@@ -1,0 +1,20 @@
+[2026-02-12 00:01:38] apply_legacy_reorg summary
+copied_current: 71
+skipped_current_same: 0
+current_conflicts: 0
+unmapped_misc: 2
+legacy_copied: 25
+legacy_skipped_same: 0
+legacy_conflicts: 0
+errors: 0
+top_10_largest_legacy_copied:
+  16637 wordpipe/ai/save 14040605/helpers - Copy.py
+  13033 wordpipe/ai/save 14040605/save 14040523 1514/helpersLegacyBeforeComprehension.py
+  10048 wordpipe/ai/save 14040605/reorganize - Copy.py
+  9569 wordpipe/ai/save 14040605/save 14040523 1514/helpers - Copy.py
+  9052 WordHorrorStories/legacy/autobiography/autobiography_coding_autobiography.py
+  9052 WordHorrorStories/legacy/autobiography/coding_autobiography-v2.py
+  8918 wordpipe/ai/save 14040605/save after 20 chunks and no ai/helpers.py
+  7930 wordpipe/ai/save 14040605/save after 20 chunks and no ai/reorganize.py
+  7440 WordHorrorStories/legacy/autobiography/coding_autobiography.py
+  7316 wordpipe/ai/save 14040605/save 14040523 1514/helpers14040523Legacy.py
