@@ -1,0 +1,32 @@
+[2026-02-11 22:46:59] Workspace created at F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246
+[2026-02-11 22:46:59] Copied zip from F:\Git\WordPipeLine\sumup_20260211_195446\snapshot_20260211_205716.zip to F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246\_ARCHIVE\raw_zips\snapshot_20260211_205716.zip
+[2026-02-11 22:46:59] Warning: Zip entries contain backslashes in paths.
+[2026-02-11 22:47:00] Extracted zip to F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246\_WORK\snapshot
+[2026-02-11 22:47:00] Tree summary (depth=3):
+snapshot/
+  snapshot/
+    WordHorrorStories/
+      autobiography/
+      chatgpt-chronicle/
+      instructions/
+      legacy/
+      reports/
+      CODEX_ENTRYPOINT.md
+      docx_to_md_converter.py
+      helloworld.py
+      md_to_docx_converter.py
+      README.md
+    wordpipe/
+      ai/
+      core/
+      flatteners/
+      pipeline/
+      __init__.py
+      code_style.py
+      config.py
+      init.py
+      logging_tools.py
+      orchestrator.py
+    MERGE_MAP.md
+    README.md
+[2026-02-11 23:25:37] AUTO_NORMALIZE_ROOT: F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246\_WORK\snapshot -> F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246\_WORK\snapshot\snapshot

@@ -1,0 +1,20 @@
+[2026-02-11 23:27:23] plan_legacy_reorg summary
+total_files: 98
+legacy_candidates: 25
+breakdown_by_area:
+  ai: 18
+  misc: 7
+breakdown_by_confidence:
+  high: 18
+  medium: 7
+top_10_largest_legacy:
+  16637 wordpipe/ai/save 14040605/helpers - Copy.py
+  13033 wordpipe/ai/save 14040605/save 14040523 1514/helpersLegacyBeforeComprehension.py
+  10048 wordpipe/ai/save 14040605/reorganize - Copy.py
+  9569 wordpipe/ai/save 14040605/save 14040523 1514/helpers - Copy.py
+  9052 WordHorrorStories/legacy/autobiography/autobiography_coding_autobiography.py
+  9052 WordHorrorStories/legacy/autobiography/coding_autobiography-v2.py
+  8918 wordpipe/ai/save 14040605/save after 20 chunks and no ai/helpers.py
+  7930 wordpipe/ai/save 14040605/save after 20 chunks and no ai/reorganize.py
+  7440 WordHorrorStories/legacy/autobiography/coding_autobiography.py
+  7316 wordpipe/ai/save 14040605/save 14040523 1514/helpers14040523Legacy.py
