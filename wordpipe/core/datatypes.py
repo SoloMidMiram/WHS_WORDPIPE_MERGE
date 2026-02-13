@@ -3,7 +3,6 @@
 # ===================================
 from __future__ import annotations
 from dataclasses import dataclass, field
-from typing import Sequence
 from pathlib import Path
 import datetime as dt
 from typing import Optional, Sequence

@@ -1,8 +1,11 @@
 # =========================================
 # file: wordpipe/pipeline/code_style.py
 # =========================================
+from __future__ import annotations
+
 import re
-from docx import Document
+from typing import Any
+
 from wordpipe.config import CODE_STYLE, CHANGE_LOG_HEADING_STYLE
 from wordpipe.events import EventSink
 
@@ -23,7 +26,7 @@ def _looks_like_code_line(s: str) -> bool:
 
 
 def style_code_blocks(
-    doc: Document, min_run: int = MIN_CODE_RUN, sink: EventSink | None = None
+    doc: Any, min_run: int = MIN_CODE_RUN, sink: EventSink | None = None
 ) -> None:
     in_fence = False
     run_buf = []

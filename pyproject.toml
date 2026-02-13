@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wordpipe"
+version = "0.0.0"
+description = "Modular DOCX pipeline helpers (TraceLedger-oriented)."
+readme = "docs/README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+# Base install is intentionally dependency-light; extras opt-in to features.
+core = []
+docx = ["python-docx>=1.1.0"]
+ai = ["openai>=1.0.0", "python-dotenv>=1.0.0"]
+cli = []
+full = [
+  "python-docx>=1.1.0",
+  "openai>=1.0.0",
+  "python-dotenv>=1.0.0",
+]
+
+[project.scripts]
+wordpipe = "wordpipe.cli.main:main"
+
+[tool.setuptools.packages.find]
+include = ["wordpipe*"]
