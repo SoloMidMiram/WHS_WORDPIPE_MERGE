@@ -1,9 +1,9 @@
 # Verify Report
 
-Generated: 2026-02-12 02:11:10
+Generated: 2026-02-13 07:31:55
 
 ## Integrity
-- Status counts: {'copied': 25}
+- Status counts: {'skipped_same': 25}
 - Area counts: {'misc': 7, 'ai': 18}
 - Failures: 0
 
@@ -12,6 +12,23 @@ Generated: 2026-02-12 02:11:10
 - Accounted files: 98
 - Unaccounted files: 0
 - Duplicates count: 9
+
+## Consistency
+- Plan rows: 25
+- Map rows: 25
+- Missing in map: 0
+- Extra in map: 0
+- Duplicate src in map: 0
+- OK: True
+
+## Immutability
+- Snapshot root: F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246\_WORK\snapshot
+- Effective snapshot root: F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246\_WORK\snapshot\snapshot
+- Manifest rows: 98
+- Checked rows: 98
+- Missing source files: 0
+- Hash mismatches: 0
+- OK: True
 
 ### Duplicates (sha256)
 - 02d5fbb11d967ce2e2f4d3ad7444c9f4f6b803ca1cebef277b45db6b1066eb03:

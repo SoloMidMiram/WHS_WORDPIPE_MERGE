@@ -1,10 +1,20 @@
 """Build legacy index docs for wordpipe and WordHorrorStories."""
 
+from __future__ import annotations
+
+import argparse
 import json
 import os
-from datetime import datetime
 from pathlib import Path
 
+from pipeline_contracts import (
+    StagePaths,
+    StageResult,
+    resolve_path,
+    resolve_workspace_root,
+    write_summary_json,
+)
+from tool_common import append_log_block
 
 TOKENS = ["after", "chunks", "no ai", "save"]
 
@@ -18,8 +28,7 @@ def _load_relocation_map(path: str) -> dict[str, dict]:
             row = json.loads(line)
             dst_abs = row.get("dst_abs")
             if dst_abs:
-                norm = str(Path(dst_abs).resolve()).lower()
-                mapping[norm] = row
+                mapping[str(Path(dst_abs).resolve()).lower()] = row
     return mapping
 
 
@@ -75,13 +84,12 @@ def _normalize_text(text: str) -> str:
 
 
 def _bucket_key(root: str, bucket_path: str) -> str:
-    rel = os.path.relpath(bucket_path, root).replace("\\", "/")
-    return rel
+    return os.path.relpath(bucket_path, root).replace("\\", "/")
 
 
 def _collect_buckets(legacy_root: str) -> dict[str, dict]:
     buckets = {}
-    for base, dirs, files in os.walk(legacy_root):
+    for base, _dirs, files in os.walk(legacy_root):
         parts = os.path.relpath(base, legacy_root).split(os.sep)
         if parts == ["."]:
             continue
@@ -102,7 +110,7 @@ def _bucket_area(bucket_rel: str) -> str:
 
 def _compute_bucket_stats(
     bucket_path: str, files: list[str], rel_map: dict[str, dict]
-):
+) -> tuple[dict[str, int], set[str], int]:
     confidence = {"high": 0, "medium": 0, "low": 0, "unknown": 0}
     labels = set()
     mapped_count = 0
@@ -130,27 +138,27 @@ def _compute_bucket_stats(
 
 
 def _write_index(
+    *,
     legacy_root: str,
     index_path: str,
     rel_map: dict[str, dict],
-    log_lines: list[str],
-):
+) -> dict[str, int]:
     tree = _tree_lines(legacy_root, 5)
     buckets = _collect_buckets(legacy_root)
 
-    lines = []
-    lines.append("# LEGACY_INDEX")
-    lines.append("")
-    lines.append(f"Root: {legacy_root}")
-    lines.append("")
-    lines.append("## Tree (depth=5)")
-    lines.append("```text")
+    lines = [
+        "# LEGACY_INDEX",
+        "",
+        f"Root: {legacy_root}",
+        "",
+        "## Tree (depth=5)",
+        "```text",
+    ]
     lines.extend(tree)
-    lines.append("```")
-    lines.append("")
-    lines.append("## Buckets")
+    lines.extend(["```", "", "## Buckets"])
 
     bucket_missing = 0
+    files_indexed = 0
     for bucket_rel in sorted(buckets.keys()):
         bucket = buckets[bucket_rel]
         files = bucket["files"]
@@ -159,10 +167,10 @@ def _write_index(
         confidence, labels, mapped_count = _compute_bucket_stats(
             bucket_path, files, rel_map
         )
+        files_indexed += len(files)
         label_line = "Label: (none)"
         if labels:
             label_line = "Label: " + ", ".join(sorted(labels))
-
         if mapped_count == 0 and rel_map:
             bucket_missing += 1
 
@@ -186,46 +194,142 @@ def _write_index(
     with open(index_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
 
-    project_name = os.path.basename(os.path.dirname(legacy_root))
-    log_lines.append(f"project: {project_name}")
-    log_lines.append(f"index_written: {index_path}")
-    log_lines.append(f"bucket_count: {len(buckets)}")
-    log_lines.append(f"files_indexed: {sum(len(b['files']) for b in buckets.values())}")
-    log_lines.append(f"buckets_missing_map: {bucket_missing}")
+    return {
+        "bucket_count": len(buckets),
+        "files_indexed": files_indexed,
+        "buckets_missing_map": bucket_missing,
+    }
 
 
-def main() -> None:
-    workspace = os.path.abspath(".")
-    legacy_roots = [
-        os.path.join(workspace, "wordpipe", "legacy"),
-        os.path.join(workspace, "WordHorrorStories", "legacy"),
-    ]
-    rel_map_path = os.path.join(workspace, "_ARCHIVE", "move_maps", "relocation_map.jsonl")
-    rel_map = _load_relocation_map(rel_map_path)
+def run_stage(
+    *,
+    workspace_root: str,
+    relocation_map: str,
+    wordpipe_legacy_root: str,
+    whs_legacy_root: str,
+    wordpipe_index_out: str,
+    whs_index_out: str,
+    log: str,
+    strict: bool,
+) -> StageResult:
+    workspace_abs = resolve_workspace_root(workspace_root)
+    relocation_map_path = resolve_path(workspace_abs, relocation_map)
+    wordpipe_legacy_abs = resolve_path(workspace_abs, wordpipe_legacy_root)
+    whs_legacy_abs = resolve_path(workspace_abs, whs_legacy_root)
+    wordpipe_index_abs = resolve_path(workspace_abs, wordpipe_index_out)
+    whs_index_abs = resolve_path(workspace_abs, whs_index_out)
+    log_path = resolve_path(workspace_abs, log)
+
+    result = StageResult(
+        stage="build_legacy_index",
+        paths=StagePaths(
+            workspace_root=workspace_abs,
+            inputs={
+                "relocation_map": relocation_map_path,
+                "wordpipe_legacy_root": wordpipe_legacy_abs,
+                "whs_legacy_root": whs_legacy_abs,
+            },
+            outputs={
+                "wordpipe_index": wordpipe_index_abs,
+                "whs_index": whs_index_abs,
+                "legacy_index_log": log_path,
+            },
+        ),
+    )
+
+    rel_map = _load_relocation_map(relocation_map_path)
     rel_map_loaded = bool(rel_map)
+    if not rel_map_loaded:
+        result.add_warning(
+            f"relocation map not found or empty: {relocation_map_path}; confidence labels may be incomplete"
+        )
+
+    if not os.path.isdir(wordpipe_legacy_abs):
+        result.add_warning(f"legacy root missing: {wordpipe_legacy_abs}")
+    if not os.path.isdir(whs_legacy_abs):
+        result.add_warning(f"legacy root missing: {whs_legacy_abs}")
+
+    wp_stats = _write_index(
+        legacy_root=wordpipe_legacy_abs,
+        index_path=wordpipe_index_abs,
+        rel_map=rel_map,
+    )
+    whs_stats = _write_index(
+        legacy_root=whs_legacy_abs,
+        index_path=whs_index_abs,
+        rel_map=rel_map,
+    )
 
     log_lines = [
         f"relocation_map_loaded: {str(rel_map_loaded).lower()}",
-        f"relocation_map_path: {rel_map_path}",
+        f"relocation_map_path: {relocation_map_path}",
+        f"project: wordpipe",
+        f"index_written: {wordpipe_index_abs}",
+        f"bucket_count: {wp_stats['bucket_count']}",
+        f"files_indexed: {wp_stats['files_indexed']}",
+        f"buckets_missing_map: {wp_stats['buckets_missing_map']}",
+        f"project: WordHorrorStories",
+        f"index_written: {whs_index_abs}",
+        f"bucket_count: {whs_stats['bucket_count']}",
+        f"files_indexed: {whs_stats['files_indexed']}",
+        f"buckets_missing_map: {whs_stats['buckets_missing_map']}",
     ]
+    append_log_block(log_path, "build_legacy_index summary", log_lines)
 
-    outputs = [
-        os.path.join(workspace, "wordpipe", "legacy", "LEGACY_INDEX.md"),
-        os.path.join(workspace, "WordHorrorStories", "legacy", "LEGACY_INDEX.md"),
-    ]
+    result.counters = {
+        "wordpipe_bucket_count": wp_stats["bucket_count"],
+        "wordpipe_files_indexed": wp_stats["files_indexed"],
+        "wordpipe_buckets_missing_map": wp_stats["buckets_missing_map"],
+        "whs_bucket_count": whs_stats["bucket_count"],
+        "whs_files_indexed": whs_stats["files_indexed"],
+        "whs_buckets_missing_map": whs_stats["buckets_missing_map"],
+    }
+    result.generated_paths = {
+        "wordpipe_index": wordpipe_index_abs,
+        "whs_index": whs_index_abs,
+        "legacy_index_log": log_path,
+    }
+    result.details["summary_lines"] = log_lines
 
-    for legacy_root, out_path in zip(legacy_roots, outputs):
-        _write_index(legacy_root, out_path, rel_map, log_lines)
+    return result.finalize(strict=strict)
 
-    log_path = os.path.join(workspace, "_ARCHIVE", "logs", "legacy_index.log")
-    os.makedirs(os.path.dirname(log_path), exist_ok=True)
-    ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open(log_path, "a", encoding="utf-8") as f:
-        f.write(f"[{ts}] build_legacy_index summary\n")
-        for line in log_lines:
-            f.write(line + "\n")
 
-    print("\n".join(log_lines))
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--workspace-root", default=".")
+    parser.add_argument(
+        "--relocation-map", default="_ARCHIVE/move_maps/relocation_map.jsonl"
+    )
+    parser.add_argument("--wordpipe-legacy-root", default="wordpipe/legacy")
+    parser.add_argument("--whs-legacy-root", default="WordHorrorStories/legacy")
+    parser.add_argument("--wordpipe-index-out", default="wordpipe/legacy/LEGACY_INDEX.md")
+    parser.add_argument(
+        "--whs-index-out", default="WordHorrorStories/legacy/LEGACY_INDEX.md"
+    )
+    parser.add_argument("--log", default="_ARCHIVE/logs/legacy_index.log")
+    parser.add_argument("--summary-json", default="")
+    parser.add_argument("--strict", action="store_true")
+    args = parser.parse_args()
+
+    result = run_stage(
+        workspace_root=args.workspace_root,
+        relocation_map=args.relocation_map,
+        wordpipe_legacy_root=args.wordpipe_legacy_root,
+        whs_legacy_root=args.whs_legacy_root,
+        wordpipe_index_out=args.wordpipe_index_out,
+        whs_index_out=args.whs_index_out,
+        log=args.log,
+        strict=args.strict,
+    )
+
+    for line in result.details.get("summary_lines", []):
+        print(line)
+
+    if args.summary_json:
+        summary_json_path = resolve_path(result.paths.workspace_root, args.summary_json)
+        write_summary_json(summary_json_path, result)
+
+    raise SystemExit(1 if result.status == "error" else 0)
 
 
 if __name__ == "__main__":

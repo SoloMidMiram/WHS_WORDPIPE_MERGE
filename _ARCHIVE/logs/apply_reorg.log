@@ -18,3 +18,20 @@ top_10_largest_legacy_copied:
   7930 wordpipe/ai/save 14040605/save after 20 chunks and no ai/reorganize.py
   7440 WordHorrorStories/legacy/autobiography/coding_autobiography.py
   7316 wordpipe/ai/save 14040605/save 14040523 1514/helpers14040523Legacy.py
+[2026-02-13 07:31:54] apply_legacy_reorg summary
+AUTO_NORMALIZE_ROOT: F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246\_WORK\snapshot -> F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246\_WORK\snapshot\snapshot
+preflight_mode: warn
+preflight_wordpipe_files: 50
+preflight_WordHorrorStories_files: 48
+preflight_decision: continue_with_warning
+preflight_warning: destination trees are non-empty; copy-only apply continues
+copied_current: 0
+skipped_current_same: 71
+current_conflicts: 0
+unmapped_misc: 2
+legacy_copied: 0
+legacy_skipped_same: 25
+legacy_conflicts: 0
+errors: 0
+conflict_log: F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246\_ARCHIVE\logs\conflicts.log
+top_10_largest_legacy_copied:

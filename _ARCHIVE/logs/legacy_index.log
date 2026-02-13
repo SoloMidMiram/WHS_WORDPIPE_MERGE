@@ -46,3 +46,16 @@ index_written: F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246\WordHorrorStories\le
 bucket_count: 4
 files_indexed: 7
 buckets_missing_map: 0
+[2026-02-13 07:31:54] build_legacy_index summary
+relocation_map_loaded: true
+relocation_map_path: F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246\_ARCHIVE\move_maps\relocation_map.jsonl
+project: wordpipe
+index_written: F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246\wordpipe\legacy\LEGACY_INDEX.md
+bucket_count: 11
+files_indexed: 18
+buckets_missing_map: 0
+project: WordHorrorStories
+index_written: F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246\WordHorrorStories\legacy\LEGACY_INDEX.md
+bucket_count: 4
+files_indexed: 7
+buckets_missing_map: 0

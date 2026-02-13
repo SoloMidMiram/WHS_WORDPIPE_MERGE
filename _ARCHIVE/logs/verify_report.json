@@ -1,7 +1,7 @@
 {
   "integrity": {
     "status_counts": {
-      "copied": 25
+      "skipped_same": 25
     },
     "area_counts": {
       "misc": 7,

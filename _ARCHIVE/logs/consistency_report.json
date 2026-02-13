@@ -1,0 +1,11 @@
+{
+  "plan_rows": 25,
+  "map_rows": 25,
+  "missing_in_map": [],
+  "extra_in_map": [],
+  "duplicate_src_in_map": [],
+  "status_counts": {
+    "skipped_same": 25
+  },
+  "ok": true
+}

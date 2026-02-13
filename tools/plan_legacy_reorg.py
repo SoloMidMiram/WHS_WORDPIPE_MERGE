@@ -1,37 +1,21 @@
 """Generate a dry-run relocation plan for legacy candidates."""
 
+from __future__ import annotations
+
 import argparse
 import json
 import os
 from datetime import datetime
 
-
-def _auto_normalize_root(root: str) -> tuple[str, bool]:
-    try:
-        entries = [e for e in os.scandir(root) if e.is_dir()]
-    except FileNotFoundError:
-        return root, False
-
-    if len(entries) != 1:
-        return root, False
-    if entries[0].name != "snapshot":
-        return root, False
-
-    candidate = os.path.join(root, "snapshot")
-    if os.path.isdir(os.path.join(candidate, "WordHorrorStories")) or os.path.isdir(
-        os.path.join(candidate, "wordpipe")
-    ):
-        return candidate, True
-    return root, False
-
-
-def _append_plan_log(log_path: str, lines: list[str]) -> None:
-    os.makedirs(os.path.dirname(log_path), exist_ok=True)
-    ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open(log_path, "a", encoding="utf-8") as f:
-        f.write(f"[{ts}] plan_legacy_reorg summary\n")
-        for line in lines:
-            f.write(line + "\n")
+from pipeline_contracts import (
+    StagePaths,
+    StageResult,
+    emit_required_path_error,
+    resolve_path,
+    resolve_workspace_root,
+    write_summary_json,
+)
+from tool_common import auto_normalize_root, append_log_block
 
 
 def _area_from_rel(rel_path: str) -> str:
@@ -101,43 +85,44 @@ def _jalali_parts_from_stamp(
     return jalali_date_time, jy, jm, jd, hh, mm
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--root", default="_WORK/snapshot", help="Snapshot root (pre-normalization)."
-    )
-    parser.add_argument(
-        "--manifest",
-        default="_ARCHIVE/manifests/manifest.jsonl",
-        help="Path to manifest.jsonl",
-    )
-    parser.add_argument(
-        "--out",
-        default="_ARCHIVE/move_maps/relocation_plan.jsonl",
-        help="Output relocation plan jsonl",
-    )
-    parser.add_argument(
-        "--log",
-        default="_ARCHIVE/logs/plan.log",
-        help="Summary log path",
-    )
-    parser.add_argument(
-        "--no-auto-normalize",
-        action="store_true",
-        help="Disable auto-normalization for nested snapshot/snapshot roots.",
-    )
-    args = parser.parse_args()
+def run_stage(
+    *,
+    workspace_root: str,
+    root: str,
+    manifest: str,
+    out: str,
+    log: str,
+    no_auto_normalize: bool,
+    strict: bool,
+) -> StageResult:
+    workspace_abs = resolve_workspace_root(workspace_root)
+    root_abs = resolve_path(workspace_abs, root)
+    manifest_path = resolve_path(workspace_abs, manifest)
+    out_path = resolve_path(workspace_abs, out)
+    log_path = resolve_path(workspace_abs, log)
 
-    root = os.path.abspath(args.root)
-    effective_root = root
-    if not args.no_auto_normalize:
-        normalized_root, did_normalize = _auto_normalize_root(root)
+    result = StageResult(
+        stage="plan_legacy_reorg",
+        paths=StagePaths(
+            workspace_root=workspace_abs,
+            inputs={"root": root_abs, "manifest_jsonl": manifest_path},
+            outputs={"relocation_plan": out_path, "plan_log": log_path},
+        ),
+    )
+
+    if not os.path.isfile(manifest_path):
+        emit_required_path_error(
+            result, label="manifest.jsonl", abs_path=manifest_path, kind="file"
+        )
+        return result.finalize(strict=strict)
+
+    effective_root = root_abs
+    auto_normalize_msg = ""
+    if not no_auto_normalize:
+        normalized_root, did_normalize = auto_normalize_root(root_abs)
         if did_normalize:
             effective_root = normalized_root
-
-    manifest_path = os.path.abspath(args.manifest)
-    out_path = os.path.abspath(args.out)
-    log_path = os.path.abspath(args.log)
+            auto_normalize_msg = f"AUTO_NORMALIZE_ROOT: {root_abs} -> {effective_root}"
 
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
 
@@ -219,11 +204,16 @@ def main() -> None:
     legacy_rows_sorted = sorted(legacy_rows, key=lambda r: r["size_bytes"], reverse=True)
     top10 = legacy_rows_sorted[:10]
 
-    summary_lines = [
-        f"total_files: {total_files}",
-        f"legacy_candidates: {legacy_count}",
-        "breakdown_by_area:",
-    ]
+    summary_lines = []
+    if auto_normalize_msg:
+        summary_lines.append(auto_normalize_msg)
+    summary_lines.extend(
+        [
+            f"total_files: {total_files}",
+            f"legacy_candidates: {legacy_count}",
+            "breakdown_by_area:",
+        ]
+    )
     for area in sorted(area_counts):
         summary_lines.append(f"  {area}: {area_counts[area]}")
     summary_lines.append("breakdown_by_confidence:")
@@ -233,8 +223,68 @@ def main() -> None:
     for row in top10:
         summary_lines.append(f"  {row['size_bytes']} {row['src_rel']}")
 
-    _append_plan_log(log_path, summary_lines)
-    print("\n".join(summary_lines))
+    append_log_block(log_path, "plan_legacy_reorg summary", summary_lines)
+
+    result.counters = {
+        "total_files": total_files,
+        "legacy_candidates": legacy_count,
+    }
+    result.generated_paths = {"relocation_plan": out_path}
+    result.details["area_counts"] = area_counts
+    result.details["confidence_counts"] = conf_counts
+    result.details["summary_lines"] = summary_lines
+
+    return result.finalize(strict=strict)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--root", default="_WORK/snapshot", help="Snapshot root (pre-normalization)."
+    )
+    parser.add_argument(
+        "--manifest",
+        default="_ARCHIVE/manifests/manifest.jsonl",
+        help="Path to manifest.jsonl",
+    )
+    parser.add_argument(
+        "--out",
+        default="_ARCHIVE/move_maps/relocation_plan.jsonl",
+        help="Output relocation plan jsonl",
+    )
+    parser.add_argument(
+        "--log",
+        default="_ARCHIVE/logs/plan.log",
+        help="Summary log path",
+    )
+    parser.add_argument("--workspace-root", default=".")
+    parser.add_argument("--summary-json", default="")
+    parser.add_argument("--strict", action="store_true")
+    parser.add_argument(
+        "--no-auto-normalize",
+        action="store_true",
+        help="Disable auto-normalization for nested snapshot/snapshot roots.",
+    )
+    args = parser.parse_args()
+
+    result = run_stage(
+        workspace_root=args.workspace_root,
+        root=args.root,
+        manifest=args.manifest,
+        out=args.out,
+        log=args.log,
+        no_auto_normalize=args.no_auto_normalize,
+        strict=args.strict,
+    )
+
+    for line in result.details.get("summary_lines", []):
+        print(line)
+
+    if args.summary_json:
+        summary_json_path = resolve_path(result.paths.workspace_root, args.summary_json)
+        write_summary_json(summary_json_path, result)
+
+    raise SystemExit(1 if result.status == "error" else 0)
 
 
 if __name__ == "__main__":

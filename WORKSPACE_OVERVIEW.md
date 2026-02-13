@@ -14,11 +14,21 @@ Copy-only merge workspace that separates current vs legacy content and buckets l
 - _ARCHIVE/move_maps/relocation_map.jsonl
 - wordpipe/legacy/LEGACY_INDEX.md
 - WordHorrorStories/legacy/LEGACY_INDEX.md
+- _ARCHIVE/logs/conflicts.log
 - _ARCHIVE/logs/verify_report.md
 - _ARCHIVE/logs/verify_report.json
+- _ARCHIVE/logs/consistency_report.json
+- _ARCHIVE/logs/immutability_report.json
 
 ## Canonical Legacy Bucket Scheme
 - area/JY/JM/JD/HHMM
+
+## Documentation
+- docs/LABOR_REPORT.md
+- docs/PIPELINE_CONTRACTS.md
+- docs/PIPELINE_RUNBOOK.md
+- docs/INTEGRATION_MAP_BEFORE_AFTER.md
+- docs/SECURITY_HARDENING.md
 
 ## Re-run Commands (PowerShell)
 ```powershell
