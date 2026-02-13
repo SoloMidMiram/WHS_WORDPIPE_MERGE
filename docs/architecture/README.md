@@ -7,6 +7,8 @@ This folder is the architecture-facing entrypoint for TraceLedger alignment and 
 - Debug/enhancement roadmap: `docs/TRACELEDGER_DEBUG_ENHANCEMENT_PLAN.md`
 - Integration contract: `docs/TRACELEDGER_INTEGRATION_CONTRACT.md`
 - Before/after logic flow narrative: `docs/LOGIC_FLOW_BEFORE_AFTER_TRACELEDGER.md`
+- Whole-project summary: `docs/architecture/PROJECT_SUMMARY.md`
+- Deep architecture spec: `ARCHITECTURE.md`
 
 ## Key Boundary Principle
 - `tools/` is the evidence/audit pipeline (CLI oriented, produces `_ARCHIVE/` artifacts).
@@ -15,4 +17,3 @@ This folder is the architecture-facing entrypoint for TraceLedger alignment and 
 ## See Also
 - Docs index: `docs/README.md`
 - Duplicate governance placeholder: `docs/DUPLICATE_POLICY.md`
-

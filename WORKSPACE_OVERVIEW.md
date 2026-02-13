@@ -26,8 +26,12 @@ Copy-only merge workspace that separates current vs legacy content and buckets l
 ## Documentation
 - docs/README.md
 - docs/operations/README.md
+- docs/operations/MANUAL.md
+- docs/operations/LABOR.md
 - docs/engineering/README.md
+- docs/engineering/MODULES_PACKAGES.md
 - docs/architecture/README.md
+- docs/architecture/PROJECT_SUMMARY.md
 - docs/LABOR_REPORT.md
 - docs/PIPELINE_CONTRACTS.md
 - docs/PIPELINE_RUNBOOK.md

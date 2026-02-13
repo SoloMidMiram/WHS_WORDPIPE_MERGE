@@ -3,7 +3,9 @@
 ## Documentation
 - `docs/README.md`
 - `docs/operations/README.md`
+- Manual: `docs/operations/MANUAL.md`
 - `docs/engineering/README.md`
+- Modules/packages: `docs/engineering/MODULES_PACKAGES.md`
 - `docs/architecture/README.md`
 - `docs/LABOR_REPORT.md`
 - `docs/PIPELINE_CONTRACTS.md`
