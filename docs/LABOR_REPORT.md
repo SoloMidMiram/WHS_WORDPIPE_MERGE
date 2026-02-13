@@ -1,5 +1,23 @@
 # Labor Report: Tools Pipeline Hardening
 
+## See Also
+- `docs/README.md`
+- `docs/INTEGRATION_MAP_BEFORE_AFTER.md`
+- `docs/LOGIC_FLOW_BEFORE_AFTER_TRACELEDGER.md`
+- `docs/SECURITY_HARDENING.md`
+- `docs/REPOSITORY_REVIEW_MERGED_2026-02-13.md`
+
+## TraceLedger Readiness Summary
+- The `tools/` pipeline is already contract-consistent (`StageResult`) and can be automated as evidence generation, but TraceLedger should not depend on it as a runtime library API.
+- Copy-only and conflict-safe behavior is suitable for audit/evidence workflows TraceLedger may want to schedule independently.
+- Security posture is improved (env-only secrets + scanner), which is required if TraceLedger will run in CI/CD.
+- WordPipe runtime modularization and an EventSink contract are planned/ongoing and will be the primary TraceLedger integration surface.
+- Portability improvements (preferring relative paths in verification) are planned to reduce environment-dependent failures.
+
+## Change Anchors
+- `c778c43` (security hardening + pipeline save point)
+- Note: additional documentation organization work exists in the working tree after `c778c43` and should be anchored by the next "docs organization" commit.
+
 ## Executive Summary
 This workspace implements a copy-only archival pipeline that separates current content from legacy content and verifies integrity after relocation. The labor completed in this phase focused on operational safety, evidence quality, and module consistency without changing core copy-only semantics.
 

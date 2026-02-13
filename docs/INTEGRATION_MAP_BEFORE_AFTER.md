@@ -1,5 +1,10 @@
 # Integration Map and Data Flow (Before vs After)
 
+## See Also
+- `docs/README.md`
+- `docs/TOOLS_MODULES_INTEGRATION_REPORT.md`
+- `docs/LOGIC_FLOW_BEFORE_AFTER_TRACELEDGER.md`
+
 ## Scope
 This map covers the `tools/` pipeline only:
 - `make_manifest.py`
@@ -147,3 +152,33 @@ _WORK/snapshot
 - Stage contracts: `tools/pipeline_contracts.py`
 - Stage runbook: `docs/PIPELINE_RUNBOOK.md`
 - Stage contract reference: `docs/PIPELINE_CONTRACTS.md`
+
+## Execution Context and Argument Passing
+`tools/orchestrate.py` runs each stage as a subprocess with:
+- subprocess working directory: `cwd=<abs(--workspace-root)>`
+- `--root <snapshot_root>` passed through to root-aware stages (make/plan/apply and optional route step)
+- `--snapshot-root <snapshot_root>` passed to `verify_integrity.py`
+
+Today, `tools/orchestrate.py` does not forward:
+- `--workspace-root` (stages rely on `cwd` implicitly in orchestrated runs)
+- `--strict`
+- `--summary-json`
+- stage-specific overrides (for example custom `--manifest`, `--plan`, output paths)
+
+Operator patterns:
+- If you need `--strict` or `--summary-json`, run the stage directly.
+- If you need stage-specific overrides, run the stage directly.
+- Future extension (not implemented): add explicit pass-through flags to `tools/orchestrate.py`.
+
+## Job Model (Who Runs What)
+- Operator job:
+  - Run the pipeline (stage-by-stage or orchestrated) and inspect `_ARCHIVE/logs/*` reports.
+- CI job:
+  - Run docs link check (`python tools/docs_link_check.py`) and secret scan (`python tools/security_scan.py --root . --fail-on-findings`).
+  - Optionally run `python tools/orchestrate.py --dry-run` for interface sanity.
+- Evidence job:
+  - Preserve append-only audit logs and deterministic reports under `_ARCHIVE/`.
+  - Treat `_ARCHIVE/` artifacts as evidence; avoid rewriting historical logs.
+
+## TraceLedger Impact
+TraceLedger's primary integration target is the **WordPipe runtime** (`wordpipe/`) as a library API. The `tools/` pipeline remains evidence/audit oriented, intended for archival verification workflows and operational audits rather than in-process library calls.

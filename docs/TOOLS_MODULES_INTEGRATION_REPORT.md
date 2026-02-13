@@ -1,5 +1,9 @@
 # Tools Modules Integration Report
 
+## See Also
+- `docs/README.md`
+- `docs/LOGIC_FLOW_BEFORE_AFTER_TRACELEDGER.md`
+
 ## Executive Introduction
 This report documents the `tools/` pipeline as a single architecture narrative for operators and engineers.
 
@@ -24,6 +28,9 @@ Operator value:
 - One command can run the full documented flow.
 - Every stage can still run standalone.
 - Evidence is split into audit logs (append-only) and reports (replace-on-run) for clear operations and QA.
+
+## Where This Fits in TraceLedger
+This document describes the **evidence pipeline** (`tools/`) and its artifacts. TraceLedger should primarily integrate with **WordPipe runtime** (`wordpipe/`) as a library and use `tools/` only as an optional audit/evidence subsystem when needed.
 
 ## Scope and Artifact Chain
 In-scope modules:

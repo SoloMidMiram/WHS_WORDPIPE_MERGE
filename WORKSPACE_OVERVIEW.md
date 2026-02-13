@@ -24,11 +24,21 @@ Copy-only merge workspace that separates current vs legacy content and buckets l
 - area/JY/JM/JD/HHMM
 
 ## Documentation
+- docs/README.md
+- docs/operations/README.md
+- docs/engineering/README.md
+- docs/architecture/README.md
 - docs/LABOR_REPORT.md
 - docs/PIPELINE_CONTRACTS.md
 - docs/PIPELINE_RUNBOOK.md
 - docs/INTEGRATION_MAP_BEFORE_AFTER.md
+- docs/LOGIC_FLOW_BEFORE_AFTER_TRACELEDGER.md
+- docs/REPOSITORY_REVIEW_MERGED_2026-02-13.md
+- docs/TRACELEDGER_DEBUG_ENHANCEMENT_PLAN.md
+- docs/TRACELEDGER_INTEGRATION_CONTRACT.md
 - docs/SECURITY_HARDENING.md
+- docs/DOC_STYLE_GUIDE.md
+- docs/DUPLICATE_POLICY.md
 
 ## Re-run Commands (PowerShell)
 ```powershell
