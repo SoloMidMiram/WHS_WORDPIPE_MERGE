@@ -1,0 +1,119 @@
+{
+  "_comment": "Theme definitions for categorize.py. Each theme has positive keywords and optional negative keywords. If any negative keyword is found in the event body, the theme is NOT assigned (prevents false positives).",
+  "themes": {
+    "Web UI": {
+      "keywords": [
+        "chat.openai.com",
+        "chatgpt.com",
+        "web interface",
+        "browser interface",
+        "interface redesign",
+        "website",
+        "web app",
+        "UI freeze",
+        "button disappeared",
+        "interface"
+      ],
+      "negative_keywords": [
+        "API interface",
+        "command line interface"
+      ]
+    },
+    "API/Developer": {
+      "keywords": [
+        "API",
+        "developer",
+        "Linux terminal",
+        "simulating",
+        "pretend computer",
+        "Linux shell",
+        "function calling",
+        "code interpreter",
+        "playground",
+        "endpoint",
+        "rate limit",
+        "token",
+        "GPT-4 API"
+      ],
+      "negative_keywords": [
+        "graphical",
+        "GUI"
+      ]
+    },
+    "Outages": {
+      "keywords": [
+        "server crash",
+        "system crash",
+        "crash bug",
+        "503 error",
+        "server error",
+        "error message",
+        "downtime",
+        "outage",
+        "unavailable",
+        "service disruption",
+        "unreachable"
+      ],
+      "negative_keywords": [
+        "meme crash",
+        "crash course",
+        "trial and error",
+        "error in judgment",
+        "crash diet"
+      ]
+    },
+    "Jailbreaks/Exploits": {
+      "keywords": [
+        "jailbreak exploit",
+        "prompt exploit",
+        "security exploit",
+        "prompt injection",
+        "bypass",
+        "DAN",
+        "jailbreak",
+        "ignore previous instructions",
+        "prompt leak"
+      ],
+      "negative_keywords": [
+        "creative exploit",
+        "exploit the system creatively",
+        "exploit a loophole creatively"
+      ]
+    },
+    "Memory/Personalisation": {
+      "keywords": [
+        "memory",
+        "chat history",
+        "conversation history",
+        "memory feature",
+        "personalisation",
+        "custom instructions",
+        "bio",
+        "remembers",
+        "personalised"
+      ],
+      "negative_keywords": [
+        "in memory of",
+        "memory lane",
+        "memory game"
+      ]
+    },
+    "Culture/Virality": {
+      "keywords": [
+        "viral",
+        "mega-viral",
+        "viral sensation",
+        "Twitter",
+        "Reddit",
+        "meme",
+        "trending",
+        "went viral",
+        "social media",
+        "community"
+      ],
+      "negative_keywords": [
+        "anti-viral"
+      ]
+    }
+  }
+}

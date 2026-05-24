@@ -97,3 +97,4 @@ wordpipe/flatteners/__init__.py,20,21fe836f24f41ab0c571a0fa9e3b4089b0bc8e0a85bf5
 wordpipe/pipeline/code_style.py,142,201d32cec045a79fd9c12f0953d5c105530043f2f58c3662603233df55fb4819,2025-12-19T21:19:08+00:00,2025-12-20T00:49:08+03:30,1404/09/29 00:49,,mtime,medium,false,current/
 wordpipe/pipeline/orchestrator.py,190,3e88e16a628807c0239fff6cb4691c9f5af0d2beaa108b6741968dfea7d49a12,2025-12-19T21:18:32+00:00,2025-12-20T00:48:32+03:30,1404/09/29 00:48,,mtime,medium,false,current/
 wordpipe/pipeline/__init__.py,20,21fe836f24f41ab0c571a0fa9e3b4089b0bc8e0a85bf5361c730f67f414bd7ed,2025-08-11T15:34:04+00:00,2025-08-11T19:04:04+03:30,1404/05/20 19:04,,mtime,medium,false,current/
+pipeline-chronicle/ARCHIVE_REPORT.md,<dir>,pipeline-chronicle archive,2026-02-14,1404-11-25,archive,ignore/

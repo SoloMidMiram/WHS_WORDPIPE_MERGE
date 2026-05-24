@@ -1,0 +1,725 @@
+{
+  "meta": {
+    "title": "WHS WordPipe Merge Ontology",
+    "version": "1.0.0",
+    "date_gregorian": "2026-02-14",
+    "date_jalali": "1404-11-25",
+    "description": "Formal entity-relationship model for the WHS WordPipe Merge project"
+  },
+  "classes": [
+    {
+      "id": "entity",
+      "name": "Entity",
+      "abstract": true,
+      "description": "Base class for all ontology entities"
+    },
+    {
+      "id": "artifact",
+      "name": "Artifact",
+      "parent": "entity",
+      "description": "Any persistent file or data output",
+      "attributes": {
+        "path": {
+          "type": "Path",
+          "description": "Location in repo"
+        },
+        "kind": {
+          "type": "Enum",
+          "values": [
+            "source",
+            "doc",
+            "evidence",
+            "config"
+          ],
+          "description": "Type of artifact"
+        },
+        "sha256": {
+          "type": "String",
+          "description": "Content hash for dedup"
+        },
+        "git_created": {
+          "type": "Date",
+          "description": "First commit date"
+        },
+        "git_modified": {
+          "type": "Date",
+          "description": "Last commit date"
+        },
+        "fs_mtime": {
+          "type": "Date",
+          "description": "Filesystem modification time"
+        }
+      },
+      "subtypes": [
+        "doc",
+        "source_file",
+        "evidence",
+        "config_file"
+      ]
+    },
+    {
+      "id": "doc",
+      "name": "Doc",
+      "parent": "artifact",
+      "description": "Markdown documentation file"
+    },
+    {
+      "id": "source_file",
+      "name": "SourceFile",
+      "parent": "artifact",
+      "description": "Python source code file"
+    },
+    {
+      "id": "evidence",
+      "name": "Evidence",
+      "parent": "artifact",
+      "description": "Pipeline output (logs, manifests, reports)"
+    },
+    {
+      "id": "config_file",
+      "name": "ConfigFile",
+      "parent": "artifact",
+      "description": "Configuration file (.toml, .gitignore, .env.example)"
+    },
+    {
+      "id": "duplicate_set",
+      "name": "DuplicateSet",
+      "parent": "entity",
+      "description": "Group of files sharing the same name or content",
+      "attributes": {
+        "canonical_path": {
+          "type": "Path",
+          "description": "The authoritative version"
+        },
+        "duplicate_type": {
+          "type": "Enum",
+          "values": [
+            "mirror",
+            "wrapper",
+            "version_history"
+          ],
+          "description": "Type of duplication"
+        },
+        "content_match": {
+          "type": "Boolean",
+          "description": "Whether all copies have same SHA256"
+        }
+      },
+      "subtypes": [
+        "mirror_pair",
+        "compatibility_wrapper",
+        "version_history"
+      ]
+    },
+    {
+      "id": "mirror_pair",
+      "name": "MirrorPair",
+      "parent": "duplicate_set",
+      "description": "Active <-> Snapshot copy (archival)",
+      "attributes": {
+        "active_path": {
+          "type": "Path",
+          "description": "The working copy"
+        },
+        "snapshot_path": {
+          "type": "Path",
+          "description": "The frozen archival copy"
+        },
+        "diverged": {
+          "type": "Boolean",
+          "description": "Whether active differs from snapshot"
+        }
+      }
+    },
+    {
+      "id": "compatibility_wrapper",
+      "name": "CompatibilityWrapper",
+      "parent": "duplicate_set",
+      "description": "Thin re-export for backward compatibility",
+      "attributes": {
+        "target_module": {
+          "type": "Path",
+          "description": "The module being re-exported"
+        },
+        "import_statement": {
+          "type": "String",
+          "description": "The import line"
+        }
+      }
+    },
+    {
+      "id": "version_history",
+      "name": "VersionHistory",
+      "parent": "duplicate_set",
+      "description": "Dated snapshots of same module (legacy)",
+      "attributes": {
+        "versions": {
+          "type": "List[Path]",
+          "description": "Ordered list of dated snapshots"
+        },
+        "earliest": {
+          "type": "Date",
+          "description": "Oldest snapshot date"
+        },
+        "latest": {
+          "type": "Date",
+          "description": "Most recent snapshot date"
+        }
+      }
+    },
+    {
+      "id": "activity_period",
+      "name": "ActivityPeriod",
+      "parent": "entity",
+      "description": "A bounded span of work with a goal",
+      "attributes": {
+        "name": {
+          "type": "String",
+          "description": "Short label"
+        },
+        "start_date": {
+          "type": "Date",
+          "description": "When it began"
+        },
+        "end_date": {
+          "type": "Date",
+          "description": "When it ended"
+        },
+        "goal": {
+          "type": "String",
+          "description": "What was to be achieved"
+        }
+      },
+      "subtypes": [
+        "phase",
+        "session"
+      ]
+    },
+    {
+      "id": "phase",
+      "name": "Phase",
+      "parent": "activity_period",
+      "description": "Named project phase"
+    },
+    {
+      "id": "session",
+      "name": "Session",
+      "parent": "activity_period",
+      "description": "Single work session (date-bound)"
+    },
+    {
+      "id": "claim",
+      "name": "Claim",
+      "parent": "entity",
+      "description": "A statement made in docs or code",
+      "attributes": {
+        "text": {
+          "type": "String",
+          "description": "The assertion"
+        },
+        "status": {
+          "type": "Enum",
+          "values": [
+            "true",
+            "false",
+            "untested",
+            "partial"
+          ],
+          "description": "Verification status"
+        }
+      },
+      "subtypes": [
+        "design_claim",
+        "evidence_claim",
+        "status_claim"
+      ]
+    },
+    {
+      "id": "design_claim",
+      "name": "DesignClaim",
+      "parent": "claim",
+      "description": "X is designed to do Y"
+    },
+    {
+      "id": "evidence_claim",
+      "name": "EvidenceClaim",
+      "parent": "claim",
+      "description": "The pipeline produces Z"
+    },
+    {
+      "id": "status_claim",
+      "name": "StatusClaim",
+      "parent": "claim",
+      "description": "Feature is complete"
+    },
+    {
+      "id": "verification",
+      "name": "Verification",
+      "parent": "entity",
+      "description": "How a claim is checked",
+      "attributes": {
+        "method": {
+          "type": "Enum",
+          "values": [
+            "test",
+            "command",
+            "inspection"
+          ],
+          "description": "Verification method"
+        },
+        "command_or_path": {
+          "type": "String",
+          "description": "The test command or file to inspect"
+        }
+      },
+      "subtypes": [
+        "test",
+        "command",
+        "inspection"
+      ]
+    },
+    {
+      "id": "test",
+      "name": "Test",
+      "parent": "verification",
+      "description": "Automated test (unittest)"
+    },
+    {
+      "id": "command",
+      "name": "Command",
+      "parent": "verification",
+      "description": "CLI command to run"
+    },
+    {
+      "id": "inspection",
+      "name": "Inspection",
+      "parent": "verification",
+      "description": "Manual review"
+    },
+    {
+      "id": "role",
+      "name": "Role",
+      "parent": "entity",
+      "description": "Who interacts with the system",
+      "subtypes": [
+        "operator",
+        "engineer",
+        "architect"
+      ]
+    },
+    {
+      "id": "operator",
+      "name": "Operator",
+      "parent": "role",
+      "description": "Runs and triages the pipeline"
+    },
+    {
+      "id": "engineer",
+      "name": "Engineer",
+      "parent": "role",
+      "description": "Modifies pipeline stages"
+    },
+    {
+      "id": "architect",
+      "name": "Architect",
+      "parent": "role",
+      "description": "Designs TraceLedger alignment"
+    }
+  ],
+  "relations": [
+    {
+      "name": "produces",
+      "domain": "activity_period",
+      "range": "artifact",
+      "description": "Work output"
+    },
+    {
+      "name": "consumes",
+      "domain": "activity_period",
+      "range": "artifact",
+      "description": "Work input"
+    },
+    {
+      "name": "states",
+      "domain": "artifact",
+      "range": "claim",
+      "description": "A doc or code makes a claim"
+    },
+    {
+      "name": "verifies",
+      "domain": "verification",
+      "range": "claim",
+      "description": "How a claim is checked"
+    },
+    {
+      "name": "verified_by",
+      "domain": "claim",
+      "range": "verification",
+      "description": "Inverse of verifies"
+    },
+    {
+      "name": "depends_on",
+      "domain": "artifact",
+      "range": "artifact",
+      "description": "Dependency between artifacts"
+    },
+    {
+      "name": "part_of",
+      "domain": "activity_period",
+      "range": "activity_period",
+      "description": "Hierarchical (Session -> Phase)"
+    },
+    {
+      "name": "precedes",
+      "domain": "activity_period",
+      "range": "activity_period",
+      "description": "Temporal ordering"
+    },
+    {
+      "name": "is_duplicate_of",
+      "domain": "artifact",
+      "range": "artifact",
+      "description": "Same name/content as another file"
+    },
+    {
+      "name": "wraps",
+      "domain": "compatibility_wrapper",
+      "range": "artifact",
+      "description": "Re-exports from target module"
+    },
+    {
+      "name": "mirrors",
+      "domain": "mirror_pair",
+      "range": "artifact",
+      "description": "Active <-> Snapshot correspondence"
+    },
+    {
+      "name": "evolves_to",
+      "domain": "version_history",
+      "range": "version_history",
+      "description": "Temporal ordering of versions"
+    }
+  ],
+  "instances": {
+    "artifacts": [
+      {
+        "name": "ARCHITECTURE.md",
+        "path": "ARCHITECTURE.md",
+        "kind": "doc",
+        "produced_by": "Phase 4: Modular Refactor"
+      },
+      {
+        "name": "WORKSPACE_OVERVIEW.md",
+        "path": "WORKSPACE_OVERVIEW.md",
+        "kind": "doc",
+        "produced_by": "Phase 1: Initial Setup"
+      },
+      {
+        "name": "Pipeline Runbook",
+        "path": "docs/PIPELINE_RUNBOOK.md",
+        "kind": "doc",
+        "produced_by": "Phase 2: Security & Contracts"
+      },
+      {
+        "name": "Tools Integration Report",
+        "path": "docs/TOOLS_MODULES_INTEGRATION_REPORT.md",
+        "kind": "doc",
+        "produced_by": "Phase 2: Security & Contracts"
+      },
+      {
+        "name": "make_manifest.py",
+        "path": "tools/make_manifest.py",
+        "kind": "source",
+        "produced_by": "Phase 1: Initial Setup"
+      },
+      {
+        "name": "pipeline_contracts.py",
+        "path": "tools/pipeline_contracts.py",
+        "kind": "source",
+        "produced_by": "Phase 2: Security & Contracts"
+      },
+      {
+        "name": "add_standard_headers.py",
+        "path": "tools/add_standard_headers.py",
+        "kind": "source",
+        "produced_by": "Phase 6: Foundation Fixes"
+      },
+      {
+        "name": "manifest.jsonl",
+        "path": "_ARCHIVE/manifests/manifest.jsonl",
+        "kind": "evidence",
+        "produced_by": "Phase 1: Initial Setup"
+      },
+      {
+        "name": "relocation_plan.jsonl",
+        "path": "_ARCHIVE/move_maps/relocation_plan.jsonl",
+        "kind": "evidence",
+        "produced_by": "Phase 1: Initial Setup"
+      },
+      {
+        "name": "relocation_map.jsonl",
+        "path": "_ARCHIVE/move_maps/relocation_map.jsonl",
+        "kind": "evidence",
+        "produced_by": "Phase 1: Initial Setup"
+      },
+      {
+              "name": "verify_report.json",
+              "path": "_ARCHIVE/logs/verify_report.json",
+              "kind": "evidence",
+              "produced_by": "Phase 1: Initial Setup"
+            },
+            {
+              "name": "Chronicle Pipeline README",
+              "path": "tools/pipeline-chronicle/README.md",
+              "kind": "doc",
+              "produced_by": "P9: Chronicle Automation Pipeline"
+            },
+            {
+              "name": "Chronicle Pipeline Config",
+              "path": "tools/pipeline-chronicle/config.json",
+              "kind": "config",
+              "produced_by": "P9: Chronicle Automation Pipeline"
+            },
+            {
+              "name": "ingest.py",
+              "path": "tools/pipeline-chronicle/ingest.py",
+              "kind": "source",
+              "produced_by": "P9: Chronicle Automation Pipeline"
+            },
+            {
+              "name": "merge.py",
+              "path": "tools/pipeline-chronicle/merge.py",
+              "kind": "source",
+              "produced_by": "P9: Chronicle Automation Pipeline"
+            },
+            {
+              "name": "categorize.py",
+              "path": "tools/pipeline-chronicle/categorize.py",
+              "kind": "source",
+              "produced_by": "P9: Chronicle Automation Pipeline"
+            },
+            {
+              "name": "index.py",
+              "path": "tools/pipeline-chronicle/index.py",
+              "kind": "source",
+              "produced_by": "P9: Chronicle Automation Pipeline"
+            },
+            {
+              "name": "reference.py",
+              "path": "tools/pipeline-chronicle/reference.py",
+              "kind": "source",
+              "produced_by": "P9: Chronicle Automation Pipeline"
+            }
+          ],
+    "duplicate_sets": [
+      {
+        "name": "code_style.py",
+        "type": "compatibility_wrapper",
+        "canonical": "wordpipe/code_style.py",
+        "copies": [
+          "wordpipe/pipeline/code_style.py"
+        ]
+      },
+      {
+        "name": "orchestrator.py",
+        "type": "compatibility_wrapper",
+        "canonical": "wordpipe/orchestrator.py",
+        "copies": [
+          "wordpipe/pipeline/orchestrator.py"
+        ]
+      },
+      {
+        "name": "flattener/base.py",
+        "type": "compatibility_wrapper",
+        "canonical": "wordpipe/adapters/flatteners/base.py",
+        "copies": [
+          "wordpipe/flatteners/base.py"
+        ]
+      },
+      {
+        "name": "flattener/com_flattener.py",
+        "type": "compatibility_wrapper",
+        "canonical": "wordpipe/adapters/flatteners/com_flattener.py",
+        "copies": [
+          "wordpipe/flatteners/com_flattener.py"
+        ]
+      },
+      {
+        "name": "flattener/xml_flattener.py",
+        "type": "compatibility_wrapper",
+        "canonical": "wordpipe/adapters/flatteners/xml_flattener.py",
+        "copies": [
+          "wordpipe/flatteners/xml_flattener.py"
+        ]
+      },
+      {
+        "name": "logging_tools.py",
+        "type": "compatibility_wrapper",
+        "canonical": "wordpipe/logging_tools.py",
+        "copies": [
+          "wordpipe/ai/logging_tools.py"
+        ]
+      },
+      {
+        "name": "__init__.py (mirror)",
+        "type": "mirror_pair",
+        "active": "wordpipe/__init__.py",
+        "snapshot": "_WORK/snapshot/snapshot/wordpipe/__init__.py",
+        "diverged": true
+      },
+      {
+        "name": "helpers.py (mirror)",
+        "type": "mirror_pair",
+        "active": "wordpipe/ai/helpers.py",
+        "snapshot": "_WORK/snapshot/snapshot/wordpipe/ai/helpers.py",
+        "diverged": false
+      },
+      {
+        "name": "ailoader.py (mirror)",
+        "type": "mirror_pair",
+        "active": "wordpipe/ai/ailoader.py",
+        "snapshot": "_WORK/snapshot/snapshot/wordpipe/ai/ailoader.py",
+        "diverged": false
+      },
+      {
+        "name": "AI helpers (version history)",
+        "type": "version_history",
+        "versions": 11,
+        "earliest": "1404/05/23",
+        "latest": "1404/06/05"
+      }
+    ],
+    "activity_periods": [
+      {
+        "name": "P0: Setup",
+        "start": "1404-08-23",
+        "end": "1404-08-23",
+        "goal": "Initial workspace creation, snapshot extraction"
+      },
+      {
+        "name": "P1: Pipeline Contracts",
+        "start": "1404-10-??",
+        "end": "1404-10-??",
+        "goal": "Standardize stage interfaces with StageResult"
+      },
+      {
+        "name": "P2: Docs Pack",
+        "start": "1404-11-24",
+        "end": "1404-11-24",
+        "goal": "Add ops manual, labor notes, module/package guide"
+      },
+      {
+        "name": "P3: Security Hardening",
+        "start": "1404-11-24",
+        "end": "1404-11-24",
+        "goal": "Add secret scanner, env-only secrets policy"
+      },
+      {
+        "name": "P4: Foundation Fixes",
+        "start": "1404-11-25",
+        "end": "1404-11-25",
+        "goal": "Fix absolute paths, verify doc accuracy"
+      },
+      {
+        "name": "P5: Ontology & Journal",
+        "start": "1404-11-25",
+        "end": "1404-11-25",
+        "goal": "Build structured knowledge model"
+      },
+      {
+              "name": "P8: Duplicate Analysis",
+              "start": "1404-11-25",
+              "end": "1404-11-25",
+              "goal": "Analyze all duplicates, apply standard headers"
+            },
+            {
+              "name": "P9: Chronicle Automation Pipeline",
+              "start": "1404-11-25",
+              "end": null,
+              "goal": "Build composable CLI pipeline to ingest, merge, categorize, index, and reference deep-search files into the chronicle appendix system"
+            }
+          ],
+    "claims": [
+      {
+        "id": "C1",
+        "text": "The pipeline has 5 stages",
+        "status": "true"
+      },
+      {
+        "id": "C2",
+        "text": "Stage scripts support --workspace-root, --summary-json, --strict flags",
+        "status": "true"
+      },
+      {
+        "id": "C3",
+        "text": "verify reports are stable across machines",
+        "status": "untested"
+      },
+      {
+        "id": "C4",
+        "text": "Core has zero runtime-heavy dependencies",
+        "status": "true"
+      },
+      {
+        "id": "C5",
+        "text": "The pipeline produces manifest.jsonl, relocation_plan.jsonl, relocation_map.jsonl",
+        "status": "true"
+      },
+      {
+        "id": "C6",
+        "text": "All 82 Python files have standard Jalali-date headers",
+        "status": "true"
+      },
+      {
+        "id": "C7",
+        "text": "45 files had duplicate headers which were cleaned",
+        "status": "true"
+      },
+      {
+        "id": "C8",
+        "text": "Active tree has 28 new modular architecture files not in snapshot",
+        "status": "true"
+      },
+      {
+        "id": "C9",
+        "text": "Git history spans only 3 days (2026-02-12 to 2026-02-14)",
+        "status": "true"
+      },
+      {
+              "id": "C10",
+              "text": "Filesystem timestamps (2026-05-18) are snapshot artifacts",
+              "status": "true"
+            },
+            {
+              "id": "C11",
+              "text": "ingest.py converts any deep-search .md into normalised MD with YAML front-matter",
+              "status": "untested"
+            },
+            {
+              "id": "C12",
+              "text": "merge.py deduplicates by SHA256 hash + date, producing a duplicates report",
+              "status": "untested"
+            },
+            {
+              "id": "C13",
+              "text": "categorize.py tags merged entries with ontology classes and theme labels from config.json",
+              "status": "untested"
+            },
+            {
+              "id": "C14",
+              "text": "index.py regenerates event_index.md, theme_index.md, source_manifest.md, link_registry.md from tagged merged MD",
+              "status": "untested"
+            },
+            {
+              "id": "C15",
+              "text": "reference.py generates stable anchor IDs and a topic model for future AI iteration",
+              "status": "untested"
+            },
+            {
+              "id": "C16",
+              "text": "All 6 chronicle pipeline tools are independent CLI tools with no Python cross-imports",
+              "status": "untested"
+            }
+          ]
+  }
+}

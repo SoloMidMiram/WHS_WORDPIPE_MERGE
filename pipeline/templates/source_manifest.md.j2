@@ -1,0 +1,16 @@
+# Source Manifest
+
+> Sources contributing to the chronicle.
+> **Total sources:** {{ sources|length }}
+
+| # | Source Name | Events Contributed | Status |
+|---|-------------|-------------------|--------|
+{% for source in sources -%}
+| {{ loop.index }} | {{ source.name }} | {{ source.event_count }} | {{ source.status }} |
+{% endfor %}
+
+## Source Coverage Summary
+
+- **Total events in merged chronicle:** {{ total_events }}
+- **Sources with events:** {{ sources_with_events }}
+- **Sources with no events extracted:** {{ sources_without_events }}

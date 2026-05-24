@@ -1,0 +1,15 @@
+# Link Registry
+
+> All external URLs extracted from the chronicle, deduplicated and sorted by domain.
+> **Total unique links:** {{ links|length }}
+
+{% for domain, domain_links in links|dictsort %}
+## {{ domain }}
+
+| # | URL | First Seen In |
+|---|-----|---------------|
+{% for link in domain_links -%}
+| {{ loop.index }} | {{ link.url }} | {{ link.first_seen }} |
+{% endfor %}
+
+{% endfor %}

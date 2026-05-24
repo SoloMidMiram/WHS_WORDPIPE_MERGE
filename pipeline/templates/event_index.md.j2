@@ -1,0 +1,11 @@
+# Event Index
+
+> Generated from chronicle tagged output.
+> **Total events:** {{ events|length }}
+> **Date range:** {{ date_range_start }} to {{ date_range_end }}
+
+| # | Date | Title | Themes |
+|---|------|-------|--------|
+{% for event in events -%}
+| {{ loop.index }} | {{ event.date }} | [{{ event.title }}](#{{ event.anchor }}) | {{ event.themes | join(', ') }} |
+{% endfor %}

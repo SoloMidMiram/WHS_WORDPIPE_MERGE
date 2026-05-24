@@ -1,0 +1,17 @@
+# Theme Index
+
+> Events grouped by theme.
+> **Total themes:** {{ themes|length }}
+
+{% for theme_name, theme_events in themes|dictsort %}
+## {{ theme_name }}
+
+**{{ theme_events|length }} events**
+
+| Date | Title |
+|------|-------|
+{% for event in theme_events -%}
+| {{ event.date }} | [{{ event.title }}](#{{ event.anchor }}) |
+{% endfor %}
+
+{% endfor %}
