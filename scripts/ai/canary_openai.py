@@ -1,16 +1,25 @@
-# canary.py
-# Minimal, reusable API canary for OpenAI Responses API.
-# Run:
-#   python canary.py --model gpt-4o-mini
-# Env:
-#   OPENAI_API_KEY=sk-... [required]
-#   OPENAI_BASE_URL=https://api.openai.com/v1 (optional override)
-#   OPENAI_ORG=org_... (optional)
-#
-# Exit code 0 on success; non-zero on failure.
+#!/usr/bin/env python3
+"""Minimal, reusable API canary for OpenAI Responses API.
 
-# canary.py
-import os, sys, time, argparse
+Run:
+  python scripts/ai/canary_openai.py --model gpt-4o-mini
+
+Env:
+  OPENAI_API_KEY=sk-... [required]
+  OPENAI_BASE_URL=https://api.openai.com/v1 (optional override)
+  OPENAI_ORG=org_... (optional)
+
+Exit code 0 on success; non-zero on failure.
+
+NOTE: This is an executable script, not a pytest module.
+The name deliberately avoids the ``test_`` prefix so pytest does not
+auto-discover it at repo root.
+"""
+
+import os
+import sys
+import time
+import argparse
 from dataclasses import dataclass
 from dotenv import load_dotenv
 from openai import OpenAI

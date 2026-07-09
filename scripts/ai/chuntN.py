@@ -2,7 +2,7 @@
 from __future__ import annotations
 from pathlib import Path
 from docx import Document
-from wordpipe.ai.chunker import chunk_ranges_by_page_breaks
+from chunker import chunk_ranges_by_page_breaks
 
 FILENAME = "Modular word pipeline.docx"
 

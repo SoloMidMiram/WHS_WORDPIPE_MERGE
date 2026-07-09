@@ -1,6 +1,7 @@
 import importlib
 import sys
 import unittest
+import warnings
 from contextlib import contextmanager
 from importlib.abc import MetaPathFinder
 
@@ -61,6 +62,20 @@ class ImportSafetyTests(unittest.TestCase):
             importlib.import_module("wordpipe.core.ooxml")
             importlib.import_module("wordpipe.core.segment")
             importlib.import_module("wordpipe.core.styles")
+            # AI adapter imports should also be safe (lazy deps).
+            importlib.import_module("wordpipe.adapters")
+            importlib.import_module("wordpipe.adapters.ai")
+            # Verify core AI interfaces are importable.
+            importlib.import_module("wordpipe.interfaces.ai")
+            # Verify DummySummarizer does not require OpenAI.
+            from wordpipe.adapters.ai import DummySummarizer
+            ds = DummySummarizer()
+            self.assertEqual(ds.summarize("hello"), "hello")
+            # Deprecated wordpipe.ai stub must also be import-safe.
+            with warnings.catch_warnings(record=True) as caught:
+                warnings.simplefilter("always")
+                importlib.import_module("wordpipe.ai")
+            self.assertTrue(any(isinstance(w.message, DeprecationWarning) for w in caught))
 
 
 if __name__ == "__main__":
