@@ -7,6 +7,7 @@ This folder is the engineer-facing entrypoint for changing pipeline stages, veri
 - Full tools module catalog: `docs/TOOLS_MODULES_INTEGRATION_REPORT.md`
 - Before/after integration view: `docs/INTEGRATION_MAP_BEFORE_AFTER.md`
 - WordPipe modules/packages guide: `docs/engineering/MODULES_PACKAGES.md`
+- Repository boundaries: `docs/engineering/REPOSITORY_BOUNDARIES.md`
 
 ## Validation Checks
 - Docs reference integrity:

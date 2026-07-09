@@ -25,5 +25,19 @@ full = [
 [project.scripts]
 wordpipe = "wordpipe.cli.main:main"
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = [
+    "_WORK",
+    "_ARCHIVE",
+    "inputs",
+    "0209-*",
+    ".git",
+    "wordpipe/legacy",
+    "WordHorrorStories/legacy",
+    "scripts",
+]
+
 [tool.setuptools.packages.find]
 include = ["wordpipe*"]
+exclude = ["wordpipe.ai*", "wordpipe.legacy*"]
