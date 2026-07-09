@@ -13,7 +13,9 @@ import sys
 from pathlib import Path
 
 
-DOC_REF_RE = re.compile(r"docs/[A-Za-z0-9_./-]+\.md")
+DOC_REF_RE = re.compile(
+    r"(?:^|(?<=\s)|(?<=\()|(?<=`)|(?<=\[)|(?<=\\))docs/[A-Za-z0-9_./-]+\.md"
+)
 
 
 def iter_scan_files(repo_root: Path) -> list[Path]:
