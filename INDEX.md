@@ -83,6 +83,8 @@
 |------|------|------|-------------|
 | `docs/engineering/README.md` | 📄 Doc | Engineering entry | Changing pipeline stages, verifying contracts |
 | `docs/engineering/MODULES_PACKAGES.md` | 📄 Doc | Modules guide | Import rules, DI model, package patterns |
+| `docs/engineering/CHRONICLE_CANONICAL_DECISION.md` | 📄 Doc | chronicle decision | Canonical source location for chronicle pipeline logic |
+| `docs/engineering/REPOSITORY_BOUNDARIES.md` | 📄 Doc | Boundary guide | Directory classification, packaging and pytest rules, import boundaries |
 
 ### docs/operations/
 
@@ -146,9 +148,10 @@
 
 | Path | Kind | Role | Description |
 |------|------|------|-------------|
-| `wordpipe/ai/__init__.py` | 🐍 Source | AI init | AI package exports |
-| `wordpipe/ai/logging_tools.py` | 🐍 Source | AI logging | AI-specific logging |
-| `wordpipe/ai/ailoader.py` | 🐍 Source | AI loader | **Fragile, script-centric, silent exception swallowing** |
+| `wordpipe/ai/__init__.py` | 🐍 Source | Deprecated stub | Emits `DeprecationWarning`; no script modules remain |
+| `wordpipe/ai/run.MD` | 📄 Doc | Run notes | Points to `scripts/ai/` for manual commands |
+
+> Script-style modules (`ailoader.py`, `canary_test.py`, `helpers.py`, etc.) were moved to `scripts/ai/`. See `docs/engineering/MODULES_PACKAGES.md` AI Boundary section.
 
 ### wordpipe/adapters/
 
@@ -241,6 +244,23 @@
 | `wordpipe/plugins/__init__.py` | 🐍 Source | Plugins init | Plugin package exports |
 | `wordpipe/plugins/registry.py` | 🐍 Source | Plugin registry | Dynamic capability registration |
 
+### wordpipe/chronicle/
+
+| Path | Kind | Role | Description |
+|------|------|------|-------------|
+| `wordpipe/chronicle/__init__.py` | 🐍 Source | Package init | Re-exports ingest/merge/categorize public API |
+| `wordpipe/chronicle/ingest.py` | 🐍 Source | Ingest logic | Pure functions for raw MD normalisation |
+| `wordpipe/chronicle/merge.py` | 🐍 Source | Merge logic | Pure functions for merge, dedup, conflict resolution |
+| `wordpipe/chronicle/categorize.py` | 🐍 Source | Categorize logic | v2 theme tagging with negative keywords |
+| `wordpipe/chronicle/models.py` | 🐍 Source | Data models | ChronicleEvent, NormalisedDocument, MergeResult |
+| `wordpipe/chronicle/io.py` | 🐍 Source | I/O helpers | UTF-8 read/write helpers |
+| `wordpipe/chronicle/cli/__init__.py` | 🐍 Source | CLI init | CLI package init |
+| `wordpipe/chronicle/cli/ingest.py` | 🐍 Source | Ingest CLI | CLI wrapper delegating to wordpipe.chronicle.ingest |
+| `wordpipe/chronicle/cli/merge.py` | 🐍 Source | Merge CLI | CLI wrapper delegating to wordpipe.chronicle.merge |
+| `wordpipe/chronicle/cli/categorize.py` | 🐍 Source | Categorize CLI | CLI wrapper delegating to wordpipe.chronicle.categorize |
+
+> Canonical chronicle implementation. See `docs/engineering/CHRONICLE_CANONICAL_DECISION.md`.
+
 ---
 
 ## `WordHorrorStories/` — Content Archive
@@ -314,10 +334,10 @@
 
 | Path | Kind | Role | Description |
 |------|------|------|-------------|
-| `pipeline/categorize.py` | 🐍 Source | Stage 4 | Tag events with themes (v2 — negative keywords, dry-run) |
+| `pipeline/categorize.py` | 🐍 Source | Wrapper | Thin wrapper delegating to wordpipe.chronicle.categorize (v2) **DEPRECATED** |
 | `pipeline/index.py` | 🐍 Source | Stage 5 | Generate 4 appendix files with Jinja2 + fallback |
-| `pipeline/ingest.py` | 🐍 Source | Stage 1 | Normalise raw .md files (copied from tools/pipeline-chronicle/) |
-| `pipeline/merge.py` | 🐍 Source | Stage 3 | Merge + dedup by hash+date (copied from tools/pipeline-chronicle/) |
+| `pipeline/ingest.py` | 🐍 Source | Wrapper | Thin wrapper delegating to wordpipe.chronicle.ingest **DEPRECATED** |
+| `pipeline/merge.py` | 🐍 Source | Wrapper | Thin wrapper delegating to wordpipe.chronicle.merge **DEPRECATED** |
 | `pipeline/verify_ingest.py` | 🐍 Source | Stage 2 | Batch verification (copied from tools/pipeline-chronicle/) |
 | `pipeline/chain.ps1` | 🐍 Source | Orchestrator | 5-stage PowerShell orchestrator (v2) |
 | `pipeline/themes.json` | ⚙️ Config | Theme config | 6 themes, 62 positive + 16 negative keywords |
@@ -330,10 +350,10 @@
 
 | Path | Kind | Role | Description |
 |------|------|------|-------------|
-| `tools/pipeline-chronicle/ingest.py` | 🐍 Source | Stage 1 (v1) | Original working copy (same file as archived) |
-| `tools/pipeline-chronicle/merge.py` | 🐍 Source | Stage 3 (v1) | Original working copy |
+| `tools/pipeline-chronicle/ingest.py` | 🐍 Source | Wrapper (v1) | Thin wrapper delegating to wordpipe.chronicle.ingest **DEPRECATED** |
+| `tools/pipeline-chronicle/merge.py` | 🐍 Source | Wrapper (v1) | Thin wrapper delegating to wordpipe.chronicle.merge **DEPRECATED** |
 | `tools/pipeline-chronicle/verify_ingest.py` | 🐍 Source | Stage 2 (v1) | Original working copy |
-| `tools/pipeline-chronicle/categorize.py` | 🐍 Source | Stage 4 (v1) | Original v1 (no negative keywords) |
+| `tools/pipeline-chronicle/categorize.py` | 🐍 Source | Wrapper (v1) | Thin wrapper delegating to wordpipe.chronicle.categorize **DEPRECATED** |
 | `tools/pipeline-chronicle/chain.ps1` | 🐍 Source | Orchestrator (v1) | Original v1 (4-stage, no index) |
 | `_ARCHIVE/pipeline-chronicle/tools/` | 🗃️ Archive | All 5 tools | Frozen copy at archive time |
 | `_ARCHIVE/pipeline-chronicle/ARCHIVE_REPORT.md` | 📄 Doc | Archive report | Full documentation of archived tools |
@@ -349,6 +369,19 @@
 | Path | Kind | Role | Description |
 |------|------|------|-------------|
 | `tests/test_import_safety.py` | 🔬 Test | Import safety | Verifies wordpipe imports succeed without optional deps |
+| `tests/test_pipeline_chronicle.py` | 🔬 Test | chronicle regression | 59 tests for ingest/merge/categorize/verify logic |
+| `tests/README.md` | 📄 Doc | Test readme | Authoritative test run instructions |
+
+## `scripts/` — Executable Scripts (not packaged)
+
+| Path | Kind | Role | Description |
+|------|------|------|-------------|
+| `scripts/ai/canary_openai.py` | 🐍 Source | OpenAI canary | API connectivity/latency test (run directly, not via pytest) |
+| `scripts/ai/one_openai_api.py` | 🐍 Source | OpenAI CLI | Multi-mode OpenAI Responses API script |
+| `scripts/ai/helpers.py` | 🐍 Source | AI helpers | Legacy script helpers (sibling imports) |
+| `scripts/ai/reorganize.py` | 🐍 Source | AI reorganize | Legacy DOCX reorganize experiment |
+| `scripts/ai/ailoader.py` | 🐍 Source | AI loader | Legacy provider loader script |
+| `scripts/verify_changes.py` | 🐍 Source | Verification | Change verification utility |
 
 ---
 
@@ -375,3 +408,4 @@
 - [JOURNAL.md](JOURNAL.md) — Activity log with claims and verification
 - [ONTOLOGY_MODEL.md](ONTOLOGY_MODEL.md) — Formal entity model
 - [docs/README.md](docs/README.md) — Documentation entrypoint
+- [docs/engineering/REPOSITORY_BOUNDARIES.md](docs/engineering/REPOSITORY_BOUNDARIES.md) — Directory classification and import boundaries

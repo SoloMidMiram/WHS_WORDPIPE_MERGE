@@ -106,14 +106,12 @@ OpenAI announced increased rate limits for ChatGPT API users.
 
 
 class TestIngestCore:
-    """Tests for ingest.py core functions (imported directly)."""
+    """Tests for ingest.py core functions (imported from wordpipe.chronicle)."""
 
     def _import_ingest(self):
-        """Import ingest module, handling the fact that it may not be in path."""
-        import sys
-        sys.path.insert(0, str(Path(__file__).parent.parent / "tools" / "pipeline-chronicle"))
-        import ingest
-        return ingest
+        """Import ingest module from wordpipe.chronicle."""
+        from wordpipe.chronicle import ingest as ingest_mod
+        return ingest_mod
 
     def test_clean_mojibake(self):
         """Verify mojibake cleanup replaces known encoding artifacts."""
@@ -322,10 +320,8 @@ class TestMergeCore:
     """Tests for merge.py core functions (imported directly)."""
 
     def _import_merge(self):
-        import sys
-        sys.path.insert(0, str(Path(__file__).parent.parent / "tools" / "pipeline-chronicle"))
-        import merge
-        return merge
+        from wordpipe.chronicle import merge as merge_mod
+        return merge_mod
 
     def test_parse_yaml_frontmatter_valid(self, sample_normalised_md):
         """Verify YAML front-matter parsing extracts metadata."""
@@ -477,10 +473,8 @@ class TestCategorizeCore:
     """Tests for categorize.py core functions (imported directly)."""
 
     def _import_categorize(self):
-        import sys
-        sys.path.insert(0, str(Path(__file__).parent.parent / "tools" / "pipeline-chronicle"))
-        import categorize
-        return categorize
+        from wordpipe.chronicle import categorize as categorize_mod
+        return categorize_mod
 
     def test_load_themes_default(self):
         """Verify loading built-in default themes when no config provided."""

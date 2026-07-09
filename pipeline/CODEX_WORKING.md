@@ -484,8 +484,30 @@ All copies are byte-identical (SHA256 verified).
 
 ---
 
+---
 ## 8. Pipeline is Now Runnable
 
 After the fixes above, `pipeline/chain.ps1` should work end-to-end with no file-not-found errors (assuming all required Python dependencies are installed).
+
+---
+
+## 9. Migration to `wordpipe.chronicle`
+
+Per the canonical decision (`docs/engineering/CHRONICLE_CANONICAL_DECISION.md`):
+- Pure logic from these scripts is being extracted into `wordpipe.chronicle.*`.
+- `pipeline/` retains thin CLI wrappers and `chain.ps1` as the operator entrypoint.
+- `tools/pipeline-chronicle/` is frozen as v1 reference.
+
+Migration slices:
+| Slice | Source | Target |
+|-------|--------|--------|
+| 3a | ingest.py pure functions | `wordpipe/chronicle/ingest.py` |
+| 3b | merge.py | `wordpipe/chronicle/merge.py` |
+| 3c | categorize.py (v2) | `wordpipe/chronicle/categorize.py` |
+| 3d | index.py + themes + templates | `wordpipe/chronicle/` |
+| 3e | Thin wrappers in pipeline/ | `pipeline/ingest.py` delegates to `wordpipe.chronicle.ingest` |
+
+After migration, duplicate `.py` copies in `pipeline/` and `tools/pipeline-chronicle/` will be removed.
+---
 
 ---

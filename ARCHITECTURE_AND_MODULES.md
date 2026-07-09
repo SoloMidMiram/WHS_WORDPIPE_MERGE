@@ -53,7 +53,12 @@ This repository contains **three independent subsystems**, each with its own pur
 
 ---
 
-## 2. Subsystem A: Chronicle Pipeline (`pipeline/` + `tools/pipeline-chronicle/`)
+## 2. Subsystem A: Chronicle Pipeline (`pipeline/` → `wordpipe.chronicle/`)
+
+**Canonical source decision:** See `docs/engineering/CHRONICLE_CANONICAL_DECISION.md`.
+Pure logic is being migrated into `wordpipe.chronicle.*`; `pipeline/` retains thin
+CLI wrappers and the `chain.ps1` orchestrator. `tools/pipeline-chronicle/` is
+frozen as v1 reference.
 
 ### 2.1 Architecture
 
@@ -63,7 +68,11 @@ The chronicle pipeline is a **5-stage CLI pipeline** that transforms raw ChatGPT
 
 **Entrypoint:** `pipeline/chain.ps1` (one-command PowerShell wrapper)
 
-**NOTE — File locations:** Stage 1 (ingest), Stage 2 (verify), and Stage 3 (merge) scripts live in `tools/pipeline-chronicle/` and were **not copied** into `pipeline/`. The `pipeline/chain.ps1` references them as `$ScriptDir/ingest.py` etc., which will fail. Either copy them or update `chain.ps1` paths. See [`pipeline/CODEX_WORKING.md`](pipeline/CODEX_WORKING.md) §2 and §5 for details.
+**NOTE — File locations:** ingest.py, merge.py, and verify_ingest.py were copied
+from `tools/pipeline-chronicle/` into `pipeline/` and are byte-identical.
+`categorize.py` (v2) and `index.py` were developed only in `pipeline/`.
+See `docs/engineering/CHRONICLE_CANONICAL_DECISION.md` for the migration plan to
+`wordpipe.chronicle.*`.
 
 ```
 ┌─────────┐    ┌──────────┐    ┌───────┐    ┌────────────┐    ┌───────┐

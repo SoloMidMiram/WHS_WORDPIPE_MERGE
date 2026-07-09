@@ -22,11 +22,62 @@ wordpipe/
   interfaces/       # abstract service contracts
   adapters/         # concrete implementations (optional deps)
   orchestration/    # interfaces-only pipeline coordinator
+  steps/            # pluggable step engine (flatten, style, segment, finalize, toc)
   plugins/          # optional registry and entrypoint loading
   cli/              # optional CLI entrypoint
+  chronicle/        # importable chronicle pipeline logic (ingest, merge, categorize, index)
   pipeline/         # compatibility wrappers (legacy import paths)
   flatteners/       # compatibility wrappers (legacy import paths)
 ```
+
+Excluded from distribution (via `pyproject.toml` `[tool.setuptools.packages.find] exclude`):
+- `wordpipe.ai*` — legacy script-style AI modules (moved to `scripts/ai/`)
+- `wordpipe.legacy*` — archived legacy snapshots
+
+## Chronicle Package
+
+`wordpipe.chronicle` provides the importable canonical implementation of chronicle pipeline logic.
+
+| Module | Purpose |
+|--------|---------|
+| `wordpipe.chronicle.ingest` | Raw MD normalisation (mojibake, date parsing, event splitting) |
+| `wordpipe.chronicle.merge` | Multi-file merge, dedup, conflict resolution, source coverage |
+| `wordpipe.chronicle.categorize` | Theme tagging (v2: negative keywords, dry-run, legacy format) |
+
+CLI wrappers (argparse + I/O, delegating to the above modules):
+- `wordpipe.chronicle.cli.ingest`
+- `wordpipe.chronicle.cli.merge`
+- `wordpipe.chronicle.cli.categorize`
+
+Backward-compatible CLI entry points (thin wrappers emitting `DeprecationWarning`,
+delegating only when run as `__main__` -- not import-compatible):
+- `pipeline/ingest.py`, `pipeline/merge.py`, `pipeline/categorize.py`
+- `tools/pipeline-chronicle/ingest.py`, `tools/pipeline-chronicle/merge.py`, `tools/pipeline-chronicle/categorize.py`
+
+## Compatibility surface
+
+- **Canonical imports (stable):** `from wordpipe.chronicle import ingest, merge, categorize`
+- **CLI entry points (deprecated):** `pipeline/*.py` and `tools/pipeline-chronicle/*.py` --
+  each is a thin `if __name__ == "__main__"` wrapper only; do not import functions from them.
+- **Deferred:** `verify_ingest` and `index` extraction are not yet migrated to `wordpipe.chronicle`.
+  `verify_ingest` tests still import from `tools/pipeline-chronicle/` via `sys.path`.
+
+## AI Boundary
+
+| Area | Role | Import-safe? |
+|------|------|--------------|
+| `wordpipe/interfaces/ai.py` | Runtime AI protocols/contracts | Yes |
+| `wordpipe/adapters/ai/` | Runtime adapters (`DummySummarizer`, `OpenAISummarizer`) | Yes (OpenAI client passed explicitly; no env discovery) |
+| `scripts/ai/` | Manual canaries and legacy script-style AI experiments | N/A — run directly, not imported by runtime |
+| `wordpipe/ai/` | Deprecated stub only (`__init__.py` emits `DeprecationWarning`) | Yes — no optional deps at import time |
+
+Public runtime AI imports:
+```python
+from wordpipe.interfaces.ai import ...       # contracts
+from wordpipe.adapters.ai import DummySummarizer  # safe offline adapter
+```
+
+Do **not** import from `wordpipe.ai` in new code. Script modules formerly there now live under `scripts/ai/`.
 
 ## Import Boundary Rules
 Hard rules:
@@ -38,6 +89,11 @@ Where lazy imports are expected:
 - `wordpipe.adapters.docx.*` imports `docx` inside methods.
 - `wordpipe.adapters.ai.*` expects an explicit OpenAI client; it does not construct one implicitly.
 - Legacy flattening/TOC update imports are attempted only when called and only on Windows where relevant.
+
+### Deprecated import paths
+- `from wordpipe.ai import ...` — these are legacy scripts, not public library modules.
+  Use `wordpipe.interfaces.ai` or `wordpipe.adapters.ai.*` instead.
+- `sys.path`-based imports from `tools/pipeline-chronicle/` — use `wordpipe.chronicle.*` instead.
 
 ## Dependency Injection Model
 Orchestration contract:
@@ -74,9 +130,19 @@ Rule:
 - Plugins are never loaded automatically at import time.
 
 ## Tests and Validation
+Authoritative test invocation:
+```powershell
+python -m pytest tests -q
+```
+
 Import-safety test (blocks optional deps and verifies imports):
 ```powershell
-python -m unittest discover -s tests -p "test_*.py" -v
+python -m pytest tests/test_import_safety.py -v
+```
+
+Chronicle regression tests:
+```powershell
+python -m pytest tests/test_pipeline_chronicle.py -v
 ```
 
 Optional compile check (exclude legacy evidence):
