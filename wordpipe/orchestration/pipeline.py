@@ -1,10 +1,13 @@
+"""Interfaces-only pipeline orchestrator using pluggable steps."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
 from time import perf_counter
 
-from wordpipe.core.datatypes import ChangeNote, PipelineConfig, RunReport, Segment
+from wordpipe.core.datatypes import PipelineConfig, RunReport, Segment
+from wordpipe.events import EventSink, NullSink
 from wordpipe.interfaces.ai import AISummarizer
 from wordpipe.interfaces.documents import (
     DocumentReader,
@@ -14,15 +17,24 @@ from wordpipe.interfaces.documents import (
 )
 from wordpipe.interfaces.logging import Logger
 from wordpipe.interfaces.transforms import Flattener, TocUpdater
-
-
-class _NullLogger:
-    def emit(self, level: str, event: str, fields: dict) -> None:
-        return
+from wordpipe.steps import (
+    FinalizeResult,
+    FlattenResult,
+    SegmentResult,
+    StyleResult,
+    TocResult,
+    finalize_step,
+    flatten_step,
+    segment_step,
+    style_step,
+    toc_step,
+)
 
 
 @dataclass(slots=True)
 class OrchestrationDeps:
+    """Dependency container — each field is an interface, injected at composition root."""
+
     reader: DocumentReader
     writer: DocumentWriter
     styler: DocumentStyler
@@ -34,77 +46,64 @@ class OrchestrationDeps:
 
 
 class WordPipePipeline:
-    """Core pipeline orchestrator (interfaces-only, dependency-injected)."""
+    """Core pipeline orchestrator (interfaces-only, dependency-injected).
+
+    Runs a sequence of `wordpipe.steps.*` functions. Each step is
+    unit-testable in isolation. Errors are collected into ``RunReport.errors``
+    and do not halt the pipeline (failures are reported, not swallowed).
+    """
 
     def __init__(self, deps: OrchestrationDeps):
         self._deps = deps
 
     def run(self, cfg: PipelineConfig) -> RunReport:
-        sink: Logger = self._deps.logger or _NullLogger()
+        sink: EventSink = self._deps.logger or NullSink()  # type: ignore[assignment]
         t0 = perf_counter()
         sink.emit("INFO", "start", {k: str(v) for k, v in cfg.__dict__.items()})
 
-        working = Path(cfg.in_path)
-        notes: list[ChangeNote] = []
+        errors: list[str] = []
 
-        # 1) Flatten (optional)
-        if cfg.do_flatten and self._deps.flattener is not None:
-            tmp = Path(str(cfg.out_path) + ".work.docx")
-            try:
-                sink.emit(
-                    "INFO",
-                    "flatten_begin",
-                    {
-                        "mode": self._deps.flattener.__class__.__name__,
-                        "limit_pages": cfg.limit_pages,
-                    },
-                )
-                notes = self._deps.flattener.flatten(
-                    working, tmp, limit_pages=cfg.limit_pages
-                )
-                sink.emit(
-                    "INFO",
-                    "flatten_done",
-                    {
-                        "mode": self._deps.flattener.__class__.__name__,
-                        "notes": len(notes),
-                    },
-                )
-                working = tmp
-            except Exception as e:
-                sink.emit("WARNING", "flatten_fail", {"error": str(e)})
+        # ---- Step 1: Flatten (optional) ----
+        fr: FlattenResult = flatten_step(cfg, self._deps.flattener, sink)
+        if fr.error:
+            errors.append(fr.error)
+        working = fr.working_path
+        notes = fr.notes
 
-        # 2) Read + style
-        doc = self._deps.reader.read(working)
-        self._deps.styler.ensure_styles(doc, logger=sink)
-        self._deps.styler.style_code_blocks(doc, logger=sink)
+        # ---- Step 2: Read + style ----
+        sr: StyleResult = style_step(cfg, working, self._deps.reader, self._deps.styler, sink)
+        if sr.error:
+            errors.append(sr.error)
+        doc = sr.doc
 
-        # 3) Segmentation
-        segments: list[Segment] = self._deps.segmenter.segment(working)
+        # ---- Step 3: Segmentation ----
+        segments: list[Segment] = []
+        seg_r: SegmentResult = segment_step(cfg, working, self._deps.segmenter, sink)
+        if seg_r.error:
+            errors.append(seg_r.error)
+        else:
+            segments = seg_r.segments
 
-        # 4) AI (optional) - injected, but intentionally no default behavior yet.
+        # ---- Step 4: AI (optional, injected placeholder) ----
         if self._deps.ai is not None:
             sink.emit("INFO", "ai_present", {"impl": self._deps.ai.__class__.__name__})
 
-        # 5) Save + cleanup
-        self._deps.writer.write(doc, Path(cfg.out_path))
-        if working != Path(cfg.in_path):
-            try:
-                working.unlink()
-            except OSError:
-                pass
-        if self._deps.toc_updater is not None:
-            try:
-                self._deps.toc_updater.update(Path(cfg.out_path))
-            except Exception as e:
-                sink.emit("WARNING", "toc_update_fail", {"error": str(e)})
+        # ---- Step 5: Finalize (write + cleanup) ----
+        fz: FinalizeResult = finalize_step(cfg, doc, working, self._deps.writer, sink)
+        if fz.error:
+            errors.append(fz.error)
+
+        # ---- Step 6: TOC update (optional) ----
+        tc: TocResult = toc_step(cfg, fz.out_path, self._deps.toc_updater, sink)
+        if tc.error:
+            errors.append(tc.error)
 
         secs = perf_counter() - t0
         sink.emit("INFO", "done", {"notes": len(notes), "seconds": round(secs, 2)})
         return RunReport(
-            out_path=Path(cfg.out_path),
+            out_path=fz.out_path,
             notes=notes,
             segments=segments,
             seconds=secs,
+            errors=errors,
         )
-

@@ -24,6 +24,18 @@ The minimum stable interface TraceLedger should depend on:
 Optional compatibility helper:
 - `wordpipe.process_docx_v3_simple(...)`
 
+### Config flag status
+
+| Flag | Status | Notes |
+|------|--------|-------|
+| `do_flatten` | **Stable** | |
+| `prefer_win32` | **Stable** | Falls back to XML flattener on non-Windows |
+| `per_segment_tables` | **Experimental** | Flag accepted but no step wired yet |
+| `ai_headings` | **Experimental** | Flag accepted but no step wired yet |
+| `ai_rewrite` | **Experimental** | Flag accepted but no step wired yet |
+| `max_rewrite_per_section` | **Experimental** | Flag accepted but no step wired yet |
+| `limit_pages` | **Stable** | |
+
 ## Event Sink Interface
 TraceLedger should provide an event sink adapter to capture WordPipe runtime events.
 

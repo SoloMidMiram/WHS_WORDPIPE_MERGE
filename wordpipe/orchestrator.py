@@ -15,13 +15,14 @@ from pathlib import Path
 from typing import Optional
 
 from wordpipe.adapters.defaults import build_default_deps
-from wordpipe.core.datatypes import PipelineConfig, RunReport
+from wordpipe.core.datatypes import PipelineConfig, RunReport, warn_experimental_config
 from wordpipe.orchestration.pipeline import WordPipePipeline
 
 
 def process_docx_v3(
     cfg: PipelineConfig, logger=None, jsonl_path: Optional[str] = None
 ) -> RunReport:
+    warn_experimental_config(cfg)
     deps = build_default_deps(cfg, logger=logger, jsonl_path=jsonl_path)
     return WordPipePipeline(deps).run(cfg)
 
