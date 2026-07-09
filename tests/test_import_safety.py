@@ -78,5 +78,17 @@ class ImportSafetyTests(unittest.TestCase):
             self.assertTrue(any(isinstance(w.message, DeprecationWarning) for w in caught))
 
 
+    def test_chronicle_requires_extra(self):
+        """wordpipe.chronicle needs pyyaml + python-dateutil; blocked imports fail."""
+        chronicle_deps = ["yaml", "dateutil"]
+        with _blocked_imports(*chronicle_deps):
+            _purge("wordpipe")
+            # Core import must still work.
+            importlib.import_module("wordpipe")
+            # Chronicle should fail without its deps.
+            with self.assertRaises(ImportError):
+                importlib.import_module("wordpipe.chronicle")
+
+
 if __name__ == "__main__":
     unittest.main()
