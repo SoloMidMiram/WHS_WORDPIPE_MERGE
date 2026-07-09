@@ -1,4 +1,4 @@
-"""Chronicle pipeline: importable ingest/merge/categorize index logic."""
+"""Chronicle pipeline: importable ingest/merge/categorize/verify index logic."""
 
 from wordpipe.chronicle.categorize import (
     DEFAULT_THEMES as DEFAULT_THEMES,
@@ -20,6 +20,7 @@ from wordpipe.chronicle.ingest import (
     parse_date_range as parse_date_range,
     split_into_events as split_into_events,
 )
+from wordpipe.chronicle.verify_ingest import verify_ingest as verify_ingest
 from wordpipe.chronicle.merge import (
     collect_input_files as collect_input_files,
     compute_body_hash as compute_body_hash,
@@ -31,11 +32,19 @@ from wordpipe.chronicle.merge import (
     write_duplicates_report as write_duplicates_report,
     write_source_coverage as write_source_coverage,
 )
+from wordpipe.chronicle.verify_ingest import (
+    DEFAULT_INGEST as DEFAULT_INGEST,
+    DEFAULT_RAW_DIR as DEFAULT_RAW_DIR,
+    classify_file_result as classify_file_result,
+    parse_ingest_stderr as parse_ingest_stderr,
+    verify_directory as verify_directory,
+)
 
 # Rename merge's extract_events to avoid clash with categorize's
 extract_events_from_md = extract_merge_events
 
 __all__ = [
+    "verify_ingest",
     # --- Ingest ---
     "DEFAULT_MOJIBAKE_MAP",
     "clean_mojibake",
@@ -64,4 +73,10 @@ __all__ = [
     "parse_yaml_frontmatter",
     "write_duplicates_report",
     "write_source_coverage",
+    # --- Verify ---
+    "DEFAULT_INGEST",
+    "DEFAULT_RAW_DIR",
+    "classify_file_result",
+    "parse_ingest_stderr",
+    "verify_directory",
 ]

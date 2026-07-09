@@ -644,20 +644,72 @@ class TestVerifyIngestCore:
     """Tests for verify_ingest.py core logic."""
 
     def _import_verify(self):
-        import sys
-        sys.path.insert(0, str(Path(__file__).parent.parent / "tools" / "pipeline-chronicle"))
-        import verify_ingest
-        return verify_ingest
+        import importlib
+
+        from wordpipe.chronicle import verify_ingest
+        verify_module = importlib.import_module("wordpipe.chronicle.verify_ingest")
+        assert verify_ingest is verify_module.verify_ingest
+        return verify_module
 
     def test_default_paths_exist(self):
         """Verify default paths point to existing locations."""
         verify = self._import_verify()
-        # The default paths should exist in the project
         raw_dir = Path(verify.DEFAULT_RAW_DIR)
         ingest_script = Path(verify.DEFAULT_INGEST)
-        # These might not exist if run from a different CWD, so just check they're valid paths
         assert str(raw_dir).endswith("chatgpt_mds")
         assert str(ingest_script).endswith("ingest.py")
+
+    def test_parse_ingest_stderr_ok(self):
+        """Verify successful ingest stderr parsing."""
+        verify = self._import_verify()
+        stderr = "INFO: Extracted 5 events.\n"
+        count, warnings = verify.parse_ingest_stderr(stderr)
+        assert count == 5
+        assert warnings == []
+
+    def test_parse_ingest_stderr_warnings(self):
+        """Verify warnings are extracted from stderr."""
+        verify = self._import_verify()
+        stderr = "WARNING: No events found in empty.md (source: empty)\n"
+        count, warnings = verify.parse_ingest_stderr(stderr)
+        assert count == 0
+        assert len(warnings) == 1
+        assert "WARNING" in warnings[0]
+
+    def test_parse_ingest_stderr_info_line_not_events(self):
+        """Verify info lines without 'Extracted events' don't affect count."""
+        verify = self._import_verify()
+        stderr = "INFO: Starting ingest\nINFO: Extracted 3 events.\nINFO: Done\n"
+        count, warnings = verify.parse_ingest_stderr(stderr)
+        assert count == 3
+
+    def test_classify_file_result_ok(self):
+        """Verify classify_file_result returns OK for successful runs."""
+        verify = self._import_verify()
+        status, reason = verify.classify_file_result(0, 5, [])
+        assert status == "[OK]"
+        assert reason is None
+
+    def test_classify_file_result_error(self):
+        """Verify classify_file_result flags non-zero exit codes."""
+        verify = self._import_verify()
+        status, reason = verify.classify_file_result(1, 0, [])
+        assert status == "[ERROR]"
+        assert reason is not None
+
+    def test_classify_file_result_zero(self):
+        """Verify classify_file_result flags zero events without date warning."""
+        verify = self._import_verify()
+        status, reason = verify.classify_file_result(0, 0, [])
+        assert status == "[ZERO]"
+        assert reason is not None
+
+    def test_classify_file_result_zero_with_date_warning(self):
+        """Verify zero events with date warning is not an issue."""
+        verify = self._import_verify()
+        status, reason = verify.classify_file_result(0, 0, ["WARNING: No dates found"])
+        assert status == "[ZERO]"
+        assert reason is None
 
 
 # ==============================================================================
@@ -706,7 +758,7 @@ class TestPipelineIntegration:
         assert "--config" in result.stdout
 
     def test_verify_ingest_help(self, script_dir):
-        """Verify verify_ingest.py --help works."""
+        """Verify verify_ingest.py --help works (tools wrapper)."""
         import subprocess
         result = subprocess.run(
             ["python", str(script_dir / "verify_ingest.py"), "--help"],
@@ -715,6 +767,16 @@ class TestPipelineIntegration:
         assert result.returncode == 0
         assert "--dir" in result.stdout
         assert "--ingest" in result.stdout
+
+    def test_verify_ingest_pipeline_wrapper_help(self):
+        """Verify pipeline/verify_ingest.py --help works."""
+        import subprocess
+        result = subprocess.run(
+            ["python", "pipeline/verify_ingest.py", "--help"],
+            capture_output=True, text=True,
+        )
+        assert result.returncode == 0
+        assert "--dir" in result.stdout
 
     def test_ingest_end_to_end(self, tmp_dir, script_dir, sample_raw_md):
         """Verify ingest.py produces valid output from raw input."""
