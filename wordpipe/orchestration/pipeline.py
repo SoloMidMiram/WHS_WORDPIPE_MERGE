@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from time import perf_counter
 
@@ -49,8 +49,9 @@ class WordPipePipeline:
     """Core pipeline orchestrator (interfaces-only, dependency-injected).
 
     Runs a sequence of `wordpipe.steps.*` functions. Each step is
-    unit-testable in isolation. Errors are collected into ``RunReport.errors``
-    and do not halt the pipeline (failures are reported, not swallowed).
+    unit-testable in isolation. Recoverable errors are collected into
+    ``RunReport.errors``; read/style failures are fatal because downstream
+    steps require a valid in-memory document.
     """
 
     def __init__(self, deps: OrchestrationDeps):
@@ -59,7 +60,7 @@ class WordPipePipeline:
     def run(self, cfg: PipelineConfig) -> RunReport:
         sink: EventSink = self._deps.logger or NullSink()  # type: ignore[assignment]
         t0 = perf_counter()
-        sink.emit("INFO", "start", {k: str(v) for k, v in cfg.__dict__.items()})
+        sink.emit("INFO", "start", {k: str(v) for k, v in asdict(cfg).items()})
 
         errors: list[str] = []
 
@@ -67,14 +68,37 @@ class WordPipePipeline:
         fr: FlattenResult = flatten_step(cfg, self._deps.flattener, sink)
         if fr.error:
             errors.append(fr.error)
-        working = fr.working_path
+            working = cfg.in_path
+        else:
+            working = fr.working_path
         notes = fr.notes
 
-        # ---- Step 2: Read + style ----
+        # ---- Step 2: Read + style (critical - fail fast) ----
         sr: StyleResult = style_step(cfg, working, self._deps.reader, self._deps.styler, sink)
         if sr.error:
             errors.append(sr.error)
+            secs = perf_counter() - t0
+            sink.emit("ERROR", "fatal_style_failure", {"seconds": round(secs, 2)})
+            sink.emit("INFO", "done", {"notes": len(notes), "seconds": round(secs, 2)})
+            return RunReport(
+                out_path=cfg.out_path,
+                notes=notes,
+                segments=[],
+                seconds=secs,
+                errors=errors,
+            )
         doc = sr.doc
+        if doc is None:
+            errors.append("style_step returned doc=None without error")
+            secs = perf_counter() - t0
+            sink.emit("WARN", "aborted", {"reason": "style_step returned None", "seconds": round(secs, 2)})
+            return RunReport(
+                out_path=cfg.out_path,
+                notes=notes,
+                segments=[],
+                seconds=secs,
+                errors=errors,
+            )
 
         # ---- Step 3: Segmentation ----
         segments: list[Segment] = []
@@ -92,6 +116,15 @@ class WordPipePipeline:
         fz: FinalizeResult = finalize_step(cfg, doc, working, self._deps.writer, sink)
         if fz.error:
             errors.append(fz.error)
+            secs = perf_counter() - t0
+            sink.emit("WARN", "aborted", {"reason": "finalize_step failed", "seconds": round(secs, 2)})
+            return RunReport(
+                out_path=cfg.out_path,
+                notes=notes,
+                segments=segments,
+                seconds=secs,
+                errors=errors,
+            )
 
         # ---- Step 6: TOC update (optional) ----
         tc: TocResult = toc_step(cfg, fz.out_path, self._deps.toc_updater, sink)
