@@ -10,6 +10,8 @@ This folder is the engineer-facing entrypoint for changing pipeline stages, veri
 - Repository boundaries: `docs/engineering/REPOSITORY_BOUNDARIES.md`
 
 ## Validation Checks
+- P0–P2 remediation report (stages, claims, commit map):
+  - `docs/engineering/P0_P2_VALIDATION_REPORT.md`
 - Docs reference integrity:
   - `python tools/docs_link_check.py`
 - Secret scan (high confidence):

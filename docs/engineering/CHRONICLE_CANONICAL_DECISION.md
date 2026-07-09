@@ -1,72 +1,78 @@
-# Chronicle Pipeline — Canonical Source Decision
+# Chronicle Pipeline - Canonical Source Decision
 
-> **Date:** 2026-07-08  
-> **Status:** Adopted  
+> **Date:** 2026-07-08
+> **Status:** Adopted; P0/P1 stabilization updated 2026-07-09
 > **Supersedes:** ambiguous dual location in `pipeline/` and `tools/pipeline-chronicle/`
 
 ## Background
 
-The chronicle pipeline (5-stage CLI: ingest → verify → merge → categorize → index)
-has accumulated in three generations across four locations:
+The Chronicle pipeline is a five-stage CLI flow:
 
-| Location | Gen | Contents |
-|----------|-----|----------|
-| `_ARCHIVE/pipeline-chronicle/tools/` | Gen-1 | Frozen archive — not active |
-| `tools/pipeline-chronicle/` | Gen-2 | Committed v1 of ingest, merge, verify, categorize, chain.ps1 |
-| `pipeline/` | Gen-3 | Post-archival development: refactored categorize v2, new index.py, themes, templates, chain.ps1 v2. ingest/merge/verify copied byte-identical from `tools/pipeline-chronicle/`. |
+```text
+ingest -> verify -> merge -> categorize -> index
+```
 
-## File Duplication Audit
+It accumulated across three generations:
 
-| Tool | pipeline/ | tools/pipeline-chronicle/ | Verdict |
-|------|-----------|---------------------------|---------|
-| `ingest.py` | 16504 bytes (copy) | 16504 bytes (source) | Byte-identical |
-| `merge.py` | 17345 bytes (copy) | 17345 bytes (source) | Byte-identical |
-| `verify_ingest.py` | Not audited | Exists | Need check |
-| `categorize.py` | 17683 bytes (v2) | 13188 bytes (v1) | **Diverged** — v2 is canonical |
-| `index.py` | Exists (v1) | Does not exist | Unique to pipeline/ |
-| `chain.ps1` | v2 (5-stage) | v1 (4-stage) | **Diverged** — v2 is canonical |
+| Location | Generation | Current role |
+|----------|------------|--------------|
+| `_ARCHIVE/pipeline-chronicle/tools/` | Gen 1 | Frozen archive; not active |
+| `tools/pipeline-chronicle/` | Gen 2 | Legacy/reference CLI location; Python entry points are wrappers where canonical modules exist |
+| `pipeline/` | Gen 3 | Operator CLI surface, `chain.ps1`, config, templates, and deferred `index.py` |
+| `wordpipe/chronicle/` | Current | Canonical importable Chronicle library |
 
 ## Decision
 
-1. **Create `wordpipe.chronicle`** as the single importable library for all chronicle
-   stage logic (ingest, merge, categorize, verify, index). This follows the same
-   pattern as the rest of `wordpipe/` — interfaces in core modules, thin CLI
-   wrappers elsewhere.
+1. `wordpipe.chronicle` is the single importable library for reusable Chronicle stage logic.
+2. `pipeline/` remains operator CLI tooling. It is not a runtime import surface.
+3. `tools/pipeline-chronicle/` remains a legacy/reference CLI location. Python entry points delegate to canonical modules where migration is complete.
+4. `index.py` remains in `pipeline/` until canonical extraction is done.
 
-2. **`pipeline/`** remains the **operator CLI directory** — `chain.ps1` calls thin
-   wrappers that delegate to `wordpipe.chronicle.*`. No duplicate `.py` copies live
-   here after migration.
+## Canonical Modules
 
-3. **`tools/pipeline-chronicle/`** becomes frozen — no new edits. Contains the v1
-   snapshots for reference. Tests that currently `sys.path`-hack into this directory
-   (verify_ingest) will be updated to import `wordpipe.chronicle.*` in a future phase.
+| Stage | Canonical module | Status |
+|-------|------------------|--------|
+| Ingest | `wordpipe.chronicle.ingest` | Complete |
+| Verify ingest | `wordpipe.chronicle.verify_ingest` | Complete |
+| Merge | `wordpipe.chronicle.merge` | Complete |
+| Categorize | `wordpipe.chronicle.categorize` | Complete |
+| Index | `pipeline.index` | Deferred |
 
-### Compatibility surface
+## Compatibility Surface
 
-- **Canonical imports (stable):** `from wordpipe.chronicle import ingest, merge, categorize`
-- **CLI entry points (deprecated):** `pipeline/*.py` and `tools/pipeline-chronicle/*.py` are
-  thin `if __name__ == "__main__"` wrappers only -- not import surfaces.
-- **Deferred:** `verify_ingest` tests still import from `tools/pipeline-chronicle/` via
-  `sys.path`; `index` is not yet extracted.
+- Stable imports: `from wordpipe.chronicle import ingest, merge, categorize, verify_ingest`
+- Stable direct modules: `wordpipe.chronicle.ingest`, `wordpipe.chronicle.merge`, `wordpipe.chronicle.categorize`, `wordpipe.chronicle.verify_ingest`
+- Deprecated CLI wrappers: `pipeline/*.py` and `tools/pipeline-chronicle/*.py`
+- Wrappers are CLI surfaces only; runtime code must not import from `pipeline/` or `tools/`.
 
-4. **Migration source of truth:**
-   - Ingest, merge, verify: extract from `tools/pipeline-chronicle/` (committed,
-     stable v1 contracts).
-   - Categorize, index, chain: extract from `pipeline/` (refactored v2, the working
-     versions).
+## Dependency Contract
+
+The canonical Chronicle import surface requires the `chronicle` extra:
+
+```powershell
+python -m pip install -e ".[chronicle]"
+```
+
+That extra owns:
+
+- `pyyaml`
+- `python-dateutil`
+
+`jinja2` is not part of the `chronicle` extra because the remaining index path is still operator tooling under `pipeline/` and has fallback formatting.
 
 ## Timeline
 
-| Slice | What | Source | Status |
-|-------|------|--------|--------|
-| 3a | `wordpipe.chronicle.ingest` + `wordpipe.chronicle.models` | tools/pipeline-chronicle/ingest.py | Complete |
-| 3b | `wordpipe.chronicle.merge` | tools/pipeline-chronicle/merge.py | Complete |
-| 3c | `wordpipe.chronicle.categorize` | pipeline/categorize.py (v2) | Complete |
-| 3d | Thin wrappers in `pipeline/`; deprecation notices on `tools/pipeline-chronicle/` | All | Complete |
-| 3e | Remove duplicate `.py` copies | After one release window | Pending |
+| Slice | Work | Status |
+|-------|------|--------|
+| 3a | Extract `wordpipe.chronicle.ingest` and models | Complete |
+| 3b | Extract `wordpipe.chronicle.merge` | Complete |
+| 3c | Extract `wordpipe.chronicle.categorize` from the v2 path | Complete |
+| 3d | Convert Python CLI entry points to wrappers | Complete |
+| 3e | Extract `wordpipe.chronicle.verify_ingest` | Complete |
+| 3f | Update Chronicle tests to import canonical modules | Complete |
+| 3g | Extract `wordpipe.chronicle.index` | Pending |
 
-## Excluded from packaging
+## Packaging
 
-Per the updated `pyproject.toml`, `wordpipe.ai*` and `wordpipe.legacy*` are excluded
-from the distribution. Once the `wordpipe.chronicle` package is created, it will be
-included in the distribution via the existing `wordpipe*` include glob.
+`wordpipe.chronicle` is included by the existing `wordpipe*` setuptools package
+include rule. `wordpipe.ai*` and `wordpipe.legacy*` remain excluded.

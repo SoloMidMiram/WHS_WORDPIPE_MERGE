@@ -43,6 +43,9 @@ This repository contains **three independent subsystems**, each with its own pur
 | **Evidence Pipeline** | `tools/` | Archival, legacy reorganization, integrity verification | CLI (Python) | Operator, Auditor |
 | **WordPipe Runtime** | `wordpipe/` | DOCX processing library for TraceLedger embedding | Library (Python import) | Engineer, TraceLedger |
 
+Current Chronicle split: reusable Chronicle logic lives under `wordpipe/chronicle/`;
+`pipeline/` is the operator CLI/config surface.
+
 ### Core Design Principles (All Subsystems)
 
 1. **Copy-only, non-destructive** — No stage modifies its inputs in place
@@ -56,9 +59,10 @@ This repository contains **three independent subsystems**, each with its own pur
 ## 2. Subsystem A: Chronicle Pipeline (`pipeline/` → `wordpipe.chronicle/`)
 
 **Canonical source decision:** See `docs/engineering/CHRONICLE_CANONICAL_DECISION.md`.
-Pure logic is being migrated into `wordpipe.chronicle.*`; `pipeline/` retains thin
-CLI wrappers and the `chain.ps1` orchestrator. `tools/pipeline-chronicle/` is
-frozen as v1 reference.
+Reusable Chronicle logic for ingest, verify, merge, and categorize now lives in
+`wordpipe.chronicle.*`; `pipeline/` retains operator wrappers, configuration,
+templates, `chain.ps1`, and the deferred `index.py` stage. `tools/pipeline-chronicle/`
+is a legacy/reference CLI location with wrappers where canonical modules exist.
 
 ### 2.1 Architecture
 
@@ -68,11 +72,10 @@ The chronicle pipeline is a **5-stage CLI pipeline** that transforms raw ChatGPT
 
 **Entrypoint:** `pipeline/chain.ps1` (one-command PowerShell wrapper)
 
-**NOTE — File locations:** ingest.py, merge.py, and verify_ingest.py were copied
-from `tools/pipeline-chronicle/` into `pipeline/` and are byte-identical.
-`categorize.py` (v2) and `index.py` were developed only in `pipeline/`.
-See `docs/engineering/CHRONICLE_CANONICAL_DECISION.md` for the migration plan to
-`wordpipe.chronicle.*`.
+**NOTE - File locations:** `wordpipe.chronicle` is the canonical import surface.
+`pipeline/` and `tools/pipeline-chronicle/` are CLI/operator compatibility
+surfaces, not runtime import surfaces. `index.py` is the remaining Chronicle
+stage deferred from canonical extraction.
 
 ```
 ┌─────────┐    ┌──────────┐    ┌───────┐    ┌────────────┐    ┌───────┐
@@ -100,9 +103,9 @@ See `docs/engineering/CHRONICLE_CANONICAL_DECISION.md` for the migration plan to
 
 ### 2.2 Modules
 
-#### `tools/pipeline-chronicle/ingest.py` — Stage 1: Ingestion
+#### `wordpipe.chronicle.ingest` - Stage 1: Ingestion
 - **Purpose:** Convert raw deep-search markdown into normalised format with YAML front-matter
-- **Location:** `tools/pipeline-chronicle/ingest.py` (not in `pipeline/`)
+- **Location:** canonical module under `wordpipe/chronicle/`; CLI wrappers in `pipeline/` and `tools/pipeline-chronicle/`
 - **Input:** Raw `.md` files from `WordHorrorStories/chatgpt-chronicle/sources/raw/chatgpt_mds/`
 - **Output:** Normalised `.md` files with `source`, `title`, `date`, `event_count` in YAML front-matter
 - **Key functions:**
@@ -118,9 +121,9 @@ See `docs/engineering/CHRONICLE_CANONICAL_DECISION.md` for the migration plan to
 - **CLI flags:** `--input`, `--output`, `--source-name`, `--verbose`
 - **Error handling:** Non-zero exit on write failure; logged warnings for malformed input
 
-#### `tools/pipeline-chronicle/verify_ingest.py` — Stage 2: Verification (optional)
+#### `wordpipe.chronicle.verify_ingest` - Stage 2: Verification (optional)
 - **Purpose:** Verify that all input files can be successfully ingested
-- **Location:** `tools/pipeline-chronicle/verify_ingest.py` (not in `pipeline/`)
+- **Location:** canonical module under `wordpipe/chronicle/`; CLI wrappers in `pipeline/` and `tools/pipeline-chronicle/`
 - **Input:** Directory of raw `.md` files, path to `ingest.py`
 - **Output:** Report of which files pass/fail ingestion
 - **Key functions:**
@@ -129,9 +132,9 @@ See `docs/engineering/CHRONICLE_CANONICAL_DECISION.md` for the migration plan to
 - **CLI flags:** `--dir`, `--ingest`, `--verbose`
 - **Integration:** Only runs when `chain.ps1 -Verify` is used
 
-#### `tools/pipeline-chronicle/merge.py` — Stage 3: Merge
+#### `wordpipe.chronicle.merge` - Stage 3: Merge
 - **Purpose:** Merge N normalised MD files into one, deduplicating by body hash + date
-- **Location:** `tools/pipeline-chronicle/merge.py` (not in `pipeline/`)
+- **Location:** canonical module under `wordpipe/chronicle/`; CLI wrappers in `pipeline/` and `tools/pipeline-chronicle/`
 - **Input:** Directory of normalised `.md` files
 - **Output:** `merged.md` (merged chronicle), `merged.duplicates.json` (duplicate report), `merged.source_coverage.md` (source attribution)
 - **Key functions:**
@@ -147,8 +150,9 @@ See `docs/engineering/CHRONICLE_CANONICAL_DECISION.md` for the migration plan to
   - `overwrite`: Replaces with last-seen variant
 - **Duplicates report:** JSON with `duplicate_groups` array, each containing `canonical` and `duplicates` entries
 
-#### `pipeline/categorize.py` — Stage 4: Categorization
+#### `wordpipe.chronicle.categorize` - Stage 4: Categorization
 - **Purpose:** Tag each event with theme keywords using positive + negative matching
+- **Location:** canonical module under `wordpipe/chronicle/`; CLI wrappers in `pipeline/` and `tools/pipeline-chronicle/`
 - **Input:** `merged.md` from Stage 3
 - **Output:** `chronicle_tagged.md` (with `<!-- themes: ... -->` inline comments), `chronicle_tagged.tagged.json` (sidecar JSON)
 - **Key functions:**
@@ -225,24 +229,24 @@ See `docs/engineering/CHRONICLE_CANONICAL_DECISION.md` for the migration plan to
 [Input: Raw .md files]
          │
          ▼
-Stage 1: tools/pipeline-chronicle/ingest.py
+Stage 1: wordpipe.chronicle.ingest (CLI wrapper)
     Input:  *.md (raw deep-search files)
     Output: output/*/normalised/*.md (YAML front-matter + normalised events)
          │
          ▼
-Stage 2: tools/pipeline-chronicle/verify_ingest.py (optional, --Verify flag)
+Stage 2: wordpipe.chronicle.verify_ingest (optional, --Verify flag)
     Input:  Raw .md directory
     Output: Verification report (stdout)
          │
          ▼
-Stage 3: tools/pipeline-chronicle/merge.py
+Stage 3: wordpipe.chronicle.merge (CLI wrapper)
     Input:  output/*/normalised/*.md
     Output: output/*/merged.md
             output/*/merged.duplicates.json
             output/*/merged.source_coverage.md
          │
          ▼
-Stage 4: pipeline/categorize.py
+Stage 4: wordpipe.chronicle.categorize (CLI wrapper)
     Input:  output/*/merged.md
             pipeline/themes.json (optional)
     Output: output/*/chronicle_tagged.md
@@ -261,8 +265,8 @@ Stage 5: pipeline/index.py
 
 ### 2.4 Logic Flow
 
-1. **Ingestion:** Run `tools/pipeline-chronicle/ingest.py` on each raw .md file → extract preamble + events → normalise format → write per-source files
-2. **Verification:** Run `tools/pipeline-chronicle/ingest.py` on each file → collect passes/fails → report
+1. **Ingestion:** Run the ingest CLI wrapper for `wordpipe.chronicle.ingest` on each raw .md file → extract preamble + events → normalise format → write per-source files
+2. **Verification:** Run the verify CLI wrapper for `wordpipe.chronicle.verify_ingest` on each file → collect passes/fails → report
 3. **Merge:** Read all normalised files → parse events → hash bodies → deduplicate by date+hash → resolve conflicts → write merged file + reports
 4. **Categorization:** Read merged file → parse events → for each event, test body against theme keywords → assign matched themes → write tagged markdown + sidecar JSON
 5. **Index:** Read tagged file → parse events → deduplicate → group by theme → collect URLs → write 4 appendix files
@@ -532,10 +536,17 @@ ERROR: required {name} not found: {abs_path}
 
 ### Automated Tests
 
-| Test File | Coverage | Command |
-|-----------|----------|---------|
-| `tests/test_pipeline_chronicle.py` | 59 tests: ingest core (20), merge core (13), categorize core (16), verify_ingest (1), integration (9) | `python -m pytest tests/test_pipeline_chronicle.py -v` |
-| `tests/test_import_safety.py` | Import safety for wordpipe | `python -m unittest tests/test_import_safety.py` |
+| Test File | Tests | Coverage | Command |
+|-----------|-------|----------|---------|
+| `tests/test_pipeline_chronicle.py` | 70 | Ingest, merge, categorize, verify_ingest, integration | `python -m pytest tests/test_pipeline_chronicle.py -v` |
+| `tests/test_import_safety.py` | 2 | Core import safety + chronicle extra contract | `python -m pytest tests/test_import_safety.py -v` |
+| `tests/test_steps.py` | 12 | Step modules (flatten, style, segment, finalize, toc) | `python -m pytest tests/test_steps.py -v` |
+| `tests/test_orchestration_pipeline.py` | 6 | Fail-fast orchestration behavior | `python -m pytest tests/test_orchestration_pipeline.py -v` |
+| `tests/test_segmenter_hpath.py` | 10 | Heading-path precompute semantics | `python -m pytest tests/test_segmenter_hpath.py -v` |
+| `tests/test_wordpipe_steps.py` | 6 | Transitional step/orchestration overlap | `python -m pytest tests/test_wordpipe_steps.py -v` |
+| **Total** | **105** | Full health signal | `python -m pytest tests -q` |
+
+See also: [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_P2_VALIDATION_REPORT.md)
 
 ### Verification Commands
 

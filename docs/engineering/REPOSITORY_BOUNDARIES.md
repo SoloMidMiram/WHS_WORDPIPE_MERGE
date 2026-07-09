@@ -117,6 +117,7 @@ The canonical implementation of chronicle pipeline logic lives in `wordpipe/chro
 | `wordpipe/chronicle/ingest.py` | Raw MD normalisation |
 | `wordpipe/chronicle/merge.py` | Multi-file merge and dedup |
 | `wordpipe/chronicle/categorize.py` | Theme tagging (v2 with negative keywords) |
+| `wordpipe/chronicle/verify_ingest.py` | Batch ingest verification (parse, classify, report) |
 | `wordpipe/chronicle/cli/` | CLI wrappers (argparse + I/O, delegate to above) |
 
 Backward-compatible CLI entry points (`pipeline/*.py`, `tools/pipeline-chronicle/*.py`)

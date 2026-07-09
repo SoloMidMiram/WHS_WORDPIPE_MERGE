@@ -1,10 +1,17 @@
 # 🗺️ Project Roadmap
 
-> **Date (Gregorian):** 2026-02-14  
-> **Date (Shamsi/Jalali):** 1404-11-25  
-> **Last Updated:** 2026-02-14  
-> **Branch:** `main`  
-> **Commit:** `HEAD` (working tree has untracked `pipeline/` files)
+> **Date (Gregorian):** 2026-07-09
+> **Date (Shamsi/Jalali):** 1405-04-18
+> **Last Updated:** 2026-07-09
+> **Branch:** `main`
+
+Current stabilization status:
+- Chronicle dependency ownership is declared through the `chronicle` extra.
+- Chronicle ingest/merge/categorize/verify logic is canonical under `wordpipe/chronicle/`.
+- `pipeline/` and `tools/pipeline-chronicle/` are compatibility/operator CLI surfaces, not runtime import surfaces.
+- WordPipe orchestration is step-based; read/style failures are fatal.
+- `index` remains in `pipeline/` and is deferred from canonical extraction.
+- P0–P2 remediation validated: **105 tests pass**; see [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_P2_VALIDATION_REPORT.md).
 
 ---
 
@@ -25,7 +32,7 @@ Transform this workspace into a **maintainable, evidence-backed, ontology-ground
 | # | Goal | Priority | Status |
 |---|------|----------|--------|
 | G1 | **Path portability**: All doc paths relative, no absolute `F:\...` references | P0 | ✅ Done |
-| G2 | **Doc accuracy verification**: Verify all `.md` descriptions match actual code/modules | P0 | 🔴 Not started |
+| G2 | **Doc accuracy verification**: Verify all `.md` descriptions match actual code/modules | P0 | ✅ Done (P0–P2 validation pass, 2026-07-09) |
 | G3 | **Ontological model**: Build a structured ontology of project entities, periods, claims, evidence | P1 | ✅ Done |
 | G4 | **Journal system**: Create dated journal tracking periods of activity with claims/results/verification | P1 | ✅ Done |
 | G5 | **Roadmap anchor**: Single source of truth for planned vs completed work | P0 | ✅ Done |
@@ -33,6 +40,7 @@ Transform this workspace into a **maintainable, evidence-backed, ontology-ground
 | G7 | **NLP/ontology grounding**: Evaluate NLP/POS tagging for extracting ontology from project text | P2 | 🔴 Not started |
 | G8 | **TraceLedger alignment**: WordPipe as a library consumable by TraceLedger | P1 | 🟡 Planned |
 | G9 | **Chronicle automation**: Composable CLI pipeline to ingest, merge, categorize, index deep-search files | P3 | ✅ Done |
+| G10 | **P0/P1 stabilization**: Chronicle deps, canonical verify, fail-fast orchestration, step tests, CI | P0/P1 | ✅ Done |
 
 ---
 
@@ -50,6 +58,23 @@ Transform this workspace into a **maintainable, evidence-backed, ontology-ground
 ---
 
 ## 📋 Phases (Newest First)
+
+### Phase 11 — P0–P2 Repository Review Remediation (P0/P1/P2)
+> Goal: Stabilize packaging contract, doc trust, canonical verify, orchestration fail-fast, step tests, segmenter perf, CI
+> **Date:** 2026-07-09 | **Status:** ✅ Completed
+
+| Slice | Task | Status |
+|-------|------|--------|
+| P0-1 | Declare `chronicle` optional extra (`pyyaml`, `python-dateutil`) | ✅ Done |
+| P0-2 | Fix README/ROADMAP stale metadata; fix docs link checker false positives | ✅ Done |
+| P1-1 | Extract `verify_ingest` to `wordpipe.chronicle` + CLI wrappers | ✅ Done |
+| P1-2 | Orchestrator fail-fast on style/finalize errors | ✅ Done |
+| P1-3 | Step module unit tests | ✅ Done |
+| P2-1 | Segmenter heading-path O(n) precompute | ✅ Done |
+| P2-2 | Add `.github/workflows/ci.yml` health gate | ✅ Done |
+| P2-3 | Authoritative doc crosswalk + validation report | ✅ Done |
+
+Validation: [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_P2_VALIDATION_REPORT.md)
 
 ### Phase 10 — Documentation Architecture & Module Reference (P0)
 > Goal: Single source of truth for architecture, modules, integration, flow, logic, goals, and constraints  
@@ -109,6 +134,7 @@ Transform this workspace into a **maintainable, evidence-backed, ontology-ground
 | 7.3 | Create `tests/test_import_safety.py` | ✅ Done |
 | 7.4 | Add backward-compatible wrappers in `wordpipe/pipeline/` and `wordpipe/flatteners/` | ✅ Done |
 | 7.5 | Pipeline step module refactor: flatten, style, segment, finalize, toc | ✅ Done |
+| 7.6 | Add fail-fast read/style behavior and focused step/orchestration tests | ✅ Done |
 
 ### Phase 6 — Foundation Fixes & Ontology Building (P0)
 > Goal: Make the project portable, navigable, and self-consistent  

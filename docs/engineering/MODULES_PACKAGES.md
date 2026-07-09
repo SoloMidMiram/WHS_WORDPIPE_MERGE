@@ -25,7 +25,7 @@ wordpipe/
   steps/            # pluggable step engine (flatten, style, segment, finalize, toc)
   plugins/          # optional registry and entrypoint loading
   cli/              # optional CLI entrypoint
-  chronicle/        # importable chronicle pipeline logic (ingest, merge, categorize, index)
+  chronicle/        # importable chronicle pipeline logic (ingest, merge, categorize, verify_ingest; index deferred)
   pipeline/         # compatibility wrappers (legacy import paths)
   flatteners/       # compatibility wrappers (legacy import paths)
 ```
@@ -43,24 +43,28 @@ Excluded from distribution (via `pyproject.toml` `[tool.setuptools.packages.find
 | `wordpipe.chronicle.ingest` | Raw MD normalisation (mojibake, date parsing, event splitting) |
 | `wordpipe.chronicle.merge` | Multi-file merge, dedup, conflict resolution, source coverage |
 | `wordpipe.chronicle.categorize` | Theme tagging (v2: negative keywords, dry-run, legacy format) |
+| `wordpipe.chronicle.verify_ingest` | Batch ingest verification (parse stderr, classify, report) |
 
 CLI wrappers (argparse + I/O, delegating to the above modules):
 - `wordpipe.chronicle.cli.ingest`
 - `wordpipe.chronicle.cli.merge`
 - `wordpipe.chronicle.cli.categorize`
+- `wordpipe.chronicle.cli.verify_ingest`
 
 Backward-compatible CLI entry points (thin wrappers emitting `DeprecationWarning`,
 delegating only when run as `__main__` -- not import-compatible):
-- `pipeline/ingest.py`, `pipeline/merge.py`, `pipeline/categorize.py`
-- `tools/pipeline-chronicle/ingest.py`, `tools/pipeline-chronicle/merge.py`, `tools/pipeline-chronicle/categorize.py`
+- `pipeline/ingest.py`, `pipeline/merge.py`, `pipeline/categorize.py`, `pipeline/verify_ingest.py`
+- `tools/pipeline-chronicle/ingest.py`, `tools/pipeline-chronicle/merge.py`, `tools/pipeline-chronicle/categorize.py`, `tools/pipeline-chronicle/verify_ingest.py`
 
 ## Compatibility surface
 
-- **Canonical imports (stable):** `from wordpipe.chronicle import ingest, merge, categorize`
+- **Canonical imports (stable):** `from wordpipe.chronicle import ingest, merge, categorize, verify_ingest`
 - **CLI entry points (deprecated):** `pipeline/*.py` and `tools/pipeline-chronicle/*.py` --
   each is a thin `if __name__ == "__main__"` wrapper only; do not import functions from them.
-- **Deferred:** `verify_ingest` and `index` extraction are not yet migrated to `wordpipe.chronicle`.
-  `verify_ingest` tests still import from `tools/pipeline-chronicle/` via `sys.path`.
+- **Deferred:** `index` extraction is not yet migrated to `wordpipe.chronicle`.
+- **Complete:** `verify_ingest` is extracted to `wordpipe.chronicle.verify_ingest`;
+  `pipeline/verify_ingest.py` and `tools/pipeline-chronicle/verify_ingest.py` are deprecation wrappers.
+  Chronicle tests import canonical modules (no `sys.path` manipulation).
 
 ## AI Boundary
 
@@ -93,7 +97,7 @@ Where lazy imports are expected:
 ### Deprecated import paths
 - `from wordpipe.ai import ...` — these are legacy scripts, not public library modules.
   Use `wordpipe.interfaces.ai` or `wordpipe.adapters.ai.*` instead.
-- `sys.path`-based imports from `tools/pipeline-chronicle/` — use `wordpipe.chronicle.*` instead.
+- **(Fixed)** `sys.path`-based imports from `tools/pipeline-chronicle/` — canonical imports now use `wordpipe.chronicle.*`.
 
 ## Dependency Injection Model
 Orchestration contract:

@@ -85,6 +85,7 @@
 | `docs/engineering/MODULES_PACKAGES.md` | 📄 Doc | Modules guide | Import rules, DI model, package patterns |
 | `docs/engineering/CHRONICLE_CANONICAL_DECISION.md` | 📄 Doc | chronicle decision | Canonical source location for chronicle pipeline logic |
 | `docs/engineering/REPOSITORY_BOUNDARIES.md` | 📄 Doc | Boundary guide | Directory classification, packaging and pytest rules, import boundaries |
+| `docs/engineering/P0_P2_VALIDATION_REPORT.md` | 📄 Doc | Validation report | P0–P2 remediation stages, claim register, CI readiness (2026-07-09) |
 
 ### docs/operations/
 
@@ -252,12 +253,14 @@
 | `wordpipe/chronicle/ingest.py` | 🐍 Source | Ingest logic | Pure functions for raw MD normalisation |
 | `wordpipe/chronicle/merge.py` | 🐍 Source | Merge logic | Pure functions for merge, dedup, conflict resolution |
 | `wordpipe/chronicle/categorize.py` | 🐍 Source | Categorize logic | v2 theme tagging with negative keywords |
+| `wordpipe/chronicle/verify_ingest.py` | 🐍 Source | Verify logic | Batch ingest verification (parse, classify, report) |
 | `wordpipe/chronicle/models.py` | 🐍 Source | Data models | ChronicleEvent, NormalisedDocument, MergeResult |
 | `wordpipe/chronicle/io.py` | 🐍 Source | I/O helpers | UTF-8 read/write helpers |
 | `wordpipe/chronicle/cli/__init__.py` | 🐍 Source | CLI init | CLI package init |
 | `wordpipe/chronicle/cli/ingest.py` | 🐍 Source | Ingest CLI | CLI wrapper delegating to wordpipe.chronicle.ingest |
 | `wordpipe/chronicle/cli/merge.py` | 🐍 Source | Merge CLI | CLI wrapper delegating to wordpipe.chronicle.merge |
 | `wordpipe/chronicle/cli/categorize.py` | 🐍 Source | Categorize CLI | CLI wrapper delegating to wordpipe.chronicle.categorize |
+| `wordpipe/chronicle/cli/verify_ingest.py` | 🐍 Source | Verify CLI | CLI wrapper delegating to wordpipe.chronicle.verify_ingest |
 
 > Canonical chronicle implementation. See `docs/engineering/CHRONICLE_CANONICAL_DECISION.md`.
 
@@ -338,7 +341,7 @@
 | `pipeline/index.py` | 🐍 Source | Stage 5 | Generate 4 appendix files with Jinja2 + fallback |
 | `pipeline/ingest.py` | 🐍 Source | Wrapper | Thin wrapper delegating to wordpipe.chronicle.ingest **DEPRECATED** |
 | `pipeline/merge.py` | 🐍 Source | Wrapper | Thin wrapper delegating to wordpipe.chronicle.merge **DEPRECATED** |
-| `pipeline/verify_ingest.py` | 🐍 Source | Stage 2 | Batch verification (copied from tools/pipeline-chronicle/) |
+| `pipeline/verify_ingest.py` | 🐍 Source | Wrapper | Thin wrapper delegating to wordpipe.chronicle.verify_ingest **DEPRECATED** |
 | `pipeline/chain.ps1` | 🐍 Source | Orchestrator | 5-stage PowerShell orchestrator (v2) |
 | `pipeline/themes.json` | ⚙️ Config | Theme config | 6 themes, 62 positive + 16 negative keywords |
 | `pipeline/index_config.json` | ⚙️ Config | Index config | Configurable output dir, templates dir, dedup |
@@ -352,7 +355,7 @@
 |------|------|------|-------------|
 | `tools/pipeline-chronicle/ingest.py` | 🐍 Source | Wrapper (v1) | Thin wrapper delegating to wordpipe.chronicle.ingest **DEPRECATED** |
 | `tools/pipeline-chronicle/merge.py` | 🐍 Source | Wrapper (v1) | Thin wrapper delegating to wordpipe.chronicle.merge **DEPRECATED** |
-| `tools/pipeline-chronicle/verify_ingest.py` | 🐍 Source | Stage 2 (v1) | Original working copy |
+| `tools/pipeline-chronicle/verify_ingest.py` | 🐍 Source | Wrapper (v1) | Thin wrapper delegating to wordpipe.chronicle.verify_ingest **DEPRECATED** |
 | `tools/pipeline-chronicle/categorize.py` | 🐍 Source | Wrapper (v1) | Thin wrapper delegating to wordpipe.chronicle.categorize **DEPRECATED** |
 | `tools/pipeline-chronicle/chain.ps1` | 🐍 Source | Orchestrator (v1) | Original v1 (4-stage, no index) |
 | `_ARCHIVE/pipeline-chronicle/tools/` | 🗃️ Archive | All 5 tools | Frozen copy at archive time |
@@ -409,3 +412,4 @@
 - [ONTOLOGY_MODEL.md](ONTOLOGY_MODEL.md) — Formal entity model
 - [docs/README.md](docs/README.md) — Documentation entrypoint
 - [docs/engineering/REPOSITORY_BOUNDARIES.md](docs/engineering/REPOSITORY_BOUNDARIES.md) — Directory classification and import boundaries
+- [docs/engineering/P0_P2_VALIDATION_REPORT.md](docs/engineering/P0_P2_VALIDATION_REPORT.md) — P0–P2 remediation validation (2026-07-09)
