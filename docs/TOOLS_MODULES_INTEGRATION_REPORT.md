@@ -366,50 +366,50 @@ All examples are shown first with placeholders, then with one concrete path.
 ### Orchestrated Happy Path
 ```powershell
 python tools/orchestrate.py --workspace-root <WORKSPACE_ROOT> --root <SNAPSHOT_ROOT>
-python tools/orchestrate.py --workspace-root F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246 --root _WORK/snapshot
+python tools/orchestrate.py --workspace-root <WORKSPACE_ROOT> --root _WORK/snapshot
 ```
 
 ### Orchestrator Dry Run
 ```powershell
 python tools/orchestrate.py --workspace-root <WORKSPACE_ROOT> --root <SNAPSHOT_ROOT> --dry-run
-python tools/orchestrate.py --workspace-root F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246 --root _WORK/snapshot --dry-run
+python tools/orchestrate.py --workspace-root <WORKSPACE_ROOT> --root _WORK/snapshot --dry-run
 ```
 
 ### Optional Route Step in Orchestration
 ```powershell
 python tools/orchestrate.py --workspace-root <WORKSPACE_ROOT> --root <SNAPSHOT_ROOT> --run-route-unmapped
-python tools/orchestrate.py --workspace-root F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246 --root _WORK/snapshot --run-route-unmapped
+python tools/orchestrate.py --workspace-root <WORKSPACE_ROOT> --root _WORK/snapshot --run-route-unmapped
 ```
 
 ### Independent Stage Runs
 ```powershell
 python tools/make_manifest.py --workspace-root <WORKSPACE_ROOT> --root <SNAPSHOT_ROOT>
-python tools/make_manifest.py --workspace-root F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246 --root _WORK/snapshot
+python tools/make_manifest.py --workspace-root <WORKSPACE_ROOT> --root _WORK/snapshot
 ```
 
 ```powershell
 python tools/plan_legacy_reorg.py --workspace-root <WORKSPACE_ROOT> --root <SNAPSHOT_ROOT> --manifest <MANIFEST_PATH> --out <PLAN_PATH>
-python tools/plan_legacy_reorg.py --workspace-root F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246 --root _WORK/snapshot --manifest _ARCHIVE/manifests/manifest.jsonl --out _ARCHIVE/move_maps/relocation_plan.jsonl
+python tools/plan_legacy_reorg.py --workspace-root <WORKSPACE_ROOT> --root _WORK/snapshot --manifest _ARCHIVE/manifests/manifest.jsonl --out _ARCHIVE/move_maps/relocation_plan.jsonl
 ```
 
 ```powershell
 python tools/apply_legacy_reorg.py --workspace-root <WORKSPACE_ROOT> --root <SNAPSHOT_ROOT> --plan <PLAN_PATH> --out-map <MAP_PATH> --preflight-mode warn
-python tools/apply_legacy_reorg.py --workspace-root F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246 --root _WORK/snapshot --plan _ARCHIVE/move_maps/relocation_plan.jsonl --out-map _ARCHIVE/move_maps/relocation_map.jsonl --preflight-mode warn
+python tools/apply_legacy_reorg.py --workspace-root <WORKSPACE_ROOT> --root _WORK/snapshot --plan _ARCHIVE/move_maps/relocation_plan.jsonl --out-map _ARCHIVE/move_maps/relocation_map.jsonl --preflight-mode warn
 ```
 
 ```powershell
 python tools/build_legacy_index.py --workspace-root <WORKSPACE_ROOT> --relocation-map <MAP_PATH>
-python tools/build_legacy_index.py --workspace-root F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246 --relocation-map _ARCHIVE/move_maps/relocation_map.jsonl
+python tools/build_legacy_index.py --workspace-root <WORKSPACE_ROOT> --relocation-map _ARCHIVE/move_maps/relocation_map.jsonl
 ```
 
 ```powershell
 python tools/verify_integrity.py --workspace-root <WORKSPACE_ROOT> --manifest <MANIFEST_PATH> --plan <PLAN_PATH> --relocation <MAP_PATH> --snapshot-root <SNAPSHOT_ROOT>
-python tools/verify_integrity.py --workspace-root F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246 --manifest _ARCHIVE/manifests/manifest.jsonl --plan _ARCHIVE/move_maps/relocation_plan.jsonl --relocation _ARCHIVE/move_maps/relocation_map.jsonl --snapshot-root _WORK/snapshot
+python tools/verify_integrity.py --workspace-root <WORKSPACE_ROOT> --manifest _ARCHIVE/manifests/manifest.jsonl --plan _ARCHIVE/move_maps/relocation_plan.jsonl --relocation _ARCHIVE/move_maps/relocation_map.jsonl --snapshot-root _WORK/snapshot
 ```
 
 ### Non-Repo CWD Operation
 ```powershell
-python F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246\tools\build_legacy_index.py --workspace-root F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246
+python tools/build_legacy_index.py --workspace-root <WORKSPACE_ROOT>
 ```
 
 ## Known Limits and Deferred Work

@@ -1,0 +1,131 @@
+{
+  "_comment": "InsuranceChatbot-specific themes for chronicle categorization.",
+  "themes": {
+    "Knowledge Base": {
+      "keywords": [
+        "knowledge base",
+        "FAQ",
+        "FAQs",
+        "Q&A",
+        "questions",
+        "answers",
+        "coverage gaps",
+        "Persian FAQ",
+        "KB"
+      ],
+      "negative_keywords": []
+    },
+    "Retrieval/Search": {
+      "keywords": [
+        "retrieval",
+        "search",
+        "TF-IDF",
+        "FAISS",
+        "embedding",
+        "hybrid",
+        "recall",
+        "MRR",
+        "ranking",
+        "semantic"
+      ],
+      "negative_keywords": []
+    },
+    "API/Runtime": {
+      "keywords": [
+        "FastAPI",
+        "API",
+        "runtime",
+        "endpoint",
+        "health",
+        "server",
+        "admin",
+        "response generation",
+        "decision engine"
+      ],
+      "negative_keywords": []
+    },
+    "Ontology": {
+      "keywords": [
+        "ontology",
+        "concept",
+        "registry",
+        "schema",
+        "OntologyState",
+        "concept IDs",
+        "glossary",
+        "taxonomy"
+      ],
+      "negative_keywords": []
+    },
+    "Scraper/Release": {
+      "keywords": [
+        "scraper",
+        "scrape",
+        "release bundle",
+        "promotion",
+        "rollback",
+        "active_release",
+        "Asmari",
+        "Pasargad",
+        "publication"
+      ],
+      "negative_keywords": []
+    },
+    "Testing/CI": {
+      "keywords": [
+        "test",
+        "tests",
+        "pytest",
+        "CI",
+        "quality gates",
+        "validation",
+        "validator",
+        "lint",
+        "fixture"
+      ],
+      "negative_keywords": []
+    },
+    "Documentation/Roadmap": {
+      "keywords": [
+        "roadmap",
+        "documentation",
+        "docs",
+        "README",
+        "report",
+        "plan",
+        "milestone",
+        "phase",
+        "archive"
+      ],
+      "negative_keywords": []
+    },
+    "Data Quality/SME": {
+      "keywords": [
+        "SME",
+        "triage",
+        "dedup",
+        "deduplication",
+        "hygiene",
+        "expert",
+        "audit",
+        "reject",
+        "curation"
+      ],
+      "negative_keywords": []
+    },
+    "Operations/Baselines": {
+      "keywords": [
+        "baseline",
+        "tag",
+        "branch",
+        "main",
+        "backup",
+        "promotion",
+        "rollback",
+        "versioning",
+        "release"
+      ],
+      "negative_keywords": []
+    }
+  }
+}

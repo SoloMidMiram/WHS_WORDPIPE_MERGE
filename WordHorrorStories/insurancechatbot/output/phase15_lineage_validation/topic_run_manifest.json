@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "topic": "insurancechatbot",
+  "run_id": "phase15_lineage_validation",
+  "created_at": "2026-07-17T10:50:30+00:00",
+  "input_dir": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\input",
+  "adapter": {
+    "id": "prepare_insurancechatbot_chronicle",
+    "script": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\tools\\prepare_insurancechatbot_chronicle.py",
+    "prepare_command": "prepare",
+    "summarize_command": "summarize",
+    "registry_backed": false
+  },
+  "themes_config": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\themes.insurancechatbot.json",
+  "index_config": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\pipeline\\index_config.json",
+  "output_base_dir": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\output",
+  "quality_gates": {
+    "min_extraction_coverage_percent": 95.0,
+    "min_theme_tag_percent": 85.0,
+    "max_error_count": 0
+  },
+  "commands": {
+    "prepare": [
+      "C:\\Users\\cebit.ir\\.pyenv\\pyenv-win\\versions\\3.11.4\\python.exe",
+      "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\tools\\prepare_insurancechatbot_chronicle.py",
+      "prepare",
+      "--input-dir",
+      "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\input",
+      "--output-dir",
+      "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\output\\phase15_lineage_validation\\staged_input",
+      "--metrics",
+      "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\output\\phase15_lineage_validation\\prepare_metrics.json"
+    ],
+    "pipeline": [
+      "powershell",
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\pipeline\\chain.ps1",
+      "-InputDir",
+      "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\output\\phase15_lineage_validation\\staged_input",
+      "-OutputDir",
+      "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\output\\phase15_lineage_validation\\pipeline",
+      "-ThemesConfig",
+      "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\themes.insurancechatbot.json",
+      "-IndexConfig",
+      "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\pipeline\\index_config.json",
+      "-Verbose"
+    ],
+    "summarize": [
+      "C:\\Users\\cebit.ir\\.pyenv\\pyenv-win\\versions\\3.11.4\\python.exe",
+      "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\tools\\prepare_insurancechatbot_chronicle.py",
+      "summarize",
+      "--run-dir",
+      "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\output\\phase15_lineage_validation",
+      "--prepare-metrics",
+      "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\output\\phase15_lineage_validation\\prepare_metrics.json",
+      "--performance",
+      "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\output\\phase15_lineage_validation\\performance.txt",
+      "--run-log",
+      "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\output\\phase15_lineage_validation\\run.log"
+    ]
+  },
+  "exit_codes": {
+    "prepare": 0,
+    "pipeline": 0,
+    "summarize": 0
+  },
+  "timing_seconds": 7.8753987000091
+}

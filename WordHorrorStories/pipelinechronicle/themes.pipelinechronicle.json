@@ -1,0 +1,115 @@
+{
+  "_comment": "Pipeline Chronicle topic themes for the archived pipeline-chronicle planning docs.",
+  "themes": {
+    "Ingest/Normalise": {
+      "keywords": [
+        "ingest",
+        "normalise",
+        "normalize",
+        "raw file",
+        "YAML front-matter",
+        "section",
+        "heading",
+        "source"
+      ],
+      "negative_keywords": ["insurance", "FAQ", "bot"]
+    },
+    "Merge/Dedup": {
+      "keywords": [
+        "merge",
+        "dedup",
+        "duplicate",
+        "conflict",
+        "keep-both",
+        "coverage",
+        "deduplicat"
+      ],
+      "negative_keywords": ["insurance", "FAQ"]
+    },
+    "Categorize/Themes": {
+      "keywords": [
+        "categorize",
+        "categorise",
+        "theme",
+        "keyword",
+        "tag",
+        "taxonomy",
+        "ontology class",
+        "label",
+        "negatives"
+      ],
+      "negative_keywords": []
+    },
+    "Index/Appendix": {
+      "keywords": [
+        "index",
+        "appendix",
+        "event index",
+        "theme index",
+        "source manifest",
+        "link registry",
+        "template",
+        "Jinja2"
+      ],
+      "negative_keywords": []
+    },
+    "Orchestration/CLI": {
+      "keywords": [
+        "chain",
+        "orchestrat",
+        "CLI",
+        "wrapper",
+        "composable",
+        "Pipline",
+        "pipeline",
+        "exit code",
+        "error handling"
+      ],
+      "negative_keywords": []
+    },
+    "Testing/Verification": {
+      "keywords": [
+        "test",
+        "verify",
+        "validate",
+        "assert",
+        "pytest",
+        "regression",
+        "check",
+        "verify_ingest"
+      ],
+      "negative_keywords": []
+    },
+    "Planning/Roadmap": {
+      "keywords": [
+        "plan",
+        "roadmap",
+        "target",
+        "milestone",
+        "priority",
+        "deprecat",
+        "P1",
+        "P2",
+        "P3",
+        "P0",
+        "status",
+        "deferred"
+      ],
+      "negative_keywords": []
+    },
+    "Archive/Refactor": {
+      "keywords": [
+        "archive",
+        "refactor",
+        "superseded",
+        "v2",
+        "migration",
+        "old version",
+        "historical",
+        "original",
+        "archived version"
+      ],
+      "negative_keywords": []
+    }
+  }
+}

@@ -1,0 +1,311 @@
+{
+  "$schema": "topic-run-ontology-v1",
+  "topic": "insurancechatbot",
+  "run_id": "20260716_151311",
+  "generated_at": "2026-07-16T11:43:19+00:00",
+  "entities": [
+    {
+      "id": "topic:insurancechatbot",
+      "type": "Topic",
+      "name": "insurancechatbot",
+      "properties": {}
+    },
+    {
+      "id": "source_bundle:insurancechatbot",
+      "type": "SourceBundle",
+      "name": "insurancechatbot input",
+      "properties": {
+        "path": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\input"
+      }
+    },
+    {
+      "id": "adapter:prepare_insurancechatbot_chronicle",
+      "type": "TopicAdapter",
+      "name": "prepare_insurancechatbot_chronicle",
+      "properties": {
+        "script": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\tools\\prepare_insurancechatbot_chronicle.py"
+      }
+    },
+    {
+      "id": "run:insurancechatbot:20260716_151311",
+      "type": "TopicRun",
+      "name": "insurancechatbot 20260716_151311",
+      "properties": {
+        "run_id": "20260716_151311",
+        "topic": "insurancechatbot",
+        "started_at": "2026-07-16T11:43:19+00:00",
+        "timing_seconds": 7.0417060000036145
+      }
+    },
+    {
+      "id": "staged_source:insurancechatbot:01_commit_history.md",
+      "type": "StagedSource",
+      "name": "01_commit_history.md",
+      "properties": {
+        "filename": "01_commit_history.md"
+      }
+    },
+    {
+      "id": "staged_source:insurancechatbot:02_project_digest.md",
+      "type": "StagedSource",
+      "name": "02_project_digest.md",
+      "properties": {
+        "filename": "02_project_digest.md"
+      }
+    },
+    {
+      "id": "staged_source:insurancechatbot:03_roadmap.md",
+      "type": "StagedSource",
+      "name": "03_roadmap.md",
+      "properties": {
+        "filename": "03_roadmap.md"
+      }
+    },
+    {
+      "id": "report_event:insurancechatbot:20260716_151311",
+      "type": "ReportEvent",
+      "name": "insurancechatbot events (20260716_151311)",
+      "properties": {
+        "count": 200
+      }
+    },
+    {
+      "id": "theme:insurancechatbot:Knowledge Base",
+      "type": "Theme",
+      "name": "Knowledge Base",
+      "properties": {}
+    },
+    {
+      "id": "theme:insurancechatbot:Retrieval/Search",
+      "type": "Theme",
+      "name": "Retrieval/Search",
+      "properties": {}
+    },
+    {
+      "id": "theme:insurancechatbot:API/Runtime",
+      "type": "Theme",
+      "name": "API/Runtime",
+      "properties": {}
+    },
+    {
+      "id": "theme:insurancechatbot:Ontology",
+      "type": "Theme",
+      "name": "Ontology",
+      "properties": {}
+    },
+    {
+      "id": "theme:insurancechatbot:Scraper/Release",
+      "type": "Theme",
+      "name": "Scraper/Release",
+      "properties": {}
+    },
+    {
+      "id": "theme:insurancechatbot:Testing/CI",
+      "type": "Theme",
+      "name": "Testing/CI",
+      "properties": {}
+    },
+    {
+      "id": "theme:insurancechatbot:Documentation/Roadmap",
+      "type": "Theme",
+      "name": "Documentation/Roadmap",
+      "properties": {}
+    },
+    {
+      "id": "theme:insurancechatbot:Data Quality/SME",
+      "type": "Theme",
+      "name": "Data Quality/SME",
+      "properties": {}
+    },
+    {
+      "id": "theme:insurancechatbot:Operations/Baselines",
+      "type": "Theme",
+      "name": "Operations/Baselines",
+      "properties": {}
+    },
+    {
+      "id": "metric:insurancechatbot:20260716_151311",
+      "type": "Metric",
+      "name": "insurancechatbot metrics (20260716_151311)",
+      "properties": {
+        "input_file_count": 3,
+        "input_total_bytes": 195293,
+        "input_total_lines": 3285,
+        "input_dir": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\input",
+        "output_dir": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\output\\20260716_151311\\staged_input",
+        "generated_at": "2026-07-16T15:13:12",
+        "candidate_commit_headings": 169,
+        "candidate_roadmap_sections": 15,
+        "candidate_digest_sections": 16,
+        "candidate_total_sections": 200,
+        "staged_event_count": 200,
+        "extraction_coverage_percent": 100.0,
+        "pipeline_wall_clock": "TotalSeconds : 7.0417060000036145",
+        "merged_event_count": 200,
+        "tagged_event_count": 200,
+        "events_with_theme_tags": 194,
+        "duplicate_conflict_count": 0,
+        "warning_count": 0,
+        "error_count": 0
+      }
+    },
+    {
+      "id": "evidence:insurancechatbot:20260716_151311:RUN_SUMMARY.md",
+      "type": "EvidenceArtifact",
+      "name": "RUN_SUMMARY.md",
+      "properties": {
+        "path": "WordHorrorStories\\insurancechatbot\\output\\20260716_151311\\RUN_SUMMARY.md"
+      }
+    },
+    {
+      "id": "evidence:insurancechatbot:20260716_151311:run_metrics.json",
+      "type": "EvidenceArtifact",
+      "name": "run_metrics.json",
+      "properties": {
+        "path": "WordHorrorStories\\insurancechatbot\\output\\20260716_151311\\run_metrics.json"
+      }
+    },
+    {
+      "id": "evidence:insurancechatbot:20260716_151311:prepare_metrics.json",
+      "type": "EvidenceArtifact",
+      "name": "prepare_metrics.json",
+      "properties": {
+        "path": "WordHorrorStories\\insurancechatbot\\output\\20260716_151311\\prepare_metrics.json"
+      }
+    },
+    {
+      "id": "evidence:insurancechatbot:20260716_151311:run.log",
+      "type": "EvidenceArtifact",
+      "name": "run.log",
+      "properties": {
+        "path": "WordHorrorStories\\insurancechatbot\\output\\20260716_151311\\run.log"
+      }
+    },
+    {
+      "id": "evidence:insurancechatbot:20260716_151311:performance.txt",
+      "type": "EvidenceArtifact",
+      "name": "performance.txt",
+      "properties": {
+        "path": "WordHorrorStories\\insurancechatbot\\output\\20260716_151311\\performance.txt"
+      }
+    },
+    {
+      "id": "evidence:insurancechatbot:20260716_151311:topic_run_manifest.json",
+      "type": "EvidenceArtifact",
+      "name": "topic_run_manifest.json",
+      "properties": {
+        "path": "WordHorrorStories\\insurancechatbot\\output\\20260716_151311\\topic_run_manifest.json"
+      }
+    },
+    {
+      "id": "verdict:insurancechatbot:20260716_151311",
+      "type": "Verdict",
+      "name": "insurancechatbot run 20260716_151311",
+      "properties": {
+        "verdict": "PASS"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "source": "report_event:insurancechatbot:20260716_151311",
+      "relation": "tagged_with",
+      "target": "theme:insurancechatbot:Knowledge Base"
+    },
+    {
+      "source": "report_event:insurancechatbot:20260716_151311",
+      "relation": "tagged_with",
+      "target": "theme:insurancechatbot:Retrieval/Search"
+    },
+    {
+      "source": "report_event:insurancechatbot:20260716_151311",
+      "relation": "tagged_with",
+      "target": "theme:insurancechatbot:API/Runtime"
+    },
+    {
+      "source": "report_event:insurancechatbot:20260716_151311",
+      "relation": "tagged_with",
+      "target": "theme:insurancechatbot:Ontology"
+    },
+    {
+      "source": "report_event:insurancechatbot:20260716_151311",
+      "relation": "tagged_with",
+      "target": "theme:insurancechatbot:Scraper/Release"
+    },
+    {
+      "source": "report_event:insurancechatbot:20260716_151311",
+      "relation": "tagged_with",
+      "target": "theme:insurancechatbot:Testing/CI"
+    },
+    {
+      "source": "report_event:insurancechatbot:20260716_151311",
+      "relation": "tagged_with",
+      "target": "theme:insurancechatbot:Documentation/Roadmap"
+    },
+    {
+      "source": "report_event:insurancechatbot:20260716_151311",
+      "relation": "tagged_with",
+      "target": "theme:insurancechatbot:Data Quality/SME"
+    },
+    {
+      "source": "report_event:insurancechatbot:20260716_151311",
+      "relation": "tagged_with",
+      "target": "theme:insurancechatbot:Operations/Baselines"
+    },
+    {
+      "source": "metric:insurancechatbot:20260716_151311",
+      "relation": "measures",
+      "target": "run:insurancechatbot:20260716_151311"
+    },
+    {
+      "source": "run:insurancechatbot:20260716_151311",
+      "relation": "consumes",
+      "target": "source_bundle:insurancechatbot"
+    },
+    {
+      "source": "run:insurancechatbot:20260716_151311",
+      "relation": "uses_adapter",
+      "target": "adapter:prepare_insurancechatbot_chronicle"
+    },
+    {
+      "source": "run:insurancechatbot:20260716_151311",
+      "relation": "produces",
+      "target": "evidence:insurancechatbot:20260716_151311:RUN_SUMMARY.md"
+    },
+    {
+      "source": "run:insurancechatbot:20260716_151311",
+      "relation": "produces",
+      "target": "evidence:insurancechatbot:20260716_151311:run_metrics.json"
+    },
+    {
+      "source": "run:insurancechatbot:20260716_151311",
+      "relation": "produces",
+      "target": "evidence:insurancechatbot:20260716_151311:prepare_metrics.json"
+    },
+    {
+      "source": "run:insurancechatbot:20260716_151311",
+      "relation": "produces",
+      "target": "evidence:insurancechatbot:20260716_151311:run.log"
+    },
+    {
+      "source": "run:insurancechatbot:20260716_151311",
+      "relation": "produces",
+      "target": "evidence:insurancechatbot:20260716_151311:performance.txt"
+    },
+    {
+      "source": "run:insurancechatbot:20260716_151311",
+      "relation": "produces",
+      "target": "evidence:insurancechatbot:20260716_151311:topic_run_manifest.json"
+    },
+    {
+      "source": "run:insurancechatbot:20260716_151311",
+      "relation": "contains",
+      "target": "report_event:insurancechatbot:20260716_151311"
+    },
+    {
+      "source": "verdict:insurancechatbot:20260716_151311",
+      "relation": "summarizes",
+      "target": "run:insurancechatbot:20260716_151311"
+    }
+  ]
+}

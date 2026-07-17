@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "topic": "insurancechatbot",
+  "input_dir": "inputs/insurancechatbot/markdown",
+  "adapter": {
+    "id": "prepare_insurancechatbot_chronicle",
+    "script": "tools/prepare_insurancechatbot_chronicle.py"
+  },
+  "themes_config": "WordHorrorStories/insurancechatbot/themes.insurancechatbot.json",
+  "index_config": "pipeline/index_config.json",
+  "output": {
+    "base_dir": "WordHorrorStories/insurancechatbot/output",
+    "run_id_format": "timestamp"
+  },
+  "quality_gates": {
+    "min_extraction_coverage_percent": 95.0,
+    "min_theme_tag_percent": 85.0,
+    "max_error_count": 0
+  }
+}

@@ -224,6 +224,17 @@ class TestFinalizeStep:
         assert result.error is None
         assert result.out_path == cfg.out_path
 
+    def test_cleans_intermediate_working_file(self, cfg: PipelineConfig, sink: EventSink, tmp_path: Path):
+        """Finalize should clean up intermediate working file (not input)."""
+        working_file = tmp_path / "intermediate.docx"
+        working_file.write_text("work", encoding="utf-8")
+        result: FinalizeResult = finalize_step(
+            cfg, "fake-doc", working_file, _OkWriter(), sink,
+        )
+        assert result.error is None
+        assert result.out_path == cfg.out_path
+        assert not working_file.exists(), "intermediate working file should be deleted"
+
     def test_doc_none_produces_error(self, cfg: PipelineConfig, sink: EventSink, working: Path):
         """When doc is None, writer.write should still be attempted and fail."""
         result: FinalizeResult = finalize_step(cfg, None, working, _FailingWriter(), sink)

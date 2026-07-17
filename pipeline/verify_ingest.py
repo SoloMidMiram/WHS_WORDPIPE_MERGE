@@ -1,29 +1,26 @@
 #!/usr/bin/env python3
-"""Compatibility wrapper for the canonical Chronicle verify-ingest CLI."""
+"""
+[DEPRECATED] Thin wrapper — delegates to wordpipe.chronicle.cli.verify_ingest.
+
+This file is kept for backward compatibility. New code should import
+from wordpipe.chronicle.verify_ingest or run wordpipe.chronicle.cli.verify_ingest directly.
+
+See docs/engineering/CHRONICLE_CANONICAL_DECISION.md for migration details.
+"""
 
 from __future__ import annotations
 
 import sys
 import warnings
-from pathlib import Path
-from typing import Sequence
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-if str(REPO_ROOT) not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT))
-
-from wordpipe.chronicle.cli.verify_ingest import main as _main
-
-
-def main(argv: Sequence[str] | None = None) -> int:
-    warnings.warn(
-        "pipeline/verify_ingest.py is deprecated. Use python -m "
-        "wordpipe.chronicle.cli.verify_ingest instead.",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    return _main(argv)
-
+warnings.warn(
+    "pipeline/verify_ingest.py is deprecated. "
+    "Use wordpipe.chronicle.cli.verify_ingest instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 if __name__ == "__main__":
+    from wordpipe.chronicle.cli.verify_ingest import main
+
     sys.exit(main())

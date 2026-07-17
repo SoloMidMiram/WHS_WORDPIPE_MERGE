@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "run_id": "phase17_event_provenance_repeatability",
+  "previous_run_id": "phase16_event_lineage_validation",
+  "previous_run_path": "..\\phase16_event_lineage_validation",
+  "status": "COMPARED",
+  "comparisons": [
+    {
+      "metric": "staged_event_count",
+      "current": 50.0,
+      "previous": 50.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "merged_event_count",
+      "current": 50.0,
+      "previous": 50.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "events_with_theme_tags",
+      "current": 50.0,
+      "previous": 50.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "theme_tag_percent",
+      "current": 100.0,
+      "previous": 100.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "warning_count",
+      "current": 0.0,
+      "previous": 0.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "error_count",
+      "current": 0.0,
+      "previous": 0.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "duplicate_conflict_count",
+      "current": 0.0,
+      "previous": 0.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "runner_timing_seconds",
+      "current": 4.005633,
+      "previous": 6.100509,
+      "delta": -2.0948759999999993
+    }
+  ]
+}

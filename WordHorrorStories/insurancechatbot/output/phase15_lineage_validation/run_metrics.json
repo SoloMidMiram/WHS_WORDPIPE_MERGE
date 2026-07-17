@@ -1,0 +1,62 @@
+{
+  "input_file_count": 3,
+  "input_total_bytes": 195293,
+  "input_total_lines": 3285,
+  "input_dir": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\input",
+  "output_dir": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\output\\phase15_lineage_validation\\staged_input",
+  "generated_at": "2026-07-17T14:20:20",
+  "candidate_commit_headings": 169,
+  "candidate_roadmap_sections": 15,
+  "candidate_digest_sections": 16,
+  "candidate_total_sections": 200,
+  "staged_event_count": 200,
+  "extraction_coverage_percent": 100.0,
+  "staged_files": [
+    "01_commit_history.md",
+    "02_project_digest.md",
+    "03_roadmap.md"
+  ],
+  "source_lineage": [
+    {
+      "source_file": "Commit history.md",
+      "staged_file": "01_commit_history.md",
+      "candidate_count": 169,
+      "staged_event_count": 169
+    },
+    {
+      "source_file": "combined_git_history_digest (2).md",
+      "staged_file": "02_project_digest.md",
+      "candidate_count": 16,
+      "staged_event_count": 16
+    },
+    {
+      "source_file": "ROADMAP.md",
+      "staged_file": "03_roadmap.md",
+      "candidate_count": 15,
+      "staged_event_count": 15
+    }
+  ],
+  "topic": "insurancechatbot",
+  "pipeline_wall_clock": "TotalSeconds : 7.8753987000091",
+  "merged_event_count": 200,
+  "tagged_event_count": 200,
+  "events_with_theme_tags": 194,
+  "duplicate_conflict_count": 0,
+  "warning_count": 0,
+  "error_count": 0,
+  "output_files": {
+    "pipeline\\appendix\\event_index.md": 43217,
+    "pipeline\\appendix\\link_registry.md": 279,
+    "pipeline\\appendix\\source_manifest.md": 381,
+    "pipeline\\appendix\\theme_index.md": 106564,
+    "pipeline\\chronicle_tagged.md": 226889,
+    "pipeline\\chronicle_tagged.tagged.json": 49058,
+    "pipeline\\merged.duplicates.json": 2,
+    "pipeline\\merged.md": 210646,
+    "pipeline\\normalised\\01_commit_history.md": 92031,
+    "pipeline\\normalised\\02_project_digest.md": 45637,
+    "pipeline\\normalised\\03_roadmap.md": 65205
+  },
+  "theme_tag_percent": 97.0,
+  "runner_timing_seconds": 7.875399
+}

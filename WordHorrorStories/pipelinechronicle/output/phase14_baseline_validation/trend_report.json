@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "run_id": "phase14_baseline_validation",
+  "previous_run_id": null,
+  "previous_run_path": null,
+  "status": "NO_PREVIOUS_RUN",
+  "comparisons": [
+    {
+      "metric": "staged_event_count",
+      "current": 50.0,
+      "previous": null,
+      "delta": null
+    },
+    {
+      "metric": "merged_event_count",
+      "current": 50.0,
+      "previous": null,
+      "delta": null
+    },
+    {
+      "metric": "events_with_theme_tags",
+      "current": 50.0,
+      "previous": null,
+      "delta": null
+    },
+    {
+      "metric": "theme_tag_percent",
+      "current": 100.0,
+      "previous": null,
+      "delta": null
+    },
+    {
+      "metric": "warning_count",
+      "current": 0.0,
+      "previous": null,
+      "delta": null
+    },
+    {
+      "metric": "error_count",
+      "current": 0.0,
+      "previous": null,
+      "delta": null
+    },
+    {
+      "metric": "duplicate_conflict_count",
+      "current": 0.0,
+      "previous": null,
+      "delta": null
+    },
+    {
+      "metric": "runner_timing_seconds",
+      "current": 10.713333,
+      "previous": null,
+      "delta": null
+    }
+  ]
+}

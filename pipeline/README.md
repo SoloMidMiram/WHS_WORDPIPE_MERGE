@@ -1,6 +1,6 @@
 # Chronicle Pipeline — `pipeline/`
 
-> **Purpose:** Automated chronicle processing: raw deep-search files → normalised → merged → categorised → indexed.
+> **Purpose:** Automated chronicle processing: raw or staged topic files → normalised → merged → categorised → indexed.
 > **Date:** 2026-02-14 (Jalali: 1404-11-25)
 > **Status:** Working code — see `CODEX_WORKING.md` for full reference and known issues.
 
@@ -20,6 +20,17 @@
 
 # Categorize only (skip index generation)
 .\chain.ps1 -InputDir "path/to/raw/files" -OutputDir "output/" -SkipIndex
+```
+
+For source material that is not already shaped like dated Chronicle events,
+prefer the generic topic runner. It stages the topic through a registered
+adapter, runs `chain.ps1`, captures logs/performance, writes run metrics, emits
+trend reports, and records ontology evidence:
+
+```powershell
+python tools\run_topic_report.py `
+  --manifest WordHorrorStories\insurancechatbot\topic_manifest.json `
+  --run-id phase13_trend_validation
 ```
 
 ## Output Files
@@ -55,6 +66,13 @@
 All 5 stages are complete. `ingest.py`, `merge.py`, and `verify_ingest.py` were copied from `tools/pipeline-chronicle/` (byte-identical, SHA256 verified). `categorize.py` and `chain.ps1` are v2 refactored versions with additional features (negative keywords, `--dry-run`, Stage 5 index). `index.py`, `themes.json`, `index_config.json`, and `templates/` are new.
 
 The pipeline is now **runnable end-to-end** from `pipeline/`.
+
+Latest generic topic-runner evidence:
+`WordHorrorStories/insurancechatbot/output/phase13_trend_validation/RUN_SUMMARY.md`
+records 3 input files, 200 staged events, 200 merged events, 194 events with
+theme tags, 0 warnings/errors, and 6.51 seconds wall-clock time. The same run
+also writes `trend_report.json`, `trend_report.md`, `source_attribution.json`,
+`topic_run_manifest.json`, and `topic_run_ontology.json`.
 
 ## Tests
 

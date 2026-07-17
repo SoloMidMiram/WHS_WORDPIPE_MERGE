@@ -1,0 +1,104 @@
+{
+  "input_file_count": 5,
+  "input_total_bytes": 68646,
+  "input_total_lines": 1511,
+  "input_dir": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\_ARCHIVE\\pipeline-chronicle",
+  "output_dir": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\pipelinechronicle\\output\\phase17_event_provenance_repeatability\\staged_input",
+  "generated_at": "2026-07-17T18:54:26",
+  "adapter": "prepare_generic_markdown_chronicle",
+  "candidate_total_sections": 50,
+  "staged_event_count": 50,
+  "extraction_coverage_percent": 100.0,
+  "staged_files": [
+    "01_ARCHIVE_REPORT.md",
+    "02_PIPELINE_PLAN.md",
+    "03_README.md",
+    "04_REVIEW_PLAN.md",
+    "05_ROADMAP.md"
+  ],
+  "file_metrics": {
+    "ARCHIVE_REPORT.md": {
+      "candidates": 11,
+      "staged": 11,
+      "staged_filename": "01_ARCHIVE_REPORT.md"
+    },
+    "PIPELINE_PLAN.md": {
+      "candidates": 12,
+      "staged": 12,
+      "staged_filename": "02_PIPELINE_PLAN.md"
+    },
+    "README.md": {
+      "candidates": 10,
+      "staged": 10,
+      "staged_filename": "03_README.md"
+    },
+    "REVIEW_PLAN.md": {
+      "candidates": 6,
+      "staged": 6,
+      "staged_filename": "04_REVIEW_PLAN.md"
+    },
+    "ROADMAP.md": {
+      "candidates": 11,
+      "staged": 11,
+      "staged_filename": "05_ROADMAP.md"
+    }
+  },
+  "source_lineage": [
+    {
+      "source_file": "ARCHIVE_REPORT.md",
+      "staged_file": "01_ARCHIVE_REPORT.md",
+      "candidate_count": 11,
+      "staged_event_count": 11
+    },
+    {
+      "source_file": "PIPELINE_PLAN.md",
+      "staged_file": "02_PIPELINE_PLAN.md",
+      "candidate_count": 12,
+      "staged_event_count": 12
+    },
+    {
+      "source_file": "README.md",
+      "staged_file": "03_README.md",
+      "candidate_count": 10,
+      "staged_event_count": 10
+    },
+    {
+      "source_file": "REVIEW_PLAN.md",
+      "staged_file": "04_REVIEW_PLAN.md",
+      "candidate_count": 6,
+      "staged_event_count": 6
+    },
+    {
+      "source_file": "ROADMAP.md",
+      "staged_file": "05_ROADMAP.md",
+      "candidate_count": 11,
+      "staged_event_count": 11
+    }
+  ],
+  "event_lineage_file": "event_lineage.json",
+  "topic": "pipelinechronicle",
+  "pipeline_wall_clock": "TotalSeconds : 4.005633100008708",
+  "merged_event_count": 50,
+  "tagged_event_count": 50,
+  "events_with_theme_tags": 50,
+  "duplicate_conflict_count": 0,
+  "warning_count": 0,
+  "error_count": 0,
+  "output_files": {
+    "pipeline\\appendix\\event_index.md": 9473,
+    "pipeline\\appendix\\link_registry.md": 240,
+    "pipeline\\appendix\\source_manifest.md": 375,
+    "pipeline\\appendix\\theme_index.md": 24276,
+    "pipeline\\chronicle_tagged.md": 77488,
+    "pipeline\\chronicle_tagged.tagged.json": 12166,
+    "pipeline\\merged.duplicates.json": 2,
+    "pipeline\\merged.md": 72542,
+    "pipeline\\normalised\\01_ARCHIVE_REPORT.md": 16598,
+    "pipeline\\normalised\\02_PIPELINE_PLAN.md": 11883,
+    "pipeline\\normalised\\03_README.md": 17719,
+    "pipeline\\normalised\\04_REVIEW_PLAN.md": 11249,
+    "pipeline\\normalised\\05_ROADMAP.md": 13606
+  },
+  "theme_tag_percent": 100.0,
+  "runner_timing_seconds": 4.005633
+}

@@ -92,6 +92,7 @@ Authoritative docs reconciled:
 2. `pytest tests -q`
 3. `docs_link_check.py`
 4. `security_scan.py --fail-on-findings`
+5. `check_root_layout.py --root .` (added by the 2026-07-16 organization pass)
 
 Matrix: `windows-latest`, Python 3.10 and 3.11. No `.[docx]` required — tests use fake deps.
 

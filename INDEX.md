@@ -1,7 +1,8 @@
 # 📇 Project File Index
 
-> **Purpose:** Complete file map of the repository — every tracked file, its kind, and its role.
+> **Purpose:** Curated map of canonical files, subsystems, evidence areas, and governance artifacts.
 > **Generated:** 2026-02-14 (Jalali: 1404-11-25)
+> **Last synchronized:** 2026-07-17 (Jalali: 1405-04-26)
 > **Ontology Ref:** See `ONTOLOGY_MODEL.md` for entity classification.
 
 ---
@@ -30,11 +31,14 @@
 | `INDEX.md` | 📄 Doc | File index | This file — full project file map |
 | `PLAN.md` | 📄 Doc | Plan log | Immutable log of intentions and completions |
 | `README.md` | 📄 Doc | Project entrypoint | Top-level README with quickstart |
+| `ROOT_ORGANIZATION.md` | 📄 Doc | Root policy | Root allowlist, placement rules, evidence/output policy, and enforcement command |
+| `REPO_ORGANIZATION_PLAN.md` | 📄 Doc | Organization plan | Historical modularization intent with current status annotations |
 | `VERIFICATION.md` | 📄 Doc | Verification plan | Cross-reference factual claims against codebase evidence |
 | `WORKSPACE_OVERVIEW.md` | 📄 Doc | Workspace manual | Copy-only merge workspace, inputs, outputs, evidence policy |
 | `pyproject.toml` | ⚙️ Config | Package config | Project metadata, extras, build system |
 | `.gitignore` | ⚙️ Config | Git ignore rules | Ignored patterns for pycache, secrets, environments |
 | `.env.example` | ⚙️ Config | Environment template | Placeholder for env vars (no real keys) |
+| `AGENTS.md` | 📄 Doc | Agent protocol | Evidence labels, context inspection, collision checks, and preservation rules |
 
 ### Archived Root Docs (moved to `_ARCHIVE/root-docs/`)
 
@@ -69,6 +73,12 @@
 | `docs/TRACELEDGER_INTEGRATION_CONTRACT.md` | 📄 Doc | Integration contract | EventSink API, run report envelope |
 | `docs/DOC_STYLE_GUIDE.md` | 📄 Doc | Style guide | Documentation conventions |
 | `docs/DUPLICATE_POLICY.md` | 📄 Doc | Duplicate policy | Tiered duplicate governance |
+| `docs/ITERATIVE_PERFORMANCE_CHECK_TEMPLATE.md` | 📄 Doc | Performance template | Topic-neutral report run metrics and iteration checklist |
+| `docs/PHASE13_GENERIC_TOPIC_REPORT_RUNNER_ROADMAP.md` | 📄 Doc | Phase roadmap | Generic topic runner, performance trends, and ontology-spine plan |
+| `docs/PHASE14_SECOND_TOPIC_ONTOLOGY_READINESS.md` | 📄 Doc | Phase roadmap | Second-topic evidence, genericity remediation, and Phase 15 readiness |
+| `docs/PHASE15_PROJECT_SEMANTIC_ONTOLOGY_DESIGN.md` | 📄 Doc | Phase design | Project Phase 15 provenance maturity levels and semantic decision gate |
+| `docs/PHASE16_EVENT_IDENTITY_AND_SECTION_PROVENANCE.md` | 📄 Doc | Phase design | Section→SourceEvent→ReportEvent sidecars and ontology migration gate |
+| `docs/PHASE17_EVENT_PROVENANCE_SURVIVOR_AND_REPEATABILITY.md` | 📄 Doc | Phase design | Survivor integrity and Phase 16↔17 stable-id gate |
 
 ### docs/architecture/
 
@@ -86,6 +96,8 @@
 | `docs/engineering/CHRONICLE_CANONICAL_DECISION.md` | 📄 Doc | chronicle decision | Canonical source location for chronicle pipeline logic |
 | `docs/engineering/REPOSITORY_BOUNDARIES.md` | 📄 Doc | Boundary guide | Directory classification, packaging and pytest rules, import boundaries |
 | `docs/engineering/P0_P2_VALIDATION_REPORT.md` | 📄 Doc | Validation report | P0–P2 remediation stages, claim register, CI readiness (2026-07-09) |
+| `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md` | 📄 Doc | Alignment audit | Phase-by-phase evidence labels, corrected flaw claims, and outstanding architecture debt |
+| `docs/engineering/PHASE13_17_COMMIT_DRAFT.md` | 📄 Doc | Commit draft | Verified working-tree scope, Phase 13–17 trace map, staging boundaries, and commit messages |
 
 ### docs/operations/
 
@@ -120,6 +132,13 @@
 | `tools/jalali.py` | 🐍 Source | Shared lib | Gregorian-to-Jalali conversion |
 | `tools/docs_link_check.py` | 🐍 Source | Validation | Check doc cross-references |
 | `tools/security_scan.py` | 🐍 Source | Validation | High-confidence secret pattern scanning |
+| `tools/check_root_layout.py` | 🐍 Source | Validation | Enforce the documented repository-root allowlist |
+| `tools/check_input_catalog.py` | 🐍 Source | Validation | Validate canonical input layout, hashes, duplicate declarations, and legacy-path absence |
+| `tools/check_architecture_boundaries.py` | 🐍 Source | Validation | Enforce narrow static production import directions with a reviewed path-role registry; no active v1 bypasses |
+| `tools/prepare_insurancechatbot_chronicle.py` | 🐍 Source | Topic adapter | Converts InsuranceChatbot commit/roadmap/digest Markdown into Chronicle-compatible staged events and run summaries |
+| `tools/prepare_generic_markdown_chronicle.py` | 🐍 Source | Topic adapter | Converts `##` Markdown sections into dated Chronicle events |
+| `tools/run_topic_report.py` | 🐍 Source | Topic runner | Manifest-driven prepare/pipeline/summarize/trend/ontology orchestration with prepare-metrics contract and lineage-aware attribution |
+| `tools/compare_event_provenance_stability.py` | 🐍 Source | Provenance check | Compares Phase 16/17 SourceEvent and ReportEvent mappings and writes only to a separately reserved evidence directory |
 
 ---
 
@@ -266,12 +285,25 @@
 
 ---
 
+## `inputs/` — Canonical Corpus Inputs
+
+| Path | Kind | Role | Description |
+|------|------|------|-------------|
+| `inputs/catalog.json` | ⚙️ Config | Provenance catalog | SHA-256, size, corpus, format, and source classification for 19 active inputs |
+| `inputs/chatgpt-chronicle/markdown/` | 📊 Evidence | Source corpus | Established 16-file Chronicle input set; duplicate/derived members remain catalogued |
+| `inputs/insurancechatbot/markdown/` | 📊 Evidence | Source corpus | Three sources consumed by the InsuranceChatbot adapter |
+| `inputs/README.md` | 📄 Doc | Input policy | Canonical placement and source-DOCX policy |
+
+---
+
 ## `WordHorrorStories/` — Content Archive
 
 | Path | Kind | Role | Description |
 |------|------|------|-------------|
 | `WordHorrorStories/autobiography/` | 🗃️ Archive | Content | Autobiography content |
-| `WordHorrorStories/chatgpt-chronicle/` | 🗃️ Archive | Content | ChatGPT chronicle (book, sources, appendix) |
+| `WordHorrorStories/chatgpt-chronicle/` | 🗃️ Archive | Content | ChatGPT chronicle book, source-disposition notes, and appendix; active inputs are under `inputs/` |
+| `WordHorrorStories/insurancechatbot/` | 📊 Evidence | Topic run | InsuranceChatbot manifest, theme config, staged report outputs, and performance summaries |
+| `WordHorrorStories/pipelinechronicle/` | 📊 Evidence | Topic run | Second-topic manifest, themes, controlled runs, attribution, trends, and ontology evidence |
 | `WordHorrorStories/instructions/` | 🗃️ Archive | Content | Instructions |
 | `WordHorrorStories/legacy/` | 🗃️ Archive | Legacy | Legacy content from WHS |
 | `WordHorrorStories/legacy/LEGACY_INDEX.md` | 📄 Doc | Legacy index | Legacy file index for WHS |
@@ -297,6 +329,7 @@
 | `_ARCHIVE/logs/consistency_report.json` | 📊 Evidence | Report | Consistency check |
 | `_ARCHIVE/logs/immutability_report.json` | 📊 Evidence | Report | Immutability check |
 | `_ARCHIVE/raw_zips/` | 🗃️ Archive | Raw | Original snapshot zips |
+| `_ARCHIVE/evidence/generated-reports/` | 📊 Evidence | Generated reports | Preserved DOCX reports formerly placed at repository root |
 
 ---
 
@@ -373,6 +406,16 @@
 |------|------|------|-------------|
 | `tests/test_import_safety.py` | 🔬 Test | Import safety | Verifies wordpipe imports succeed without optional deps |
 | `tests/test_pipeline_chronicle.py` | 🔬 Test | chronicle regression | 59 tests for ingest/merge/categorize/verify logic |
+| `tests/test_prepare_insurancechatbot_chronicle.py` | 🔬 Test | topic adapter | Verifies commit heading parsing, fallback dates, mojibake cleanup, and staged-event compatibility |
+| `tests/test_prepare_generic_markdown_chronicle.py` | 🔬 Test | topic adapter | Verifies `##` event boundaries, date headings, generic summaries, and ingest compatibility |
+| `tests/test_run_topic_report.py` | 🔬 Test | topic runner | Manifest, registry, metrics contract, lineage attribution, trends, and ontology evidence |
+| `tests/test_root_layout.py` | 🔬 Test | governance | Verifies the root allowlist and rejection of misplaced outputs |
+| `tests/test_input_catalog.py` | 🔬 Test | governance | Verifies input hashes, layout, legacy-path prevention, and catalog completeness |
+| `tests/test_architecture_boundaries.py` | 🔬 Test | architecture | Verifies current-tree boundaries, forbidden edges, path-role registry behavior, and TYPE_CHECKING exclusions |
+| `tests/test_phase16_event_identity_characterization.py` | 🔬 Test | event identity | Characterizes Chronicle event extraction, normalization, hashing, and keep-both behavior |
+| `tests/test_phase16_event_lineage_runner.py` | 🔬 Test | event provenance | Verifies event-lineage preparation, runner gates, correlation, and summaries |
+| `tests/test_phase17_survivor_verification.py` | 🔬 Test | survivor integrity | Verifies merge-note-aware actual survivor membership and fail-closed ambiguity handling |
+| `tests/test_phase17_provenance_stability.py` | 🔬 Test | repeatability | Verifies stable-id comparison, drift reporting, collision protection, and comparator exits |
 | `tests/README.md` | 📄 Doc | Test readme | Authoritative test run instructions |
 
 ## `scripts/` — Executable Scripts (not packaged)
@@ -385,6 +428,7 @@
 | `scripts/ai/reorganize.py` | 🐍 Source | AI reorganize | Legacy DOCX reorganize experiment |
 | `scripts/ai/ailoader.py` | 🐍 Source | AI loader | Legacy provider loader script |
 | `scripts/verify_changes.py` | 🐍 Source | Verification | Change verification utility |
+| `scripts/reporting/` | 🐍 Source | Report utilities | DOCX builders and diagnostics formerly stored in `_scripts/`; outputs default to `_WORK/generated-reports/` |
 
 ---
 
@@ -400,6 +444,12 @@
 
 | Date (Gregorian) | Date (Jalali) | Change |
 |------------------|---------------|--------|
+| 2026-07-17 | 1405-04-26 | Added the Phase 13–17 working-tree commit draft and synchronized implementation, test, and evidence mappings |
+| 2026-07-17 | 1405-04-26 | Added Phase 17 survivor integrity (`merged-note-aware-v1`) and Phase 16↔17 stable-id evidence |
+| 2026-07-17 | 1405-04-26 | Added Phase 16 section provenance sidecars (`event-lineage-v1` / `event-correlation-v1`) and controlled-run evidence |
+| 2026-07-16 | 1405-04-25 | Added InsuranceChatbot topic adapter evidence, iterative performance check template, and docs sync for 200-event report run |
+| 2026-07-16 | 1405-04-25 | Added Phase 14 alignment audit and root organization enforcement; moved report scripts/outputs to owned directories |
+| 2026-07-17 | 1405-04-26 | Added Phase 15 provenance closeout, canonical input catalog, collision guard, and agent evidence protocol |
 | 2026-02-14 | 1404-11-25 | Added pipeline/ section (Phase 9b: 11 files + 4 templates); archived 6 superseded root docs to _ARCHIVE/root-docs/; added docs/OBSOLETE_DOCS.md; added VERIFICATION.md, WORKSPACE_OVERVIEW.md |
 | 2026-02-14 | 1404-11-25 | Initial index created |
 

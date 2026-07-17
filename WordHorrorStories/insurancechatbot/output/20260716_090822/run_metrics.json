@@ -1,0 +1,39 @@
+{
+  "input_file_count": 3,
+  "input_total_bytes": 195293,
+  "input_total_lines": 3285,
+  "input_dir": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\input",
+  "output_dir": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\output\\20260716_090822\\staged_input",
+  "generated_at": "2026-07-16T09:08:25",
+  "candidate_commit_headings": 169,
+  "candidate_roadmap_sections": 15,
+  "candidate_digest_sections": 16,
+  "candidate_total_sections": 200,
+  "staged_event_count": 200,
+  "extraction_coverage_percent": 100.0,
+  "staged_files": [
+    "01_commit_history.md",
+    "02_project_digest.md",
+    "03_roadmap.md"
+  ],
+  "pipeline_wall_clock": "Ticks             : 35944343\nDays              : 0\nHours             : 0\nMilliseconds      : 594\nMicroseconds      : 434\nNanoseconds       : 300\nMinutes           : 0\nSeconds           : 3\nTotalDays         : 4.16022488425926E-05\nTotalHours        : 0.000998453972222222\nTotalMilliseconds : 3594.4343\nTotalMicroseconds : 3594434.3\nTotalNanoseconds  : 3594434300\nTotalMinutes      : 0.0599072383333333\nTotalSeconds      : 3.5944343",
+  "merged_event_count": 216,
+  "tagged_event_count": 216,
+  "events_with_theme_tags": 210,
+  "duplicate_conflict_count": 0,
+  "warning_count": 0,
+  "error_count": 0,
+  "output_files": {
+    "pipeline\\appendix\\event_index.md": 47132,
+    "pipeline\\appendix\\link_registry.md": 279,
+    "pipeline\\appendix\\source_manifest.md": 381,
+    "pipeline\\appendix\\theme_index.md": 115144,
+    "pipeline\\chronicle_tagged.md": 231065,
+    "pipeline\\chronicle_tagged.tagged.json": 53678,
+    "pipeline\\merged.duplicates.json": 2,
+    "pipeline\\merged.md": 213595,
+    "pipeline\\normalised\\01_commit_history.md": 93774,
+    "pipeline\\normalised\\02_project_digest.md": 45830,
+    "pipeline\\normalised\\03_roadmap.md": 65130
+  }
+}

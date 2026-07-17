@@ -267,7 +267,7 @@ python index.py --input output/categorized.md --output-dir output/
 | Review & Remediation | [`REVIEW_PLAN.md`](REVIEW_PLAN.md) |
 | Full Spec | [`README.md`](README.md) |
 | Ontology | [`ontology.json`](../../ontology.json) |
-| Raw Sources | `WordHorrorStories/chatgpt-chronicle/sources/raw/chatgpt_mds/` |
+| Raw Sources | `inputs/chatgpt-chronicle/markdown/` |
 | Normalised Output | `WordHorrorStories/chatgpt-chronicle/sources/normalised/` |
 
 ---

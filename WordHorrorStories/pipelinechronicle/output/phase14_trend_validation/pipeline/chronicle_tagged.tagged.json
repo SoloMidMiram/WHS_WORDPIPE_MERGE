@@ -1,0 +1,533 @@
+[
+  {
+    "date": "2022-01-01",
+    "title": "ARCHIVE REPORT - 6. Test Results (at Time of Archive",
+    "themes": [
+      "Categorize/Themes",
+      "Merge/Dedup",
+      "Orchestration/CLI"
+    ]
+  },
+  {
+    "date": "2025-06-01",
+    "title": "ROADMAP - 🎯 Goal",
+    "themes": [
+      "Categorize/Themes",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Planning/Roadmap"
+    ]
+  },
+  {
+    "date": "2025-06-01",
+    "title": "ROADMAP - 📋 Tool Status",
+    "themes": [
+      "Categorize/Themes",
+      "Index/Appendix",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Planning/Roadmap",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2025-06-01",
+    "title": "ROADMAP - ✅ Completed: `ingest.py` (Milestone A1) — Final Implementation",
+    "themes": [
+      "Index/Appendix",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Planning/Roadmap",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2025-06-01",
+    "title": "ROADMAP - ✅ Completed: `merge.py` (Milestone A2–A3",
+    "themes": [
+      "Categorize/Themes",
+      "Index/Appendix",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Planning/Roadmap",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2025-06-01",
+    "title": "ROADMAP - ✅ Completed: `categorize.py` (Milestone B1–B3",
+    "themes": [
+      "Archive/Refactor",
+      "Categorize/Themes",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2025-06-01",
+    "title": "ROADMAP - ⬜ Future: `categorize.py` (Milestone B1–B3",
+    "themes": [
+      "Categorize/Themes",
+      "Merge/Dedup"
+    ]
+  },
+  {
+    "date": "2025-06-01",
+    "title": "ROADMAP - ⬜ Future: `index.py` (Milestone B2–B4",
+    "themes": [
+      "Categorize/Themes",
+      "Index/Appendix",
+      "Ingest/Normalise",
+      "Merge/Dedup"
+    ]
+  },
+  {
+    "date": "2025-06-01",
+    "title": "ROADMAP - ⬜ Future: `reference.py` (Milestone C–E",
+    "themes": [
+      "Merge/Dedup"
+    ]
+  },
+  {
+    "date": "2025-06-01",
+    "title": "ROADMAP - ⬜ Future: `chain.sh` (Milestone All",
+    "themes": [
+      "Categorize/Themes",
+      "Index/Appendix",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI"
+    ]
+  },
+  {
+    "date": "2025-06-01",
+    "title": "ROADMAP - 🔗 Cross-References",
+    "themes": [
+      "Ingest/Normalise",
+      "Planning/Roadmap"
+    ]
+  },
+  {
+    "date": "2025-08-06",
+    "title": "README - 🚦 Build Order (Prioritised",
+    "themes": [
+      "Archive/Refactor",
+      "Categorize/Themes",
+      "Index/Appendix",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Planning/Roadmap"
+    ]
+  },
+  {
+    "date": "2025-08-06",
+    "title": "README - 📋 Example End-to-End Workflow",
+    "themes": [
+      "Archive/Refactor",
+      "Categorize/Themes",
+      "Index/Appendix",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "ARCHIVE REPORT - 1. Overview",
+    "themes": [
+      "Archive/Refactor",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "ARCHIVE REPORT - 2. Tool Inventory",
+    "themes": [
+      "Archive/Refactor",
+      "Categorize/Themes",
+      "Index/Appendix",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Planning/Roadmap",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "ARCHIVE REPORT - 3. Architecture & Design",
+    "themes": [
+      "Categorize/Themes",
+      "Index/Appendix",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "ARCHIVE REPORT - 4. CLI Signatures (Complete Reference",
+    "themes": [
+      "Categorize/Themes",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "ARCHIVE REPORT - 5. Known Issues & Critique (at Time of Archive",
+    "themes": [
+      "Archive/Refactor",
+      "Categorize/Themes",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Planning/Roadmap",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "ARCHIVE REPORT - 7. Ontology Cross-Reference",
+    "themes": [
+      "Categorize/Themes",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "ARCHIVE REPORT - 8. File Checksums",
+    "themes": [
+      "Archive/Refactor",
+      "Categorize/Themes",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "ARCHIVE REPORT - 9. Restoration Instructions",
+    "themes": [
+      "Archive/Refactor",
+      "Categorize/Themes",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "ARCHIVE REPORT - 10. Post-Archival Developments (Phase 9b",
+    "themes": [
+      "Archive/Refactor",
+      "Categorize/Themes",
+      "Index/Appendix",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "ARCHIVE REPORT - 11. Change Log",
+    "themes": [
+      "Archive/Refactor",
+      "Categorize/Themes",
+      "Index/Appendix",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "README - 🧱 What This Is",
+    "themes": [
+      "Categorize/Themes",
+      "Index/Appendix",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "README - 📁 Directory Structure",
+    "themes": [
+      "Categorize/Themes",
+      "Index/Appendix",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "README - 🔧 Design Principles",
+    "themes": [
+      "Categorize/Themes",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "README - 🔗 Relationship to Existing Project Files",
+    "themes": [
+      "Categorize/Themes",
+      "Index/Appendix",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Planning/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "README - ⚙️ Shared Configuration: `config.json",
+    "themes": [
+      "Categorize/Themes",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "README - 🔗 Ontology Cross-Reference",
+    "themes": [
+      "Categorize/Themes",
+      "Index/Appendix",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "README - 📝 Change Log",
+    "themes": [
+      "Merge/Dedup",
+      "Planning/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "README - See Also",
+    "themes": [
+      "Index/Appendix",
+      "Merge/Dedup",
+      "Planning/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-02-14",
+    "title": "ROADMAP - 📝 Change Log",
+    "themes": [
+      "Categorize/Themes",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Planning/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "PIPELINE PLAN - 🎯 Design Principles",
+    "themes": [
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "PIPELINE PLAN - 📋 Stage Overview",
+    "themes": [
+      "Categorize/Themes",
+      "Index/Appendix",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Planning/Roadmap",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "PIPELINE PLAN - ✅ Stage 1: Ingestion (Complete",
+    "themes": [
+      "Archive/Refactor",
+      "Categorize/Themes",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "PIPELINE PLAN - Event: YYYY-MM-DD – Title",
+    "themes": [
+      "Merge/Dedup"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "PIPELINE PLAN - Event: YYYY-MM-DD – Another Title",
+    "themes": [
+      "Merge/Dedup",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "PIPELINE PLAN - ✅ Stage 2: Merge (Complete",
+    "themes": [
+      "Categorize/Themes",
+      "Merge/Dedup",
+      "Orchestration/CLI"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "PIPELINE PLAN - ✅ Stage 3: Categorisation (Complete",
+    "themes": [
+      "Archive/Refactor",
+      "Categorize/Themes",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "PIPELINE PLAN - ⬜ Stage 4: Indexing (Planned",
+    "themes": [
+      "Categorize/Themes",
+      "Index/Appendix",
+      "Ingest/Normalise",
+      "Merge/Dedup"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "PIPELINE PLAN - ⬜ Stage 5: Reference (Planned",
+    "themes": [
+      "Categorize/Themes",
+      "Merge/Dedup"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "PIPELINE PLAN - ⬜ Stage 6: Automation (Planned",
+    "themes": [
+      "Categorize/Themes",
+      "Index/Appendix",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "PIPELINE PLAN - 🔗 Cross-References",
+    "themes": [
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Planning/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "PIPELINE PLAN - 📝 Change Log",
+    "themes": [
+      "Categorize/Themes",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Planning/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "REVIEW PLAN - 1. Review Summary",
+    "themes": [
+      "Archive/Refactor",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Planning/Roadmap",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "REVIEW PLAN - 2. Prioritised Remediation Plan",
+    "themes": [
+      "Categorize/Themes",
+      "Index/Appendix",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Planning/Roadmap",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "REVIEW PLAN - 3. Detailed Issue Analysis",
+    "themes": [
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Planning/Roadmap",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "REVIEW PLAN - 4. Acceptance Criteria — P0/P1 Verification",
+    "themes": [
+      "Categorize/Themes",
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Planning/Roadmap",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "REVIEW PLAN - 5. Implementation Details",
+    "themes": [
+      "Ingest/Normalise",
+      "Merge/Dedup",
+      "Orchestration/CLI",
+      "Planning/Roadmap",
+      "Testing/Verification"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "REVIEW PLAN - 6. Change Log",
+    "themes": [
+      "Orchestration/CLI",
+      "Planning/Roadmap"
+    ]
+  }
+]

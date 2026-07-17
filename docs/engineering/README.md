@@ -8,10 +8,14 @@ This folder is the engineer-facing entrypoint for changing pipeline stages, veri
 - Before/after integration view: `docs/INTEGRATION_MAP_BEFORE_AFTER.md`
 - WordPipe modules/packages guide: `docs/engineering/MODULES_PACKAGES.md`
 - Repository boundaries: `docs/engineering/REPOSITORY_BOUNDARIES.md`
+- Current Phase 13–17 commit draft: `docs/engineering/PHASE13_17_COMMIT_DRAFT.md`
 
 ## Validation Checks
 - P0–P2 remediation report (stages, claims, commit map):
   - `docs/engineering/P0_P2_VALIDATION_REPORT.md`
+- Current implementation alignment and pending commit scope:
+  - `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`
+  - `docs/engineering/PHASE13_17_COMMIT_DRAFT.md`
 - Docs reference integrity:
   - `python tools/docs_link_check.py`
 - Secret scan (high confidence):

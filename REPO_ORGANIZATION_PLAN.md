@@ -3,6 +3,11 @@
 > **Date:** 2026-02-14 (Jalali: 1404-11-25)
 > **Purpose:** Comprehensive plan for goals, constraints, integrations, and modularization of the WHS WordPipe Merge repository.
 
+> **Current-status note (2026-07-16):** This file preserves the original
+> modularization intent. Current placement rules are authoritative in
+> `ROOT_ORGANIZATION.md`; implementation status and corrected historical flaw
+> claims are in `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`.
+
 ---
 
 ## 1. Ultimate Goal
@@ -11,6 +16,7 @@ Transform this workspace into a **maintainable, evidence-backed, ontology-ground
 
 - **`tools/`** evidence pipeline is reliable, portable, and independently runnable
 - **`wordpipe/`** is a clean, import-safe library consumable by TraceLedger
+- **Topic adapters** can stage non-Chronicle Markdown bundles into measurable report runs
 - **Documentation** is accurate, verifiable, and cross-referenced
 - **An ontological model** describes the project's structure, phases, claims, and evidence
 - **Journal and roadmap** anchor planning against disruption and chaos
@@ -29,6 +35,7 @@ Transform this workspace into a **maintainable, evidence-backed, ontology-ground
 | V6 | **Traceability** | Every phase, task, and decision links to a journal entry |
 | V7 | **Import safety** | `import wordpipe` must work with only stdlib available |
 | V8 | **Separation of concerns** | tools/ (pipeline) and wordpipe/ (library) are independent |
+| V9 | **Measured iteration** | Report quality changes are compared through stable run metrics, not impressions |
 
 ---
 
@@ -44,8 +51,8 @@ Transform this workspace into a **maintainable, evidence-backed, ontology-ground
 | C6 | _WORK/snapshot is immutable input | Must not modify source snapshot | All pipeline stages are copy-only from _WORK/ |
 | C7 | 60+ mirror pairs between active and snapshot | Confusion about authoritative version | INDEX.md and ONTOLOGY_MODEL.md document each pair |
 | C8 | 8 compatibility wrappers (re-exports) | Code duplication, maintenance burden | Documented in DUPLICATE_POLICY.md; plan to deprecate |
-| C9 | wordpipe/ai/ has fragile imports (`from logging_tools import evt`) | Breaks when module structure changes | Refactor to package-safe imports (Phase 4 of PLAN.md) |
-| C10 | wordpipe/orchestrator.py mixes 7+ responsibilities | Hard to test, maintain, or extend | Split into step modules (Phase 4 of PLAN.md) |
+| C9 | wordpipe/ai/ has fragile imports (`from logging_tools import evt`) | Breaks when module structure changes | **Superseded (1404-12-05):** AI scripts quarantined to scripts/ai/; wordpipe/ai/ is now a deprecation stub |
+| C10 | wordpipe/orchestrator.py mixes 7+ responsibilities | Hard to test, maintain, or extend | **Resolved (1404-11-25):** Split into wordpipe/steps/ step modules and wordpipe/orchestration/ orchestrator |
 
 ---
 
@@ -66,7 +73,7 @@ Transform this workspace into a **maintainable, evidence-backed, ontology-ground
 │  │  build_legacy_index │    │  orchestration/(runner)   │   │
 │  │  verify_integrity   │    │  cli/         (entry)     │   │
 │  │  orchestrate.py     │    │  plugins/     (registry)  │   │
-│  │  security_scan.py   │    │  ai/          (needs fix) │   │
+│  │  security_scan.py   │    │  ai/          (quarantined to scripts/) │   │
 │  │  pipeline_contracts │    │  pipeline/    (wrappers)  │   │
 │  │  tool_common.py     │    │  flatteners/  (wrappers)  │   │
 │  │  add_standard_hdr   │    │  events.py               │   │
@@ -98,18 +105,38 @@ wordpipe/plugins/    → interfaces
 
 tools/               → stdlib only (independent of wordpipe/)
                      → operates on _WORK/ and _ARCHIVE/
+topic adapters       → stdlib preferred; write staged inputs and metrics
+                     → call pipeline through operator commands, not imports
 ```
+
+### Topic Report Adapter Pattern
+
+Topic adapters are allowed when source Markdown is not already in Chronicle
+event format. They should:
+
+- keep raw topic input in the topic folder, usually `WordHorrorStories/<topic>/input/`
+- write staged Chronicle files under `WordHorrorStories/<topic>/output/<run_id>/staged_input/`
+- keep topic vocabulary in a topic-local theme config
+- record `prepare_metrics.json`, `run_metrics.json`, `RUN_SUMMARY.md`, and `run.log`
+- use `docs/ITERATIVE_PERFORMANCE_CHECK_TEMPLATE.md` to compare repeated runs
+
+Current evidence: the InsuranceChatbot adapter run at
+`WordHorrorStories/insurancechatbot/output/20260716_091000/` processed 3 input
+files into 200 merged events with 194 tagged events, 0 warnings/errors, and
+6.96s wall-clock time.
 
 ### Current Violations
 
 | Violation | Location | Impact |
 |-----------|----------|--------|
-| `from logging_tools import evt` (no package prefix) | wordpipe/ai/ailoader.py, helpers.py, reorganize.py | Breaks when imported from outside wordpipe/ai/ |
-| `from persiantools.jdatetime import JalaliDate` | wordpipe/ai/timefmt.py | External dependency at import time |
-| wordpipe/orchestrator.py has 7+ responsibilities | wordpipe/orchestrator.py | Hard to test, maintain, extend |
-| wordpipe/code_style.py has duplicate defs | wordpipe/code_style.py | Confusing which is authoritative |
-| wordpipe/logging_tools.py has os.makedirs() bug | wordpipe/logging_tools.py | Breaks for filename-only paths |
-| wordpipe/core/segment.py O(n^2) | wordpipe/core/segment.py | Slow on large documents |
+| `from logging_tools import evt` (no package prefix) | wordpipe/ai/ailoader.py, helpers.py, reorganize.py | **Stale:** AI scripts quarantined to scripts/ai/ (1404-12-05); wordpipe/ai/ is now a deprecation stub |
+| `from persiantools.jdatetime import JalaliDate` | wordpipe/ai/timefmt.py | **Stale:** AI scripts quarantined; timefmt.py moved to scripts/ai/ |
+| wordpipe/orchestrator.py has 7+ responsibilities | wordpipe/orchestrator.py | **Resolved:** Split into wordpipe/steps/ step modules and wordpipe/orchestration/ orchestrator |
+| wordpipe/code_style.py has duplicate defs | wordpipe/code_style.py | **Resolved:** one `style_code_blocks` definition remains |
+| wordpipe/logging_tools.py has os.makedirs() bug | wordpipe/logging_tools.py | **Superseded:** module is now a thin EventSink compatibility wrapper |
+| wordpipe/core/segment.py O(n^2) | wordpipe/core/segment.py | **Superseded:** core path is a deprecation stub; active adapter precomputes heading state in O(n) |
+| topic report runner combines multiple ontology responsibilities | tools/run_topic_report.py | **Outstanding:** split internally while preserving CLI/evidence contracts |
+| generated report scripts and DOCX files occupied root | `_scripts/`, root `*.docx` | **Resolved:** scripts moved to `scripts/reporting/`, evidence archived, root allowlist enforced |
 
 ---
 
@@ -140,10 +167,11 @@ TraceLedger provides an adapter. WordPipe never imports TraceLedger.
 | python-docx | wordpipe/adapters/docx/ | Optional (docx extra) |
 | openai | wordpipe/adapters/ai/openai_summarizer.py | Optional (openai extra) |
 | python-dotenv | wordpipe/cli/main.py | Optional (dotenv extra) |
-| persiantools | wordpipe/ai/timefmt.py | **Problem** — imported at module level |
+| persiantools | former wordpipe/ai/timefmt.py | **Superseded** — legacy AI scripts quarantined outside runtime package |
 | pywin32 | wordpipe/adapters/flatteners/com_flattener.py | Optional (win32 extra) |
 
-**Action:** Move `persiantools` import behind a lazy guard in `timefmt.py`.
+No runtime action remains for `timefmt.py`; new AI integrations use the
+interfaces/adapters boundary and lazy optional dependencies.
 
 ### 5.4 wordpipe/ Internal Module Boundaries
 
@@ -154,7 +182,7 @@ adapters/   → MAY import from interfaces/ and core/
 orchestration/ → MAY import from interfaces/, adapters/, core/
 cli/        → MAY import from orchestration/
 plugins/    → MAY import from interfaces/
-ai/         → SHOULD be refactored to use interfaces/ and adapters/
+ai/         → **Superseded (1404-12-05):** AI scripts quarantined to scripts/ai/; wordpipe/ai/ is a deprecation stub
 pipeline/   → LEGACY wrappers (to be deprecated)
 flatteners/ → LEGACY wrappers (to be deprecated)
 ```
@@ -171,6 +199,10 @@ flatteners/ → LEGACY wrappers (to be deprecated)
 | 1.2 | wordpipe/logging_tools.py | `os.makedirs()` with filename-only path | Guard: only mkdir when dirname is non-empty |
 | 1.3 | wordpipe/logging_tools.py | Duplicate imports | Remove duplicates |
 | 1.4 | wordpipe/ai/timefmt.py | `persiantools` imported at module level | Lazy import with fallback to Birashk algorithm (from tools/jalali.py) |
+
+**Current status:** 1.1 and 1.3 are fixed; 1.2 is superseded by the EventSink
+wrapper; 1.4 is superseded by quarantining legacy AI scripts. These are not
+active critical bugs.
 
 ### Phase 2: AI Module Refactor (P1) — Target: 1404/12/10
 
@@ -194,6 +226,10 @@ wordpipe/ai/
 - No `dotenv` auto-load at import time
 - Silent `except Exception: pass` blocks replaced with structured warnings via EventSink
 
+**Current status:** **SUPERSEDED.** Runtime AI contracts/adapters live under
+`wordpipe/interfaces/ai.py` and `wordpipe/adapters/ai/`; manual legacy scripts
+live under `scripts/ai/`.
+
 ### Phase 3: Split Orchestrator into Steps (P1) — Target: 1404/12/15
 
 Current: `wordpipe/orchestrator.py` `process_docx_v3()` does flattening, styling, segmentation, save, cleanup, TOC update, and telemetry.
@@ -215,6 +251,10 @@ wordpipe/steps/
 - `process_docx_v3` becomes a thin orchestrator that composes steps
 - No broad silent exception swallowing; failures become warnings/errors with context
 
+**Current status:** **VERIFIED COMPLETE.** `wordpipe/orchestrator.py` is a thin
+composition root delegating to `wordpipe/orchestration/pipeline.py`; focused
+orchestration and step tests cover fail-fast behavior.
+
 ### Phase 4: Tool Hardening (P1) — Target: 1404/12/20
 
 | Task | File | Issue | Fix |
@@ -223,12 +263,18 @@ wordpipe/steps/
 | 4.2 | tools/apply_legacy_reorg.py | No src_rel/dst_rel fields | Add relative path fields to relocation map |
 | 4.3 | tools/verify_integrity.py | Absolute paths in reports | Prefer *_rel resolved against --workspace-root |
 
+**Current status:** **OUTSTANDING / requires a separate evidence-pipeline
+audit.** Do not infer these flags or fields from the topic-runner work.
+
 ### Phase 5: Optimization (P2) — Target: 1404/12/25
 
 | Task | File | Issue | Fix |
 |------|------|-------|-----|
 | 5.1 | wordpipe/core/segment.py | O(n^2) heading context | Precompute heading state in one pass; reuse for segments |
 | 5.2 | tools/ (new) | No duplicate scanner | Create tools/duplicate_scan.py with tiered classification |
+
+**Current status:** 5.1 is **SUPERSEDED/VERIFIED** in the active DOCX adapter;
+5.2 remains **OUTSTANDING**.
 
 ### Phase 6: CI & Governance (P2) — Target: 1404/12/30
 
@@ -239,9 +285,16 @@ wordpipe/steps/
 | 6.3 | tools/duplicate_scan.py | Classify duplicates into expected_mirror, expected_boilerplate, actionable_duplicate |
 | 6.4 | Remote refs audit | Ensure no old branches expose sensitive keys |
 
+**Current status:** minimal CI exists and is verified. Separate runtime/evidence
+profiles, the duplicate scanner, and remote-ref audit remain **OUTSTANDING**.
+
 ---
 
-## 7. Directory Structure (Target)
+## 7. Directory Structure (Historical Target)
+
+This diagram is retained as planning history and contains names later archived
+or superseded. Use `ROOT_ORGANIZATION.md`,
+`docs/engineering/REPOSITORY_BOUNDARIES.md`, and `INDEX.md` for current layout.
 
 After all phases, the repository should look like:
 
@@ -351,6 +404,7 @@ These are thin re-exports for backward compatibility. Strategy:
 | G5 | tools/verify_integrity.py passes | Before release |
 | G6 | No duplicate headers in Python files | Every commit |
 | G7 | All internal markdown links resolve | Weekly |
+| G8 | Root contains only allowlisted governance/configuration entrypoints | Every commit |
 
 ---
 
@@ -375,7 +429,10 @@ python tools/docs_link_check.py
 python tools/orchestrate.py --root _WORK/snapshot
 
 # Tests
-python -m unittest discover -s tests -p "test_*.py" -v
+pytest -q
+
+# Root organization
+python tools/check_root_layout.py --root .
 ```
 
 ### Files to Read First
@@ -383,8 +440,8 @@ python -m unittest discover -s tests -p "test_*.py" -v
 | Order | File | Why |
 |-------|------|-----|
 | 1 | README.md | Friendly entry point |
-| 2 | PROJECT_INDEX.md | Navigation guide |
-| 3 | ROADMAP_1404-11-25.md | Consolidated goals |
+| 2 | INDEX.md | Navigation guide |
+| 3 | ROADMAP.md | Consolidated goals and outstanding labels |
 | 4 | PLAN.md | What needs doing |
 | 5 | VERIFICATION.md | What's been verified |
 

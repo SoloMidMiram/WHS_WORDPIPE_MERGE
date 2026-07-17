@@ -6,6 +6,147 @@
 
 ---
 
+## Project Phase 17 Survivor Integrity & Repeatability
+**Date:** 2026-07-17 (Jalali: 1405/04/26)
+**Phase:** Phase 17 — Event-Provenance Survivor Integrity and Repeatability
+**Ontology Ref:** ActivityPeriod, Evidence, Verification, Doc
+
+### Context
+Phase 16 proved locator→normalised identity and keep-both count parity, but
+`unmerged_source_event_count` was tautological and only one provenance run
+existed per topic.
+
+### What Was Done
+- Runner merge-note-aware survivor verification (`merged-note-aware-v1`) with
+  same-date confirming context; ambiguity fail-closed.
+- Stdlib comparator writing only into reserved `phase17_provenance_stability`
+  directories (exits 0/1/2); explicit Phase 16 baseline.
+- Paired `phase17_event_provenance_repeatability` runs; both STABLE vs Phase 16.
+- Design doc and diary sync; ontology remains aggregate 10/7.
+
+### Claims Verified
+- ICB 200/200/194; PC 50/50/50; survivor missing/unexpected 0; Phase 17 unmerged 0.
+- Stability exit 0 both topics; no topic-run post-mutation for stability artifacts.
+- Full suite: **231 passed** (`pytest -q`, 2026-07-17).
+- Phase 16 tree digests unchanged vs preflight (ICB `0fde0e97…`, PC `99606f4c…`).
+
+### Artifacts Produced
+- `docs/PHASE17_EVENT_PROVENANCE_SURVIVOR_AND_REPEATABILITY.md`
+- `tools/compare_event_provenance_stability.py`
+- Topic runs + reserved stability evidence under both `WordHorrorStories/*/output/`
+- `docs/engineering/PHASE13_17_COMMIT_DRAFT.md` records that the current Git
+  baseline predates Phase 13, maps the pending implementation/evidence, and
+  proposes guarded commit boundaries without creating a commit.
+
+---
+
+## Project Phase 16 Event Identity & Section Provenance
+**Date:** 2026-07-17 (Jalali: 1405/04/26)
+**Phase:** Phase 16 — Stable Event Identity and Section-Level Provenance
+**Ontology Ref:** ActivityPeriod, Evidence, Verification, Doc
+
+### Context
+File-level `source_lineage` could not answer which source section or commit locator supported each merged event. Marker protocols were rejected because HTML comments between staged bullets mutate preceding body hashes during Chronicle ingest.
+
+### What Was Done
+- Added permanent characterization tests for ingest/merge identity behavior.
+- Both registered adapters emit raw `event_lineage.json` plus `event_lineage_file` pointer (no topic/run_id/final IDs/hashes).
+- Runner finalizes `event-lineage-v1`, correlates post-pipeline fingerprints into `event-correlation-v1` before summarize, fails closed on provenance errors, and appends `## Event Provenance` to `RUN_SUMMARY.md`.
+- Documented the aggregate→individual ontology migration gate without emitting individual ReportEvent entities.
+- Produced controlled runs under `phase16_event_lineage_validation` for both topics.
+
+### Claims Made
+- Section→SourceEvent→ReportEvent provenance is complete as evidence sidecars.
+- Ontology spine remains aggregate ReportEvent (`report_event:<topic>:<run_id>`) with 10 entity / 7 relation types.
+- Broad topic-runner decomposition remains conditional on the exact published Phase 15 triggers.
+
+### Claims Verified
+- InsuranceChatbot: 200 lineage events, 200 merged, exactly 194 theme-bearing, correlation `unmerged_source_event_count=0`, empty `ambiguous_matches`, PASS.
+- PipelineChronicle: 50/50/50, PASS, trend COMPARED, same ontology invariants.
+
+### Artifacts Produced
+- `docs/PHASE16_EVENT_IDENTITY_AND_SECTION_PROVENANCE.md`
+- `event_lineage.json` / `event_correlation.json` under both Phase 16 run directories
+- Characterization and runner unit tests for Phase 16
+
+### Artifacts Consumed
+- Phase 15 lineage contracts and both registered prepare adapters
+- Chronicle `extract_events` / `compute_body_hash` for normalised fingerprints only
+
+### Verification
+- Import-safety and Phase 16 targeted group: **17 passed** after making blocked-dependency simulation independent of test collection order.
+- Full suite: **216 passed**.
+- Controlled artifacts were inspected read-only: InsuranceChatbot 200 lineage / 200 merged / 194 theme-bearing; PipelineChronicle 50/50/50; both `event-lineage-v1` and `event-correlation-v1`; empty ambiguity arrays; Event Provenance summary; aggregate ontology still 10/7.
+- No topic run was executed during closeout.
+
+### Result Summary
+Phase 16 sidecar schemas, registered-adapter gates, normalized fingerprint correlation, provenance failure path, and controlled evidence are implemented. The earlier full-suite failure was a test-isolation defect: Phase 16 characterization imports preloaded Chronicle dependencies before the import-safety test. The blocking helper now removes and restores those modules explicitly.
+
+The current `unmerged_source_event_count` remains a keep-both invariant derived from the normalized key set and merged heading-count parity, not independent actual-survivor membership. Only one provenance-enabled controlled run exists per topic. These limits block ontology individualization and define Phase 17 survivor-integrity/repeatability work.
+
+### Next Steps
+- Plan merge-note-aware actual survivor-key comparison without changing merge semantics.
+- Compare a fresh paired `phase17_event_provenance_repeatability` run against the Phase 16 baseline for exact stable-id mappings.
+- Keep ontology v2, semantic extraction, and broad decomposition blocked until the repeatability gate passes.
+
+---
+
+## Project Phase 15 Architecture Stability Gate
+**Date:** 2026-07-17 (Jalali: 1405/04/26)
+**Phase:** Phase 15 — Architecture Stability and Whole-Project Domain Vision
+**Ontology Ref:** ActivityPeriod, Doc, Verification
+
+### Context
+The implementation now provides enough repeated topic and runtime evidence to define responsibility domains and dependency direction, but the published Phase 15 trigger for broad topic-runner decomposition has not occurred. This slice therefore documents and enforces stability without moving production modules.
+
+### What Was Done
+- Added the six-domain-to-three-subsystem crosswalk, capability ownership, whole-project and topic-run lifecycle diagrams, separation rules, non-goals, and refactor gate to `ARCHITECTURE_AND_MODULES.md`.
+- Added `tools/check_architecture_boundaries.py`, a narrow AST production-import guard with one centralized reviewed path-role registry, plus focused tests and a CI step.
+- Aligned `AGENTS.md`, ROADMAP, PLAN, ontology, repository boundaries, implementation-alignment audit, pre-push commands, and project index.
+- Kept catalog validation explicitly outside the topic-runner lifecycle and documented run-directory reservation as observed implementation.
+- Recorded function/term frequency only as directional appendix evidence, not as package naming or refactor authorization.
+
+### Claims Made
+- Bounded responsibility domains do not imply one package per domain or ontology entity.
+- Broad topic-runner decomposition remains conditional on the exact published Phase 15 triggers.
+- The AST checker is an import-direction guard, not a complete call graph or security proof.
+- No topic run or production refactor is required for this slice.
+
+### Claims Verified
+- `validate_run_id` and `run_report` provide collision-protected run reservation in the existing runner.
+- Current production imports satisfy the narrow v1 rules: 292 static edges inspected, no violations.
+- Both `phase15_lineage_validation_v2` directories still expose schema v1 with the same 10 entity and 7 relation types.
+- Task-start and final aggregate digests match for `_ARCHIVE/` plus `_WORK/snapshot/` (`8627104576ae6179be8eaa9707dcecb81c5d4d91e9c0accd848e8a1f318204b8`) and both v2 evidence trees (`dd5f6beb34e040d3a0fa124bc35dd1cad31efdf84a4248f88e7a8f0f7bf871a6`).
+
+### Artifacts Produced
+- `tools/check_architecture_boundaries.py`
+- `tests/test_architecture_boundaries.py`
+- Architecture, policy, ontology, roadmap/plan, verification, index, and CI updates.
+
+### Artifacts Consumed
+- Current production import graph under `wordpipe/` and `pipeline/`.
+- `tools/run_topic_report.py`, both registered topic adapters, manifests, tests, Chronicle/diary documentation, and the existing Phase 15 decision language.
+- Read-only task-start inventories for production paths, historical/snapshot content, and v2 evidence.
+
+### Verification
+- `pytest -q`: **200 passed**.
+- Architecture checker: OK; **292** static import edges and **6** reviewed path roles in the registry, with **0** active v1 bypasses.
+- Root layout and input catalog: OK.
+- Documentation links: **33 files**, **29 references**, all valid after the journal update.
+- Security scan: **784 files**, **0 findings**.
+- `git diff --check`: exit 0; CRLF conversion notices only.
+- Historical/snapshot and v2 evidence digests: unchanged. No topic command executed and no new topic evidence directory created.
+
+### Result Summary
+The repository now has a documented domain vision and a green, deliberately narrow dependency gate without production package fission. This slice did not edit the topic runner/adapters, Chronicle/WordPipe production modules, archives, snapshots, or topic evidence; ignored Python caches created by test execution are not curated production artifacts.
+
+### Next Steps
+- Keep changes local until a primary trigger or properly audited secondary trigger is present.
+- If a trigger occurs, characterize behavior, extract one pure seam, preserve contracts, validate, and stop to reassess.
+- Keep semantic extraction, stable event IDs, canonical index extraction, and any third adapter in their separately governed tracks.
+
+---
+
 ## How to Read This Journal
 
 Each entry follows a **standard template** to anchor against disruption:
@@ -48,10 +189,66 @@ Items deferred or queued.
 
 ---
 
+## Project Phase 15 Provenance Foundation
+**Date:** 2026-07-17 (Jalali: 1405/04/26)
+**Phase:** Phase 15 — Provenance Foundation & Semantic Ontology Design
+**Ontology Ref:** ActivityPeriod
+
+### Context
+Before semantic extraction, the topic-report path needed a portable preparation-metrics contract and explicit file-level source lineage so attribution does not depend on staged-filename reconstruction alone.
+
+### What Was Done
+- Standardized consumed-source metrics in both adapters.
+- Added `validate_prepare_metrics` / `normalize_metrics_path` and fail-closed runner validation.
+- Emitted `source_lineage` from both registered adapters.
+- Made `source_attribution.json` lineage-aware with a fixed additive mismatch schema.
+- Wrote `docs/PHASE15_PROJECT_SEMANTIC_ONTOLOGY_DESIGN.md` with three provenance maturity levels.
+- Marked broad runner decomposition as conditional in ROADMAP/PLAN.
+- Added append-only run-directory reservation, portable run-ID validation,
+  top-level staged-filename enforcement, and finite coverage checks.
+- Migrated 19 active Markdown inputs byte-for-byte into the canonical `inputs/`
+  hierarchy and added a SHA-256 catalog plus CI validation.
+- Added the repository `AGENTS.md` evidence protocol.
+
+### Claims Made
+- File-level lineage is implemented; section→event and concept extraction are not.
+- Ontology spine remains 10 entity types and 7 relation types.
+- The earlier InsuranceChatbot `phase15_lineage_validation` run was overwritten
+  before collision protection and cannot be reconstructed; it is superseded by
+  fresh v2 evidence rather than rewritten again.
+
+### Artifacts Produced
+- `tools/run_topic_report.py`, both prepare adapters, focused tests, design doc, docs sync.
+- Controlled runs under `phase15_lineage_validation` (per topic output base).
+- `inputs/catalog.json`, `tools/check_input_catalog.py`, `AGENTS.md`.
+- Authoritative controlled runs under `phase15_lineage_validation_v2`.
+
+### Artifacts Consumed
+- The 16-file ChatGPT Chronicle corpus and three InsuranceChatbot Markdown sources.
+- Existing Phase 13/14 and Phase 15 run directories, inventoried before changes.
+- `_ARCHIVE/pipeline-chronicle/` and `_WORK/snapshot/`, treated as immutable.
+
+### Verification
+- `pytest` focused and full suites; 16-file/224-event ingest verification;
+  controlled topic runs; root/input-layout/link/security gates; source and
+  historical-evidence hash comparison.
+
+### Result Summary
+File-level provenance closeout complete with collision-protected evidence and
+catalogued input identity. Semantic extraction remains outstanding behind the
+decision gate.
+
+### Next Steps
+Stable individual event IDs, source-section locators, schema version decision, then concept emission.
+
+---
+
 ## Period Index (Newest First)
 
 | # | Period | Date (Gregorian) | Date (Jalali) | Phase |
 |---|--------|-------------------|---------------|-------|
+| 12 | **Roadmap Alignment & Root Organization** | **2026-07-16** | **1405-04-25** | **Phase 14 Maintenance** |
+| 11 | **Phase 14 Genericity Remediation & Context Mapping** | **2026-07-16** | **1405-04-25** | **Second Topic Adapter & Multi-Topic Ontology Readiness** |
 | 10 | **Documentation Architecture & Module Reference** | **2026-02-14** | **1404-11-25** | **Documentation Architecture** |
 | 9 | Chronicle Pipeline Keyword Tuning & Index Builder | 2026-02-14 | 1404-11-25 | Chronicle Automation Pipeline |
 | 8 | Duplicate Analysis & Header Standardization | 2026-02-14 | 1404-11-25 | Foundation Fixes |
@@ -66,6 +263,99 @@ Items deferred or queued.
 ---
 
 ## Detailed Entries
+
+---
+
+### Period 12: Roadmap Alignment & Root Organization
+**Date:** 2026-07-16 (Jalali: 1405/04/25)
+**Phase:** Phase 14 Maintenance — Implementation Alignment
+**Ontology Ref:** `ActivityPeriod(name="Roadmap Alignment & Root Organization")`
+
+#### Context
+Roadmap, verification, organization, and index documents accumulated claims
+that no longer matched the refactored implementation. Tracked report utilities
+and generated DOCX files also occupied the governance-oriented repository root.
+
+#### What Was Done
+- Audited main roadmap phases against code, tests, manifests, and run evidence.
+- Introduced VERIFIED, PARTIAL, OUTSTANDING, SUPERSEDED, and HISTORICAL labels.
+- Corrected stale monolith, segmenter, logging, code-style, and P9 ontology claims.
+- Moved report utilities to `scripts/reporting/` and preserved generated reports
+  under `_ARCHIVE/evidence/generated-reports/`.
+- Added `ROOT_ORGANIZATION.md`, an executable root-layout check, and focused tests.
+- Synchronized the roadmap, plan, index, architecture, ontology, verification,
+  repository-boundary, and documentation entrypoint mappings.
+
+#### Claims Verified
+- Root allowlist passes after organization.
+- Phase 9c remains partial: P9 activity exists, while reference generation,
+  manual-merge validation, and project-level topic-run instances remain outstanding.
+- Phase 7 monolith/complexity findings are superseded by current composition and adapter code.
+- Operational documentation no longer requires a machine-specific workspace path.
+
+#### Artifacts Produced
+- `ROOT_ORGANIZATION.md`
+- `tools/check_root_layout.py`
+- `tests/test_root_layout.py`
+- `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`
+
+#### Result Summary
+The main roadmap now distinguishes verified completion from partial,
+outstanding, superseded, and historical work. Root organization is documented
+and mechanically checked rather than relying on convention alone.
+
+Validation: 143 tests passed; root layout OK; documentation check scanned 32
+files and validated 28 references; security scan found 0 findings across 672
+files; `ontology.json` parsed successfully.
+
+#### Next Steps
+Address the outstanding table in priority order; do not fold those items into a
+completion claim until their stated implementation and evidence both exist.
+
+---
+
+### Period 11: Phase 14 Genericity Remediation & Context Mapping
+**Date:** 2026-07-16 (Jalali: 1405/04/25)
+**Phase:** P1 — Second Topic Adapter & Multi-Topic Ontology Readiness
+**Ontology Ref:** `ActivityPeriod(name="Phase 14 Genericity Remediation")`
+
+#### Context
+A review of the second-topic implementation found a fixed staged month heading,
+a topic-specific summary title, and conflicting documentation about whether
+`###` headings form events.
+
+#### What Was Done
+- Derived staged month headings from each event date while preserving event order.
+- Propagated the manifest topic through preparation metrics into summaries.
+- Standardized the production event boundary as `##` and retained nested headings in event bodies.
+- Added controlled remediation baseline/trend runs and mapped Phase 14 across project documentation.
+
+#### Claims Made and Verified
+- Generic output no longer contains a fixed July 2026 heading for every event: verified by inspecting remediation staged files.
+- Summary identity is manifest-owned rather than adapter-hardcoded: verified by focused tests and the remediation summary.
+- Pipeline metrics and ontology coverage remain stable: 50 staged/merged/tagged events, 0 errors, PASS, 10 entity types, and 7 relation types.
+
+#### Artifacts Produced
+- `WordHorrorStories/pipelinechronicle/output/phase14_genericity_fix_baseline/`
+- `WordHorrorStories/pipelinechronicle/output/phase14_genericity_fix_trend/`
+- Updated Phase 14 roadmap, architecture, ontology, index, and context documentation.
+
+#### Artifacts Consumed
+- `WordHorrorStories/pipelinechronicle/topic_manifest.json`
+- `_ARCHIVE/pipeline-chronicle/` (read-only)
+- Existing `phase13_*` and `phase14_*` run evidence (preserved)
+
+#### Verification
+- **Method:** focused/full tests, controlled runs, dry-run, documentation link check, security scan, and artifact inspection.
+- **Result:** Remediation trend COMPARED with its baseline and retained a PASS verdict.
+
+#### Result Summary
+Phase 14 now demonstrates runner reuse and adapter-level genericity without
+changing the core Chronicle pipeline or custom adapter CLI contract.
+
+#### Next Steps
+Proceed to Phase 15 only as incremental semantic ontology expansion; retain the
+file-based topic-run evidence contract as the source of truth.
 
 ---
 

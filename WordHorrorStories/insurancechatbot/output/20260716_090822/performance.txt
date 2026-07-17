@@ -1,0 +1,17 @@
+
+Ticks             : 35944343
+Days              : 0
+Hours             : 0
+Milliseconds      : 594
+Microseconds      : 434
+Nanoseconds       : 300
+Minutes           : 0
+Seconds           : 3
+TotalDays         : 4.16022488425926E-05
+TotalHours        : 0.000998453972222222
+TotalMilliseconds : 3594.4343
+TotalMicroseconds : 3594434.3
+TotalNanoseconds  : 3594434300
+TotalMinutes      : 0.0599072383333333
+TotalSeconds      : 3.5944343
+

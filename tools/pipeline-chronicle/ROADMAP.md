@@ -275,7 +275,7 @@ Reads a normalised or merged chronicle file and tags each event with theme label
 | Full Spec | [`README.md`](README.md) |
 | Source Code | [`ingest.py`](ingest.py) |
 | Ontology | [`ontology.json`](../../ontology.json) |
-| Raw Sources | `WordHorrorStories/chatgpt-chronicle/sources/raw/chatgpt_mds/` |
+| Raw Sources | `inputs/chatgpt-chronicle/markdown/` |
 | Normalised Output | `WordHorrorStories/chatgpt-chronicle/sources/normalised/` |
 
 ---

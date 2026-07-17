@@ -1,0 +1,19 @@
+{
+  "input_file_count": 3,
+  "input_total_bytes": 195293,
+  "input_total_lines": 3285,
+  "input_dir": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\input",
+  "output_dir": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\insurancechatbot\\output\\20260716_151311\\staged_input",
+  "generated_at": "2026-07-16T15:13:12",
+  "candidate_commit_headings": 169,
+  "candidate_roadmap_sections": 15,
+  "candidate_digest_sections": 16,
+  "candidate_total_sections": 200,
+  "staged_event_count": 200,
+  "extraction_coverage_percent": 100.0,
+  "staged_files": [
+    "01_commit_history.md",
+    "02_project_digest.md",
+    "03_roadmap.md"
+  ]
+}

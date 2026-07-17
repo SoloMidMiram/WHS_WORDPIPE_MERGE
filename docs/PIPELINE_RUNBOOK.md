@@ -10,7 +10,7 @@ python tools/orchestrate.py --root _WORK/snapshot
 From any working directory:
 
 ```powershell
-python F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246\tools\orchestrate.py --workspace-root F:\Git\WHS_WORDPIPE_MERGE__TEH_20260211_2246 --root _WORK/snapshot
+python tools/orchestrate.py --workspace-root <WORKSPACE_ROOT> --root _WORK/snapshot
 ```
 
 ## Dry-Run Mode

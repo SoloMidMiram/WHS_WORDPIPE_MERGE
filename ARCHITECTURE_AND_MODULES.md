@@ -2,6 +2,7 @@
 
 > **Purpose:** Comprehensive reference documenting all three subsystems — their architecture, module responsibilities, data flow, logic flow, goals, and constraints.
 > **Date:** 2026-02-14 (Jalali: 1404-11-25)
+> **Last Updated:** 2026-07-17 (Jalali: 1405-04-26)
 > **Supersedes:** `docs/architecture/PROJECT_SUMMARY.md`, `docs/TOOLS_MODULES_INTEGRATION_REPORT.md`, `docs/INTEGRATION_MAP_BEFORE_AFTER.md`
 
 ---
@@ -30,6 +31,7 @@
 5. [Cross-Subsystem Integration](#5-cross-subsystem-integration)
 6. [Shared Contracts](#6-shared-contracts)
 7. [Verification & Testing](#7-verification--testing)
+8. [Appendix: Directional Architecture Evidence](#8-appendix-directional-architecture-evidence)
 
 ---
 
@@ -42,9 +44,18 @@ This repository contains **three independent subsystems**, each with its own pur
 | **Chronicle Pipeline** | `pipeline/` | Automated chronicle ingestion → merging → categorization → indexing | CLI (PowerShell + Python) | Operator, Historian |
 | **Evidence Pipeline** | `tools/` | Archival, legacy reorganization, integrity verification | CLI (Python) | Operator, Auditor |
 | **WordPipe Runtime** | `wordpipe/` | DOCX processing library for TraceLedger embedding | Library (Python import) | Engineer, TraceLedger |
+| **Topic Report Runner** | `tools/run_topic_report.py`, `tools/prepare_*_chronicle.py`, topic folders | Convert non-Chronicle Markdown bundles into staged Chronicle events, run the pipeline, compare trends, and emit ontology evidence | CLI (Python + pipeline) | Operator, Researcher |
 
 Current Chronicle split: reusable Chronicle logic lives under `wordpipe/chronicle/`;
 `pipeline/` is the operator CLI/config surface.
+
+Current topic-runner evidence: the InsuranceChatbot manifest resolves the first
+registered adapter, converts commit history, project digest, and roadmap
+Markdown into staged Chronicle input, runs `pipeline/chain.ps1`, and emits
+metrics/trends/source attribution/ontology evidence. Run
+`WordHorrorStories/insurancechatbot/output/phase13_trend_validation/` produced
+200 staged/merged events, 194 events with theme tags, 0 warnings/errors, and a
+trend comparison against `phase13_baseline_validation`.
 
 ### Core Design Principles (All Subsystems)
 
@@ -53,6 +64,136 @@ Current Chronicle split: reusable Chronicle logic lives under `wordpipe/chronicl
 3. **Backward compatibility** — CLI flags and contracts are preserved across versions
 4. **Graceful fallbacks** — Missing optional dependencies (Jinja2, YAML) degrade gracefully
 5. **Audit trail** — Append-only logs for historical evidence; replace-on-run reports for current state
+6. **Root ownership** — Governance/configuration only at root; generated output
+   goes to `_WORK/` and curated evidence to `_ARCHIVE/evidence/` as defined in
+   `ROOT_ORGANIZATION.md`.
+
+Current alignment debt is tracked in
+`docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`. The principal modular
+follow-ups are conditional decomposition of the topic runner, separately
+deferred canonical extraction of the index stage, and project-level mapping of
+topic-run ontology instances.
+
+### 1.1 Domain-to-subsystem crosswalk
+
+The bounded domains below describe ownership without replacing or renumbering Subsystems A, B, and C. Domains are responsibility boundaries; they are not a prescription for one package per domain.
+
+| Bounded domain | Existing architecture location | Current ownership |
+|----------------|--------------------------------|-------------------|
+| Corpus Governance | Cross-cutting support domain | `inputs/`, `inputs/catalog.json`, and `tools/check_input_catalog.py`; input may instead be another manifest-declared read-only topic source |
+| Chronicle Engine | Subsystem A | `wordpipe/chronicle/` and operator stages in `pipeline/`; index remains an operator stage in `pipeline/index.py`, with canonical extraction deferred |
+| Topic Reporting | Topic Report Runner entry and Subsystem A integration | Runner, topic adapters, manifests, themes, and run-evidence schemas |
+| Evidence Governance | Subsystem B plus root policy | Layout, append-only retention, collision policy, integrity, documentation-link, and security checks |
+| WordPipe Runtime | Subsystem C | Importable DOCX runtime, interfaces, adapters, steps, and orchestration |
+| Historical Archive | Supporting evidence boundary, not a subsystem | `_ARCHIVE/`, `_WORK/snapshot/`, and `_META/`; never an active import surface |
+
+`WordHorrorStories/<topic>/` is an active Topic Reporting workspace containing manifests, themes, topic documentation, and run evidence. It is not part of the Historical Archive. Topic Reporting owns schemas such as `run_metrics.json`, `source_attribution.json`, and `topic_run_ontology.json`; Evidence Governance owns their placement, collision protection, append-only retention, and the rule that historical runs are never rewritten.
+
+A topic source may be a catalogued `inputs/<corpus>/<format>/` path or another manifest-declared read-only source such as `_ARCHIVE/pipeline-chronicle/`. This ownership model does not itself require a source move.
+
+### 1.2 Required capabilities and logical flow
+
+| Capability | Current owner |
+|------------|---------------|
+| Catalog, hash, and classify active corpus inputs | Corpus Governance |
+| Validate a manifest and resolve its adapter | Topic Reporting |
+| Translate source-native structure into staged events and lineage | Topic adapter |
+| Validate preparation metrics and registered-adapter lineage | `validate_prepare_metrics` in Topic Reporting |
+| Validate a run ID and reserve a safe append-only run directory | `validate_run_id` and `run_report` |
+| Ingest, verify, merge/deduplicate, categorize, and index | Chronicle Engine |
+| Summarize metrics and output inventory | Topic adapter/reporting contract |
+| Produce attribution, trends, ontology projection, and verdict | Topic Reporting |
+| Enforce layout, input integrity, links, security, and evidence preservation | Evidence Governance |
+| Read, flatten, style, segment, finalize, and update a DOCX TOC | WordPipe Runtime |
+
+The input catalog is an operator/CI prerequisite, not a stage inside `run_topic_report.py`:
+
+```mermaid
+flowchart LR
+    Catalog["Catalogued input corpus"] -. operator/CI prerequisite .-> Topic
+    Declared["Manifest-declared read-only source"] --> Topic["Topic Reporting"]
+    Manifest["Topic manifest"] --> Topic
+    Topic --> Chronicle["Chronicle Engine"]
+    Chronicle --> TopicEvidence["Topic run evidence"]
+    TopicEvidence --> Governance["Evidence Governance"]
+    Docx["DOCX input"] --> WordPipe["WordPipe Runtime"]
+    WordPipe --> RunReport["DOCX output + RunReport"]
+    Snapshot["Workspace snapshot"] --> EvidencePipeline["Evidence Pipeline"]
+    EvidencePipeline --> Archive["Historical Archive"]
+    Topic -. invokes operator contract .-> Chronicle
+    WordPipe -. no runtime dependency .- Topic
+```
+
+The observed topic-run lifecycle is:
+
+```mermaid
+flowchart TD
+    Pre["Operator/CI prerequisite: optional catalog check"] -. separate command .-> Manifest
+    Manifest["Load and validate topic manifest"] --> Adapter["Resolve registered or custom adapter"]
+    Adapter --> Reserve["Validate run ID and reserve a fresh directory"]
+    Reserve --> Prepare["Prepare staged files, metrics and lineage"]
+    Prepare --> Gate{"validate_prepare_metrics passes?<br/>Registered adapter has lineage?"}
+    Gate -- no --> Fail["Fail closed; no Chronicle pipeline"]
+    Gate -- yes --> Chronicle["Ingest → verify → merge → categorize → index"]
+    Chronicle --> Summary["Adapter summary and run metrics"]
+    Summary --> Evidence["Attribution + trend + ontology projection + verdict"]
+    Evidence --> Immutable["Append-only topic output directory"]
+```
+
+Run reservation is implemented behavior, not an aspirational policy: `validate_run_id` rejects unsafe directory names, and `run_report` rejects an existing directory before reserving a real-run directory with `mkdir(..., exist_ok=False)`.
+
+### 1.3 Separation-of-concerns rules
+
+Machine-enforced v1 import boundaries are implemented by `tools/check_architecture_boundaries.py`:
+
+- `wordpipe` must not import `tools`, `pipeline`, `WordHorrorStories`, or `_ARCHIVE`.
+- `wordpipe.core` and `wordpipe.interfaces` must not import adapters, orchestration, Chronicle, or tools.
+- `wordpipe.chronicle` must not import topic adapters, `run_topic_report`, or DOCX runtime adapters.
+
+The checker scans production Python under `wordpipe/` and `pipeline/` with `ast`, excludes tests, legacy/archive/generated trees, and imports guarded solely by `TYPE_CHECKING`, and records six reviewed composition-root and compatibility-wrapper path roles in one registry. Those roles are not active v1 bypasses: none currently suppresses a forbidden edge. `tools/`, including the topic runner and adapters, remains outside the v1 AST scan; its import hygiene is governed by policy and characterization tests. Static AST inspection cannot see `importlib`, subprocess execution, plugin entry points, or test-time dynamic loading; it is an import-boundary guard, not a complete call graph or security proof.
+
+More detailed inward-layer rules for `wordpipe.steps` remain documentation-only in v1. Do not add them to CI until a fresh import inventory and focused fixtures establish a green, low-false-positive baseline.
+
+The following design rules are documented constraints rather than broader automated enforcement:
+
+- Topic adapters translate inputs; they do not own trend comparison, verdicts, ontology projection, or retention policy.
+- Chronicle code remains topic-neutral and does not discover manifests or run IDs.
+- Operator CLIs delegate to domain logic and do not become application import surfaces.
+- Ontology entities do not automatically become Python modules.
+- Compatibility facades are intentional and are not duplication evidence by themselves.
+- A feature, schema migration, and package/filesystem move cannot share one slice.
+- Historical evidence is not rewritten to reflect a newer architecture.
+
+Explicit non-goals for this stability slice are: no `tools/topic_report/`, no adapter-helper package, no ontology emission expansion or NLP, no move of `pipeline/index.py`, and no production module move, rename, or public-contract change.
+
+### 1.4 Refactor eligibility gate
+
+> Broad topic-runner decomposition is conditional, not an active Project Phase 15 deliverable. Reconsider it only when a third adapter exposes concrete coupling or ontology schema evolution makes the current serializer unsafe.
+
+The two conditions in that sentence are the primary triggers. The following are secondary supporting triggers and are insufficient when observed only once:
+
+1. The same defect requires synchronized edits across multiple production modules on two separate occasions.
+2. A checked dependency violation cannot be repaired locally.
+3. A public contract cannot evolve safely inside its current owner despite characterization tests.
+
+The repeated-defect trigger is valid only when `JOURNAL.md` or `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md` records the date and defect, affected production paths, first and second occurrence, why synchronized edits were required, and tests demonstrating the shared responsibility.
+
+```mermaid
+flowchart TD
+    Change["Feature request or defect"] --> Primary{"Primary Phase 15 trigger?"}
+    Primary -- yes --> Characterized
+    Primary -- no --> Secondary{"Audited secondary trigger?"}
+    Secondary -- no --> Local["Keep change local; no restructuring"]
+    Secondary -- yes --> Characterized{"Current behavior characterized?"}
+    Characterized -- no --> Tests["Add characterization tests"]
+    Tests --> Characterized
+    Characterized -- yes --> Seam["Extract one pure seam only"]
+    Seam --> Preserve["Preserve CLI, imports, and JSON contracts"]
+    Preserve --> Validate["Full validation and fresh evidence only if behavior changed"]
+    Validate --> Stop["Stop and reassess; do not continue package fission"]
+```
+
+Current gate decisions are intentionally conservative: broad runner decomposition is blocked; shared adapter utilities are blocked until a third adapter or an audited repeated defect; ontology-projector or verdict extraction is blocked until serializer/schema pressure; Chronicle index extraction remains a separate deferred track; and WordPipe restructuring is not justified because its current layering is already the target pattern.
 
 ---
 
@@ -67,6 +208,13 @@ is a legacy/reference CLI location with wrappers where canonical modules exist.
 ### 2.1 Architecture
 
 The chronicle pipeline is a **5-stage CLI pipeline** that transforms raw ChatGPT incident markdown files into a tagged, indexed, cross-referenced chronicle.
+
+With a topic manifest and preparation adapter, the same 5-stage pipeline can
+process other long Markdown topics. The adapter's job is to convert
+source-native structures (commit headings, roadmap phases, chapters, cases,
+lessons, or notes) into Chronicle-compatible dated events. The generic runner
+then records metrics, trend deltas, source attribution, and ontology evidence
+around `pipeline/chain.ps1`.
 
 **Architecture pattern:** Pipe-and-filter, each stage reads from the previous stage's output.
 
@@ -106,7 +254,7 @@ stage deferred from canonical extraction.
 #### `wordpipe.chronicle.ingest` - Stage 1: Ingestion
 - **Purpose:** Convert raw deep-search markdown into normalised format with YAML front-matter
 - **Location:** canonical module under `wordpipe/chronicle/`; CLI wrappers in `pipeline/` and `tools/pipeline-chronicle/`
-- **Input:** Raw `.md` files from `WordHorrorStories/chatgpt-chronicle/sources/raw/chatgpt_mds/`
+- **Input:** Raw `.md` files from `inputs/chatgpt-chronicle/markdown/`
 - **Output:** Normalised `.md` files with `source`, `title`, `date`, `event_count` in YAML front-matter
 - **Key functions:**
   - `clean_mojibake(text)` — Fixes common Unicode corruption patterns
@@ -217,6 +365,46 @@ stage deferred from canonical extraction.
 - `theme_index.md.j2` — Template for theme grouping
 - `source_manifest.md.j2` — Template for source attribution
 - `link_registry.md.j2` — Template for URL registry
+
+#### `tools/run_topic_report.py` — Generic Topic Report Runner
+- **Purpose:** Execute a manifest-driven topic report run: adapter prepare -> Chronicle pipeline -> adapter summarize -> source attribution -> trend comparison -> ontology outputs.
+- **Input:** Topic manifest such as `WordHorrorStories/insurancechatbot/topic_manifest.json`.
+- **Output:** Run folder with `RUN_SUMMARY.md`, `run_metrics.json`, `prepare_metrics.json`, `run.log`, `performance.txt`, `topic_run_manifest.json`, `topic_run_ontology.json`, `trend_report.json`, `trend_report.md`, `source_attribution.json`, `staged_input/`, and `pipeline/`.
+- **Adapter registry:** `prepare_insurancechatbot_chronicle` (InsuranceChatbot-specific) and `prepare_generic_markdown_chronicle` (generic Markdown-section) are the two registered adapters; direct `adapter.script` remains supported for custom topics.
+- **Context flow:** After preparation succeeds, the runner loads `prepare_metrics.json`, adds the manifest's canonical `topic` in memory, validates the preparation-metrics contract (requiring `source_lineage` when `adapter.id` is in `ADAPTER_REGISTRY`), finalizes `event-lineage-v1` when `event_lineage_file` is present/required, then rewrites the enriched metrics once. Invalid metrics or lineage fail closed before `pipeline/chain.ps1`. After the pipeline, the runner correlates normalised fingerprints into `event-correlation-v1` before summarize; provenance failures set `provenance=1` and skip the PASS summarize path. Adapters consume topic context during summarization without a new CLI argument.
+- **Lineage:** Built-in adapters emit file-level `source_lineage` and raw section/commit `event_lineage` records. After the pipeline, the runner verifies actual merged survivors with `merged-note-aware-v1` (Phase 17) and records individual ReportEvent ids only in `event_correlation.json`. Attribution prefers validated file lineage; aggregate ReportEvent ontology emission is unchanged.
+- **Output:** `staged_input/*.md`, `prepare_metrics.json` (including consumed-source metrics, `source_lineage`, and `event_lineage_file`), root `event_lineage.json` / `event_correlation.json` when applicable, plus `RUN_SUMMARY.md` and `run_metrics.json` after summarization.
+- **Evidence reservation:** A run ID is one portable directory name. Existing
+  run directories are rejected before commands execute, including dry-run
+  preflight, and real runs reserve the directory atomically without overwrite.
+- **Staging contract:** Raw `source_file` lineage may be nested, but staged paths
+  are top-level filenames because `chain.ps1` consumes only top-level `*.md`.
+  Coverage percentages must be finite and within 0–100.
+- **Measured runs:**
+  - `WordHorrorStories/insurancechatbot/output/phase13_trend_validation/RUN_SUMMARY.md` (200 events, InsuranceChatbot topic)
+  - `WordHorrorStories/pipelinechronicle/output/phase14_genericity_fix_trend/RUN_SUMMARY.md` (50 events, pipelinechronicle topic, genericity remediation)
+
+#### `tools/prepare_insurancechatbot_chronicle.py` — Topic Adapter Example
+- **Purpose:** Convert InsuranceChatbot commit history, project digest, and roadmap Markdown into staged Chronicle-compatible input.
+- **Input:** `inputs/insurancechatbot/markdown/*.md`
+- **Output:** `staged_input/*.md`, `prepare_metrics.json` (including consumed-source metrics, `source_lineage`, and `event_lineage_file`), plus `RUN_SUMMARY.md` and `run_metrics.json` after summarization.
+
+#### `tools/prepare_generic_markdown_chronicle.py` — Generic Markdown-Section Adapter
+- **Purpose:** Convert any folder of long Markdown files into staged Chronicle-compatible input by splitting at `##` headings and extracting ISO dates. Nested `###` and deeper headings remain in the parent event body. Registry-backed as `prepare_generic_markdown_chronicle`.
+- **Input:** Any folder with 2-5 long `.md` files containing section headings and dates.
+- **Output:** `staged_input/*.md` (one per source file) with month headings derived from event dates, `prepare_metrics.json` (including `source_lineage`, `event_lineage_file`, and `file_metrics`), plus a manifest-topic-labelled `RUN_SUMMARY.md` and `run_metrics.json` after summarization.
+- **Registered in:** `ADAPTER_REGISTRY` in `tools/run_topic_report.py`.
+- **Topic example:** `WordHorrorStories/pipelinechronicle/topic_manifest.json` (source: `_ARCHIVE/pipeline-chronicle/`).
+- **Measured run:** `WordHorrorStories/pipelinechronicle/output/phase14_genericity_fix_trend/RUN_SUMMARY.md`.
+- **Performance:** 5 input files, 50 staged events, 50 merged events, 50 events with theme tags, 0 warnings/errors, PASS verdict.
+- **Generalization rule:** Keep topic-specific parsing and theme vocabulary outside `pipeline/`; the core Chronicle stages should remain topic-neutral.
+
+#### `inputs/catalog.json` — Canonical Corpus Identity
+- **Purpose:** Bind every active Markdown/DOCX corpus member to its corpus,
+  format, size, SHA-256, and source/duplicate/derived classification.
+- **Validation:** `tools/check_input_catalog.py` rejects drift, omissions,
+  malformed layout, undeclared duplicates, and recurrence of legacy input paths.
+- **Boundary:** Generated reports and project documentation are not inputs.
 
 #### `pipeline/chain.ps1` — Pipeline Orchestrator
 - **Purpose:** One-command wrapper for all 5 stages
@@ -536,15 +724,14 @@ ERROR: required {name} not found: {abs_path}
 
 ### Automated Tests
 
-| Test File | Tests | Coverage | Command |
-|-----------|-------|----------|---------|
-| `tests/test_pipeline_chronicle.py` | 70 | Ingest, merge, categorize, verify_ingest, integration | `python -m pytest tests/test_pipeline_chronicle.py -v` |
-| `tests/test_import_safety.py` | 2 | Core import safety + chronicle extra contract | `python -m pytest tests/test_import_safety.py -v` |
-| `tests/test_steps.py` | 12 | Step modules (flatten, style, segment, finalize, toc) | `python -m pytest tests/test_steps.py -v` |
-| `tests/test_orchestration_pipeline.py` | 6 | Fail-fast orchestration behavior | `python -m pytest tests/test_orchestration_pipeline.py -v` |
-| `tests/test_segmenter_hpath.py` | 10 | Heading-path precompute semantics | `python -m pytest tests/test_segmenter_hpath.py -v` |
-| `tests/test_wordpipe_steps.py` | 6 | Transitional step/orchestration overlap | `python -m pytest tests/test_wordpipe_steps.py -v` |
-| **Total** | **105** | Full health signal | `python -m pytest tests -q` |
+| Test Area | Coverage | Command |
+|-----------|----------|---------|
+| Chronicle | Ingest, merge, categorize, verify, integration | `python -m pytest tests/test_pipeline_chronicle.py -v` |
+| Runtime architecture | Import safety, orchestration, steps, heading paths | `python -m pytest tests/test_import_safety.py tests/test_orchestration_pipeline.py tests/test_steps.py tests/test_segmenter_hpath.py -v` |
+| Topic reports | Both adapters, manifest runner, trends, attribution, ontology | `python -m pytest tests/test_prepare_insurancechatbot_chronicle.py tests/test_prepare_generic_markdown_chronicle.py tests/test_run_topic_report.py -v` |
+| Governance | Root organization allowlist | `python -m pytest tests/test_root_layout.py -v` |
+| Architecture boundaries | Static production-import direction and reviewed path-role registry behavior | `python -m pytest tests/test_architecture_boundaries.py -v` |
+| **Current total** | **See `VERIFICATION.md` and the latest CI/full-suite result; architecture prose does not pin a transient count** | `python -m pytest tests -q` |
 
 See also: [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_P2_VALIDATION_REPORT.md)
 
@@ -554,6 +741,8 @@ See also: [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_P2
 |-------|---------|-----------------|
 | Doc link integrity | `python tools/docs_link_check.py` | No broken links |
 | Secret scan | `python tools/security_scan.py --root . --fail-on-findings` | Exit 0, no findings |
+| Root layout | `python tools/check_root_layout.py --root .` | Exit 0, allowlist satisfied |
+| Architecture boundaries | `python tools/check_architecture_boundaries.py --root .` | Exit 0, no forbidden static import edges |
 | Import safety | `python -c "import wordpipe"` | Succeeds without optional deps |
 | Header consistency | `python tools/add_standard_headers.py --path .` | "0 files changed, N files skipped" |
 | Full pipeline (dry) | `python tools/orchestrate.py --dry-run` | Commands printed, no execution |
@@ -565,6 +754,42 @@ For the chronicle pipeline, tag quality is verified by inspecting the sidecar JS
 ```powershell
 python -c "import json; d=json.load(open('output/*/chronicle_tagged.tagged.json')); total=len(d); tagged=sum(1 for e in d if e['themes']); over=sum(1 for e in d if len(e['themes'])>=4); print(f'{tagged/total*100:.1f}% coverage, {over/total*100:.1f}% over-tagged')"
 ```
+
+---
+
+## 8. Appendix: Directional Architecture Evidence
+
+This appendix records observations, not module-design commands. The inventory was taken on 2026-07-17 by parsing current production Python definitions and counting selected responsibility terms across current code plus Chronicle/diary documentation. Textual occurrence is neither runtime call frequency nor authorization to refactor; common words and historical repetition materially affect these counts.
+
+### 8.1 Module shape observed
+
+| Current file | Lines | Functions | Classes | Interpretation |
+|--------------|------:|----------:|--------:|----------------|
+| `tools/run_topic_report.py` | 1,256 | 29 | 3 | Concentrated orchestration is a watch point, not by itself a split trigger |
+| `pipeline/index.py` | 700 | 15 | Operator-stage index remains the separately deferred extraction track |
+| `tools/prepare_generic_markdown_chronicle.py` | 343 | 14 | Second registered topic adapter |
+| `tools/prepare_insurancechatbot_chronicle.py` | 392 | 16 | First registered topic adapter |
+
+The two adapters share 13 top-level definition names, but only four were exact AST-shape matches (`ChronicleEvent`, `count_duplicates`, `escape_nested_event_bullets`, and `source_metrics`). That is directional evidence for watching the adapter contract, not sufficient evidence for an adapter-helper package.
+
+### 8.2 Responsibility-term observations
+
+| Term | Current code files containing term | Chronicle/diary mentions |
+|------|-----------------------------------:|-------------------------:|
+| run | 55 | 478 |
+| event | 38 | 215 |
+| adapter | 21 | 91 |
+| merge | 19 | 150 |
+| report | 18 | 295 |
+| index | 17 | 325 |
+| ingest | 13 | 66 |
+| theme | 12 | 121 |
+| manifest | 10 | 90 |
+| evidence | 8 | 126 |
+| ontology | 3 | 155 |
+| lineage | 3 | 23 |
+
+The observations support the capability boundaries documented above—input translation, Chronicle processing, reporting/evidence, and runtime orchestration recur—but they do not imply one package per term or ontology entity. Refactoring remains governed only by the eligibility gate in section 1.4.
 
 ---
 

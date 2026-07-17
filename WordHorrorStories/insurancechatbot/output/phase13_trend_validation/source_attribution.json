@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "run_id": "phase13_trend_validation",
+  "source_count": 3,
+  "total_contributed_event_count": 200,
+  "sources": [
+    {
+      "staged_source_file": "staged_input\\01_commit_history.md",
+      "normalised_file": "pipeline\\normalised\\01_commit_history.md",
+      "staged_filename": "01_commit_history.md",
+      "normalised_filename": "01_commit_history.md",
+      "contributed_event_count": 169
+    },
+    {
+      "staged_source_file": "staged_input\\02_project_digest.md",
+      "normalised_file": "pipeline\\normalised\\02_project_digest.md",
+      "staged_filename": "02_project_digest.md",
+      "normalised_filename": "02_project_digest.md",
+      "contributed_event_count": 16
+    },
+    {
+      "staged_source_file": "staged_input\\03_roadmap.md",
+      "normalised_file": "pipeline\\normalised\\03_roadmap.md",
+      "staged_filename": "03_roadmap.md",
+      "normalised_filename": "03_roadmap.md",
+      "contributed_event_count": 15
+    }
+  ]
+}

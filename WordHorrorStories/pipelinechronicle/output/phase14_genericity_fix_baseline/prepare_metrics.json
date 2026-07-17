@@ -1,0 +1,47 @@
+{
+  "input_file_count": 5,
+  "input_total_bytes": 68646,
+  "input_total_lines": 1511,
+  "input_dir": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\_ARCHIVE\\pipeline-chronicle",
+  "output_dir": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\pipelinechronicle\\output\\phase14_genericity_fix_baseline\\staged_input",
+  "generated_at": "2026-07-16T19:29:16",
+  "adapter": "prepare_generic_markdown_chronicle",
+  "candidate_total_sections": 50,
+  "staged_event_count": 50,
+  "extraction_coverage_percent": 100.0,
+  "staged_files": [
+    "01_ARCHIVE_REPORT.md",
+    "02_PIPELINE_PLAN.md",
+    "03_README.md",
+    "04_REVIEW_PLAN.md",
+    "05_ROADMAP.md"
+  ],
+  "file_metrics": {
+    "ARCHIVE_REPORT.md": {
+      "candidates": 11,
+      "staged": 11,
+      "staged_filename": "01_ARCHIVE_REPORT.md"
+    },
+    "PIPELINE_PLAN.md": {
+      "candidates": 12,
+      "staged": 12,
+      "staged_filename": "02_PIPELINE_PLAN.md"
+    },
+    "README.md": {
+      "candidates": 10,
+      "staged": 10,
+      "staged_filename": "03_README.md"
+    },
+    "REVIEW_PLAN.md": {
+      "candidates": 6,
+      "staged": 6,
+      "staged_filename": "04_REVIEW_PLAN.md"
+    },
+    "ROADMAP.md": {
+      "candidates": 11,
+      "staged": 11,
+      "staged_filename": "05_ROADMAP.md"
+    }
+  },
+  "topic": "pipelinechronicle"
+}

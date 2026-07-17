@@ -1,0 +1,1945 @@
+[
+  {
+    "date": "2026-05-11",
+    "title": "ðŸ“‹ Phase Completion Tracker",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-05-14",
+    "title": "6cb6634 - chore: initial commit — Insurance FAQ Knowledge Base",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-05-15",
+    "title": "caa148c - Phase 5b: Deep Search KB expansion (+147 Qs, 378 total",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-05-15",
+    "title": "161b513 - chore: add root-level exclusions to .gitignore, remove duplicate pytest.ini (config in pyproject.toml",
+    "themes": [
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-05-15",
+    "title": "c35eec5 - feat: add related_ids cross-references for all 378 entries",
+    "themes": [
+      "Documentation/Roadmap",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-05-15",
+    "title": "0067e35 - feat: add metadata.ask_frequency and metadata.faq_type_label to all 378 KB entries",
+    "themes": [
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Retrieval/Search"
+    ]
+  },
+  {
+    "date": "2026-05-16",
+    "title": "e3b8d91 - Phase 8 H4: Deep-search verified injury entries + ontology update + FAISS rebuild + project reorganisation",
+    "themes": [
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-05-16",
+    "title": "e8c7f1d - feat: branch manager extractor from personnel_enriched.xlsx — 70 branches mapped",
+    "themes": [
+      "Operations/Baselines"
+    ]
+  },
+  {
+    "date": "2026-05-16",
+    "title": "cbbaa98 - docs: evidence file for branch manager extraction + register in REPORT_INDEX",
+    "themes": [
+      "Documentation/Roadmap",
+      "Operations/Baselines"
+    ]
+  },
+  {
+    "date": "2026-05-28",
+    "title": "ðŸ”— Related Documents",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-05-29",
+    "title": "ðŸ“Š Comparison Summary",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-05-30",
+    "title": "9e85042 - reorg: reorganise scripts and add survey, tools, startup checks",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-05-30",
+    "title": "eb83207 - phase10: add scrape data, tests, reports, and API config changes",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-05-30",
+    "title": "ed7ab97 - feat: complete Waves 3-4 — verification, FAQ strength, retrieval hardening",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-05-30",
+    "title": "9645751 - docs: sync documentation across all waves — Phase 10 branch quality pass, Phase 5 doc update, report index, scripts README",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Operations/Baselines"
+    ]
+  },
+  {
+    "date": "2026-05-30",
+    "title": "e4a01f6 - Phase 12: SME triage & content hygiene infrastructure",
+    "themes": [
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-05-30",
+    "title": "364a401 - Phase 12: complete — all 48 misplaced reviewed (REJECT), 3 semantic pairs reviewed (KEEP_BOTH",
+    "themes": [
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-05-30",
+    "title": "ðŸ”œ Immediate Next Steps",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-06-05",
+    "title": "19ee6fd - Phase 13: import scrape results for body damage and calculation domains",
+    "themes": [
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Scraper/Release"
+    ]
+  },
+  {
+    "date": "2026-06-05",
+    "title": "c9c1fe2 - Phase 14: add calculation bot with ontology-driven body damage formula",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Ontology",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-06-05",
+    "title": "c19b3ca - Phase 14: add FAQ ontology prototype builder and report",
+    "themes": [
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Retrieval/Search",
+      "Scraper/Release"
+    ]
+  },
+  {
+    "date": "2026-06-05",
+    "title": "bd924b1 - Phase 14: add expert review export package with full-KB marked-up review kit",
+    "themes": [
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base"
+    ]
+  },
+  {
+    "date": "2026-06-05",
+    "title": "7fedfd5 - docs: sweep phase reports, README updates, and auxiliary analysis scripts",
+    "themes": [
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Retrieval/Search"
+    ]
+  },
+  {
+    "date": "2026-06-05",
+    "title": "52d0838 - release: v14.0.0 deploy docs, bundle scripts, and version bump",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release"
+    ]
+  },
+  {
+    "date": "2026-06-05",
+    "title": "c9a5337 - docs: staged server deploy plan and v14.0.1 release documentation",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines"
+    ]
+  },
+  {
+    "date": "2026-06-05",
+    "title": "Historical phase record",
+    "themes": [
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-06-05",
+    "title": "ðŸ“ Current Status (2026-06-05",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-06-11",
+    "title": "488e7f8 - Add v2 roadmaps and chat interface docs",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-06-11",
+    "title": "bdaf242 - Expand v2 roadmap with governance milestones",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-06-11",
+    "title": "d99c9b1 - Organize P2 roadmap milestones",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-06-11",
+    "title": "7e53e9a - Refine v2 roadmap for remaining governance work",
+    "themes": [
+      "Documentation/Roadmap",
+      "Operations/Baselines"
+    ]
+  },
+  {
+    "date": "2026-06-18",
+    "title": "4bbe282 - docs: add kagent asset contract and roadmap spine",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-06-18",
+    "title": "ebd7dd5 - chore: add docs safety checker",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-06-18",
+    "title": "7de9f84 - docs: index kagent docs in report map",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-06-18",
+    "title": "1e3464e - docs: lock runtime environment and server policy",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-06-18",
+    "title": "bdd30a2 - docs: add third-party diyat analysis bundle",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-06-18",
+    "title": "d7c0c20 - docs: add body glossary ontology roadmap",
+    "themes": [
+      "Documentation/Roadmap",
+      "Ontology"
+    ]
+  },
+  {
+    "date": "2026-06-18",
+    "title": "6af5d0e - test: add regression suites for ontology reports",
+    "themes": [
+      "Documentation/Roadmap",
+      "Ontology",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-06-18",
+    "title": "f2c87bf - untracked files on (no branch): c9a5337 docs: staged server deploy plan and v14.0.1 release documentation",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Operations/Baselines"
+    ]
+  },
+  {
+    "date": "2026-06-18",
+    "title": "5b245a3 - index on (no branch): c9a5337 docs: staged server deploy plan and v14.0.1 release documentation",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Operations/Baselines"
+    ]
+  },
+  {
+    "date": "2026-06-18",
+    "title": "db0bb2c - On (no branch): codex pre-switch to roadmap-ontology-organize",
+    "themes": [
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines"
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "title": "87d5dad - docs: reorganize roadmap and current-state mapping",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-06-19",
+    "title": "7163510 - docs: add third-party dependency graph",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-06-24",
+    "title": "b6c26da - chore: consolidate archived content into top-level /archive/",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-06-24",
+    "title": "0fcc4de - chore: reorganize docs/ into categorized subdirectories and archive historical docs",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Operations/Baselines"
+    ]
+  },
+  {
+    "date": "2026-06-24",
+    "title": "053f231 - chore: update archive README with new kagent, phase5, roadmap sections",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-06-25",
+    "title": "8011f9b - P0: runtime contract — add artifact_format_version + metadata_formats_written to validation report",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-06-25",
+    "title": "2064b43 - feat: add evaluation framework with runner, coverage analysis, and regression gates",
+    "themes": [
+      "Documentation/Roadmap",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-06-25",
+    "title": "02ea410 - docs: add third-party variable integration plan — knowledge review, 1404/1405 merge strategy, and search manifest",
+    "themes": [
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-06-25",
+    "title": "7fa9ea9 - docs: add third-party investigation playbook — 4 focused DeepSearch runs for conflict resolution and 1404 gap-filling",
+    "themes": [
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-06-25",
+    "title": "9d30ce5 - docs: integrate DeepSearch results — resolve all 6 third-party conflicts and fill 12/14 missing 1404 values",
+    "themes": [
+      "Documentation/Roadmap",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-06-25",
+    "title": "c76afc9 - feat: create canonical insurance_rules.json and derivation script — implement DeepSearch findings",
+    "themes": [
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-06-25",
+    "title": "0d4818c - feat: synchronize third-party ontology, glossary, and values matrix — all 38 variables aligned",
+    "themes": [
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines"
+    ]
+  },
+  {
+    "date": "2026-06-25",
+    "title": "f5c1a13 - feat: implement value reduction (┌⌐╪│╪▒ ┘é█î┘à╪¬) knowledge — split third-party vs body, add formula, ontology, and glossary",
+    "themes": [
+      "Knowledge Base",
+      "Ontology",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-06-25",
+    "title": "4a6c614 - feat: implement Article 8 knowledge — coverage limits, ordinary vehicle rule, corresponding loss, and social justice",
+    "themes": [
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-06-25",
+    "title": "c9e05fd - feat: add hazm-based KB validator framework, fix stale addon texts, add 6 missing FAQ entries, update ontology key_concepts",
+    "themes": [
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-06-25",
+    "title": "0a032f6 - refactor: Phase 15 repository reorganization — roadmaps, metadata, archiving with tracking",
+    "themes": [
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-06-25",
+    "title": "Phase 15: Repository Reorganization & Documentation (2026-06-25 - staged archive complete",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-02",
+    "title": "417debf - docs: ORG-1 top-doc cleanup and handoff",
+    "themes": [
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-02",
+    "title": "9d65648 - docs: add ORG-2A workspace ownership plan",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-07-02",
+    "title": "46e53ce - chore: ORG-2B ignore local-only artifacts",
+    "themes": [
+      "Documentation/Roadmap",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-02",
+    "title": "22761cb - docs: add ORG session completion report",
+    "themes": [
+      "Documentation/Roadmap",
+      "Operations/Baselines",
+      "Scraper/Release"
+    ]
+  },
+  {
+    "date": "2026-07-02",
+    "title": "54efc29 - docs: add ORG-15 repo reorganization report",
+    "themes": [
+      "Documentation/Roadmap",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-02",
+    "title": "01d4202 - docs: fix root README guide links",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-07-02",
+    "title": "ca4af97 - docs: add Phase 15 reorganization roadmap updates",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-07-02",
+    "title": "f4274d9 - chore: track FAQ schema contracts",
+    "themes": [
+      "Knowledge Base",
+      "Ontology"
+    ]
+  },
+  {
+    "date": "2026-07-02",
+    "title": "9f821b0 - docs: consolidate org files into docs/organization/ with index and survey",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Ontology",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-02",
+    "title": "d3237c4 - docs: add commit-readiness fix plan",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-07-02",
+    "title": "a8a2e2e - feat: add runtime loaders, branch lookup, decision engine, artifact validation",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-02",
+    "title": "1688c98 - feat: add retrieval pipeline with TF-IDF, hybrid, embedding, eval scripts",
+    "themes": [
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-02",
+    "title": "6a6aabe - docs: add Phase 15 review reports, organisation diary, agent roadmap",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-07-02",
+    "title": "bc713ee - chore: add shared VSCode task runner tasks.json",
+    "themes": []
+  },
+  {
+    "date": "2026-07-02",
+    "title": "965bafb - fix: resolve runtime config, align search sigs, fix Docker venv for non-root user",
+    "themes": [
+      "API/Runtime",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Retrieval/Search"
+    ]
+  },
+  {
+    "date": "2026-07-02",
+    "title": "98185c9 - fix: align artifact validation with runtime bundle, unify serialized artifact loading",
+    "themes": [
+      "API/Runtime",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-02",
+    "title": "5a8df26 - fix: add active-release wiring, ontology path correction, pkl fallback, profile-based validation",
+    "themes": [
+      "API/Runtime",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-02",
+    "title": "5e3d3e6 - fix: wire RuntimeState into API, constrain records_path, fix FAQ IDs, fix chat timeout",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "89f80fb - fix: derive DATA_PROFILE from APP_ENV, exclude active-release from FAISS parity, use runtime path in reload-ontology",
+    "themes": [
+      "API/Runtime",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "52ccc59 - fix: route search through retriever, return full health payload, recompute validation on ontology reload",
+    "themes": [
+      "API/Runtime",
+      "Ontology",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "170733d - fix: wire SlowAPIMiddleware, replace sys.exit with exceptions, fix ontology version key",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Ontology",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "9b27159 - fix: integrate decision layer, count active-release pairs, default to production profile",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "f2a5ed0 - fix: move CI workflow to repo root, normalize glossary columns, flatten rules, handle keyed ontology clusters",
+    "themes": [
+      "Ontology",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "28b2577 - fix: make hazm dependency compatible with Python 3.11 CI",
+    "themes": [
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "e2f9b8b - fix: point kagent REPORT_INDEX links at archive tree instead of dead docs/ paths",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "7a2a5c3 - fix: remove hazm.download_resources() call not present in hazm 0.10",
+    "themes": [
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "8eb8b0d - style: apply Black formatting to 40 src and test files",
+    "themes": [
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "75832df - style: fix isort import ordering in 10 files",
+    "themes": [
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "bac69bd - style: add docstrings to 4 TestVariablesAPI methods (pydocstyle D102",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "db30d5c - style: add docstrings to TestVariablesAPI class and first 3 methods",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "cbd3a4b - style: add docstrings to 4 TestVariablesModule methods (pydocstyle D102",
+    "themes": [
+      "Documentation/Roadmap",
+      "Ontology",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "44db79b - style: add class docstring and 3 method docstrings to TestVariablesModule (pydocstyle D101/D102",
+    "themes": [
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "78ae369 - style: add docstrings to 4 functions in test_third_party_yearly_diyat_matrix.py (D103",
+    "themes": [
+      "Documentation/Roadmap",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "359bb8c - style: add docstrings to 4 functions in test_third_party_variable_correlation_report.py (D103",
+    "themes": [
+      "Documentation/Roadmap",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "9868619 - style: fix D212 docstring format and add D103 docstrings across 2 test files",
+    "themes": [
+      "Documentation/Roadmap",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "4118d8b - style: remove all unused imports from test_search.py (F401",
+    "themes": [
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "8b9695c - Fix lint job by relaxing flake8 debt checks and annotating Bandit findings",
+    "themes": [
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "55e808b - fix: address 4 Codex review issues (P1 + 3xP2",
+    "themes": [
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "4d458f4 - fix: apply black formatting to config.py and services.py",
+    "themes": []
+  },
+  {
+    "date": "2026-07-03",
+    "title": "5a44a12 - fix: move scraper tests out of FAQ CI, validate records_path, fix docs link",
+    "themes": [
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "a656596 - feat: add canonical insurance-scraper workspace (scrape/",
+    "themes": [
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "3544640 - chore: scrape workspace hardening — CI, live-opt-in, ruff config, AGENTS docs",
+    "themes": [
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "0cdd31d - fix: remove BOM from pyproject.toml, deduplicate FAQ IDs, expose decision key",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "ca5d1ab - fix: CI isort, sample profile paths, JSON-first FAISS metadata",
+    "themes": [
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "67b5b3a - fix: resolve remaining CI test failures — profile-aware kb parity, skip prod-data tests in CI",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "605d73e - style: format test_kb_faiss_count_parity with black",
+    "themes": [
+      "Knowledge Base",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "3615940 - fix: profile-aware runtime paths and isort cleanup for CI",
+    "themes": [
+      "API/Runtime",
+      "Knowledge Base",
+      "Ontology",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "3d77cb7 - fix: add missing sample analysis artifacts and enable slowapi headers",
+    "themes": [
+      "API/Runtime",
+      "Knowledge Base",
+      "Ontology",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "0f1b237 - feat: workspace boundary hardening — schemas, sentinel, tests, health contract",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "b9e7751 - feat: complete active-release contract enforcement with consumer test and CI boundary check",
+    "themes": [
+      "API/Runtime",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "bf6aedb - docs(phase16+): ontology layering plan and Milestone A tasks",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-03",
+    "title": "c941ca6 - docs(phase16-17): address four watching items in ontology planning",
+    "themes": [
+      "Documentation/Roadmap",
+      "Ontology",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "52a6517 - feat(phase16a): ontology inventory discovery, review artifact, and update guide",
+    "themes": [
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "c7adf73 - fix(ci): align active-release schema with loader and harden contract checks",
+    "themes": [
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "c82998e - style(scrape): apply ruff import fixes",
+    "themes": [
+      "Scraper/Release"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "175deb6 - fix(variables): normalize cluster-year insurance_rules for API/tests",
+    "themes": [
+      "API/Runtime",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "8efe15d - fix(ci): cross-platform normalization, encoding, runtime init, and fixture fixes",
+    "themes": [
+      "API/Runtime",
+      "Operations/Baselines",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "2eb203c - fix(scrape): POSIX test assertion, root README boundary refs, regenerate release fixture",
+    "themes": [
+      "Documentation/Roadmap",
+      "Operations/Baselines",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "3e5ce2b - fix(api): run TestClient lifespan in tests and correct CORS credentials config",
+    "themes": [
+      "API/Runtime",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "7b02e70 - fix(merge): resolve five merge-readiness blockers before PR merge",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "938fbda - fix(merge): active-release overlay exclusion, flake8 F821, mypy assert, API test guard",
+    "themes": [
+      "API/Runtime",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "ca618f5 - feat(phase-16b): core domain ontology schema, registry, loader, tests, stage 1 cleanup",
+    "themes": [
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "ffcd6a1 - fix(promotion): read release_id from active pointer; keep note in rollback record",
+    "themes": [
+      "Ontology",
+      "Operations/Baselines",
+      "Scraper/Release"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "fc6a5cd - feat(ontology): harden Phase 16b registry integrity and subproject schemas",
+    "themes": [
+      "Documentation/Roadmap",
+      "Ontology",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "d03e13f - chore: add ontology-phase-verifier subagent and update AGENTS.md",
+    "themes": [
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines",
+      "Scraper/Release"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "f2e2045 - feat: close ontology compatibility and add ontology state",
+    "themes": [
+      "Ontology"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "ff8b4a9 - fix: harden ontology compatibility contract",
+    "themes": [
+      "Ontology"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "3f03c37 - feat: expose ontology state in runtime health",
+    "themes": [
+      "API/Runtime",
+      "Ontology"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "0680bb3 - chore: clean up uncommitted changes before main promotion",
+    "themes": [
+      "Operations/Baselines",
+      "Scraper/Release"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "f74cc4a - chore: add gitignore patterns for scraper, scratch docs, and agent artifacts",
+    "themes": [
+      "Documentation/Roadmap",
+      "Scraper/Release"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "Early Project Evolution Narrative (Pre-Baseline",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "Initial knowledge base and API (Phase 0–4",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "Deep search expansion (Phase 5",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "Ontology update and injury deep search (Phase 8 H4",
+    "themes": [
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Retrieval/Search"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "Reorganisation and survey integration",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "Branch address verification and Asia branch scraping (Phase 10",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Operations/Baselines",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "Verification, retrieval hardening, and quality gates (Phase 11",
+    "themes": [
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "SME triage and content hygiene (Phase 12",
+    "themes": [
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "Importing scrape results (Phase 13",
+    "themes": [
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Operations/Baselines",
+      "Scraper/Release"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "Summary and impact",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "Ref verification summary",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines",
+      "Scraper/Release"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "Theme grouping summary",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "Scraper pipeline narrative (deep review",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "Draft narrative v1",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "Self‑review table",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-04",
+    "title": "Final outputs",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-05",
+    "title": "716e9b0 - Merge remote-tracking branch 'origin/main' into roadmap-ontology-organize",
+    "themes": [
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines"
+    ]
+  },
+  {
+    "date": "2026-07-05",
+    "title": "32489c0 - docs: split project-evolution digest into modular documentation suite",
+    "themes": [
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-05",
+    "title": "7e75ee8 - docs: align subproject README with modular documentation suite",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-07-05",
+    "title": "cd996bd - docs: freeze repository versioning policy",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Operations/Baselines"
+    ]
+  },
+  {
+    "date": "2026-07-05",
+    "title": "edccd75 - ci: add python 3.12 and docker smoke validation",
+    "themes": [
+      "API/Runtime",
+      "Ontology",
+      "Operations/Baselines",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-05",
+    "title": "49f91a5 - schema: add domain concept metadata contracts",
+    "themes": [
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines"
+    ]
+  },
+  {
+    "date": "2026-07-05",
+    "title": "1a6301d - feat: scaffold metadata-only FAQ domain concept bridge",
+    "themes": [
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines"
+    ]
+  },
+  {
+    "date": "2026-07-05",
+    "title": "d0548b3 - test: verify domain concept bridge remains retrieval-neutral",
+    "themes": [
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-05",
+    "title": "f692d41 - fix: close phase 18 review gaps",
+    "themes": [
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-06",
+    "title": "a92b179 - fix: require review for broad body addon bindings",
+    "themes": []
+  },
+  {
+    "date": "2026-07-06",
+    "title": "24cad16 - fix: close phase 18 CI blockers and scrape compatibility",
+    "themes": [
+      "Documentation/Roadmap",
+      "Operations/Baselines",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-06",
+    "title": "4d64ca7 - chore: add version and hardening verifiers",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Operations/Baselines",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-06",
+    "title": "df71d94 - docs: sync phase 18 hardening roadmap and top-level indexes",
+    "themes": [
+      "Documentation/Roadmap",
+      "Operations/Baselines"
+    ]
+  },
+  {
+    "date": "2026-07-07",
+    "title": "6b31dba - fix: harden phase 18 faq bridge priority",
+    "themes": [
+      "Documentation/Roadmap",
+      "Knowledge Base"
+    ]
+  },
+  {
+    "date": "2026-07-07",
+    "title": "c32bf5e - fix: validate subcategory exact schema contract",
+    "themes": [
+      "Ontology"
+    ]
+  },
+  {
+    "date": "2026-07-07",
+    "title": "2cb4d60 - fix: narrow Phase 18 patch scope and schema validation",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-07",
+    "title": "a51ded1 - feat: implement interface roadmap slices 1-3 (contract, logging, UI",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-07",
+    "title": "7a603a0 - Phase 19 foundation (Stages 0–5): eval, trace, ontologies, hardening",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-07",
+    "title": "86d2952 - Phase 19: observability, taxonomy, and ontology extraction",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-09",
+    "title": "8964908 - docs: reconcile phase 20 validation and source authority",
+    "themes": [
+      "Documentation/Roadmap",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-09",
+    "title": "eee290f - docs: add phase 21-22 execution queue",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-07-09",
+    "title": "ddab599 - docs: add through-phase-23 strategic roadmap",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-07-09",
+    "title": "4ae94d3 - docs: refresh phase 20 validation ledger at gate 0 freeze",
+    "themes": [
+      "Documentation/Roadmap",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-09",
+    "title": "6a085cb - docs: align gate 0 ledger to reviewable HEAD and PR #4",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-07-09",
+    "title": "5f27e8d - feat: add phase 21 candidate lifecycle diagnostics",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-07-09",
+    "title": "4029283 - docs: wire phase 21 a1 evidence into roadmap and indexes",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-07-09",
+    "title": "0f7e305 - fix: allowlist Phase 19 retrieval and runtime-integration ontology artifacts in data-boundary verifier",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Ontology",
+      "Retrieval/Search"
+    ]
+  },
+  {
+    "date": "2026-07-09",
+    "title": "a048263 - style: format Phase 19/21 Python files",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-07-09",
+    "title": "fbd81ae - fix(api): recompute decision scores from post-filter answers",
+    "themes": [
+      "API/Runtime",
+      "Knowledge Base",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-09",
+    "title": "609daf8 - fix(retrieval): distinguish runtime top-k from wide-pool lifecycle labels",
+    "themes": [
+      "API/Runtime",
+      "Retrieval/Search"
+    ]
+  },
+  {
+    "date": "2026-07-09",
+    "title": "7008684 - docs(eval): regenerate Stage 7A taxonomy and document lifecycle method",
+    "themes": [
+      "Documentation/Roadmap",
+      "Ontology",
+      "Operations/Baselines"
+    ]
+  },
+  {
+    "date": "2026-07-09",
+    "title": "94aac36 - docs: record P0 stabilization pass in validation ledger and roadmap",
+    "themes": [
+      "Documentation/Roadmap",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-10",
+    "title": "Active backlog",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-10",
+    "title": "Outstanding work inherited from earlier phases",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-12",
+    "title": "f7aaa81 - fix(ci): close Docker false-green on ontology_ready in health smoke test",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Ontology",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-14",
+    "title": "3134b55 - chore: ignore local workspace artifacts",
+    "themes": []
+  },
+  {
+    "date": "2026-07-14",
+    "title": "b87f3f3 - docs: integrate roadmap folder indexes",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-07-14",
+    "title": "0fb2a0b - fix: harden third-party analysis builders",
+    "themes": []
+  },
+  {
+    "date": "2026-07-14",
+    "title": "386bab4 - docs: add future outstanding work roadmap",
+    "themes": [
+      "Documentation/Roadmap"
+    ]
+  },
+  {
+    "date": "2026-07-14",
+    "title": "89467c2 - fix: stabilize sample FAQ ontology baseline",
+    "themes": [
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines"
+    ]
+  },
+  {
+    "date": "2026-07-14",
+    "title": "a2ce323 - fix: align third-party correlation builder adapters",
+    "themes": []
+  },
+  {
+    "date": "2026-07-14",
+    "title": "94da09e - Stabilize PR4 runtime reality",
+    "themes": [
+      "API/Runtime"
+    ]
+  },
+  {
+    "date": "2026-07-14",
+    "title": "Roadmap folder integration index",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-14",
+    "title": "Current snapshot",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-14",
+    "title": "Phase 16+: Ontology Architecture (In Progress",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-14",
+    "title": "ðŸ› ï¸ Phase 11 — Robustness & Hardening (survey-driven",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-14",
+    "title": "ðŸ—ºï¸ Five Development Variants",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-14",
+    "title": "ðŸ§© Outstanding Work Items (Prioritised",
+    "themes": [
+      "API/Runtime",
+      "Data Quality/SME",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Operations/Baselines",
+      "Retrieval/Search",
+      "Scraper/Release",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "0582746 - Harden CI workflow checks",
+    "themes": [
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "07dd265 - Make CI tests sample-profile aware",
+    "themes": [
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "fcd1d70 - Normalize ontology registry integrity hashes",
+    "themes": [
+      "Ontology"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "7b093a3 - Align Docker health smoke contract",
+    "themes": [
+      "API/Runtime"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "e2df0b2 - fix: isolate API diagnostics by runtime profile",
+    "themes": [
+      "API/Runtime"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "fa914fd - fix: align branch golden fixture with strong-match fallback",
+    "themes": [
+      "Operations/Baselines",
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "1dc517a - fix: separate calc confidence from top_score and hard-fail sample acceptance in CI",
+    "themes": [
+      "Testing/CI"
+    ]
+  },
+  {
+    "date": "2026-07-16",
+    "title": "89f61d3 - Close out PR4 observability and fixture integrity fixes",
+    "themes": [
+      "API/Runtime",
+      "Documentation/Roadmap",
+      "Knowledge Base",
+      "Ontology",
+      "Testing/CI"
+    ]
+  }
+]

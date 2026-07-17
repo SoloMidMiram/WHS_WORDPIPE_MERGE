@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "topic": "pipelinechronicle",
+  "input_dir": "_ARCHIVE/pipeline-chronicle",
+  "adapter": {
+    "id": "prepare_generic_markdown_chronicle"
+  },
+  "themes_config": "WordHorrorStories/pipelinechronicle/themes.pipelinechronicle.json",
+  "index_config": "pipeline/index_config.json",
+  "output": {
+    "base_dir": "WordHorrorStories/pipelinechronicle/output",
+    "run_id_format": "timestamp"
+  },
+  "quality_gates": {
+    "min_extraction_coverage_percent": 95.0,
+    "min_theme_tag_percent": 85.0,
+    "max_error_count": 0
+  }
+}

@@ -2,11 +2,74 @@
 
 > **Purpose:** Cross-reference all factual claims about the project against actual codebase evidence.
 > **Date:** 2026-02-14 (Jalali: 1404-11-25)
-> **Status:** Baseline established
+> **Status:** Historical baseline; current corrections and phase evidence are in
+> `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`
 
 ---
 
-## Summary
+## Latest Phase 17 Closeout Result
+
+Observed on 2026-07-17 (1405/04/26):
+
+| Check | Observed result |
+|-------|-----------------|
+| Phase 17 focused tests | See JOURNAL for live `pytest` counts |
+| `pytest -q` | **231 passed** |
+| Architecture boundaries | OK; 292 static edges; 6 reviewed path roles; 0 active v1 bypasses |
+| Root layout / input catalog | Both OK |
+| Documentation links | 36 files scanned; 33 references valid |
+| Security scan | 908 files scanned; 0 findings |
+| `git diff --check` | Exit 0; line-ending conversion notices only |
+| InsuranceChatbot `phase17_event_provenance_repeatability` | 200/200/194; `merged-note-aware-v1`; missing/unexpected 0; unmerged 0; PASS; ontology 10/7 |
+| PipelineChronicle `phase17_event_provenance_repeatability` | 50/50/50; same survivor method; PASS; ontology 10/7 |
+| Stability vs explicit `phase16_event_lineage_validation` | Both topics exit 0 STABLE under reserved `phase17_provenance_stability/` |
+| Phase 16 tree digests (preflight) | ICB `0fde0e97…7022ed9f` (26 files); PC `99606f4c…a082801a` (30 files) |
+| `_ARCHIVE/` + `_WORK/snapshot/` (preflight) | 185 files; digest `da5a6761…2868ae0c` |
+
+Phase 16 `unmerged_source_event_count` remains keep-both count-parity history. Phase 17 correlation uses actual survivor membership. Stability evidence is indexed here and in JOURNAL — not via `OPTIONAL_EVIDENCE_FILES`.
+
+## Latest Phase 16 Closeout Result
+
+Observed on 2026-07-17 (1405/04/26):
+
+| Check | Observed result |
+|-------|-----------------|
+| Import-safety + Phase 16 focused group | 17 passed |
+| `pytest -q` | 216 passed |
+| `python tools/check_architecture_boundaries.py --root .` | OK; 292 static edges; 6 reviewed path roles; 0 active v1 bypasses |
+| `python tools/check_root_layout.py --root .` | OK |
+| `python tools/check_input_catalog.py --root .` | OK |
+| `python tools/docs_link_check.py` | 34 files scanned; 29 references valid |
+| `python tools/security_scan.py --root . --fail-on-findings` | 843 files scanned; 0 findings |
+| `git diff --check` | Exit 0; CRLF conversion notices only |
+
+Read-only artifact inspection reconfirmed InsuranceChatbot 200 lineage / 200 merged / 194 theme-bearing events and PipelineChronicle 50/50/50, both event-sidecar schemas, empty ambiguity arrays, Event Provenance summary sections, and the aggregate 10-entity/7-relation ontology spine.
+
+No topic run was executed during closeout. The paired Phase 16 evidence inventory remained 56 files with digest `9a4c4afda024756e19a95f7e493dbb9a7e4eff97a18c0c7f450f66864a1d452f`; `_ARCHIVE/` plus `_WORK/snapshot/` remained 185 files with digest `8627104576ae6179be8eaa9707dcecb81c5d4d91e9c0accd848e8a1f318204b8`.
+
+Historical Phase 16 assessment: the Phase 16 evidence proved normalized identity
+and fixed keep-both count parity; independent actual-survivor membership and a
+second paired stable-id run remained the then-planned Phase 17 gate. The current
+Phase 17 result is recorded above and supersedes that limitation without
+rewriting the historical Phase 16 artifacts.
+
+## Latest Architecture Stability Result
+
+Observed on 2026-07-17 (1405/04/26):
+
+| Check | Observed result |
+|-------|-----------------|
+| `pytest -q` | 200 passed |
+| `python tools/check_architecture_boundaries.py --root .` | OK; 292 static import edges; 6 reviewed path roles in the registry; 0 active v1 bypasses |
+| `python tools/check_root_layout.py --root .` | OK |
+| `python tools/check_input_catalog.py --root .` | OK |
+| `python tools/docs_link_check.py` | 33 files scanned; 29 references valid |
+| `python tools/security_scan.py --root . --fail-on-findings` | 784 files scanned; 0 findings |
+| `git diff --check` | Exit 0; CRLF conversion notices only |
+
+No controlled topic run was executed for this documentation-and-guardrails slice. Task-start and post-validation SHA-256 inventory digests match for `_ARCHIVE/` plus `_WORK/snapshot/` and for both `phase15_lineage_validation_v2` evidence trees.
+
+## Historical Summary (2026-02-14)
 
 | Metric | Value |
 |--------|-------|
@@ -14,6 +77,21 @@
 | True | 19 |
 | False | 1 |
 | Uncertain | 0 |
+
+The table below records the 2026-02-14 audit and must not be read as current
+truth for later-refactored modules. In particular, DC12, DC14, and DC15 were
+subsequently fixed or superseded, while DC17 requires external/remote evidence
+and is not established by the current dirty worktree.
+
+## Current Corrections
+
+| Historical claim | Current status |
+|------------------|----------------|
+| Duplicate `style_code_blocks()` definitions | FIXED — one definition remains |
+| Monolithic `wordpipe/orchestrator.py` | SUPERSEDED — thin composition root delegates to `WordPipePipeline` |
+| O(n²) `wordpipe/core/segment.py` | SUPERSEDED — core module is a stub; active adapter precomputes heading states |
+| Duplicate logging imports / fragile mkdir | FIXED or superseded by the EventSink compatibility wrapper |
+| Main synchronized with remote | NOT REVALIDATED — requires remote evidence and a clean comparison point |
 
 ---
 
@@ -83,6 +161,16 @@ python -c "import tomllib; d = tomllib.load(open('pyproject.toml','rb')); print(
 
 # 10. EventSink protocol
 python -c "from wordpipe.events import EventSink; print(EventSink)"
+
+# 11. Repository, canonical input, and architecture placement
+python tools/check_root_layout.py --root .
+python tools/check_input_catalog.py --root .
+python tools/check_architecture_boundaries.py --root .
+
+# 12. Topic report, docs, and security regression
+python -m pytest -q
+python tools/docs_link_check.py
+python tools/security_scan.py --root . --fail-on-findings
 ```
 
 ### Manual Inspection Checks

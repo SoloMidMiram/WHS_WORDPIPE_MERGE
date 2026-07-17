@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "run_id": "phase14_trend_validation",
+  "source_count": 5,
+  "total_contributed_event_count": 50,
+  "sources": [
+    {
+      "staged_source_file": "staged_input\\01_ARCHIVE_REPORT.md",
+      "normalised_file": "pipeline\\normalised\\01_ARCHIVE_REPORT.md",
+      "staged_filename": "01_ARCHIVE_REPORT.md",
+      "normalised_filename": "01_ARCHIVE_REPORT.md",
+      "contributed_event_count": 11
+    },
+    {
+      "staged_source_file": "staged_input\\02_PIPELINE_PLAN.md",
+      "normalised_file": "pipeline\\normalised\\02_PIPELINE_PLAN.md",
+      "staged_filename": "02_PIPELINE_PLAN.md",
+      "normalised_filename": "02_PIPELINE_PLAN.md",
+      "contributed_event_count": 12
+    },
+    {
+      "staged_source_file": "staged_input\\03_README.md",
+      "normalised_file": "pipeline\\normalised\\03_README.md",
+      "staged_filename": "03_README.md",
+      "normalised_filename": "03_README.md",
+      "contributed_event_count": 10
+    },
+    {
+      "staged_source_file": "staged_input\\04_REVIEW_PLAN.md",
+      "normalised_file": "pipeline\\normalised\\04_REVIEW_PLAN.md",
+      "staged_filename": "04_REVIEW_PLAN.md",
+      "normalised_filename": "04_REVIEW_PLAN.md",
+      "contributed_event_count": 6
+    },
+    {
+      "staged_source_file": "staged_input\\05_ROADMAP.md",
+      "normalised_file": "pipeline\\normalised\\05_ROADMAP.md",
+      "staged_filename": "05_ROADMAP.md",
+      "normalised_filename": "05_ROADMAP.md",
+      "contributed_event_count": 11
+    }
+  ]
+}

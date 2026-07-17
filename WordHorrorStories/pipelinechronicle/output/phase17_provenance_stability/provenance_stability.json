@@ -1,0 +1,16 @@
+{
+  "$schema": "provenance-stability-v1",
+  "status": "STABLE",
+  "topic": "pipelinechronicle",
+  "baseline_run_id": "phase16_event_lineage_validation",
+  "candidate_run_id": "phase17_event_provenance_repeatability",
+  "missing_source_event_ids": [],
+  "added_source_event_ids": [],
+  "missing_report_event_ids": [],
+  "added_report_event_ids": [],
+  "changed_records": [],
+  "report_to_sources_drift": [],
+  "count_drift": {},
+  "source_to_report_equal": true,
+  "report_to_sources_equal": true
+}

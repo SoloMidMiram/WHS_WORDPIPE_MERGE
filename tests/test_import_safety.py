@@ -20,12 +20,26 @@ class _BlockOptionalDeps(MetaPathFinder):
 @contextmanager
 def _blocked_imports(*names: str):
     blocked = set(names)
+    saved_modules = {
+        key: module
+        for key, module in list(sys.modules.items())
+        if any(key == base or key.startswith(base + ".") for base in blocked)
+    }
+    for key in saved_modules:
+        sys.modules.pop(key, None)
     finder = _BlockOptionalDeps(blocked)
     sys.meta_path.insert(0, finder)
     try:
         yield
     finally:
         sys.meta_path = [f for f in sys.meta_path if f is not finder]
+        for key in [
+            key
+            for key in sys.modules
+            if any(key == base or key.startswith(base + ".") for base in blocked)
+        ]:
+            sys.modules.pop(key, None)
+        sys.modules.update(saved_modules)
 
 
 def _purge(prefix: str) -> None:
@@ -81,6 +95,10 @@ class ImportSafetyTests(unittest.TestCase):
     def test_chronicle_requires_extra(self):
         """wordpipe.chronicle needs pyyaml + python-dateutil; blocked imports fail."""
         chronicle_deps = ["yaml", "dateutil"]
+        # Test the real collection-order hazard: Phase 16 characterization
+        # modules may have already loaded Chronicle's optional dependencies.
+        for dependency in chronicle_deps:
+            importlib.import_module(dependency)
         with _blocked_imports(*chronicle_deps):
             _purge("wordpipe")
             # Core import must still work.

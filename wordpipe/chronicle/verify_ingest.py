@@ -10,7 +10,7 @@ import tempfile
 from pathlib import Path
 from typing import Sequence
 
-DEFAULT_RAW_DIR = Path("WordHorrorStories/chatgpt-chronicle/sources/raw/chatgpt_mds")
+DEFAULT_RAW_DIR = Path("inputs/chatgpt-chronicle/markdown")
 DEFAULT_INGEST = Path("pipeline/ingest.py")
 
 

@@ -1,0 +1,382 @@
+{
+  "$schema": "topic-run-ontology-v1",
+  "topic": "pipelinechronicle",
+  "run_id": "phase14_baseline_validation",
+  "generated_at": "2026-07-16T15:01:35+00:00",
+  "entities": [
+    {
+      "id": "topic:pipelinechronicle",
+      "type": "Topic",
+      "name": "pipelinechronicle",
+      "properties": {}
+    },
+    {
+      "id": "source_bundle:pipelinechronicle",
+      "type": "SourceBundle",
+      "name": "pipelinechronicle input",
+      "properties": {
+        "path": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\_ARCHIVE\\pipeline-chronicle"
+      }
+    },
+    {
+      "id": "adapter:prepare_generic_markdown_chronicle",
+      "type": "TopicAdapter",
+      "name": "prepare_generic_markdown_chronicle",
+      "properties": {
+        "script": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\tools\\prepare_generic_markdown_chronicle.py"
+      }
+    },
+    {
+      "id": "run:pipelinechronicle:phase14_baseline_validation",
+      "type": "TopicRun",
+      "name": "pipelinechronicle phase14_baseline_validation",
+      "properties": {
+        "run_id": "phase14_baseline_validation",
+        "topic": "pipelinechronicle",
+        "started_at": "2026-07-16T15:01:35+00:00",
+        "timing_seconds": 10.713332500003162
+      }
+    },
+    {
+      "id": "staged_source:pipelinechronicle:01_ARCHIVE_REPORT.md",
+      "type": "StagedSource",
+      "name": "01_ARCHIVE_REPORT.md",
+      "properties": {
+        "filename": "01_ARCHIVE_REPORT.md"
+      }
+    },
+    {
+      "id": "staged_source:pipelinechronicle:02_PIPELINE_PLAN.md",
+      "type": "StagedSource",
+      "name": "02_PIPELINE_PLAN.md",
+      "properties": {
+        "filename": "02_PIPELINE_PLAN.md"
+      }
+    },
+    {
+      "id": "staged_source:pipelinechronicle:03_README.md",
+      "type": "StagedSource",
+      "name": "03_README.md",
+      "properties": {
+        "filename": "03_README.md"
+      }
+    },
+    {
+      "id": "staged_source:pipelinechronicle:04_REVIEW_PLAN.md",
+      "type": "StagedSource",
+      "name": "04_REVIEW_PLAN.md",
+      "properties": {
+        "filename": "04_REVIEW_PLAN.md"
+      }
+    },
+    {
+      "id": "staged_source:pipelinechronicle:05_ROADMAP.md",
+      "type": "StagedSource",
+      "name": "05_ROADMAP.md",
+      "properties": {
+        "filename": "05_ROADMAP.md"
+      }
+    },
+    {
+      "id": "report_event:pipelinechronicle:phase14_baseline_validation",
+      "type": "ReportEvent",
+      "name": "pipelinechronicle events (phase14_baseline_validation)",
+      "properties": {
+        "count": 50
+      }
+    },
+    {
+      "id": "theme:pipelinechronicle:Ingest/Normalise",
+      "type": "Theme",
+      "name": "Ingest/Normalise",
+      "properties": {}
+    },
+    {
+      "id": "theme:pipelinechronicle:Merge/Dedup",
+      "type": "Theme",
+      "name": "Merge/Dedup",
+      "properties": {}
+    },
+    {
+      "id": "theme:pipelinechronicle:Categorize/Themes",
+      "type": "Theme",
+      "name": "Categorize/Themes",
+      "properties": {}
+    },
+    {
+      "id": "theme:pipelinechronicle:Index/Appendix",
+      "type": "Theme",
+      "name": "Index/Appendix",
+      "properties": {}
+    },
+    {
+      "id": "theme:pipelinechronicle:Orchestration/CLI",
+      "type": "Theme",
+      "name": "Orchestration/CLI",
+      "properties": {}
+    },
+    {
+      "id": "theme:pipelinechronicle:Testing/Verification",
+      "type": "Theme",
+      "name": "Testing/Verification",
+      "properties": {}
+    },
+    {
+      "id": "theme:pipelinechronicle:Planning/Roadmap",
+      "type": "Theme",
+      "name": "Planning/Roadmap",
+      "properties": {}
+    },
+    {
+      "id": "theme:pipelinechronicle:Archive/Refactor",
+      "type": "Theme",
+      "name": "Archive/Refactor",
+      "properties": {}
+    },
+    {
+      "id": "metric:pipelinechronicle:phase14_baseline_validation",
+      "type": "Metric",
+      "name": "pipelinechronicle metrics (phase14_baseline_validation)",
+      "properties": {
+        "input_file_count": 5,
+        "input_total_bytes": 68646,
+        "input_total_lines": 1511,
+        "input_dir": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\_ARCHIVE\\pipeline-chronicle",
+        "output_dir": "F:\\Git\\WHS_WORDPIPE_MERGE__TEH_20260211_2246\\WordHorrorStories\\pipelinechronicle\\output\\phase14_baseline_validation\\staged_input",
+        "generated_at": "2026-07-16T18:31:23",
+        "adapter": "prepare_generic_markdown_chronicle",
+        "candidate_total_sections": 50,
+        "staged_event_count": 50,
+        "extraction_coverage_percent": 100.0,
+        "pipeline_wall_clock": "TotalSeconds : 10.713332500003162",
+        "merged_event_count": 50,
+        "tagged_event_count": 50,
+        "events_with_theme_tags": 50,
+        "duplicate_conflict_count": 0,
+        "warning_count": 0,
+        "error_count": 0,
+        "theme_tag_percent": 100.0,
+        "runner_timing_seconds": 10.713333
+      }
+    },
+    {
+      "id": "evidence:pipelinechronicle:phase14_baseline_validation:RUN_SUMMARY.md",
+      "type": "EvidenceArtifact",
+      "name": "RUN_SUMMARY.md",
+      "properties": {
+        "path": "WordHorrorStories\\pipelinechronicle\\output\\phase14_baseline_validation\\RUN_SUMMARY.md"
+      }
+    },
+    {
+      "id": "evidence:pipelinechronicle:phase14_baseline_validation:run_metrics.json",
+      "type": "EvidenceArtifact",
+      "name": "run_metrics.json",
+      "properties": {
+        "path": "WordHorrorStories\\pipelinechronicle\\output\\phase14_baseline_validation\\run_metrics.json"
+      }
+    },
+    {
+      "id": "evidence:pipelinechronicle:phase14_baseline_validation:prepare_metrics.json",
+      "type": "EvidenceArtifact",
+      "name": "prepare_metrics.json",
+      "properties": {
+        "path": "WordHorrorStories\\pipelinechronicle\\output\\phase14_baseline_validation\\prepare_metrics.json"
+      }
+    },
+    {
+      "id": "evidence:pipelinechronicle:phase14_baseline_validation:run.log",
+      "type": "EvidenceArtifact",
+      "name": "run.log",
+      "properties": {
+        "path": "WordHorrorStories\\pipelinechronicle\\output\\phase14_baseline_validation\\run.log"
+      }
+    },
+    {
+      "id": "evidence:pipelinechronicle:phase14_baseline_validation:performance.txt",
+      "type": "EvidenceArtifact",
+      "name": "performance.txt",
+      "properties": {
+        "path": "WordHorrorStories\\pipelinechronicle\\output\\phase14_baseline_validation\\performance.txt"
+      }
+    },
+    {
+      "id": "evidence:pipelinechronicle:phase14_baseline_validation:topic_run_manifest.json",
+      "type": "EvidenceArtifact",
+      "name": "topic_run_manifest.json",
+      "properties": {
+        "path": "WordHorrorStories\\pipelinechronicle\\output\\phase14_baseline_validation\\topic_run_manifest.json"
+      }
+    },
+    {
+      "id": "evidence:pipelinechronicle:phase14_baseline_validation:topic_run_ontology.json",
+      "type": "EvidenceArtifact",
+      "name": "topic_run_ontology.json",
+      "properties": {
+        "path": "WordHorrorStories\\pipelinechronicle\\output\\phase14_baseline_validation\\topic_run_ontology.json"
+      }
+    },
+    {
+      "id": "evidence:pipelinechronicle:phase14_baseline_validation:trend_report.json",
+      "type": "EvidenceArtifact",
+      "name": "trend_report.json",
+      "properties": {
+        "path": "WordHorrorStories\\pipelinechronicle\\output\\phase14_baseline_validation\\trend_report.json"
+      }
+    },
+    {
+      "id": "evidence:pipelinechronicle:phase14_baseline_validation:trend_report.md",
+      "type": "EvidenceArtifact",
+      "name": "trend_report.md",
+      "properties": {
+        "path": "WordHorrorStories\\pipelinechronicle\\output\\phase14_baseline_validation\\trend_report.md"
+      }
+    },
+    {
+      "id": "evidence:pipelinechronicle:phase14_baseline_validation:source_attribution.json",
+      "type": "EvidenceArtifact",
+      "name": "source_attribution.json",
+      "properties": {
+        "path": "WordHorrorStories\\pipelinechronicle\\output\\phase14_baseline_validation\\source_attribution.json"
+      }
+    },
+    {
+      "id": "metric:pipelinechronicle:phase14_baseline_validation:source_attribution",
+      "type": "Metric",
+      "name": "pipelinechronicle source attribution (phase14_baseline_validation)",
+      "properties": {
+        "source_count": 5,
+        "total_contributed_event_count": 50
+      }
+    },
+    {
+      "id": "verdict:pipelinechronicle:phase14_baseline_validation",
+      "type": "Verdict",
+      "name": "pipelinechronicle run phase14_baseline_validation",
+      "properties": {
+        "verdict": "PASS"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "source": "report_event:pipelinechronicle:phase14_baseline_validation",
+      "relation": "tagged_with",
+      "target": "theme:pipelinechronicle:Ingest/Normalise"
+    },
+    {
+      "source": "report_event:pipelinechronicle:phase14_baseline_validation",
+      "relation": "tagged_with",
+      "target": "theme:pipelinechronicle:Merge/Dedup"
+    },
+    {
+      "source": "report_event:pipelinechronicle:phase14_baseline_validation",
+      "relation": "tagged_with",
+      "target": "theme:pipelinechronicle:Categorize/Themes"
+    },
+    {
+      "source": "report_event:pipelinechronicle:phase14_baseline_validation",
+      "relation": "tagged_with",
+      "target": "theme:pipelinechronicle:Index/Appendix"
+    },
+    {
+      "source": "report_event:pipelinechronicle:phase14_baseline_validation",
+      "relation": "tagged_with",
+      "target": "theme:pipelinechronicle:Orchestration/CLI"
+    },
+    {
+      "source": "report_event:pipelinechronicle:phase14_baseline_validation",
+      "relation": "tagged_with",
+      "target": "theme:pipelinechronicle:Testing/Verification"
+    },
+    {
+      "source": "report_event:pipelinechronicle:phase14_baseline_validation",
+      "relation": "tagged_with",
+      "target": "theme:pipelinechronicle:Planning/Roadmap"
+    },
+    {
+      "source": "report_event:pipelinechronicle:phase14_baseline_validation",
+      "relation": "tagged_with",
+      "target": "theme:pipelinechronicle:Archive/Refactor"
+    },
+    {
+      "source": "metric:pipelinechronicle:phase14_baseline_validation",
+      "relation": "measures",
+      "target": "run:pipelinechronicle:phase14_baseline_validation"
+    },
+    {
+      "source": "metric:pipelinechronicle:phase14_baseline_validation:source_attribution",
+      "relation": "measures",
+      "target": "run:pipelinechronicle:phase14_baseline_validation"
+    },
+    {
+      "source": "run:pipelinechronicle:phase14_baseline_validation",
+      "relation": "consumes",
+      "target": "source_bundle:pipelinechronicle"
+    },
+    {
+      "source": "run:pipelinechronicle:phase14_baseline_validation",
+      "relation": "uses_adapter",
+      "target": "adapter:prepare_generic_markdown_chronicle"
+    },
+    {
+      "source": "run:pipelinechronicle:phase14_baseline_validation",
+      "relation": "produces",
+      "target": "evidence:pipelinechronicle:phase14_baseline_validation:RUN_SUMMARY.md"
+    },
+    {
+      "source": "run:pipelinechronicle:phase14_baseline_validation",
+      "relation": "produces",
+      "target": "evidence:pipelinechronicle:phase14_baseline_validation:run_metrics.json"
+    },
+    {
+      "source": "run:pipelinechronicle:phase14_baseline_validation",
+      "relation": "produces",
+      "target": "evidence:pipelinechronicle:phase14_baseline_validation:prepare_metrics.json"
+    },
+    {
+      "source": "run:pipelinechronicle:phase14_baseline_validation",
+      "relation": "produces",
+      "target": "evidence:pipelinechronicle:phase14_baseline_validation:run.log"
+    },
+    {
+      "source": "run:pipelinechronicle:phase14_baseline_validation",
+      "relation": "produces",
+      "target": "evidence:pipelinechronicle:phase14_baseline_validation:performance.txt"
+    },
+    {
+      "source": "run:pipelinechronicle:phase14_baseline_validation",
+      "relation": "produces",
+      "target": "evidence:pipelinechronicle:phase14_baseline_validation:topic_run_manifest.json"
+    },
+    {
+      "source": "run:pipelinechronicle:phase14_baseline_validation",
+      "relation": "produces",
+      "target": "evidence:pipelinechronicle:phase14_baseline_validation:topic_run_ontology.json"
+    },
+    {
+      "source": "run:pipelinechronicle:phase14_baseline_validation",
+      "relation": "produces",
+      "target": "evidence:pipelinechronicle:phase14_baseline_validation:trend_report.json"
+    },
+    {
+      "source": "run:pipelinechronicle:phase14_baseline_validation",
+      "relation": "produces",
+      "target": "evidence:pipelinechronicle:phase14_baseline_validation:trend_report.md"
+    },
+    {
+      "source": "run:pipelinechronicle:phase14_baseline_validation",
+      "relation": "produces",
+      "target": "evidence:pipelinechronicle:phase14_baseline_validation:source_attribution.json"
+    },
+    {
+      "source": "run:pipelinechronicle:phase14_baseline_validation",
+      "relation": "contains",
+      "target": "report_event:pipelinechronicle:phase14_baseline_validation"
+    },
+    {
+      "source": "verdict:pipelinechronicle:phase14_baseline_validation",
+      "relation": "summarizes",
+      "target": "run:pipelinechronicle:phase14_baseline_validation"
+    }
+  ]
+}

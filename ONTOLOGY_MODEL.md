@@ -6,7 +6,8 @@
 
 > **Date:** 1404-11-25 (2026-02-14)
 
-> **Status:** Skeleton — ready for population
+> **Status:** Incrementally populated — Phase 13/14 per-run spine validated;
+> project-level topic-run instances remain outstanding
 
 
 
@@ -208,25 +209,88 @@ Entity (abstract)
 | `mirrors` | MirrorPair | Artifact | Active <-> Snapshot correspondence |
 | `evolves_to` | VersionHistory | VersionHistory | Temporal ordering of versions |
 
-| `is_duplicate_of` | Artifact | Artifact | Same name/content as another file |
+---
 
-| `wraps` | CompatibilityWrapper | Artifact | Re-exports from target module |
+## 4. Topic-Run Ontology Spine (Phase 13 Implemented, Phase 14 Validated)
 
-| `mirrors` | MirrorPair | Artifact | Active <-> Snapshot correspondence |
+Phase 13 implemented a small strategic spine that every generic topic-report
+run emits. Phase 14 validated the same entity and relation coverage across the
+InsuranceChatbot and pipelinechronicle topics. A later ontology phase can enrich
+this stable evidence contract incrementally.
 
-| `evolves_to` | VersionHistory | VersionHistory | Temporal ordering of versions |
+The manifest's canonical `topic` flows through the runner into preparation and
+run metrics, summary evidence, `TopicRun`, and related ontology identifiers:
+`topic_manifest.json -> prepare_metrics.json -> run_metrics.json / RUN_SUMMARY.md
+-> topic_run_ontology.json`. This keeps topic identity manifest-owned rather
+than adapter-specific.
 
+| Entity | Meaning |
+|--------|---------|
+| Topic | Named subject being reported on |
+| SourceBundle | Raw source folder or file set consumed by a run |
+| TopicAdapter | Preparation logic that converts source-native structure into staged Chronicle events |
+| TopicRun | One measured execution for one topic |
+| StagedSource | Adapter output fed into Chronicle ingestion |
+| ReportEvent | Normalized event produced by ingest/merge |
+| Theme | Topic vocabulary label applied during categorization |
+| Metric | Count, duration, or quality gate value measured for a run |
+| EvidenceArtifact | File proving a run result, such as `RUN_SUMMARY.md` or `run_metrics.json` |
+| Verdict | PASS, REVIEW, or FAIL decision for a run |
 
+Minimum relations:
+
+| Relation | Domain | Range | Description |
+|----------|--------|-------|-------------|
+| `consumes` | TopicRun | SourceBundle | Raw material used by the run |
+| `uses_adapter` | TopicRun | TopicAdapter | Preparation logic used |
+| `produces` | TopicRun | EvidenceArtifact | Report, metrics, logs, and appendices |
+| `contains` | TopicRun | ReportEvent | Events produced in the run |
+| `tagged_with` | ReportEvent | Theme | Theme assignment |
+| `measures` | Metric | TopicRun | Metric value for the run |
+| `summarizes` | Verdict | TopicRun | Quality decision |
+
+This keeps ontology work strategic without blocking the runner. Two different
+topics now satisfy the same runner, metric, evidence, and ontology schema.
+Project Phase 15 adds file-level provenance (`source_lineage`) and a semantic
+design gate. Project Phase 16 adds section/commit locators via
+`event-lineage-v1` / `event-correlation-v1` evidence sidecars. Project Phase 17
+adds `merged-note-aware-v1` actual survivor membership and a second-run
+stable-id comparison; individual ontology ReportEvent emission remains behind
+the Phase 16.4 / Phase 17 gate. SemanticConcept emission remains outstanding.
+See `docs/PHASE16_EVENT_IDENTITY_AND_SECTION_PROVENANCE.md` and
+`docs/PHASE17_EVENT_PROVENANCE_SURVIVOR_AND_REPEATABILITY.md`.
+
+The canonical input catalog now anchors the upstream identity flow:
+
+```text
+inputs/catalog.json entry → SourceBundle → source_lineage → StagedSource
+                         → event_lineage / event_correlation (evidence)
+                         → aggregate ReportEvent → EvidenceArtifact → Verdict
+```
+
+Catalog SHA-256 values protect corpus identity; they do not create individual
+ontology event entities or authorize `derived_from`/`mentions` relations. Those
+remain behind the Phase 15/16 semantic and ontology migration gates.
+
+### Architecture domains are not ontology modules
+
+The whole-project bounded domains—Corpus Governance, Chronicle Engine, Topic Reporting, Evidence Governance, WordPipe Runtime, and Historical Archive—assign responsibility to the existing three subsystems plus the Topic Report Runner. They do not add entity types to the 10-type/7-relation topic-run spine and do not imply one Python package per domain or ontology entity. `WordHorrorStories/<topic>/` is an active Topic Reporting workspace; `_ARCHIVE/`, `_WORK/snapshot/`, and `_META/` are historical/support boundaries rather than runtime sources.
+
+Topic Reporting owns the manifest-to-run-evidence flow and evidence schemas, while Evidence Governance owns collision protection, append-only placement, and preservation. Corpus Governance is an operator/CI prerequisite when a catalogued input is used; a manifest may instead declare another read-only topic source.
+
+Broad topic-runner decomposition is conditional, not an active Project Phase 15 deliverable. Reconsider it only when a third adapter exposes concrete coupling or ontology schema evolution makes the current serializer unsafe.
+
+Until a primary trigger occurs, new semantic questions should extend and test the existing projection against both topics without reorganizing the filesystem. Secondary architectural signals require audited repeated evidence as defined in `ARCHITECTURE_AND_MODULES.md`; textual frequency and ontology labels are not refactor authorization.
 
 ---
 
 
 
-## 4. Initial Instances (Seeded from Project)
+## 5. Initial Instances (Seeded from Project)
 
 
 
-### 4.1 Artifacts
+### 5.1 Artifacts
 
 
 
@@ -275,7 +339,7 @@ Entity (abstract)
 
 
 
-### 4.2 Duplicate Sets (Populated from Analysis)
+### 5.2 Duplicate Sets (Populated from Analysis)
 
 
 
@@ -305,7 +369,7 @@ Entity (abstract)
 
 
 
-### 4.3 Activity Periods
+### 5.3 Activity Periods
 
 
 
@@ -334,7 +398,7 @@ Entity (abstract)
 
 
 
-### 4.3 Claims (Sample)
+### 5.4 Claims (Sample)
 
 
 
@@ -371,7 +435,7 @@ Entity (abstract)
 
 
 
-## 5. Population Plan
+## 6. Population Plan
 
 
 
@@ -411,7 +475,7 @@ Entity (abstract)
 
 
 
-## 6. Linking Convention (Ontology ↔ Journal ↔ Roadmap)
+## 7. Linking Convention (Ontology ↔ Journal ↔ Roadmap)
 
 
 
@@ -457,7 +521,7 @@ JOURNAL ENTRY EXAMPLE:
 
 
 
-## 7. Change Log
+## 8. Change Log
 
 
 

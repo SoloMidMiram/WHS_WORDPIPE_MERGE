@@ -656,7 +656,8 @@ class TestVerifyIngestCore:
         verify = self._import_verify()
         raw_dir = Path(verify.DEFAULT_RAW_DIR)
         ingest_script = Path(verify.DEFAULT_INGEST)
-        assert str(raw_dir).endswith("chatgpt_mds")
+        assert raw_dir.as_posix() == "inputs/chatgpt-chronicle/markdown"
+        assert raw_dir.is_dir()
         assert str(ingest_script).endswith("ingest.py")
 
     def test_parse_ingest_stderr_ok(self):

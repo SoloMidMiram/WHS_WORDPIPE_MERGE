@@ -2,6 +2,7 @@
 
 > **Purpose:** Explicit classification of every top-level directory — what is runtime product, what is tooling, what is archive/evidence, and what is experimental/manual material.
 > **See also:** `pyproject.toml` for packaging and pytest config; `docs/engineering/MODULES_PACKAGES.md` for import rules within `wordpipe/`.
+> **Root policy:** `ROOT_ORGANIZATION.md` defines the root allowlist and generated-output placement rules.
 
 ---
 
@@ -19,9 +20,9 @@
 | `_META/` | Snapshot metadata | No | No | No |
 | `_SECURITY/` | Security scan reports | No | No | No |
 | `_INBOX/` | Reserved for incoming files | No | No | No |
-| `inputs/` | Sample / user input documents | No | No (excluded via `norecursedirs`) | No |
+| `inputs/` | Canonical, hash-catalogued corpus inputs | No | No (excluded via `norecursedirs`) | No |
 | `0209-*` (and similar dated dirs) | Dated pipeline run artifacts | No | No (excluded via `norecursedirs`) | No |
-| `WordHorrorStories/` | Content archive (legacy experiments) | No | No (`WordHorrorStories/legacy` excluded via `norecursedirs`) | No |
+| `WordHorrorStories/` | Active topic workspaces plus preserved legacy content | No | No (`WordHorrorStories/legacy` excluded via `norecursedirs`) | No |
 | `tests/` | Unit tests | No | Yes (`testpaths = ["tests"]`) | No |
 
 ---
@@ -70,6 +71,16 @@ Runtime code may import from:
 - `tests/` helpers (only in test context, never in production code)
 - `docs/` is documentation-only and not importable.
 
+The narrow machine-enforced v1 rules are:
+
+- `wordpipe` must not import `tools`, `pipeline`, `WordHorrorStories`, or `_ARCHIVE`.
+- `wordpipe.core` and `wordpipe.interfaces` must not import adapters, orchestration, Chronicle, or tools.
+- `wordpipe.chronicle` must not import topic adapters, `run_topic_report`, or DOCX runtime adapters.
+
+Run `python tools/check_architecture_boundaries.py --root .` to enforce those static import directions. The checker scans `wordpipe/` and `pipeline/` only, ignores imports guarded solely by `TYPE_CHECKING`, and centralizes six reviewed composition-root/wrapper path roles in one registry. No registered role currently bypasses a forbidden v1 edge. `tools/` import hygiene and more detailed `wordpipe.steps` inward rules remain policy/test concerns rather than AST-enforced v1 rules. The checker cannot see dynamic imports, subprocess calls, plugin entry points, or test-time module loading, so it is not a full call graph or security proof.
+
+Broad topic-runner decomposition is conditional, not an active Project Phase 15 deliverable. Reconsider it only when a third adapter exposes concrete coupling or ontology schema evolution makes the current serializer unsafe.
+
 ---
 
 ## Rules for Future Files
@@ -82,10 +93,17 @@ When adding new files, place them according to their kind:
 | CLI tool / pipeline stage | `pipeline/` or `tools/` |
 | Manual dev script or one-off experiment | `scripts/<area>/` |
 | Documentation | `docs/<area>/` |
-| Sample input data | `inputs/<project>/` |
+| Corpus input data | `inputs/<corpus>/<format>/` plus `inputs/catalog.json`, or a manifest-declared read-only topic source |
 | Pipeline run output | `0209-<date>/` (or similar dated dir) |
 | Evidence / audit artifacts | `_ARCHIVE/<area>/` |
 | Work-in-progress snapshots | `_WORK/<area>/` |
+| Temporary/generated reports | `_WORK/generated-reports/` |
+| Manual report builders and diagnostics | `scripts/reporting/` |
+
+Corpus inputs are immutable by default and checked by
+`python tools/check_input_catalog.py --root .`. Generated DOCX reports are not
+inputs; source DOCX files, when supplied, belong under an explicitly catalogued
+`inputs/<corpus>/docx/` directory.
 
 ---
 
@@ -103,10 +121,12 @@ _WORK/                 # work snapshots                 (pytest: no,  import: no
 _META/                 # snapshot metadata              (pytest: no,  import: no)
 _SECURITY/             # security scan reports          (pytest: no,  import: no)
 _INBOX/                # reserved for incoming          (pytest: no,  import: no)
-inputs/                # sample/user input documents    (pytest: no,  import: no)
+inputs/                # hash-catalogued corpus inputs  (pytest: no,  import: no)
 0209-*/                # dated pipeline run artifacts   (pytest: no,  import: no)
-WordHorrorStories/     # content archive (legacy)       (pytest: no,  import: no)
+WordHorrorStories/     # active topic workspaces/legacy (pytest: no,  import: no)
 ```
+
+Active `WordHorrorStories/<topic>/` manifests, themes, documentation, and output trees belong to Topic Reporting, not Historical Archive. Topic Reporting owns run-evidence schemas; Evidence Governance owns their append-only placement, collision policy, and historical retention. `_ARCHIVE/`, `_WORK/snapshot/`, and `_META/` remain evidence/support boundaries and never become active import surfaces.
 
 ## Chronicle Pipeline
 
@@ -153,3 +173,5 @@ Rules:
 - `docs/engineering/CHRONICLE_CANONICAL_DECISION.md` — Canonical source decision for chronicle pipeline
 - `ARCHITECTURE_AND_MODULES.md` — Comprehensive 3-subsystem architecture reference
 - `INDEX.md` — Full project file map
+- `ROOT_ORGANIZATION.md` — Root allowlist and placement enforcement
+- `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md` — Current implementation/roadmap crosswalk

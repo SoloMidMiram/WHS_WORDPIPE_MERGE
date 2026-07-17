@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "run_id": "phase15_lineage_validation",
+  "source_count": 3,
+  "total_contributed_event_count": 200,
+  "sources": [
+    {
+      "staged_source_file": "staged_input\\01_commit_history.md",
+      "normalised_file": "pipeline\\normalised\\01_commit_history.md",
+      "staged_filename": "01_commit_history.md",
+      "normalised_filename": "01_commit_history.md",
+      "contributed_event_count": 169,
+      "source_file": "Commit history.md",
+      "staged_event_count": 169,
+      "count_mismatch": false
+    },
+    {
+      "staged_source_file": "staged_input\\02_project_digest.md",
+      "normalised_file": "pipeline\\normalised\\02_project_digest.md",
+      "staged_filename": "02_project_digest.md",
+      "normalised_filename": "02_project_digest.md",
+      "contributed_event_count": 16,
+      "source_file": "combined_git_history_digest (2).md",
+      "staged_event_count": 16,
+      "count_mismatch": false
+    },
+    {
+      "staged_source_file": "staged_input\\03_roadmap.md",
+      "normalised_file": "pipeline\\normalised\\03_roadmap.md",
+      "staged_filename": "03_roadmap.md",
+      "normalised_filename": "03_roadmap.md",
+      "contributed_event_count": 15,
+      "source_file": "ROADMAP.md",
+      "staged_event_count": 15,
+      "count_mismatch": false
+    }
+  ]
+}

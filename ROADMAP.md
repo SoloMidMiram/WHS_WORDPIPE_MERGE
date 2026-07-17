@@ -2,7 +2,7 @@
 
 > **Date (Gregorian):** 2026-07-09
 > **Date (Shamsi/Jalali):** 1405-04-18
-> **Last Updated:** 2026-07-09
+> **Last Updated:** 2026-07-17
 > **Branch:** `main`
 
 Current stabilization status:
@@ -11,7 +11,17 @@ Current stabilization status:
 - `pipeline/` and `tools/pipeline-chronicle/` are compatibility/operator CLI surfaces, not runtime import surfaces.
 - WordPipe orchestration is step-based; read/style failures are fatal.
 - `index` remains in `pipeline/` and is deferred from canonical extraction.
-- P0–P2 remediation validated: **105 tests pass**; see [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_P2_VALIDATION_REPORT.md).
+- Historical P0–P2 remediation baseline: **105 tests passed** on 2026-07-09;
+  see [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_P2_VALIDATION_REPORT.md).
+- Current validation results are recorded by dated activity in `JOURNAL.md` and
+  `VERIFICATION.md`; transient test/file counts are not architecture claims.
+- Generic topic-runner workflow validated on InsuranceChatbot: 3 Markdown
+  inputs, 200 staged/merged events, 194 events with theme tags, 0
+  warnings/errors, trend comparison, source attribution, and ontology evidence.
+  Evidence: [`WordHorrorStories/insurancechatbot/output/phase13_trend_validation/RUN_SUMMARY.md`](WordHorrorStories/insurancechatbot/output/phase13_trend_validation/RUN_SUMMARY.md).
+- Phase 14 genericity remediation is validated on the second topic; root layout
+  is enforced by `tools/check_root_layout.py`. See the
+  [implementation alignment audit](docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md).
 
 ---
 
@@ -31,16 +41,18 @@ Transform this workspace into a **maintainable, evidence-backed, ontology-ground
 
 | # | Goal | Priority | Status |
 |---|------|----------|--------|
-| G1 | **Path portability**: All doc paths relative, no absolute `F:\...` references | P0 | ✅ Done |
+| G1 | **Path portability**: Operational docs use repo-relative paths or placeholders | P0 | ✅ Verified after 2026-07-16 cleanup |
 | G2 | **Doc accuracy verification**: Verify all `.md` descriptions match actual code/modules | P0 | ✅ Done (P0–P2 validation pass, 2026-07-09) |
-| G3 | **Ontological model**: Build a structured ontology of project entities, periods, claims, evidence | P1 | ✅ Done |
+| G3 | **Ontological model**: Build a structured ontology of project entities, periods, claims, evidence | P1 | 🟡 Partial — model and per-run spine exist; project-level topic-run instances outstanding |
 | G4 | **Journal system**: Create dated journal tracking periods of activity with claims/results/verification | P1 | ✅ Done |
 | G5 | **Roadmap anchor**: Single source of truth for planned vs completed work | P0 | ✅ Done |
 | G6 | **Comprehensive architecture reference**: ARCHITECTURE_AND_MODULES.md covering all 3 subsystems | P0 | ✅ Done |
-| G7 | **NLP/ontology grounding**: Evaluate NLP/POS tagging for extracting ontology from project text | P2 | 🔴 Not started |
-| G8 | **TraceLedger alignment**: WordPipe as a library consumable by TraceLedger | P1 | 🟡 Planned |
+| G7 | **NLP/ontology grounding**: Evaluate NLP/POS tagging for extracting ontology from project text | P2 | 🔴 OUTSTANDING |
+| G8 | **TraceLedger alignment**: WordPipe as a library consumable by TraceLedger | P1 | 🟡 PARTIAL — protocols/library boundary exist; external integration not validated here |
 | G9 | **Chronicle automation**: Composable CLI pipeline to ingest, merge, categorize, index deep-search files | P3 | ✅ Done |
 | G10 | **P0/P1 stabilization**: Chronicle deps, canonical verify, fail-fast orchestration, step tests, CI | P0/P1 | ✅ Done |
+| G11 | **Topic-neutral report performance loop**: Stage non-Chronicle Markdown bundles, measure extraction/tagging/runtime, and iterate from evidence | P1 | ✅ Done (template + InsuranceChatbot run) |
+| G12 | **Generic topic runner and ontology spine**: Run any configured topic with one audited command, trend metrics, and minimal ontology outputs | P1 | ✅ Done (Phase 13) |
 
 ---
 
@@ -58,6 +70,153 @@ Transform this workspace into a **maintainable, evidence-backed, ontology-ground
 ---
 
 ## 📋 Phases (Newest First)
+
+Status labels: **VERIFIED** means implementation plus proportionate evidence;
+**PARTIAL** means meaningful work exists but the stated outcome is incomplete;
+**OUTSTANDING** means planned behavior/evidence is absent; **SUPERSEDED** means a
+later implementation satisfies the intent differently. Detailed crosswalk:
+[`docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`](docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md).
+
+### Phase 14 — Second Topic Adapter & Multi-Topic Ontology Readiness (P1)
+> Goal: Add a second topic through the Phase 13 generic runner, proving reusability and providing multi-topic evidence before any strategic ontology expansion.
+> **Date:** 2026-07-16 | **Status:** ✅ Completed
+
+| Slice | Task | Status |
+|-------|------|--------|
+| 14.1 | Identify and validate a second Markdown topic | ✅ Done (pipelinechronicle: `_ARCHIVE/pipeline-chronicle/`, 5 files) |
+| 14.2 | Create generic Markdown-section adapter (`tools/prepare_generic_markdown_chronicle.py`) | ✅ Done |
+| 14.3 | Register adapter in `ADAPTER_REGISTRY` and add topic folder (manifest, themes, README) | ✅ Done |
+| 14.4 | Baseline + trend runs through the generic runner | ✅ Done |
+| 14.5 | Validate ontology spine with multi-topic evidence | ✅ Done |
+| 14.6 | Add adapter tests and runner registry tests | ✅ Done |
+| 14.7 | Update docs and assess Phase 15 readiness | ✅ Done |
+| 14.8 | Remediate genericity review findings and map Phase 14 context | ✅ Done (dynamic month headings, manifest topic summaries, `##` boundary documented) |
+| 14.9 | Audit roadmap claims, label outstanding work, and enforce root organization | ✅ VERIFIED (alignment audit + root checker) |
+
+Phase 14 output: `WordHorrorStories/pipelinechronicle/output/phase14_baseline_validation/`
+and `phase14_trend_validation/` — 50 staged/merged/tagged events, 0 errors, PASS verdict.
+Trend COMPARED against baseline. Both topics (insurancechatbot + pipelinechronicle)
+have identical ontology spine coverage.
+
+Genericity remediation evidence: `phase14_genericity_fix_baseline/` and
+`phase14_genericity_fix_trend/` preserve the 50/50/50 PASS baseline while
+proving date-derived month headings and manifest-derived summary titles.
+
+Phase 15 (semantic ontology expansion) is now justified — see
+[Phase 14 doc](docs/PHASE14_SECOND_TOPIC_ONTOLOGY_READINESS.md) for the readiness assessment.
+
+### Phase 15 — Provenance Foundation & Semantic Ontology Design (P1)
+> Goal: Strengthen adapter preparation contracts and file-level source lineage before event-level semantic ontology expansion.
+> **Date:** 2026-07-17 | **Status:** ✅ Provenance foundation complete; semantic extraction outstanding
+
+Design doc: [`docs/PHASE15_PROJECT_SEMANTIC_ONTOLOGY_DESIGN.md`](docs/PHASE15_PROJECT_SEMANTIC_ONTOLOGY_DESIGN.md)
+
+| Slice | Task | Status |
+|-------|------|--------|
+| 15.1 | Common preparation-metrics validation in the topic runner | ✅ Done |
+| 15.2 | Consumed-source metrics semantics (`input_file_count` / bytes / lines) | ✅ Done |
+| 15.3 | Built-in adapter file-level `source_lineage` | ✅ Done |
+| 15.4 | Fail-closed prepare-contract handling before pipeline | ✅ Done |
+| 15.5 | Lineage-aware aggregate `source_attribution.json` | ✅ Done |
+| 15.6 | Project Phase 15 semantic design + decision gate | ✅ Done |
+| 15.7 | Append-only run-directory reservation and portable run-ID validation | ✅ Done |
+| 15.8 | Top-level staged-path and finite coverage validation | ✅ Done |
+| 15.9 | Canonical hash-catalogued input corpus migration and CI guard | ✅ Done |
+| 15.10 | Fresh paired Phase 15 closeout evidence under v2 run IDs | ✅ Done |
+| 15.11 | Whole-project domain crosswalk, architecture stability gate, and static import-boundary check | ✅ Done |
+
+Broad topic-runner decomposition is conditional, not an active Project Phase 15 deliverable. Reconsider it only when a third adapter exposes concrete coupling or ontology schema evolution makes the current serializer unsafe.
+
+The third-adapter and unsafe-serializer conditions are the primary triggers. Secondary signals—a defect requiring synchronized production edits on two separately audited occasions, an import-boundary violation that cannot be repaired locally, or a public contract that cannot evolve safely despite characterization tests—support but do not independently mandate broad decomposition. Repeated-defect evidence must be dated and path/test-backed in `JOURNAL.md` or the implementation-alignment audit.
+
+This slice implements file-level provenance only (`SourceBundle → raw source → StagedSource`). Source-section locators and stable individual ReportEvent IDs are delivered in Project Phase 16 as evidence sidecars; semantic concept extraction remains outstanding.
+
+### Phase 17 — Event-Provenance Survivor Integrity & Repeatability (P1)
+> Goal: Independently verify actual merged survivor keys and prove stable SourceEvent/ReportEvent mappings across a second fresh paired run before ontology v2 design.
+> **Date:** 2026-07-17 | **Status:** ✅ Done — survivor verification + paired stability; ontology emission excluded
+
+Design doc: [`docs/PHASE17_EVENT_PROVENANCE_SURVIVOR_AND_REPEATABILITY.md`](docs/PHASE17_EVENT_PROVENANCE_SURVIVOR_AND_REPEATABILITY.md)
+
+| Slice | Task | Status |
+|-------|------|--------|
+| 17.1 | Merge-note-aware actual survivor-key verification without changing merge behavior | ✅ Done |
+| 17.2 | Auditable Phase 16 baseline → Phase 17 stable-id comparison | ✅ Done |
+| 17.3 | Fresh paired `phase17_event_provenance_repeatability` runs after collision and preservation preflight | ✅ Done |
+| 17.4 | Repeatability gate assessment; ontology emission remains excluded | ✅ Done |
+
+Controlled evidence: `phase17_event_provenance_repeatability` and reserved `phase17_provenance_stability` under both topic output bases. Phase 16 `unmerged_source_event_count` remains keep-both count-parity history; Phase 17 uses actual survivor membership (`merged-note-aware-v1`).
+
+Pending Git scope and commit boundaries are recorded in [`docs/engineering/PHASE13_17_COMMIT_DRAFT.md`](docs/engineering/PHASE13_17_COMMIT_DRAFT.md); the inspected Git baseline predates Phase 13, so this working tree must not be described as Phase 15-only.
+
+Broad topic-runner decomposition is conditional, not an active Project Phase 15 deliverable. Reconsider it only when a third adapter exposes concrete coupling or ontology schema evolution makes the current serializer unsafe.
+
+### Phase 16 — Stable Event Identity & Section-Level Provenance (P1)
+> Goal: Transport section/commit locators through prepare → normalised fingerprints → merge survivors without changing Chronicle dedup or aggregate ontology emission.
+> **Date:** 2026-07-17 | **Status:** ✅ Evidence sidecars implemented and closeout-tested; Phase 17 repeatability and individual ontology emission deferred
+
+Design doc: [`docs/PHASE16_EVENT_IDENTITY_AND_SECTION_PROVENANCE.md`](docs/PHASE16_EVENT_IDENTITY_AND_SECTION_PROVENANCE.md)
+
+| Slice | Task | Status |
+|-------|------|--------|
+| 16.0 | Permanent characterization tests (ingest comment→body, hashes, empties) | ✅ Done |
+| 16.1 | Adapter raw `event_lineage` emit + pointer + pre-pipeline envelope | ✅ Done |
+| 16.2 | Post-pipeline correlation before summarize + provenance exit + summary section | ✅ Done |
+| 16.3 | Design doc, roadmap sync, controlled runs (`phase16_event_lineage_validation`) | ✅ Done |
+| 16.4 | Aggregate→individual ontology migration gate (design only; no emission) | ✅ Done |
+
+Broad topic-runner decomposition is conditional, not an active Project Phase 15 deliverable. Reconsider it only when a third adapter exposes concrete coupling or ontology schema evolution makes the current serializer unsafe.
+
+Controlled evidence: `WordHorrorStories/insurancechatbot/output/phase16_event_lineage_validation/` and
+`WordHorrorStories/pipelinechronicle/output/phase16_event_lineage_validation/`.
+
+### Phase 13 — Generic Topic Report Runner & Performance Trends (P1)
+> Goal: Convert the InsuranceChatbot-specific report workflow into a reusable topic-runner with manifests, one-command execution, trend comparison, source attribution, and a minimal ontology spine.
+> **Date:** 2026-07-16 | **Status:** ✅ Completed
+
+Roadmap doc: [`docs/PHASE13_GENERIC_TOPIC_REPORT_RUNNER_ROADMAP.md`](docs/PHASE13_GENERIC_TOPIC_REPORT_RUNNER_ROADMAP.md)
+
+| Slice | Task | Status |
+|-------|------|--------|
+| 13.1 | Define topic-run manifest schema: topic name, input directory, adapter, theme config, output policy, and quality gates | ✅ Done |
+| 13.2 | Add one-command runner for prepare -> pipeline -> summarize -> trend update | ✅ Done |
+| 13.3 | Refactor InsuranceChatbot preparation into the first registry-backed adapter | ✅ Done |
+| 13.4 | Add trend comparison across repeated runs for the same topic | ✅ Done |
+| 13.5 | Emit `topic_run_manifest.json` and `topic_run_ontology.json` for each run | ✅ Done |
+| 13.6 | Improve source attribution in appendix output and/or a source sidecar JSON | ✅ Done (`source_attribution.json`) |
+| 13.7 | Add tests for manifest parsing, dry-run execution, trend comparison, and ontology-spine output | ✅ Done |
+| 13.8 | Update docs with the generic runner command and migration path from bespoke adapters | ✅ Done |
+
+Historical Phase 13 validation: `pytest -q` reported 124 passed. Controlled runs
+`phase13_baseline_validation` and `phase13_trend_validation` prove repeated-run
+trend comparison. The trend run emits `RUN_SUMMARY.md`, `run_metrics.json`,
+`topic_run_manifest.json`, `topic_run_ontology.json`, `trend_report.json`,
+`trend_report.md`, and `source_attribution.json`.
+
+Ontology stance: Phase 13 is the right time to define the strategic ontology
+spine, but not the right time for full ontology population. The minimum model
+should cover `Topic`, `SourceBundle`, `TopicAdapter`, `TopicRun`,
+`StagedSource`, `ReportEvent`, `Theme`, `Metric`, `EvidenceArtifact`, and
+`Verdict`. Larger semantic ontology work should wait until multiple different
+topics have passed through the generic runner.
+
+### Phase 12 — Topic Adapter Performance Loop (P1)
+> Goal: Make the Chronicle pipeline usable for arbitrary long Markdown topics through staging adapters, topic-specific themes, and repeatable performance checks.
+> **Date:** 2026-07-16 | **Status:** ✅ Completed
+
+| Slice | Task | Status |
+|-------|------|--------|
+| 12.1 | Add InsuranceChatbot preparation tool for commit history, project digest, and roadmap Markdown | ✅ Done |
+| 12.2 | Add InsuranceChatbot theme config for knowledge base, retrieval, runtime, ontology, scraper/release, CI, docs, data quality, and operations tags | ✅ Done |
+| 12.3 | Fix Chronicle ingest ISO-date heading extraction for staged topic events | ✅ Done |
+| 12.4 | Add focused topic-adapter tests; suite now passes with 105 tests | ✅ Done |
+| 12.5 | Run measured InsuranceChatbot report and publish `RUN_SUMMARY.md`, `run_metrics.json`, logs, and appendices | ✅ Done |
+| 12.6 | Add topic-neutral iterative performance check template for future subjects | ✅ Done |
+
+Observed performance: 195,293 input bytes across 3 files; 169 commit headings and
+31 section candidates; 200 staged events; 200 merged events; 194 tagged events;
+0 duplicate/conflict entries; 0 warnings/errors; 6.96s wall time.
+
+Template: [`docs/ITERATIVE_PERFORMANCE_CHECK_TEMPLATE.md`](docs/ITERATIVE_PERFORMANCE_CHECK_TEMPLATE.md)
 
 ### Phase 11 — P0–P2 Repository Review Remediation (P0/P1/P2)
 > Goal: Stabilize packaging contract, doc trust, canonical verify, orchestration fail-fast, step tests, segmenter perf, CI
@@ -116,12 +275,14 @@ Validation: [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_
 | 9b.7 | Update `pipeline/chain.ps1` v2 — 5 stages with `-SkipIndex`, `-NoLinkRegistry`, `-SourceCoverage`, `-IndexConfig` switches | ✅ Done |
 | 9b.8 | Re-run pipeline: 100% coverage (was 96.7%), over-tagging 18.0% (was 29.5%), false negatives eliminated | ✅ Done |
 
-**Sub-phase 9c: Reference Builder & Ontology Wiring (🔴 Pending)**
+**Sub-phase 9c: Reference Builder & Ontology Wiring (🟡 PARTIAL / OUTSTANDING)**
 | Task | Description | Status |
 |------|-------------|--------|
-| 9c.1 | Build `pipeline/reference.py` — secondary TOC, topic model, stable anchor IDs | 🔴 |
-| 9c.2 | Wire chronicle pipeline into ontology: add P9 ActivityPeriod instances to ontology.json | 🔴 |
-| 9c.3 | Validate against existing manual merge (`ChatGPT_Incidents_Merged.md`) | 🔴 |
+| 9c.1 | Build `pipeline/reference.py` — secondary TOC, topic model, stable anchor IDs | 🔴 OUTSTANDING |
+| 9c.2 | Wire chronicle pipeline into ontology | 🟡 PARTIAL — P9 ActivityPeriod exists; topic-run instances remain outstanding |
+| 9c.3 | Validate against existing manual merge (`ChatGPT_Incidents_Merged.md`) | 🔴 OUTSTANDING |
+| 9c.4 | Generalize topic adapter pattern beyond InsuranceChatbot with a config-driven adapter registry | ✅ Superseded by Phase 13 |
+| 9c.5 | Add a command wrapper that runs prep, pipeline, summary, and metrics in one audited invocation | ✅ Superseded by Phase 13 |
 
 ### Phase 7 — WordPipe Modular Refactor (P1)
 > Goal: Refactor wordpipe into clean, import-safe layered architecture  
@@ -164,7 +325,7 @@ Validation: [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_
 
 ### Phase 4 — Security Hardening & Pipeline Contracts (P1)
 > Goal: Redact leaked keys, add secrets scanner, standardize stage interfaces  
-> **Date:** 1404/11/22 | **Status:** ✅ Completed
+> **Date:** 1404/11/22 | **Status:** 🟡 PARTIAL — local hardening/contracts verified; remote-history audit outstanding
 
 | Task | Description | Status |
 |------|-------------|--------|
@@ -174,6 +335,7 @@ Validation: [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_
 | 4.4 | Create `tools/pipeline_contracts.py` with StagePaths/StageResult/StageError | ✅ Done |
 | 4.5 | Create `tools/orchestrate.py` for one-command pipeline | ✅ Done |
 | 4.6 | Create pipeline docs (RUNBOOK, CONTRACTS, SECURITY, TOOLS_MODULES, INTEGRATION_MAP, LABOR_REPORT) | ✅ Done |
+| 4.7 | Audit remote refs/history for previously leaked keys | 🔴 OUTSTANDING — local scanner does not prove remote-history cleanup |
 
 ### Phase 3 — Initial Snapshot & Evidence Pipeline (P0)
 > Goal: Extract snapshot, create initial workspace, establish evidence pipeline  
@@ -190,10 +352,40 @@ Validation: [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_
 
 ---
 
+## 🧭 Outstanding Works
+
+These are the active items after the Project Phase 17 survivor-integrity gate.
+Completed Phase 13–17 foundation work is intentionally excluded.
+
+| Priority | Work | Why It Matters | Current Evidence |
+|----------|------|----------------|------------------|
+| P1 | Map Phase 13/14/15/16/17 topic runs into the project-level ontology/activity model | Per-run ontologies exist, but `ontology.json` lacks TopicRun instances | Phase 14–17 prove stable 10-entity/7-relation coverage |
+| P1 | Complete evidence-pipeline portability (`--portable`, `src_rel`/`dst_rel` relocation output, relative report fields) | Older organization phases planned these contracts but current relocation evidence remains absolute-only | `verify_integrity.py` has no `--portable`; relocation output omits relative fields |
+| P1 | Validate the documented TraceLedger consumer integration | Protocol and import boundary exist, but this repository does not prove an external consumer run | EventSink and public library APIs are implemented |
+| P2 | Canonicalize `pipeline/index.py` under `wordpipe.chronicle` | `index` is still the deferred Chronicle stage | Existing Phase 9c deferral |
+| P2 | Build `pipeline/reference.py` / stable secondary TOC | Long reports need stronger navigational references | Existing Phase 9c item |
+| P2 | Validate reference output against the existing manual merge | Phase 9c acceptance evidence is missing | `ChatGPT_Incidents_Merged.md` comparison remains unperformed |
+| P2 | Audit remote refs/history for leaked credentials | Local scanning cannot validate remote history | Local security scan is green |
+| P2 | Add governed duplicate scanning and separate runtime/evidence CI profiles | Original organization Phase 6 deliverables remain incomplete | Minimal combined CI exists; `tools/duplicate_scan.py` does not |
+| P2 | Emit individual ReportEvent entities after Phase 16.4 / Phase 17 gate | Section→event evidence + two-run stability exist; ontology individuals deferred | Phase 16/17 design docs |
+| P3 | Emit SemanticConcept / derived_from / mentions after schema decision | Candidate future additions only; not approved schema yet | Project Phase 15/16 design docs |
+| P3 | Evaluate offline NLP/POS ontology population | Must not hardcode one topic | Two-topic evidence + section lineage now exist |
+| Conditional | Broad topic-runner decomposition | Reconsider only when a third adapter exposes concrete coupling or ontology schema evolution makes the current serializer unsafe | Not an active Project Phase 15 deliverable |
+
+Broad topic-runner decomposition is conditional, not an active Project Phase 15 deliverable. Reconsider it only when a third adapter exposes concrete coupling or ontology schema evolution makes the current serializer unsafe.
+
+---
+
 ## 🏁 Milestones (Newest First)
 
 | MS# | Milestone | Phase | Target Date | Status |
 |-----|-----------|-------|-------------|--------|
+| M16 | Project Phase 17 survivor integrity and stable-id repeatability | Ph17 | 1405-04-26 | ✅ |
+| M15 | Project Phase 16 section provenance sidecars and correlation | Ph16 | 1405-04-26 | ✅ |
+| M14 | Project Phase 15 provenance foundation and semantic design gate | Ph15 | 1405-04-26 | ✅ |
+| M13 | Second-topic genericity remediation and root organization enforcement | Ph14 | 1405-04-25 | ✅ |
+| M12 | Generic topic runner supports manifest-driven one-command runs and trend comparison | Ph13 | 1405-04-25 | ✅ |
+| M11 | Topic-adapter performance loop validated on InsuranceChatbot and template published | Ph12 | 1405-04-25 | ✅ |
 | M10 | Comprehensive architecture reference published, old docs indexed as obsolete | Ph10 | 1404-11-25 | ✅ |
 | M9 | Tag quality: 100% coverage, <=20% over-tagging | Ph9 | 1404-12-20 | ✅ |
 | M8 | Chronicle pipeline operational — ingest→merge→categorize→index works end-to-end | Ph9 | 1404-12-20 | ✅ |
@@ -202,8 +394,8 @@ Validation: [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_
 | M5 | Documentation pack with role-based entrypoints | Ph5 | 1404-11-24 | ✅ |
 | M4 | Security posture improved, pipeline contracts operational | Ph4 | 1404-11-22 | ✅ |
 | M3 | Evidence pipeline established with 98 files inventoried | Ph3 | 1404-11-21 | ✅ |
-| M2 | Doc accuracy verified — all `.md` claims match code | Ph10 | 1404-12-05 | 🔴 |
-| M1 | All doc paths are relative, no `F:\...` in docs | Ph6 | 1404-11-25 | ✅ |
+| M2 | Dated doc-accuracy pass completed; later drift reconciled by current alignment audit | Ph10/14 | 1405-04-25 | ✅ |
+| M1 | Operational documentation uses relative paths/placeholders | Ph6/14 | 1405-04-25 | ✅ |
 
 ---
 
@@ -226,5 +418,8 @@ Validation: [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_
 - [`JOURNAL.md`](JOURNAL.md) — Dated period journal with claims and verification
 - [`ONTOLOGY_MODEL.md`](ONTOLOGY_MODEL.md) — Formal entity/relation model
 - [`pipeline/CODEX_WORKING.md`](pipeline/CODEX_WORKING.md) — Working code reference with evolution timeline and known issues
+- [`docs/PHASE13_GENERIC_TOPIC_REPORT_RUNNER_ROADMAP.md`](docs/PHASE13_GENERIC_TOPIC_REPORT_RUNNER_ROADMAP.md) — Completed generic runner, trend, and ontology-spine roadmap
+- [`docs/ITERATIVE_PERFORMANCE_CHECK_TEMPLATE.md`](docs/ITERATIVE_PERFORMANCE_CHECK_TEMPLATE.md) — Topic-neutral report run performance checklist
+- [`WordHorrorStories/insurancechatbot/output/phase13_trend_validation/RUN_SUMMARY.md`](WordHorrorStories/insurancechatbot/output/phase13_trend_validation/RUN_SUMMARY.md) — Latest measured generic topic-runner run
 - [`docs/OBSOLETE_DOCS.md`](docs/OBSOLETE_DOCS.md) — Index of superseded vs preserved documentation
 - [`docs/README.md`](docs/README.md) — Documentation entrypoint (redirects to current source of truth)

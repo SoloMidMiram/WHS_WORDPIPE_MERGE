@@ -174,6 +174,14 @@ def split_into_events(text: str) -> list[dict[str, str]]:
     def _extract_date_and_title(
         bold_content: str,
     ) -> tuple[Optional[str], str]:
+        iso_date_match = re.match(
+            r"^\s*(\d{4}-\d{2}-\d{2})\s*[-\u2013-]\s*(.+?)\s*$",
+            bold_content,
+            re.DOTALL,
+        )
+        if iso_date_match:
+            return iso_date_match.group(1), iso_date_match.group(2).strip()
+
         dash_match = re.match(r"^\s*(.+)\s*[-\u2013-]\s*(.+)\s*$", bold_content, re.DOTALL)
         if dash_match:
             date_candidate = dash_match.group(1).strip()

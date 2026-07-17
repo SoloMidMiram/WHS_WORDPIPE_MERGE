@@ -63,9 +63,9 @@ tools/pipeline-chronicle/
 | `WordHorrorStories/chatgpt-chronicle/appendix/link_registry.md` | **Target** of `index.py` — extracts external links |
 | `WordHorrorStories/chatgpt-chronicle/appendix/source_coverage.md` | Updated by `merge.py` — merged/dropped/notes per source |
 | `WordHorrorStories/chatgpt-chronicle/book/02_master_current.md` | **Consumed by** `categorize.py` and `reference.py` for Topic Model |
-| `WordHorrorStories/chatgpt-chronicle/sources/raw/chatgpt_mds/*.md` | **Input** to `ingest.py` — raw deep‑search MD files |
+| `inputs/chatgpt-chronicle/markdown/*.md` | **Input** to `ingest.py` — raw deep-search MD files |
 | `WordHorrorStories/chatgpt-chronicle/sources/dropped/` | Populated by `merge.py` when sources are flagged as duplicates |
-| `WordHorrorStories/chatgpt-chronicle/sources/raw/chatgpt_mds/ChatGPT_Incidents_Merged.md` | Example of a **manual merge** that `merge.py` will automate |
+| `inputs/chatgpt-chronicle/markdown/ChatGPT_Incidents_Merged.md` | Example of a **manual merge** that `merge.py` will automate |
 
 ---
 
@@ -97,7 +97,7 @@ Converts a single raw deep‑search file (any `.md` with file:// or https:// cit
 **Example:**
 ```powershell
 python tools/pipeline-chronicle/ingest.py `
-  --input "WordHorrorStories/chatgpt-chronicle/sources/raw/chatgpt_mds/2025-08-06-ChatGPT_Agent_Mode_-_Bugs,_Exploits,_and_Cultural_Phenomena_(June-July_2025).md" `
+  --input "inputs/chatgpt-chronicle/markdown/2025-08-06-ChatGPT_Agent_Mode_-_Bugs,_Exploits,_and_Cultural_Phenomena_(June-July_2025).md" `
   --output "WordHorrorStories/chatgpt-chronicle/sources/normalised/2025-08-06-chatgpt-agent-mode.md" `
   --source-name "ChatGPT Agent Mode Report" `
   --verbose
@@ -258,7 +258,7 @@ A shell script that runs `ingest → merge → categorize → index` in sequence
 
 ```bash
 # Run full pipeline on all raw sources
-./chain.sh --input-dir "WordHorrorStories/chatgpt-chronicle/sources/raw/chatgpt_mds/"
+./chain.sh --input-dir "inputs/chatgpt-chronicle/markdown/"
            --output-dir "WordHorrorStories/chatgpt-chronicle/sources/normalised/"
            --merged "WordHorrorStories/chatgpt-chronicle/sources/merged/merged_chronicle.md"
            --appendix "WordHorrorStories/chatgpt-chronicle/appendix/"
@@ -308,12 +308,12 @@ Each tool reads only the relevant section. CLI flags can override config values 
 ```powershell
 # 1. Ingest two raw deep-search files
 python tools/pipeline-chronicle/ingest.py `
-  --input "WordHorrorStories/chatgpt-chronicle/sources/raw/chatgpt_mds/2025-08-06-ChatGPT_Agent_Mode_-_Bugs,_Exploits,_and_Cultural_Phenomena_(June-July_2025).md" `
+  --input "inputs/chatgpt-chronicle/markdown/2025-08-06-ChatGPT_Agent_Mode_-_Bugs,_Exploits,_and_Cultural_Phenomena_(June-July_2025).md" `
   --output "WordHorrorStories/chatgpt-chronicle/sources/normalised/agent_mode.md" `
   --source-name "Agent Mode Deep Report"
 
 python tools/pipeline-chronicle/ingest.py `
-  --input "WordHorrorStories/chatgpt-chronicle/sources/raw/chatgpt_mds/2025-08-06-ChatGPT's_Bugs_&_Lore_-_May_to_July_2025_Timeline.md" `
+  --input "inputs/chatgpt-chronicle/markdown/2025-08-06-ChatGPT's_Bugs_&_Lore_-_May_to_July_2025_Timeline.md" `
   --output "WordHorrorStories/chatgpt-chronicle/sources/normalised/bugs_lore_may_jul.md" `
   --source-name "Bugs & Lore Timeline"
 

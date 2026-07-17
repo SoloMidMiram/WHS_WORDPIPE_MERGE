@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "run_id": "phase15_lineage_validation_v2",
+  "previous_run_id": "phase15_lineage_validation",
+  "previous_run_path": "..\\phase15_lineage_validation",
+  "status": "COMPARED",
+  "comparisons": [
+    {
+      "metric": "staged_event_count",
+      "current": 200.0,
+      "previous": 200.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "merged_event_count",
+      "current": 200.0,
+      "previous": 200.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "events_with_theme_tags",
+      "current": 194.0,
+      "previous": 194.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "theme_tag_percent",
+      "current": 97.0,
+      "previous": 97.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "warning_count",
+      "current": 0.0,
+      "previous": 0.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "error_count",
+      "current": 0.0,
+      "previous": 0.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "duplicate_conflict_count",
+      "current": 0.0,
+      "previous": 0.0,
+      "delta": 0.0
+    },
+    {
+      "metric": "runner_timing_seconds",
+      "current": 4.742729,
+      "previous": 7.875399,
+      "delta": -3.13267
+    }
+  ]
+}
