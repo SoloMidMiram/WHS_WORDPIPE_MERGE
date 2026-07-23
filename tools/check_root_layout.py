@@ -29,6 +29,7 @@ ALLOWED_FILES = {
 ALLOWED_DIRECTORIES = {
     ".agents",
     ".continue",
+    ".cursor",
     ".git",
     ".github",
     "_ARCHIVE",
