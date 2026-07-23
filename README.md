@@ -103,7 +103,7 @@ python tools/security_scan.py --root . --fail-on-findings
 | [`docs/ITERATIVE_PERFORMANCE_CHECK_TEMPLATE.md`](docs/ITERATIVE_PERFORMANCE_CHECK_TEMPLATE.md) | Topic-neutral template for repeated report performance checks |
 | [`ROOT_ORGANIZATION.md`](ROOT_ORGANIZATION.md) | Root allowlist, placement rules, and generated-output policy |
 | [`docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`](docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md) | Phase evidence crosswalk, corrected flaw claims, and outstanding work |
-| [`docs/engineering/PHASE13_17_COMMIT_DRAFT.md`](docs/engineering/PHASE13_17_COMMIT_DRAFT.md) | Current dirty-tree scope, Phase 13–17 trace map, staging guardrails, and commit drafts |
+| [`docs/engineering/PHASE13_17_COMMIT_DRAFT.md`](docs/engineering/PHASE13_17_COMMIT_DRAFT.md) | Phase 13–17 committed scope, trace map, staging guardrails, and closeout commit record |
 
 ## Documentation Entry Points
 

@@ -146,7 +146,7 @@ Design doc: [`docs/PHASE17_EVENT_PROVENANCE_SURVIVOR_AND_REPEATABILITY.md`](docs
 
 Controlled evidence: `phase17_event_provenance_repeatability` and reserved `phase17_provenance_stability` under both topic output bases. Phase 16 `unmerged_source_event_count` remains keep-both count-parity history; Phase 17 uses actual survivor membership (`merged-note-aware-v1`).
 
-Pending Git scope and commit boundaries are recorded in [`docs/engineering/PHASE13_17_COMMIT_DRAFT.md`](docs/engineering/PHASE13_17_COMMIT_DRAFT.md); the inspected Git baseline predates Phase 13, so this working tree must not be described as Phase 15-only.
+The committed Git scope and boundaries are recorded in [`docs/engineering/PHASE13_17_COMMIT_DRAFT.md`](docs/engineering/PHASE13_17_COMMIT_DRAFT.md). Commit `a635ea2` closes the implementation/evidence stack that began after a Git baseline predating Phase 13; it is not a Phase 15-only change.
 
 Broad topic-runner decomposition is conditional, not an active Project Phase 15 deliverable. Reconsider it only when a third adapter exposes concrete coupling or ontology schema evolution makes the current serializer unsafe.
 

@@ -1,7 +1,7 @@
 # Implementation-to-Roadmap Alignment Audit
 
 > Date: 2026-07-17 (1405/04/26)<br>
-> Status: Current working-tree audit<br>
+> Status: Committed baseline audit (`a635ea2`)<br>
 > Scope: Main roadmap phases, root organization, canonical module boundaries,
 > topic-report evidence, and known implementation debt
 

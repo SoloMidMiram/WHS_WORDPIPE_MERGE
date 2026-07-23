@@ -34,9 +34,9 @@ existed per topic.
 - `docs/PHASE17_EVENT_PROVENANCE_SURVIVOR_AND_REPEATABILITY.md`
 - `tools/compare_event_provenance_stability.py`
 - Topic runs + reserved stability evidence under both `WordHorrorStories/*/output/`
-- `docs/engineering/PHASE13_17_COMMIT_DRAFT.md` records that the current Git
-  baseline predates Phase 13, maps the pending implementation/evidence, and
-  proposes guarded commit boundaries without creating a commit.
+- `docs/engineering/PHASE13_17_COMMIT_DRAFT.md` records that the inspected Git
+  baseline predated Phase 13, maps the implementation/evidence, and records the
+  guarded consolidated closeout commit `a635ea2`.
 
 ---
 

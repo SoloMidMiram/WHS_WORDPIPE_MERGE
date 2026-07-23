@@ -65,7 +65,7 @@ The third-adapter and unsafe-serializer conditions are primary triggers. Seconda
 - [x] Add merge-note-aware actual survivor-key verification without changing Chronicle merge behavior (concept: Verification, Evidence) (completed: 1405/04/26 — merged-note-aware-v1 in tools/run_topic_report.py)
 - [x] Compare Phase 16 and a fresh paired Phase 17 run for exact SourceEvent/ReportEvent id stability (concept: Verification, Evidence) (completed: 1405/04/26 — tools/compare_event_provenance_stability.py + phase17_provenance_stability)
 - [x] Assess the Phase 17 repeatability gate before any individual ontology ReportEvent design or emission (concept: Entity, Verification) (completed: 1405/04/26 — docs/PHASE17_EVENT_PROVENANCE_SURVIVOR_AND_REPEATABILITY.md)
-- [x] Inventory and map the actual Phase 13–17 dirty-tree scope before committing (concept: Doc, Verification) (completed: 1405/04/26 — docs/engineering/PHASE13_17_COMMIT_DRAFT.md; no commit created)
+- [x] Inventory, map, and commit the actual Phase 13–17 dirty-tree scope (concept: Doc, Verification) (completed: 1405/04/26 — docs/engineering/PHASE13_17_COMMIT_DRAFT.md; commit `a635ea2`)
 
 ---
 

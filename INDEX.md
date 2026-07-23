@@ -97,7 +97,7 @@
 | `docs/engineering/REPOSITORY_BOUNDARIES.md` | 📄 Doc | Boundary guide | Directory classification, packaging and pytest rules, import boundaries |
 | `docs/engineering/P0_P2_VALIDATION_REPORT.md` | 📄 Doc | Validation report | P0–P2 remediation stages, claim register, CI readiness (2026-07-09) |
 | `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md` | 📄 Doc | Alignment audit | Phase-by-phase evidence labels, corrected flaw claims, and outstanding architecture debt |
-| `docs/engineering/PHASE13_17_COMMIT_DRAFT.md` | 📄 Doc | Commit draft | Verified working-tree scope, Phase 13–17 trace map, staging boundaries, and commit messages |
+| `docs/engineering/PHASE13_17_COMMIT_DRAFT.md` | 📄 Doc | Commit record | Verified Phase 13–17 scope, staging boundaries, commit messages, and executed commit `a635ea2` |
 
 ### docs/operations/
 
