@@ -5,6 +5,7 @@ Uses fake/dummy implementations — no python-docx, no real filesystem I/O.
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 from typing import Any, Optional
 
@@ -266,3 +267,22 @@ class TestTocStep:
         assert result.updated is False
         assert result.error is not None
         assert "TOC update failed" in result.error
+
+    # ------------------------------------------------------------------
+    # P0.4 — Real Win32MergedpipelineV3TocUpdater behaviour
+    # ------------------------------------------------------------------
+
+    def test_real_toc_adapter_raises_on_windows_missing_import(self):
+        """``Win32MergedpipelineV3TocUpdater().update()`` raises ``ImportError``
+        on Windows (MergedpipelineV3 absent), else returns None on non-Windows."""
+        from wordpipe.adapters.transforms import Win32MergedpipelineV3TocUpdater
+
+        updater = Win32MergedpipelineV3TocUpdater()
+        p = Path("out.docx")
+
+        if sys.platform.startswith("win"):
+            with pytest.raises(ImportError):
+                updater.update(p)
+        else:
+            # Non-Windows: platform guard returns early
+            assert updater.update(p) is None

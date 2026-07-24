@@ -1,7 +1,7 @@
 # Implementation-to-Roadmap Alignment Audit
 
-> Date: 2026-07-17 (1405/04/26)<br>
-> Status: Committed baseline audit (`a635ea2`)<br>
+> Date: 2026-07-24 (1405/05/02)<br>
+> Status: Committed baseline audit (`a635ea2`) plus P0 reliability remediation<br>
 > Scope: Main roadmap phases, root organization, canonical module boundaries,
 > topic-report evidence, and known implementation debt
 
@@ -46,6 +46,7 @@ tests, generated run evidence, and focused inspection.
 | File-level lineage existed without section→event identity | **FIXED through Phases 16–17; semantic concepts OUTSTANDING** | Section/commit locators, stable SourceEvent/ReportEvent sidecars, actual survivor membership, and two-run repeatability are verified; SemanticConcept/mentions/derived_from emission remains deferred |
 | Chronicle `index` is the only active stage not canonical under `wordpipe.chronicle` | **OUTSTANDING** | `pipeline/index.py` exists; `wordpipe/chronicle/index.py` does not |
 | Static project ontology does not contain Phase 13–17 topic-run instances | **PARTIAL** | Per-run ontology JSON is complete and remains aggregate 10/7, while project-level `ontology.json` only contains the older P9 activity |
+| P0 external-review defects (6 findings across verify_integrity, chronicle merge, ComFlattener, TOC adapter, CLI error handling, path guard) | **FIXED in P0 reliability remediation slice** | `--strict` added to orchestration; `validate_event_headings()` pre-scan added; `ComFlattener.__init__` eager import; `Win32MergedpipelineV3TocUpdater` exception blocks removed; CLI rewritten to check `RunReport.errors`; `--in`/`--out` path guard added. 253 tests pass. See `VERIFICATION.md` and `JOURNAL.md` |
 | Evidence portability deliverables are incomplete | **OUTSTANDING** | `verify_integrity.py` lacks `--portable`; generated relocation rows omit `src_rel`/`dst_rel` and retain absolute-only paths |
 | Roadmap outstanding table described completed Phase 14 work as future | **FIXED** | Outstanding table now lists only current work |
 | Root mixed tracked report scripts and generated DOCX outputs with governance files | **FIXED** | Scripts moved to `scripts/reporting/`; reports preserved in `_ARCHIVE/evidence/generated-reports/`; root checker passes |

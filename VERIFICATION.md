@@ -7,6 +7,28 @@
 
 ---
 
+## Latest P0 Reliability Remediation Result
+
+Observed on 2026-07-24 (1405/05/02):
+
+| Check | Observed result |
+|-------|-----------------|
+| P0-focused tests (`test_p0_cli`, `test_pipeline_contracts`, `test_flatteners`, P0.2/P0.4 additions) | **22 new tests** |
+| `pytest -q` | **253 passed** (up from 231) |
+| Architecture boundaries | OK; 296 static edges; 6 reviewed path roles; 0 active v1 bypasses |
+| Root layout / input catalog | Both OK |
+| Documentation links | 36 files scanned; 33 references valid |
+| Security scan | 911 files scanned; 0 findings |
+| `git diff --check` | Exit 0; CRLF conversion notices only |
+| P0.1: `verify_integrity --strict` flag in orchestration | Verified via `--dry-run` subprocess test |
+| P0.2: Malformed event heading pre-scan | 6 validation tests + merge-integration test pass |
+| P0.3: ComFlattener eager fail | Import-safe + construction-raise tests pass |
+| P0.4: TOC adapter explicit failure | Adapter test raises `ImportError` on Windows; returns None on non-Windows |
+| P0.5: CLI error exit code | Success exits 0; error exits 1 (monkeypatched pipeline) |
+| P0.6: `--in`/`--out` path guard | Same path, relative-vs-absolute, case-insensitive (Windows) all rejected |
+
+---
+
 ## Latest Phase 17 Closeout Result
 
 Observed on 2026-07-17 (1405/04/26):

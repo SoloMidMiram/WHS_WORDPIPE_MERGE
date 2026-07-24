@@ -44,6 +44,16 @@
 - [ ] Canonicalize `pipeline/index.py` under `wordpipe.chronicle` with a thin operator wrapper (concept: SourceFile, Command)
 - [ ] Map Phase 13/14/15/16 TopicRun evidence into project-level `ontology.json` activity instances (concept: ActivityPeriod, Evidence)
 
+## P0 Reliability Remediation — Completed: 1405/05/02
+
+- [x] Add `--strict` flag to `verify_integrity.py` invocation in `tools/orchestrate.py` (concept: Verification, Command) (completed: 1405/05/02)
+- [x] Add malformed event heading pre-scan in `wordpipe/chronicle/merge.py` that rejects any `## Event:` line not matching canonical ISO format (concept: Verification, SourceFile) (completed: 1405/05/02)
+- [x] Move `MergedpipelineV3` import from `run()` to `__init__()` in `ComFlattener` for eager failure at construction time (concept: SourceFile, Command) (completed: 1405/05/02)
+- [x] Remove bare `except Exception: return` blocks in `Win32MergedpipelineV3TocUpdater.update()`; conditionalize `toc_updater` in `build_default_deps()` to supply `None` on non-Windows (concept: SourceFile, Verification) (completed: 1405/05/02)
+- [x] Rewrite WordPipe CLI to call `process_docx_v3` directly and return non-zero exit code when `RunReport.errors` is non-empty (concept: Command, Verification) (completed: 1405/05/02)
+- [x] Add `--in`/`--out` resolved-path guard to WordPipe CLI, rejecting identical input/output paths before any mutation (concept: Command, Verification) (completed: 1405/05/02)
+- [x] Add test files: `test_p0_cli.py` (orchestration `--strict`, CLI exit code, path guard), `test_pipeline_contracts.py` (`StageResult.finalize` strict/non-strict), `test_flatteners.py` (import-safety, construction-fail, fallback), plus P0.2 validation tests in `test_pipeline_chronicle.py` and P0.4 adapter test in `test_steps.py` (concept: Verification) (completed: 1405/05/02)
+
 Broad topic-runner decomposition is conditional, not an active Project Phase 15 deliverable. Reconsider it only when a third adapter exposes concrete coupling or ontology schema evolution makes the current serializer unsafe.
 
 The third-adapter and unsafe-serializer conditions are primary triggers. Secondary signals require audited evidence and do not mandate decomposition from one occurrence; repeated cross-module defects must have two dated, path- and test-backed records in `JOURNAL.md` or the implementation-alignment audit.

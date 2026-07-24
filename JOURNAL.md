@@ -6,6 +6,37 @@
 
 ---
 
+## P0 Reliability Remediation
+**Date:** 2026-07-24 (Jalali: 1405/05/02)
+**Phase:** P0 Reliability Remediation
+**Ontology Ref:** ActivityPeriod, Verification, SourceFile, Command
+
+### Context
+An external code review identified 6 P0 reliability defects in the repository. All 6 were verified against the actual codebase and remediated in a single slice. No P1 fixes, refactoring, or evidence reruns were performed.
+
+### What Was Done
+1. **P0.1 — verify_integrity warnings in orchestration:** Added `--strict` flag to `verify_integrity.py` invocation in `tools/orchestrate.py`. Warnings now become errors under orchestrated runs.
+2. **P0.2 — Malformed Chronicle event headings silently vanish:** Added `validate_event_headings()` pre-scan in `wordpipe/chronicle/merge.py` that rejects any `## Event:` line not matching the canonical ISO format (`## Event: YYYY-MM-DD [- Optional Title]`). This catches `unknown`, `TBD`, non-ISO dates, blank dates, etc.
+3. **P0.3 — ComFlattener runtime import failure:** Moved the `MergedpipelineV3` import from `run()` into `__init__()` in `ComFlattener`. Construction now raises `RuntimeError` eagerly if the dependency is missing; `make_flattener` falls back to `XmlFlattener`. Module-level import remains safe.
+4. **P0.4 — TOC adapter silently reports success:** Removed both bare `except Exception: return` blocks in `Win32MergedpipelineV3TocUpdater.update()`. On Windows, imports/execution failures now raise, which `toc_step` catches and returns `TocResult(updated=False, error=...)`. On non-Windows, `build_default_deps()` supplies `toc_updater=None` so `toc_step` skips cleanly.
+5. **P0.5 — WordPipe CLI discards errors:** Rewrote `wordpipe/cli/main.py` to construct `PipelineConfig` and call `process_docx_v3` directly, checking `RunReport.errors` and exiting non-zero on error.
+6. **P0.6 — No `--in`/`--out` guard:** Added resolved-path comparison in the CLI, failing before any mutation when input and output resolve to the same file.
+
+### Claims Verified
+- All 6 P0 findings verified at code level before changes.
+- **253 passed** (`pytest -q`, 2026-07-24), up from 231 (Phase 17 baseline).
+- Architecture boundaries: OK (296 edges, 6 reviewed roles, 0 bypasses).
+- Root layout, input catalog, docs links, security scan: all OK.
+
+### Artifacts Produced
+- `tests/test_p0_cli.py` — orchestration `--strict`, CLI exit code, path guard tests
+- `tests/test_pipeline_contracts.py` — `StageResult.finalize` strict/non-strict contract
+- `tests/test_flatteners.py` — ComFlattener import-safety, construction-fail, fallback tests
+- P0.2 validation tests added to `tests/test_pipeline_chronicle.py`
+- P0.4 adapter test added to `tests/test_steps.py`
+
+---
+
 ## Project Phase 17 Survivor Integrity & Repeatability
 **Date:** 2026-07-17 (Jalali: 1405/04/26)
 **Phase:** Phase 17 — Event-Provenance Survivor Integrity and Repeatability

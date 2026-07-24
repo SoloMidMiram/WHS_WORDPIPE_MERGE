@@ -463,6 +463,69 @@ class TestMergeCore:
         files = merge.collect_input_files([str(f), str(f)], None)
         assert len(files) == 1  # duplicate skipped
 
+    # ------------------------------------------------------------------
+    # P0.2 — Malformed event heading validation
+    # ------------------------------------------------------------------
+
+    def test_validate_event_headings_rejects_unknown(self):
+        """``validate_event_headings`` raises ``ValueError`` for ``## Event: unknown``."""
+        merge = self._import_merge()
+        text = "## Event: unknown\n\nSome content."
+        with pytest.raises(ValueError, match="Malformed event heading"):
+            merge.validate_event_headings(text)
+
+    def test_validate_event_headings_rejects_non_iso(self):
+        """``validate_event_headings`` rejects non-ISO date formats."""
+        merge = self._import_merge()
+        cases = [
+            "## Event: 2026/01/01",
+            "## Event: TBD",
+            "## Event:",
+            "## Event : 2025-06-10",
+        ]
+        for heading in cases:
+            with pytest.raises(ValueError, match="Malformed event heading"):
+                merge.validate_event_headings(heading)
+
+    def test_validate_event_headings_accepts_valid(self):
+        """``validate_event_headings`` passes valid ISO headings."""
+        merge = self._import_merge()
+        cases = [
+            "## Event: 2025-06-10\n\nBody.",
+            "## Event: 2025-06-10 - With Title\n\nBody.",
+            "## Event: 2025-06-10 – En Dash\n\nBody.",
+            "## Event: 2025-12-31 -  \n\nBody with trailing space in title.",
+            "## Event: 2025-06-10\n",
+            "## Event: 2025-06-10 -\n",
+        ]
+        for heading in cases:
+            # Should not raise
+            merge.validate_event_headings(heading)
+
+    def test_validate_event_headings_empty_passes(self):
+        """Empty text or text without any ``## Event:`` line passes."""
+        merge = self._import_merge()
+        merge.validate_event_headings("")  # no raise
+        merge.validate_event_headings("# Just a heading\n\nNo events.\n")  # no raise
+
+    def test_merge_files_malformed_heading_rejected(self, tmp_dir):
+        """``merge_files`` raises ``ValueError`` when a file contains a malformed
+        heading before any processing."""
+        merge = self._import_merge()
+        bad = tmp_dir / "bad.md"
+        bad.write_text(
+            "---\nsource: Bad\n---\n\n"
+            "## Event: unknown\n\nSome content.\n",
+            encoding="utf-8",
+        )
+        with pytest.raises(ValueError, match="Malformed event heading"):
+            merge.merge_files([bad])
+
+    def test_validate_event_headings_normal_text_no_events(self):
+        """``validate_event_headings`` passes on normal text without ``## Event:`` lines."""
+        merge = self._import_merge()
+        merge.validate_event_headings("# Regular markdown\n\nNo event headings.\n")
+
 
 # ==============================================================================
 # categorize.py tests

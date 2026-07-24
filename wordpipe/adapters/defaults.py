@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from typing import Optional
 
 from wordpipe.adapters.docx import (
@@ -35,6 +36,10 @@ def build_default_deps(
         segmenter=DocxSegmenter(),
         logger=sink,
         flattener=fl_adapter,
-        toc_updater=Win32MergedpipelineV3TocUpdater(),
+        toc_updater=(
+            Win32MergedpipelineV3TocUpdater()
+            if sys.platform.startswith("win")
+            else None
+        ),
         ai=None,
     )

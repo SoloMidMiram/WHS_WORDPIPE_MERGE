@@ -59,7 +59,7 @@ def main() -> None:
     commands.extend(
         [
             ["python", "tools/build_legacy_index.py"],
-            ["python", "tools/verify_integrity.py", "--snapshot-root", args.root],
+            ["python", "tools/verify_integrity.py", "--snapshot-root", args.root, "--strict"],
         ]
     )
 

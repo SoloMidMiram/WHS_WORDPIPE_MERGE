@@ -2,7 +2,7 @@
 
 > **Date (Gregorian):** 2026-07-09
 > **Date (Shamsi/Jalali):** 1405-04-18
-> **Last Updated:** 2026-07-17
+> **Last Updated:** 2026-07-24
 > **Branch:** `main`
 
 Current stabilization status:
@@ -22,6 +22,11 @@ Current stabilization status:
 - Phase 14 genericity remediation is validated on the second topic; root layout
   is enforced by `tools/check_root_layout.py`. See the
   [implementation alignment audit](docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md).
+- **2026-07-24: P0 reliability remediation complete.** All 6 verified P0 defects
+  (verify-integrity strict mode, malformed event heading validation, ComFlattener
+  eager fail, TOC adapter explicit failure, CLI error propagation,
+  `--in`/`--out` path guard) are fixed. See
+  [`VERIFICATION.md`](VERIFICATION.md) for results.
 
 ---
 
@@ -381,6 +386,7 @@ Broad topic-runner decomposition is conditional, not an active Project Phase 15 
 | MS# | Milestone | Phase | Target Date | Status |
 |-----|-----------|-------|-------------|--------|
 | M16 | Project Phase 17 survivor integrity and stable-id repeatability | Ph17 | 1405-04-26 | ✅ |
+| M17 | P0 reliability remediation (6 verified defects fixed) | — | 1405-05-02 | ✅ |
 | M15 | Project Phase 16 section provenance sidecars and correlation | Ph16 | 1405-04-26 | ✅ |
 | M14 | Project Phase 15 provenance foundation and semantic design gate | Ph15 | 1405-04-26 | ✅ |
 | M13 | Second-topic genericity remediation and root organization enforcement | Ph14 | 1405-04-25 | ✅ |
