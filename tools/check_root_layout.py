@@ -9,6 +9,7 @@ from pathlib import Path
 
 ALLOWED_FILES = {
     ".env.example",
+    ".gitattributes",
     ".gitignore",
     "AGENTS.md",
     "ARCHITECTURE_AND_MODULES.md",
