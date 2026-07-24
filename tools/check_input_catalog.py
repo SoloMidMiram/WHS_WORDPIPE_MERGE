@@ -18,12 +18,10 @@ LEGACY_INPUT_DIRS = (
 )
 
 
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+def _normalized_content(path: Path) -> bytes:
+    """Read file and normalize CRLF to LF for consistent hashing."""
+    raw = path.read_bytes()
+    return raw.replace(b"\r\n", b"\n")
 
 
 def _catalog_entries(catalog: Any) -> list[dict[str, Any]]:
@@ -87,9 +85,10 @@ def find_violations(root: Path, catalog_path: Path | None = None) -> list[str]:
         if not path.is_file():
             violations.append(f"{rel}: missing input")
             continue
-        if path.stat().st_size != entry.get("size_bytes"):
+        norm = _normalized_content(path)
+        if len(norm) != entry.get("size_bytes"):
             violations.append(f"{rel}: size differs from catalog")
-        if _sha256(path) != expected_hash:
+        if hashlib.sha256(norm).hexdigest() != expected_hash:
             violations.append(f"{rel}: SHA-256 differs from catalog")
 
     for digest, same_hash in hashes.items():
