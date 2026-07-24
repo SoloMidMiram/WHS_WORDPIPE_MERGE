@@ -13,6 +13,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - run: python -m pip install -e ".[chronicle,test]"
       - run: python -c "import pytest; print(f'pytest {pytest.__version__} installed')"
+      - run: python -c "import hashlib, json, os; cat=json.loads(open('inputs/catalog.json').read()); cm={e['path']:e for e in cat['entries']}; os.system('git check-attr -a inputs/chatgpt-chronicle/markdown/ChatGPT_Incidents_Merged.md'); os.system('git config core.autocrlf'); [print(f'DBG:{p} sz={len(open(p,\"rb\").read())} h={hashlib.sha256(open(p,\"rb\").read()).hexdigest()[:16]} cat_sz={cm[p][\"size_bytes\"]} cat_h={cm[p][\"sha256\"][:16]} has_gitattrs={\"inputs/** -text\" in open(\".gitattributes\").read() if os.path.exists(\".gitattributes\") else \"NO_FILE\"}') for p in ['inputs/chatgpt-chronicle/markdown/ChatGPT_Incidents_Merged.md','inputs/insurancechatbot/markdown/ROADMAP.md']]"
       - run: python -m pytest tests -q
       - run: python tools/check_root_layout.py --root .
       - run: python tools/check_input_catalog.py --root .
