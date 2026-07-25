@@ -32,12 +32,10 @@ def _precompute_heading_states(doc: Any) -> List[_HeadingState]:
             h2 = None
             h3 = None
         elif s.startswith("Heading 2"):
-            if h2 is None:
-                h2 = p.text.strip()
-                h3 = None
+            h2 = p.text.strip()
+            h3 = None
         elif s.startswith("Heading 3"):
-            if h3 is None:
-                h3 = p.text.strip()
+            h3 = p.text.strip()
         states.append((h1 or "(No H1)", h2, h3, h1_counter if found_h1 else None))
     return states
 
@@ -72,10 +70,10 @@ def _build_hpath(doc: Any, p_idx: int) -> Tuple[str, str, Optional[str]]:
             h1_index = counter
             h2 = None
             h3 = None
-        elif s.startswith("Heading 2") and not h2:
+        elif s.startswith("Heading 2"):
             h2 = p.text.strip()
             h3 = None
-        elif s.startswith("Heading 3") and not h3:
+        elif s.startswith("Heading 3"):
             h3 = p.text.strip()
     h1 = h1 or "(No H1)"
     parts = [f"H1: {h1}"]

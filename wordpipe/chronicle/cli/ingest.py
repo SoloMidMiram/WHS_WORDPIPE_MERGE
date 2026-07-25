@@ -7,6 +7,7 @@ CLI argument parsing, I/O, and logging.
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import sys
 from datetime import datetime
@@ -39,6 +40,11 @@ def main() -> None:
     parser.add_argument(
         "--date-override",
         help="Force a date (YYYY-MM-DD or YYYY-MM) when file has no parseable dates",
+    )
+    parser.add_argument(
+        "--allow-undated",
+        action="store_true",
+        help="Allow undated events (written with a rejection manifest)",
     )
     parser.add_argument("--verbose", "-v", action="store_true", help="Enable debug logging")
     args = parser.parse_args()
@@ -80,8 +86,51 @@ def main() -> None:
         else:
             logging.warning("No dates found in content; date will be 'unknown'.")
 
-    events = split_into_events(cleaned_text)
-    logging.info("Extracted %d events.", len(events))
+    events, rejection_records = split_into_events(cleaned_text)
+    logging.info("Extracted %d events, %d rejected.", len(events), len(rejection_records))
+
+    # Determine output path
+    if args.output:
+        out_path = Path(args.output)
+    else:
+        out_stem = input_path.stem + "_normalised"
+        out_path = input_path.with_name(out_stem + ".md")
+
+    # Handle rejection records
+    if rejection_records:
+        # Annotate records with input filename
+        input_name = input_path.name
+        for rec in rejection_records:
+            rec["input_file"] = input_name
+
+        manifest = {
+            "manifest_type": "partial" if args.allow_undated else "complete",
+            "input_file": input_name,
+            "accepted_event_count": len(events),
+            "rejected_event_count": len(rejection_records),
+            "rejected_events": rejection_records,
+        }
+
+        manifest_path = out_path.with_suffix(".rejections.json")
+        manifest_path.write_text(
+            json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        logging.info("Rejection manifest written to %s", manifest_path)
+
+        if not args.allow_undated:
+            logging.error(
+                "%d event(s) rejected due to undated headings. "
+                "Use --allow-undated to write partial output instead.",
+                len(rejection_records),
+            )
+            sys.exit(1)
+        # --allow-undated: fall through to write partial output
+        logging.warning(
+            "Writing partial output with %d accepted events (%d rejected).",
+            len(events),
+            len(rejection_records),
+        )
 
     preamble = extract_preamble(cleaned_text, events)
 
@@ -94,11 +143,6 @@ def main() -> None:
         preamble=preamble,
     )
 
-    if args.output:
-        out_path = Path(args.output)
-    else:
-        out_stem = input_path.stem + "_normalised"
-        out_path = input_path.with_name(out_stem + ".md")
     out_path.write_text(normalised_md, encoding="utf-8")
     logging.info("Normalised file written to %s", out_path)
 

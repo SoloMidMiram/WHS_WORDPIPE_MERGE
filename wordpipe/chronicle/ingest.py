@@ -138,10 +138,38 @@ def extract_preamble(text: str, events: list[dict[str, Any]]) -> str:
     return cleaned
 
 
-def split_into_events(text: str) -> list[dict[str, str]]:
+# Rejection reason codes
+REASON_MISSING_EVENT_DATE = "missing_event_date"
+
+
+def _make_rejection_record(
+    input_filename: str,
+    event_index: int,
+    raw_heading: str,
+    rejected_body: str,
+    reason_code: str,
+    line_number: int = 0,
+) -> dict[str, Any]:
+    """Build a structured rejection record for an undated event."""
+    return {
+        "input_file": input_filename,
+        "line_number": line_number,
+        "event_index": event_index,
+        "raw_heading": raw_heading,
+        "rejected_body": rejected_body,
+        "reason_code": reason_code,
+        "reason": "No ISO date or parseable date found in bold heading",
+    }
+
+
+def split_into_events(text: str) -> tuple[list[dict[str, str]], list[dict[str, Any]]]:
     """Split raw markdown into event blocks based on the actual file structure.
 
-    Returns list of dicts with keys: 'date' (str YYYY-MM-DD), 'title' (str), 'body' (str).
+    Returns:
+        (events, rejection_records) where:
+        - events: list of dicts with keys ``date`` (str YYYY-MM-DD),
+          ``title`` (str), ``body`` (str)
+        - rejection_records: list of structured rejection dicts for undated events
     """
     period_pattern = re.compile(
         r"^##\s+(January|February|March|April|May|June|July|"
@@ -153,10 +181,12 @@ def split_into_events(text: str) -> list[dict[str, str]]:
 
     lines = text.splitlines(keepends=False)
     events: list[dict[str, str]] = []
+    rejection_records: list[dict[str, Any]] = []
     current_period = ""
     current_date: Optional[str] = None
     current_title = ""
     current_body: list[str] = []
+    event_index = 0
 
     def _save_current_event() -> None:
         nonlocal current_date, current_title, current_body
@@ -202,8 +232,9 @@ def split_into_events(text: str) -> list[dict[str, str]]:
 
         return None, bold_content.strip()
 
-    for line in lines:
+    for line_idx, line in enumerate(lines):
         stripped = line.strip()
+        line_number = line_idx + 1  # 1-indexed
 
         period_match = period_pattern.match(stripped)
         if period_match:
@@ -215,19 +246,26 @@ def split_into_events(text: str) -> list[dict[str, str]]:
             bullet_match = bullet_bold_pattern.match(stripped)
             if bullet_match:
                 _save_current_event()
+                event_index += 1
                 bold_content = bullet_match.group(1).strip()
                 body_text = bullet_match.group(2).strip()
 
                 extracted_date, extracted_title = _extract_date_and_title(bold_content)
                 if extracted_date is None:
+                    rec = _make_rejection_record(
+                        input_filename="",
+                        event_index=event_index,
+                        raw_heading=stripped,
+                        rejected_body=body_text,
+                        reason_code=REASON_MISSING_EVENT_DATE,
+                        line_number=line_number,
+                    )
+                    rejection_records.append(rec)
                     logging.warning(
-                        "Skipping event with undated heading: %r",
+                        "Rejected event at line %d: undated heading %r",
+                        line_number,
                         bold_content,
                     )
-                    _save_current_event()
-                    current_date = None
-                    current_title = ""
-                    current_body = []
                     continue
                 current_date = extracted_date
                 current_title = extracted_title
@@ -238,7 +276,7 @@ def split_into_events(text: str) -> list[dict[str, str]]:
             current_body.append(line)
 
     _save_current_event()
-    return events
+    return events, rejection_records
 
 
 def format_event(event: dict[str, str]) -> str:

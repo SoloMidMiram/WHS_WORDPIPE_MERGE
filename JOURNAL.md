@@ -6,6 +6,43 @@
 
 ---
 
+## Third-Wave P0/P1 Remediation
+**Date:** 2026-07-25 (Jalali: 1405/05/03)
+**Phase:** P0/P1 Third-Wave Remediation
+**Ontology Ref:** ActivityPeriod, Verification, SourceFile, Command, Doc
+
+### Context
+An external review of the second-wave P0/P1 remediation (PR #2 head `2ab7bda`) identified 5 additional findings (1 P0, 4 P1) plus a CI gap. This slice resolves all 5 findings, adds CI coverage for DOCX and chain.ps1, and establishes decisive acceptance gates.
+
+### What Was Done
+1. **F1 (P0) — Undated events silently discarded:** `split_into_events()` now returns `tuple[list[dict], list[dict]]` — (events, rejection_records). Each rejection record includes `input_file`, `line_number`, `event_index`, `raw_heading`, `rejected_body`, and `reason_code`. CLI added `--allow-undated` flag. Default mode: exit 1, write `complete` rejection manifest, no normalized output. `--allow-undated`: exit 0, write partial output with `partial` manifest.
+2. **F2 (P1) — Flatten failure writes incomplete output:** Preflight: `build_default_deps()` raises `RuntimeError` if `do_flatten=True` and flattener is `_UnavailableFlattener`. Runtime: `WordPipePipeline.run()` returns immediately on flatten error (no output created/overwritten); cleans up `.work.docx` artifact.
+3. **F3 (P1) — Source coverage format mismatch:** `build_source_manifest()` now detects both numbered (`| Number | Source | Count |`) and un-numbered (`| Source | Unique Events | Duplicates | Status |`) table formats. Rejects coverage files with zero valid rows. Preserves zero-event sources and their status.
+4. **F4 (P1) — Default dedup uses title-only:** Changed default from `"title"` to `"date_title"` in all 5 locations: `DEFAULT_CONFIG`, `deduplicate_events()` parameter, unknown-method fallback, CLI help text, and `pipeline/index_config.json`.
+5. **F5 (P1) — Sibling H2/H3 heading context stale:** Removed `is None` guards in both `_precompute_heading_states()` and legacy `_build_hpath()`. Any Heading 2 or Heading 3 now replaces the current state unconditionally.
+6. **CI gap:** Added `docx: true` matrix entry installing `.[chronicle,docx,test]`. Real DOCX CLI test (create DOCX, run `--no-flatten`, verify re-open). Real chain.ps1 test (valid input exits 0, undated input exits 1).
+
+### Claims Verified
+- **270 passed** (`pytest -q`, 2026-07-25), up from 257 (second-wave baseline).
+- 12 acceptance tests in `tests/test_acceptance_remediation.py`: ingest rejection (5), flatten preflight (1), coverage parse (3), dedup default (2), heading sibling (1).
+- Sibling transition test added to `tests/test_segmenter_hpath.py`.
+- Existing `split_into_events()` call sites updated in 5 test files.
+- All CI checks pass: root layout, input catalog, architecture boundaries, docs links, security scan.
+- `tools/__pycache__/` is gitignored (already clean).
+
+### Artifacts Produced
+- `tests/test_acceptance_remediation.py` — 12 new acceptance tests
+- Updated: `wordpipe/chronicle/ingest.py`, `wordpipe/chronicle/cli/ingest.py`,
+  `wordpipe/adapters/defaults.py`, `wordpipe/orchestration/pipeline.py`,
+  `pipeline/index.py`, `wordpipe/adapters/docx/segmenter.py`, `.github/workflows/ci.yml`
+- Updated tests: `tests/test_pipeline_chronicle.py`, `tests/test_prepare_generic_markdown_chronicle.py`,
+  `tests/test_prepare_insurancechatbot_chronicle.py`, `tests/test_phase16_event_identity_characterization.py`,
+  `tests/test_orchestration_pipeline.py`, `tests/test_segmenter_hpath.py`
+- Updated docs: `ROADMAP.md`, `PLAN.md`, `JOURNAL.md`, `VERIFICATION.md`,
+  `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`
+
+---
+
 ## Second-Wave P0/P1 Remediation
 **Date:** 2026-07-25 (Jalali: 1405/05/03)
 **Phase:** P0/P1 Second-Wave Remediation

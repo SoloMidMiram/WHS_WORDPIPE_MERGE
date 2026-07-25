@@ -7,6 +7,24 @@
 
 ---
 
+## Latest Third-Wave P0/P1 Remediation Result
+
+Observed on 2026-07-25 (1405/05/03):
+
+| Check | Observed result |
+|-------|-----------------|
+| `pytest -q` | **270 passed** (up from 257) |
+| Ingest rejection manifest | 5 tests pass (mixed fails, allow-undated works, all-undated fails, structured manifest, no-undated-no-manifest) |
+| Flatten preflight + abort | `_UnavailableFlattener` raises RuntimeError; pipeline aborts on flatten failure (0 segments, no output) |
+| Source coverage parser | Both numbered and un-numbered formats parse; malformed coverage raises; zero-event sources preserved |
+| Dedup default `date_title` | All 5 locations updated; same-title different-dates events both survive |
+| Heading sibling transition | Both precomputed and legacy paths handle H2-B→H3-A→H2-B→H3-B correctly |
+| DOCX CLI test | Real DOCX created, processed with `--no-flatten`, reopened through python-docx |
+| chain.ps1 test | Valid input exits 0; undated input exits non-zero |
+| root_layout | OK |
+| input_catalog | OK (v2 with hash_mode) |
+| docs_link_check | 37 files, 34 refs valid |
+
 ## Latest Second-Wave P0/P1 Remediation Result
 
 Observed on 2026-07-25 (1405/05/03):

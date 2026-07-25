@@ -27,12 +27,12 @@ def test_html_comment_between_bullets_appends_to_preceding_event_body():
 
 - **2026-01-02 - Second:** beta body
 """
-    events = split_into_events(staged)
+    events = split_into_events(staged)[0]
     assert len(events) == 2
     assert "marker:should-not-be-a-protocol" in events[0]["body"]
     assert "marker" not in events[1]["body"]
     hashed = compute_body_hash(events[0]["body"])
-    clean = split_into_events(
+    clean_events = split_into_events(
         """# Source
 
 ## July 2026
@@ -41,15 +41,15 @@ def test_html_comment_between_bullets_appends_to_preceding_event_body():
 
 - **2026-01-02 - Second:** beta body
 """
-    )
-    assert hashed != compute_body_hash(clean[0]["body"])
+    )[0]
+    assert hashed != compute_body_hash(clean_events[0]["body"])
 
 
 def test_mojibake_cleanup_changes_body_before_split():
     raw = "- **2026-01-01 - Title:** helloâ€™s world\n"
     cleaned = clean_mojibake(raw)
     assert "’" in cleaned or "'" in cleaned or "â€™" not in cleaned
-    events = split_into_events(f"# Doc\n\n## January 2026\n\n{cleaned}")
+    events = split_into_events(f"# Doc\n\n## January 2026\n\n{cleaned}")[0]
     assert len(events) == 1
     assert "â€™" not in events[0]["body"]
 
@@ -71,7 +71,7 @@ def test_nested_bold_bullet_escape_round_trip_body_hash(tmp_path):
         "Src",
         [prep.ChronicleEvent("2026-01-01", "Title", escaped)],
     )
-    events = split_into_events(staged)
+    events = split_into_events(staged)[0]
     assert len(events) == 1
     assert events[0]["body"].lstrip().startswith("* **") or "* **" in events[0]["body"]
     normalised = format_event(events[0])

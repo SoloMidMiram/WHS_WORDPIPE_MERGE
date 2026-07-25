@@ -232,7 +232,7 @@ class TestIngestCore:
     def test_extract_preamble_with_events(self, sample_raw_md):
         """Verify preamble extraction captures content before first event."""
         ingest = self._import_ingest()
-        events = ingest.split_into_events(sample_raw_md)
+        events = ingest.split_into_events(sample_raw_md)[0]
         preamble = ingest.extract_preamble(sample_raw_md, events)
         # The preamble should contain the H1 title or be empty (headings stripped)
         assert isinstance(preamble, str)
@@ -241,7 +241,7 @@ class TestIngestCore:
         """Verify preamble returns full text (minus headings) when no events."""
         ingest = self._import_ingest()
         text = "# Just a narrative\n\nNo bullet points here."
-        events = ingest.split_into_events(text)
+        events = ingest.split_into_events(text)[0]
         preamble = ingest.extract_preamble(text, events)
         assert len(preamble) > 0
         # Headings are stripped, so "narrative" is removed; body text remains
@@ -250,7 +250,7 @@ class TestIngestCore:
     def test_split_into_events(self, sample_raw_md):
         """Verify event splitting produces correct number of events."""
         ingest = self._import_ingest()
-        events = ingest.split_into_events(sample_raw_md)
+        events = ingest.split_into_events(sample_raw_md)[0]
         assert len(events) == 4
         assert events[0]["title"] == "Global ChatGPT Outage"
         assert events[1]["title"] == "Memory Glitch"
@@ -260,7 +260,7 @@ class TestIngestCore:
     def test_split_into_events_dates(self, sample_raw_md):
         """Verify event dates are correctly extracted."""
         ingest = self._import_ingest()
-        events = ingest.split_into_events(sample_raw_md)
+        events = ingest.split_into_events(sample_raw_md)[0]
         assert events[0]["date"] == "2025-06-10"
         assert events[1]["date"] == "2025-06-15"
         assert events[2]["date"] == "2025-07-03"

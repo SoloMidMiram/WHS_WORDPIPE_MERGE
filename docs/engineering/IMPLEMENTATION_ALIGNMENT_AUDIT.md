@@ -1,7 +1,7 @@
 # Implementation-to-Roadmap Alignment Audit
 
 > Date: 2026-07-25 (1405/05/03)<br>
-> Status: Committed baseline audit (`a635ea2`) plus P0 reliability remediation plus second-wave P0/P1 closeout<br>
+> Status: Committed baseline audit (`a635ea2`) plus P0 reliability remediation plus second-wave P0/P1 closeout plus third-wave P0/P1 closeout<br>
 > Scope: Main roadmap phases, root organization, canonical module boundaries,
 > topic-report evidence, and known implementation debt
 
@@ -48,6 +48,7 @@ tests, generated run evidence, and focused inspection.
 | Static project ontology does not contain Phase 13–17 topic-run instances | **PARTIAL** | Per-run ontology JSON is complete and remains aggregate 10/7, while project-level `ontology.json` only contains the older P9 activity |
 | P0 external-review defects (6 findings across verify_integrity, chronicle merge, ComFlattener, TOC adapter, CLI error handling, path guard) | **FIXED in P0 reliability remediation slice** | `--strict` added to orchestration; `validate_event_headings()` pre-scan added; `ComFlattener.__init__` eager import; `Win32MergedpipelineV3TocUpdater` exception blocks removed; CLI rewritten to check `RunReport.errors`; `--in`/`--out` path guard added. 253 tests pass. See `VERIFICATION.md` and `JOURNAL.md` |
 | Second-wave P0/P1 review findings (7 findings across flattener decoupling, chain abort, verify defaults, ingest provenance, categorize preamble, REVIEW verdict, API doc alignment, catalog v2) | **FIXED in second-wave slice** | `_can_import_mergedpipeline()` probe + `_UnavailableFlattener` stub; chain.ps1 aborts on `$IngestFailures -gt 0`; `verify_integrity.py` defaults to strict (`--diagnostic-only` to relax); ingest skips undated events; categorize preserves preamble; `run_topic_report.py` returns exit 2 for REVIEW verdict; TraceLedger contract doc corrected; catalog bumped to v2 with hash_mode. 257 tests pass. See `docs/engineering/SECOND_WAVE_P0P1_VALIDATION.md` |
+| Third-wave P0/P1 review findings (5 findings across ingest rejection manifest, flatten preflight+abort, source coverage parser, dedup defaults, sibling heading context; CI gap) | **FIXED in third-wave slice** | `split_into_events()` returns structured rejection records; CLI `--allow-undated` flag; `build_default_deps()` preflight RuntimeError; `WordPipePipeline.run()` aborts on flatten failure; `build_source_manifest()` accepts both numbered/un-numbered formats; dedup defaults aligned to `date_title`; H2/H3 sibling transition guards removed; CI matrix expanded with DOCX extra, real DOCX CLI test, real chain.ps1 execution. 270 tests pass. |
 | Evidence portability deliverables are incomplete | **OUTSTANDING** | `verify_integrity.py` lacks `--portable`; generated relocation rows omit `src_rel`/`dst_rel` and retain absolute-only paths |
 | Roadmap outstanding table described completed Phase 14 work as future | **FIXED** | Outstanding table now lists only current work |
 | Root mixed tracked report scripts and generated DOCX outputs with governance files | **FIXED** | Scripts moved to `scripts/reporting/`; reports preserved in `_ARCHIVE/evidence/generated-reports/`; root checker passes |
@@ -108,8 +109,8 @@ phase documents retain their dated counts.
 | Root layout | OK |
 | Input catalog | OK (v2 with hash_mode) |
 | Architecture boundaries | OK; 296 static edges; 6 reviewed path roles; 0 active v1 bypasses |
-| `pytest -q` | 257 passed |
-| Documentation links | 36 files scanned, 33 references valid |
+| `pytest -q` | 270 passed |
+| Documentation links | 37 files scanned, 34 references valid |
 | Security scan | 911 files scanned, 0 findings |
 | `git diff --check` | Exit 0; line-ending conversion notices only |
 

@@ -60,7 +60,7 @@ SOURCE_LINE_RE = re.compile(r"^#\s*Source:\s*(.+)$", re.MULTILINE)
 DEFAULT_CONFIG: Dict[str, Any] = {
     "output_dir": "appendix",
     "templates_dir": "pipeline/templates",
-    "dedup_method": "title",
+    "dedup_method": "date_title",
     "theme_sort": "name",
     "no_link_registry": False,
     "event_snippet_max_chars": 200,
@@ -182,7 +182,7 @@ def extract_events_from_tagged(tagged_md: str) -> List[Dict[str, Any]]:
 # ------------------------------------------------------------------------------
 def deduplicate_events(
     events: List[Dict[str, Any]],
-    method: str = "title",
+    method: str = "date_title",
 ) -> List[Dict[str, Any]]:
     """
     Deduplicate events by title (normalized) or by date+title.
@@ -200,8 +200,8 @@ def deduplicate_events(
         Deduplicated list of event dicts
     """
     if method not in ("title", "date_title"):
-        logging.warning("Unknown dedup method '%s'; using 'title'.", method)
-        method = "title"
+        logging.warning("Unknown dedup method '%s'; using 'date_title'.", method)
+        method = "date_title"
 
     seen: Dict[str, Dict[str, Any]] = {}
 
@@ -280,23 +280,80 @@ def build_source_manifest(
     Build source manifest context.
 
     If source_coverage_path is provided, parses it for source names and counts.
+    Supports two markdown table formats:
+
+    - Numbered: ``| Number | Source | Count |``
+    - Un-numbered: ``| Source | Unique Events | Duplicates | Status |``
+
     Otherwise, extracts source names from inline annotations in events.
 
     Returns dict with:
       - sources: list of {name, event_count, status}
       - total_events, sources_with_events, sources_without_events
+
+    Raises:
+        ValueError: If the coverage file has no recognizable format or zero valid rows.
     """
     sources: Dict[str, int] = defaultdict(int)
+    source_statuses: Dict[str, str] = {}
 
     if source_coverage_path and source_coverage_path.exists():
         # Parse source coverage markdown
         text = source_coverage_path.read_text(encoding="utf-8")
-        # Look for table rows with source names and counts
-        table_row_re = re.compile(r"^\|\s*\d+\s*\|\s*(.+?)\s*\|\s*(\d+)\s*\|", re.MULTILINE)
-        for match in table_row_re.finditer(text):
-            name = match.group(1).strip()
-            count = int(match.group(2))
-            sources[name] = count
+
+        # Detect format from the first non-empty table header row
+        header_match = re.search(
+            r"^\|(.+?)\|\s*$", text, re.MULTILINE
+        )
+        if not header_match:
+            raise ValueError(
+                f"Cannot find table header in source coverage file: {source_coverage_path}"
+            )
+        header = header_match.group(1).strip().lower()
+
+        numbered_header = re.match(
+            r"\s*number\s*\|\s*source\s*\|", header
+        )
+        unnamed_header = re.match(
+            r"\s*source\s*\|\s*unique\s+events\s*\|", header
+        )
+
+        if numbered_header:
+            # Format: | Number | Source | Count |
+            table_row_re = re.compile(
+                r"^\|\s*\d+\s*\|\s*(.+?)\s*\|\s*(\d+)\s*\|", re.MULTILINE
+            )
+            for match in table_row_re.finditer(text):
+                name = match.group(1).strip()
+                count = int(match.group(2))
+                sources[name] = count
+                source_statuses[name] = "active" if count > 0 else "no events"
+        elif unnamed_header:
+            # Format: | Source | Unique Events | Duplicates | Status |
+            table_row_re = re.compile(
+                r"^\|\s*(.+?)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(.+?)\s*\|",
+                re.MULTILINE,
+            )
+            for match in table_row_re.finditer(text):
+                name = match.group(1).strip()
+                count = int(match.group(2))
+                status = match.group(4).strip()
+                # Skip header/separator rows
+                if name.lower() in ("source", "--------"):
+                    continue
+                sources[name] = count
+                source_statuses[name] = status
+        else:
+            raise ValueError(
+                f"Unrecognized source coverage table format in {source_coverage_path}. "
+                f"Expected '| Number | Source | Count |' or '| Source | Unique Events | "
+                f"Duplicates | Status |'. Got header: {header_match.group(1).strip()!r}"
+            )
+
+        if not sources:
+            raise ValueError(
+                f"Source coverage file {source_coverage_path} contains zero valid rows."
+            )
     else:
         # Extract from event inline annotations
         for ev in events:
@@ -313,7 +370,11 @@ def build_source_manifest(
                 sources["Merged Chronicle"] = len(events)
 
     source_list = [
-        {"name": name, "event_count": count, "status": "active"}
+        {
+            "name": name,
+            "event_count": count,
+            "status": source_statuses.get(name, "active"),
+        }
         for name, count in sorted(sources.items(), key=lambda x: -x[1])
     ]
 
@@ -572,7 +633,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--dedup-method", choices=["title", "date_title"],
-        help="Deduplication method: 'title' (default) or 'date_title'",
+        help="Deduplication method: 'title' or 'date_title' (default)",
     )
     parser.add_argument(
         "--verbose", "-v", action="store_true",

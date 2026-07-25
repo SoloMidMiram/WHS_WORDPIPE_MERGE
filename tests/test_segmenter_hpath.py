@@ -130,6 +130,44 @@ class TestPrecomputeHeadingStates:
         assert states[0][0] == "(No H1)"  # empty text → "(No H1)"
         assert states[0][3] == 1  # counter still incremented
 
+    def test_h2_sibling_transition(self):
+        """A second H2 (sibling) replaces the first and clears H3.
+
+        Sequence: H1 → H2-A → H3-A → H2-B → paragraph → H3-B
+        """
+        doc = _make_doc([
+            {"style_name": "Heading 1", "text": "Title"},
+            {"style_name": "Heading 2", "text": "First section"},
+            {"style_name": "Heading 3", "text": "Subsection under A"},
+            {"style_name": "Normal", "text": "paragraph content"},
+            {"style_name": "Heading 2", "text": "Second section"},
+            {"style_name": "Normal", "text": "paragraph content"},
+            {"style_name": "Heading 3", "text": "Subsection under B"},
+            {"style_name": "Normal", "text": "paragraph content"},
+        ])
+        states = _precompute_heading_states(doc)
+
+        # Para 3: H3-A paragraph → H2=First section, H3=Subsection under A
+        assert states[3][0] == "Title"
+        assert states[3][1] == "First section"
+        assert states[3][2] == "Subsection under A"
+
+        # Para 4: H2-B line itself → H2=Second section, H3=None
+        assert states[4][1] == "Second section"
+        assert states[4][2] is None
+
+        # Para 5: After H2-B → H2=Second section, H3=None
+        assert states[5][1] == "Second section"
+        assert states[5][2] is None
+
+        # Para 6: H3-B line itself → H2=Second section, H3=Subsection under B
+        assert states[6][1] == "Second section"
+        assert states[6][2] == "Subsection under B"
+
+        # Para 7: After H3-B → H2=Second section, H3=Subsection under B
+        assert states[7][1] == "Second section"
+        assert states[7][2] == "Subsection under B"
+
 
 # ----------------------------------------------------------------------------
 # _build_hpath_from_state

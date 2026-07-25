@@ -6,12 +6,21 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.10", "3.11"]
+        docx: [false]
+        include:
+          - python-version: "3.11"
+            docx: true
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
-      - run: python -m pip install -e ".[chronicle,test]"
+      - name: Install base dependencies
+        if: ${{ !matrix.docx }}
+        run: python -m pip install -e ".[chronicle,test]"
+      - name: Install with DOCX extra
+        if: ${{ matrix.docx }}
+        run: python -m pip install -e ".[chronicle,docx,test]"
       - run: python -c "import pytest; print(f'pytest {pytest.__version__} installed')"
       - run: python -m pytest tests -q
       - run: python tools/check_root_layout.py --root .
@@ -19,3 +28,86 @@ jobs:
       - run: python tools/check_architecture_boundaries.py --root .
       - run: python tools/docs_link_check.py
       - run: python tools/security_scan.py --root . --fail-on-findings
+
+      # DOCX CLI integration test (only on docx extra job)
+      - name: Real DOCX CLI test
+        if: ${{ matrix.docx }}
+        shell: powershell
+        run: |
+          $tmpDir = Join-Path $env:RUNNER_TEMP "docx_test"
+          New-Item -ItemType Directory -Force -Path $tmpDir | Out-Null
+          $docxPath = Join-Path $tmpDir "test.docx"
+          $outPath = Join-Path $tmpDir "test.cleaned.docx"
+
+          # Create a minimal DOCX using python-docx
+          python -c @"
+          from docx import Document
+          doc = Document()
+          doc.add_heading('Test Document', 0)
+          doc.add_paragraph('Hello world.')
+          doc.save(r'$docxPath')
+          "@
+
+          # Run the CLI with --no-flatten
+          python -m wordpipe.cli.main --in "$docxPath" --out "$outPath" --no-flatten
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+
+          # Verify output can be reopened
+          python -c @"
+          from docx import Document
+          doc = Document(r'$outPath')
+          assert len(doc.paragraphs) > 0, 'Output DOCX is empty'
+          print(f'Output DOCX has {len(doc.paragraphs)} paragraphs')
+          "@
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+
+      # chain.ps1 integration test (only on docx extra job)
+      - name: Real chain.ps1 test
+        if: ${{ matrix.docx }}
+        shell: powershell
+        run: |
+          $tmpDir = Join-Path $env:RUNNER_TEMP "chain_test"
+          New-Item -ItemType Directory -Force -Path $tmpDir | Out-Null
+
+          # Create a valid normalised .md file
+          $validPath = Join-Path $tmpDir "valid.md"
+          @'
+          ---
+          source: TestSource
+          date: 2025-01-01
+          ---
+
+          ## Event: 2025-01-01 – Test Event
+
+          This is a test event.
+          '@ | Set-Content -Path $validPath -Encoding UTF8
+
+          # Run chain.ps1 with minimal switches
+          $mergeDir = Join-Path $tmpDir "merged"
+          $result = & .\pipeline\chain.ps1 -InputDir $tmpDir -OutputDir $mergeDir -SkipCategorize -SkipIndex 2>&1
+          $exitCode = $LASTEXITCODE
+          if ($exitCode -ne 0) {
+            Write-Error "chain.ps1 with valid input exited $exitCode. Output: $result"
+            exit 1
+          }
+
+          # Now create a file with an undated heading
+          $badPath = Join-Path $tmpDir "bad.md"
+          @'
+          ---
+          source: BadTest
+          date: 2025-01-01
+          ---
+
+          ## Event: unknown – No Date
+
+          This event has no date.
+          '@ | Set-Content -Path $badPath -Encoding UTF8
+
+          $mergeDir2 = Join-Path $tmpDir "merged_bad"
+          $result = & .\pipeline\chain.ps1 -InputDir $tmpDir -OutputDir $mergeDir2 -SkipCategorize -SkipIndex 2>&1
+          $exitCode = $LASTEXITCODE
+          if ($exitCode -eq 0) {
+            Write-Error "chain.ps1 with undated input should have failed but exited 0"
+            exit 1
+          }

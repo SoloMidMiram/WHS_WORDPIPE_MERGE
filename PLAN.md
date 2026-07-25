@@ -44,6 +44,18 @@
 - [ ] Canonicalize `pipeline/index.py` under `wordpipe.chronicle` with a thin operator wrapper (concept: SourceFile, Command)
 - [ ] Map Phase 13/14/15/16 TopicRun evidence into project-level `ontology.json` activity instances (concept: ActivityPeriod, Evidence)
 
+## P0/P1 Third-Wave Remediation — Completed: 1405/05/03
+
+- [x] F1 (P0): Structured rejection manifest from `split_into_events()`; `--allow-undated` flag in CLI; three-mode ingest (fail-no-output, partial-with-manifest, complete-manifest) (completed: 1405/05/03)
+- [x] F2 (P1): Preflight check for `_UnavailableFlattener` in `build_default_deps()`; abort pipeline on runtime flatten failure — no output created or overwritten (completed: 1405/05/03)
+- [x] F3 (P1): Broadened `build_source_manifest()` index parser to accept both numbered and un-numbered coverage formats; reject zero-valid-row coverage; preserve zero-event sources (completed: 1405/05/03)
+- [x] F4 (P1): Changed dedup default to `date_title` in `DEFAULT_CONFIG`, `deduplicate_events()` parameter, unknown-method fallback, CLI help text, and `pipeline/index_config.json` (completed: 1405/05/03)
+- [x] F5 (P1): Removed `is None` guards in both `_precompute_heading_states()` and `_build_hpath()`; sibling H2/H3 transitions now update context unconditionally (completed: 1405/05/03)
+- [x] CI: Added DOCX extra to matrix; added real DOCX CLI test; added real chain.ps1 execution test (completed: 1405/05/03)
+- [x] Acceptance tests: 12 new tests covering all decisive gates (ingest rejection, flatten preflight, coverage parse, dedup, heading sibling, DOCX CLI) (completed: 1405/05/03)
+- [x] Removed tracked `tools/__pycache__/jalali.cpython-311.pyc` (already cleaned); `__pycache__/` gitignored (completed: 1405/05/03)
+- [x] Updates: ROADMAP, PLAN, JOURNAL, VERIFICATION, IMPLEMENTATION_ALIGNMENT_AUDIT (completed: 1405/05/03)
+
 ## P0/P1 Second-Wave Remediation — Completed: 1405/05/03
 
 - [x] Add `_can_import_mergedpipeline()` probe and `_UnavailableFlattener` stub so `make_flattener()` fails clearly before processing when `MergedpipelineV3` is absent (concept: SourceFile, Verification) (completed: 1405/05/03)
