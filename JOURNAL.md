@@ -6,6 +6,46 @@
 
 ---
 
+## Second-Wave P0/P1 Remediation
+**Date:** 2026-07-25 (Jalali: 1405/05/03)
+**Phase:** P0/P1 Second-Wave Remediation
+**Ontology Ref:** ActivityPeriod, Verification, SourceFile, Command, Doc
+
+### Context
+An external review of the first-wave P0 reliability remediation identified 7 additional findings (3 P0, 4 P1) that must be resolved before claiming P0 readiness. This slice addresses all 7 as a follow-up closeout.
+
+### What Was Done
+1. **F1 (P0) — Flattener fallback not self-contained:** Added `_can_import_mergedpipeline()` probe and `_UnavailableFlattener` stub. `make_flattener()` now fails clearly before processing when `MergedpipelineV3` is absent. TOC updater also gated on the probe.
+2. **F2 (P0) — chain.ps1 continues past ingest failures:** Changed abort condition from `$IngestCount -eq 0` to `$IngestFailures -gt 0` (unless `-AllowPartialIngest`).
+3. **F3 (P0) — verify_integrity standalone is fail-open:** Flipped default: warnings are now fatal. Replaced `--strict` with `--diagnostic-only`. Updated orchestration and docs.
+4. **F4a (P1) — Ingest emits "unknown" dates:** Undated events are now skipped with a logging warning instead of emitting `## Event: unknown`.
+5. **F4b (P1) — Categorize drops preamble:** `rebuild_tagged_md()` now preserves text between frontmatter and first event heading.
+6. **F4c (P1) — SourceCoverage not auto-generated:** `chain.ps1` passes `--source-coverage` to merge when `-SourceCoverage` is set.
+7. **F5 (P1) — REVIEW verdict non-enforceable:** `run_report()` includes `verdict` in return; `main()` returns exit 2 for REVIEW (unless `--allow-review`).
+8. **F6 (P1) — Documented API vs actual:** Updated `docs/TRACELEDGER_INTEGRATION_CONTRACT.md` to match actual `process_docx_v3` signature.
+9. **F7 (P1) — Catalog hash semantics silently changed:** Bumped to schema v2 with explicit `hash_mode` field; checker accepts v1 and v2.
+10. **TOC Contract Documentation:** Expanded `toc_step()` docstring with explicit three-case contract.
+
+### Claims Verified
+- All 7 findings verified at code level before changes.
+- **257 passed** (`pytest -q`, 2026-07-25), up from 253 (P0 first-wave baseline).
+- 17 production files changed, 3 test files updated, 5 documentation files created/updated.
+- All new v2 catalog tests pass (valid, missing hash_mode, invalid hash_mode).
+
+### Artifacts Produced
+- `docs/engineering/SECOND_WAVE_P0P1_VALIDATION.md` — detailed validation per finding
+- Updated: `wordpipe/adapters/flatteners/base.py`, `wordpipe/adapters/defaults.py`,
+  `pipeline/chain.ps1`, `tools/verify_integrity.py`, `tools/orchestrate.py`,
+  `wordpipe/chronicle/ingest.py`, `wordpipe/chronicle/categorize.py`,
+  `tools/run_topic_report.py`, `inputs/catalog.json`, `tools/check_input_catalog.py`,
+  `wordpipe/steps/toc.py`
+- Updated tests: `tests/test_flatteners.py`, `tests/test_p0_cli.py`,
+  `tests/test_input_catalog.py`
+- Updated docs: `docs/PIPELINE_RUNBOOK.md`, `docs/TOOLS_MODULES_INTEGRATION_REPORT.md`,
+  `docs/TRACELEDGER_INTEGRATION_CONTRACT.md`
+
+---
+
 ## P0 Reliability Remediation
 **Date:** 2026-07-24 (Jalali: 1405/05/02)
 **Phase:** P0 Reliability Remediation

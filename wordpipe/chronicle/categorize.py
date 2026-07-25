@@ -230,7 +230,12 @@ def match_themes(
 
 
 def rebuild_tagged_md(original_text: str, events: list[dict[str, Any]]) -> str:
-    """Reconstruct full markdown with ``<!-- themes: ... -->`` comments inserted."""
+    """Reconstruct full markdown with ``<!-- themes: ... -->`` comments inserted.
+
+    Preserves everything between the YAML frontmatter and the first ``## Event:``
+    heading as a preamble block, so document-level context (e.g. ``# Source: ...``)
+    is not lost.
+    """
     body_start = 0
     if original_text.startswith("---"):
         parts = original_text.split("---", 2)
@@ -239,6 +244,15 @@ def rebuild_tagged_md(original_text: str, events: list[dict[str, Any]]) -> str:
 
     preamble = original_text[:body_start]
     body = original_text[body_start:]
+
+    # Preserve any text between the end of frontmatter and the first event heading.
+    event_heading_re = re.compile(r"^## Event:", re.MULTILINE)
+    event_match = event_heading_re.search(body)
+    if event_match is not None:
+        inter_preamble = body[: event_match.start()]
+        body = body[event_match.start() :]
+    else:
+        inter_preamble = ""
 
     tagged_blocks: list[str] = []
     for ev in events:
@@ -252,7 +266,7 @@ def rebuild_tagged_md(original_text: str, events: list[dict[str, Any]]) -> str:
         else:
             tagged_blocks.append(raw)
 
-    return preamble + "\n\n".join(tagged_blocks) + "\n"
+    return preamble + inter_preamble + "\n\n".join(tagged_blocks) + "\n"
 
 
 def build_sidecar_json(events: list[dict[str, Any]]) -> list[dict[str, Any]]:

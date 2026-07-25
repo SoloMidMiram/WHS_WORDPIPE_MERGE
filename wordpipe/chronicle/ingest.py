@@ -6,6 +6,7 @@ standard chronicle format with YAML front-matter and consistent event headings.
 
 from __future__ import annotations
 
+import logging
 import re
 from datetime import datetime
 from pathlib import Path
@@ -218,7 +219,17 @@ def split_into_events(text: str) -> list[dict[str, str]]:
                 body_text = bullet_match.group(2).strip()
 
                 extracted_date, extracted_title = _extract_date_and_title(bold_content)
-                current_date = extracted_date or "unknown"
+                if extracted_date is None:
+                    logging.warning(
+                        "Skipping event with undated heading: %r",
+                        bold_content,
+                    )
+                    _save_current_event()
+                    current_date = None
+                    current_title = ""
+                    current_body = []
+                    continue
+                current_date = extracted_date
                 current_title = extracted_title
                 current_body = [body_text] if body_text else []
                 continue

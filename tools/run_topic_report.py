@@ -1524,11 +1524,14 @@ def run_report(manifest: dict[str, Any], *, dry_run: bool = False, run_id: str |
     )
 
     print(f"\n[DONE] Topic report complete. Output in: {run_dir}")
+
+    verdict = _compute_verdict(manifest, run_metrics, exit_codes)
     return {
         "run_dir": str(run_dir),
         "exit_codes": exit_codes,
         "run_metrics": run_metrics,
         "timing_seconds": timing_seconds,
+        "verdict": verdict,
     }
 
 
@@ -1838,6 +1841,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Explicit run ID (default: auto-generated timestamp)",
     )
+    parser.add_argument(
+        "--allow-review",
+        action="store_true",
+        help="Return exit code 0 even when verdict is REVIEW",
+    )
     return parser
 
 
@@ -1866,6 +1874,10 @@ def main(argv: list[str] | None = None) -> int:
         if any(code != 0 for code in exit_codes.values()):
             print(f"\nRun had failures. Exit codes: {exit_codes}", file=sys.stderr)
             return 1
+        verdict = result.get("verdict", "PASS")
+        if verdict == "REVIEW" and not args.allow_review:
+            print(f"\nVerdict: REVIEW (use --allow-review to skip enforcement)", file=sys.stderr)
+            return 2
         timing = result.get("timing_seconds", 0.0)
         print(f"Wall-clock time: {timing:.2f}s")
 

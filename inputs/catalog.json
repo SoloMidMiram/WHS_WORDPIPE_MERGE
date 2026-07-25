@@ -1,6 +1,7 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "generated_on": "2026-07-17",
+  "hash_mode": "lf_normalized_utf8",
   "entries": [
     {
       "corpus": "chatgpt-chronicle",

@@ -7,6 +7,24 @@
 
 ---
 
+## Latest Second-Wave P0/P1 Remediation Result
+
+Observed on 2026-07-25 (1405/05/03):
+
+| Check | Observed result |
+|-------|-----------------|
+| `pytest -q` | **257 passed** (up from 253) |
+| Flattener probe + stub | 4 tests pass (import-safe, construction-raise, stub-return, stub-run-raises) |
+| Catalog v2 schema | 3 new tests: valid v2 passes, missing hash_mode fails, invalid hash_mode fails |
+| chain.ps1 abort | `$IngestFailures -gt 0` condition in place; `-AllowPartialIngest` switch added |
+| verify_integrity default | `--diagnostic-only` replaces `--strict`; default is fail-closed |
+| REVIEW verdict enforcement | `--allow-review` flag added; exit 2 returned for REVIEW without flag |
+| TraceLedger API doc | Signature corrected, `WARNING` → `WARN` |
+| TOC contract doc | Three-case contract documented in `toc.py` |
+| Ingest no-unknown dates | Undated events skipped (not written as `## Event: unknown`) |
+| Categorize preamble preserved | Text between frontmatter and first `## Event:` heading retained |
+| SourceCoverage auto-generation | `--source-coverage` flag passed to merge from chain.ps1 |
+
 ## Latest P0 Reliability Remediation Result
 
 Observed on 2026-07-24 (1405/05/02):

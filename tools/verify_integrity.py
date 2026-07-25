@@ -397,7 +397,8 @@ def main() -> None:
     )
     parser.add_argument("--workspace-root", default=".")
     parser.add_argument("--summary-json", default="")
-    parser.add_argument("--strict", action="store_true")
+    parser.add_argument("--diagnostic-only", action="store_true",
+                        help="Run in diagnostic-only mode: warnings do not cause non-zero exit.")
     args = parser.parse_args()
 
     result = run_stage(
@@ -406,7 +407,7 @@ def main() -> None:
         plan=args.plan,
         relocation=args.relocation,
         snapshot_root=args.snapshot_root,
-        strict=args.strict,
+        strict=not args.diagnostic_only,
     )
 
     for line in result.details.get("summary_lines", []):

@@ -25,8 +25,24 @@ def _normalized_content(path: Path) -> bytes:
 
 
 def _catalog_entries(catalog: Any) -> list[dict[str, Any]]:
-    if not isinstance(catalog, dict) or catalog.get("schema_version") != 1:
-        raise ValueError("catalog must be an object with schema_version 1")
+    sv = catalog.get("schema_version")
+    if sv == 1:
+        # v1: hash_mode is implicitly "lf_normalized_utf8" (CRLF was normalized
+        # before hashing). Accept without requiring an explicit field.
+        pass
+    elif sv == 2:
+        hm = catalog.get("hash_mode")
+        if hm is None:
+            raise ValueError("catalog v2 requires 'hash_mode' field")
+        expected = "lf_normalized_utf8"
+        if hm != expected:
+            raise ValueError(
+                f"catalog v2 hash_mode must be {expected!r}, got {hm!r}"
+            )
+    else:
+        raise ValueError(
+            f"catalog schema_version must be 1 or 2, got {sv!r}"
+        )
     entries = catalog.get("entries")
     if not isinstance(entries, list):
         raise ValueError("catalog.entries must be a list")

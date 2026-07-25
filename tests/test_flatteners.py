@@ -1,15 +1,18 @@
-"""Import-safety and fallback tests for ComFlattener (P0.3).
+"""Import-safety and fallback tests for ComFlattener (P0.3 / second-wave P0.1).
 
 Verifies:
 - ``from wordpipe.adapters.flatteners.com_flattener import ComFlattener`` does
   NOT fail on any platform (import safety).
 - ``ComFlattener()`` construction raises ``RuntimeError`` when ``MergedpipelineV3``
   is unavailable.
-- ``make_flattener(prefer_win32=True)`` falls back to ``XmlFlattener`` when COM
-  is unavailable.
+- ``make_flattener(prefer_win32=...)`` returns ``_UnavailableFlattener`` when
+  ``MergedpipelineV3`` is absent (both Windows and non-Windows paths).
+- ``_UnavailableFlattener.run()`` raises ``RuntimeError``.
 """
 
 from __future__ import annotations
+
+from pathlib import Path
 
 import pytest
 
@@ -34,25 +37,34 @@ class TestComFlattenerImportSafety:
 
 
 class TestMakeFlattenerFallback:
-    """``make_flattener`` should return ``XmlFlattener`` when COM is unavailable."""
+    """``make_flattener`` returns ``_UnavailableFlattener`` when
+    ``MergedpipelineV3`` is absent (both flattener paths require it).
+    """
 
     def test_make_flattener_falls_back(self) -> None:
-        """``make_flattener(prefer_win32=True)`` returns an ``XmlFlattener``
-        instance (not ``ComFlattener``) when COM is unavailable."""
-        from wordpipe.adapters.flatteners.base import make_flattener
-        from wordpipe.adapters.flatteners.xml_flattener import XmlFlattener
+        """When ``MergedpipelineV3`` is unavailable, ``make_flattener`` returns
+        ``_UnavailableFlattener`` even with ``prefer_win32=True``."""
+        from wordpipe.adapters.flatteners.base import _UnavailableFlattener, make_flattener
 
         fl = make_flattener(prefer_win32=True)
-        assert isinstance(fl, XmlFlattener), (
-            f"Expected XmlFlattener, got {type(fl).__name__}"
+        assert isinstance(fl, _UnavailableFlattener), (
+            f"Expected _UnavailableFlattener, got {type(fl).__name__}"
         )
 
     def test_make_flattener_no_flattener(self) -> None:
-        """``make_flattener(prefer_win32=False)`` returns an ``XmlFlattener``."""
-        from wordpipe.adapters.flatteners.base import make_flattener
-        from wordpipe.adapters.flatteners.xml_flattener import XmlFlattener
+        """When ``MergedpipelineV3`` is unavailable, ``make_flattener`` returns
+        ``_UnavailableFlattener`` even with ``prefer_win32=False``."""
+        from wordpipe.adapters.flatteners.base import _UnavailableFlattener, make_flattener
 
         fl = make_flattener(prefer_win32=False)
-        assert isinstance(fl, XmlFlattener), (
-            f"Expected XmlFlattener, got {type(fl).__name__}"
+        assert isinstance(fl, _UnavailableFlattener), (
+            f"Expected _UnavailableFlattener, got {type(fl).__name__}"
         )
+
+    def test_unavailable_flattener_run_raises(self) -> None:
+        """``_UnavailableFlattener.run()`` raises ``RuntimeError``."""
+        from wordpipe.adapters.flatteners.base import _UnavailableFlattener
+
+        stub = _UnavailableFlattener(reason="test")
+        with pytest.raises(RuntimeError, match="test"):
+            stub.run(Path("in.docx"), Path("out.docx"))

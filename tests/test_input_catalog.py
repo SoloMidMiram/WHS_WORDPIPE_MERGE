@@ -70,3 +70,71 @@ def test_catalog_rejects_legacy_input_location(tmp_path):
     legacy.mkdir(parents=True)
     violations = checker.find_violations(tmp_path)
     assert any("legacy input location" in item for item in violations)
+
+
+def test_catalog_v2_with_valid_hash_mode_passes(tmp_path):
+    """A v2 catalog with valid hash_mode is accepted."""
+    source = tmp_path / "inputs/demo/markdown/source.md"
+    source.parent.mkdir(parents=True, exist_ok=True)
+    source.write_text("source", encoding="utf-8")
+    payload = source.read_bytes()
+    catalog = {
+        "schema_version": 2,
+        "hash_mode": "lf_normalized_utf8",
+        "entries": [{
+            "corpus": "demo",
+            "format": "markdown",
+            "path": "inputs/demo/markdown/source.md",
+            "size_bytes": len(payload),
+            "sha256": hashlib.sha256(payload).hexdigest(),
+            "classification": "source",
+        }],
+    }
+    catalog_path = tmp_path / "inputs" / "catalog.json"
+    catalog_path.write_text(json.dumps(catalog), encoding="utf-8")
+    assert checker.find_violations(tmp_path) == []
+
+
+def test_catalog_v2_missing_hash_mode_fails(tmp_path):
+    """A v2 catalog without hash_mode returns a violation."""
+    source = tmp_path / "inputs/demo/markdown/source.md"
+    source.parent.mkdir(parents=True, exist_ok=True)
+    source.write_text("source", encoding="utf-8")
+    catalog = {
+        "schema_version": 2,
+        "entries": [{
+            "corpus": "demo",
+            "format": "markdown",
+            "path": "inputs/demo/markdown/source.md",
+            "size_bytes": 6,
+            "sha256": "0000",
+            "classification": "source",
+        }],
+    }
+    catalog_path = tmp_path / "inputs" / "catalog.json"
+    catalog_path.write_text(json.dumps(catalog), encoding="utf-8")
+    violations = checker.find_violations(tmp_path)
+    assert any("hash_mode" in item for item in violations)
+
+
+def test_catalog_v2_invalid_hash_mode_fails(tmp_path):
+    """A v2 catalog with wrong hash_mode returns a violation."""
+    source = tmp_path / "inputs/demo/markdown/source.md"
+    source.parent.mkdir(parents=True, exist_ok=True)
+    source.write_text("source", encoding="utf-8")
+    catalog = {
+        "schema_version": 2,
+        "hash_mode": "raw_bytes",
+        "entries": [{
+            "corpus": "demo",
+            "format": "markdown",
+            "path": "inputs/demo/markdown/source.md",
+            "size_bytes": 6,
+            "sha256": "0000",
+            "classification": "source",
+        }],
+    }
+    catalog_path = tmp_path / "inputs" / "catalog.json"
+    catalog_path.write_text(json.dumps(catalog), encoding="utf-8")
+    violations = checker.find_violations(tmp_path)
+    assert any("hash_mode" in item for item in violations)

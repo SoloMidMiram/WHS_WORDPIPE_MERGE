@@ -19,7 +19,7 @@ Define how TraceLedger should consume this repository as a helper package withou
 The minimum stable interface TraceLedger should depend on:
 - `wordpipe.PipelineConfig`
 - `wordpipe.RunReport`
-- `wordpipe.process_docx_v3(cfg, sink=..., artifacts=...) -> RunReport`
+- `wordpipe.process_docx_v3(cfg, logger=None, jsonl_path=None) -> RunReport`
 
 Optional compatibility helper:
 - `wordpipe.process_docx_v3_simple(...)`
@@ -43,7 +43,7 @@ Contract:
 - `EventSink.emit(level: str, event: str, fields: dict) -> None`
 
 Rules:
-- `level` uses `INFO|WARNING|ERROR` strings.
+- `level` uses `INFO|WARN|ERROR` strings.
 - `event` is a stable short string key (`start`, `flatten_begin`, `flatten_fail`, `done`, etc.).
 - `fields` is JSON-serializable.
 - WordPipe must not import TraceLedger. TraceLedger may import WordPipe.

@@ -44,6 +44,19 @@
 - [ ] Canonicalize `pipeline/index.py` under `wordpipe.chronicle` with a thin operator wrapper (concept: SourceFile, Command)
 - [ ] Map Phase 13/14/15/16 TopicRun evidence into project-level `ontology.json` activity instances (concept: ActivityPeriod, Evidence)
 
+## P0/P1 Second-Wave Remediation — Completed: 1405/05/03
+
+- [x] Add `_can_import_mergedpipeline()` probe and `_UnavailableFlattener` stub so `make_flattener()` fails clearly before processing when `MergedpipelineV3` is absent (concept: SourceFile, Verification) (completed: 1405/05/03)
+- [x] Change `chain.ps1` abort condition from `$IngestCount -eq 0` to `$IngestFailures -gt 0`; add `-AllowPartialIngest` switch (concept: Command, Verification) (completed: 1405/05/03)
+- [x] Flip `verify_integrity.py` warnings to fatal by default; replace `--strict` with `--diagnostic-only`; update orchestration and docs (concept: Verification, Command) (completed: 1405/05/03)
+- [x] Fix ingest provenance: skip undated events instead of emitting `## Event: unknown` (concept: SourceFile) (completed: 1405/05/03)
+- [x] Fix categorize preamble preservation: preserve text between frontmatter and first event heading (concept: SourceFile) (completed: 1405/05/03)
+- [x] Fix SourceCoverage: pass `--source-coverage` to merge CLI from chain.ps1 when requested (concept: Command, Verification) (completed: 1405/05/03)
+- [x] Make REVIEW verdict enforceable in `run_topic_report.py`: return exit 2 when verdict is REVIEW unless `--allow-review` passed (concept: Verification, Command) (completed: 1405/05/03)
+- [x] Align `docs/TRACELEDGER_INTEGRATION_CONTRACT.md` with actual `process_docx_v3(cfg, logger, jsonl_path)` signature (concept: Doc) (completed: 1405/05/03)
+- [x] Bump catalog schema to v2 with explicit `hash_mode` field; update checker and tests (concept: ConfigFile, Verification) (completed: 1405/05/03)
+- [x] Document TOC adapter three-case contract in `wordpipe/steps/toc.py` docstring (concept: Doc) (completed: 1405/05/03)
+
 ## P0 Reliability Remediation — Completed: 1405/05/02
 
 - [x] Add `--strict` flag to `verify_integrity.py` invocation in `tools/orchestrate.py` (concept: Verification, Command) (completed: 1405/05/02)
