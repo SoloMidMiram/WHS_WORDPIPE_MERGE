@@ -69,18 +69,11 @@ jobs:
           $tmpDir = Join-Path $env:RUNNER_TEMP "chain_test"
           New-Item -ItemType Directory -Force -Path $tmpDir | Out-Null
 
-          # Create a valid normalised .md file
+          # Create a valid raw deep-search .md file
           $validPath = Join-Path $tmpDir "valid.md"
           @'
-          ---
-          source: TestSource
-          date: 2025-01-01
-          ---
-
-          ## Event: 2025-01-01 – Test Event
-
-          This is a test event.
-          '@ | Set-Content -Path $validPath -Encoding UTF8
+- **2025-01-01 - Test Event:** This is a test event.
+'@ | Set-Content -Path $validPath -Encoding UTF8
 
           # Run chain.ps1 with minimal switches
           $mergeDir = Join-Path $tmpDir "merged"
@@ -91,18 +84,11 @@ jobs:
             exit 1
           }
 
-          # Now create a file with an undated heading
+          # Now create a file with an undated heading (raw format)
           $badPath = Join-Path $tmpDir "bad.md"
           @'
-          ---
-          source: BadTest
-          date: 2025-01-01
-          ---
-
-          ## Event: unknown – No Date
-
-          This event has no date.
-          '@ | Set-Content -Path $badPath -Encoding UTF8
+- **unknown - No Date:** This event has no date.
+'@ | Set-Content -Path $badPath -Encoding UTF8
 
           $mergeDir2 = Join-Path $tmpDir "merged_bad"
           $result = & .\pipeline\chain.ps1 -InputDir $tmpDir -OutputDir $mergeDir2 -SkipCategorize -SkipIndex 2>&1
