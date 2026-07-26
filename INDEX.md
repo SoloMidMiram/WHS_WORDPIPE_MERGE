@@ -2,7 +2,7 @@
 
 > **Purpose:** Curated map of canonical files, subsystems, evidence areas, and governance artifacts.
 > **Generated:** 2026-02-14 (Jalali: 1404-11-25)
-> **Last synchronized:** 2026-07-17 (Jalali: 1405-04-26)
+> **Last synchronized:** 2026-07-26 (Jalali: 1405-05-04)
 > **Ontology Ref:** See `ONTOLOGY_MODEL.md` for entity classification.
 
 ---
@@ -97,6 +97,7 @@
 | `docs/engineering/REPOSITORY_BOUNDARIES.md` | 📄 Doc | Boundary guide | Directory classification, packaging and pytest rules, import boundaries |
 | `docs/engineering/P0_P2_VALIDATION_REPORT.md` | 📄 Doc | Validation report | P0–P2 remediation stages, claim register, CI readiness (2026-07-09) |
 | `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md` | 📄 Doc | Alignment audit | Phase-by-phase evidence labels, corrected flaw claims, and outstanding architecture debt |
+| `docs/engineering/OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md` | 📄 Doc | Work map | Prioritized outstanding work, PR-review closure, and refactor/optimization gates |
 | `docs/engineering/PHASE13_17_COMMIT_DRAFT.md` | 📄 Doc | Commit record | Verified Phase 13–17 scope, staging boundaries, commit messages, and executed commit `a635ea2` |
 
 ### docs/operations/
@@ -113,6 +114,14 @@
 |------|------|------|-------------|
 | `docs/PlansArchive/PLAN.md` | 📄 Doc | Archived plan | Merge reviews + TraceLedger-ready debug/enhancement roadmap |
 | `docs/PlansArchive/Merge Reviews + TraceLedger-Ready Debug-Enhancement Roadmap.md` | 📄 Doc | Archived plan | Same content (duplicate — preserve for audit) |
+
+---
+
+## `.github/` — Continuous Integration
+
+| Path | Kind | Role | Description |
+|------|------|------|-------------|
+| `.github/workflows/ci.yml` | ⚙️ Config | CI matrix | Windows Python 3.10/3.11 base jobs plus a Python 3.11 DOCX-extra job with real DOCX CLI and `chain.ps1` coverage |
 
 ---
 
@@ -416,6 +425,7 @@
 | `tests/test_phase16_event_lineage_runner.py` | 🔬 Test | event provenance | Verifies event-lineage preparation, runner gates, correlation, and summaries |
 | `tests/test_phase17_survivor_verification.py` | 🔬 Test | survivor integrity | Verifies merge-note-aware actual survivor membership and fail-closed ambiguity handling |
 | `tests/test_phase17_provenance_stability.py` | 🔬 Test | repeatability | Verifies stable-id comparison, drift reporting, collision protection, and comparator exits |
+| `tests/test_acceptance_remediation.py` | 🔬 Test | third-wave acceptance | Covers rejection-manifest modes, flatten preflight, coverage parsing, dedup defaults, and DOCX heading siblings |
 | `tests/README.md` | 📄 Doc | Test readme | Authoritative test run instructions |
 
 ## `scripts/` — Executable Scripts (not packaged)

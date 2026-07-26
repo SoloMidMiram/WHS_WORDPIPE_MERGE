@@ -8,6 +8,7 @@ This folder is the engineer-facing entrypoint for changing pipeline stages, veri
 - Before/after integration view: `docs/INTEGRATION_MAP_BEFORE_AFTER.md`
 - WordPipe modules/packages guide: `docs/engineering/MODULES_PACKAGES.md`
 - Repository boundaries: `docs/engineering/REPOSITORY_BOUNDARIES.md`
+- Current outstanding-work and optimization map: `docs/engineering/OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md`
 - Current Phase 13–17 commit draft: `docs/engineering/PHASE13_17_COMMIT_DRAFT.md`
 
 ## Validation Checks

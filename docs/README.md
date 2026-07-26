@@ -24,6 +24,7 @@ Start here instead:
 | [`PHASE16_EVENT_IDENTITY_AND_SECTION_PROVENANCE.md`](PHASE16_EVENT_IDENTITY_AND_SECTION_PROVENANCE.md) | Project Phase 16 section provenance sidecars and ontology migration gate |
 | [`PHASE17_EVENT_PROVENANCE_SURVIVOR_AND_REPEATABILITY.md`](PHASE17_EVENT_PROVENANCE_SURVIVOR_AND_REPEATABILITY.md) | Project Phase 17 survivor integrity and stable-id repeatability gate |
 | [`engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`](engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md) | Current phase crosswalk, corrected flaw claims, and explicitly outstanding work |
+| [`engineering/OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md`](engineering/OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md) | Prioritized open work, live PR-review closure, and refactor/optimization decision gates |
 | [`engineering/PHASE13_17_COMMIT_DRAFT.md`](engineering/PHASE13_17_COMMIT_DRAFT.md) | Verified Phase 13–17 traceability, staging guidance, and executed closeout commit `a635ea2` |
 
 ## Preserved Docs (Still Current)

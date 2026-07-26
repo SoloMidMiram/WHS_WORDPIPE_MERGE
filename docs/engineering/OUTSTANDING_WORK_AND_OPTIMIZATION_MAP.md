@@ -1,0 +1,75 @@
+# Outstanding Work and Optimization Map
+
+> **As of:** 2026-07-26 (1405-05-04)
+> **Baseline:** PR #2 published head `7d8e114`; third-wave remediation commit `777c62a`
+> **Purpose:** Keep remaining delivery work, review closure, and refactor choices
+> explicit without treating planned work as implemented.
+
+## Evidence Labels
+
+| Label | Meaning |
+|---|---|
+| **VERIFIED** | Supported by current repository inspection or an executable result. |
+| **HISTORICAL** | A dated commit/report result; do not present it as a new run. |
+| **LOCAL PENDING** | Present in the current worktree but not part of the published PR head. |
+| **OUTSTANDING** | Required behavior or evidence is not yet present. |
+| **CONDITIONAL** | Reassess only when the documented architecture trigger is met. |
+
+`777c62a` records **270 passed** for the third-wave suite. That is
+**HISTORICAL** evidence; a fresh result requires a configured Python 3.10/3.11
+environment with the needed extras. Commit `7d8e114` corrects the CI raw-input
+fixture; fresh matrix success is therefore **OUTSTANDING** until all jobs finish
+green.
+
+The current local worktree ran **273 passed** on 2026-07-26. That **VERIFIED**
+result includes the two uncommitted P1 review fixes and their three regression
+tests, so it is not the published PR-head baseline.
+
+## Immediate PR #2 Closure
+
+| Priority | State | Work | Completion evidence |
+|---|---|---|---|
+| P0 | **OUTSTANDING** | Confirm `7d8e114` on the three current Windows CI jobs (3.10 base, 3.11 base, 3.11 DOCX). | All jobs succeed; retain the run URL/result in PR #2. |
+| P1 | **LOCAL PENDING** | Preserve pre-existing `.work.docx` artifacts on a flatten failure. | Commit the existing `flatten_step` ownership-aware cleanup and its two regression tests; resolve the matching review thread. |
+| P1 | **LOCAL PENDING** | Restore `tools/verify_integrity.py --strict` as a compatibility selector while strict remains the default. | Commit the parser/test change and resolve the matching review thread. |
+| P2 | **OUTSTANDING** | Probe the XML flattener dependency on non-Windows default wiring. | A non-Windows regression test receives the unavailable-flattener failure before processing. |
+| P2 | **OUTSTANDING** | Preserve multi-line undated-event body text in rejection records. | Rejection-manifest test covers heading plus continuation lines. |
+| P2 | **OUTSTANDING** | Reject non-object input catalogs with the normal diagnostic rather than a traceback. | List-shaped JSON catalog test returns a formatted violation. |
+| P2 | **OUTSTANDING** | Hash DOCX catalog inputs as raw binary while retaining text normalization only for text formats. | DOCX/ZIP CRLF-byte fixture verifies exact size and SHA-256. |
+
+## Product and Evidence Backlog
+
+| Priority | State | Work | Source / dependency | Completion criteria |
+|---|---|---|---|---|
+| P0 | **OUTSTANDING** | Audit all remote branches and tags for leaked keys. | Roadmap Phase 4; local `security_scan.py` is worktree-only. | Scan remote refs, rotate/revoke any confirmed secrets, and preserve a non-sensitive audit result. |
+| P1 | **OUTSTANDING** | Canonicalize Chronicle index logic under `wordpipe.chronicle`. | Alignment audit; `pipeline/index.py` is the only active stage outside the canonical package. | Characterize behavior, extract one pure seam to `wordpipe/chronicle/index.py`, retain a thin wrapper and all CLI/import/JSON contracts. |
+| P1 | **PARTIAL** | Add Phase 13–17 project-level ontology instances. | Alignment audit; per-run ontology is complete but root `ontology.json` only records older P9 activity. | Define the mapping and add project instances without changing the aggregate 10-entity/7-relation model unintentionally. |
+| P1 | **OUTSTANDING** | Emit semantic concepts, mentions, and `derived_from` relationships. | Phase 15 design / G7. | Approve an NLP/POS evaluation gate, then add characterized extraction and provenance tests. |
+| P1 | **OUTSTANDING** | Build the reference stage and validate the manual merge. | Roadmap Phase 9c. | Implement `pipeline/reference.py` and compare automated output against `ChatGPT_Incidents_Merged.md`. |
+| P1 | **OUTSTANDING** | Make integrity evidence portable. | Plan and alignment audit. | Add `--portable` and populate `src_rel`/`dst_rel`; retain compatible absolute-path evidence where required. |
+| P2 | **OUTSTANDING** | Map labor notes, reports, and plans into the ontology; audit remaining absolute paths. | Plan backlog. | Produce traceable model instances and an audit with zero unapproved machine-specific paths. |
+| P2 | **OUTSTANDING** | Add `tools/duplicate_scan.py` and split runtime/evidence CI profiles. | Plan backlog and alignment audit. | Give each tool/profile a documented contract, focused tests, and no lost governance checks. |
+| P2 | **OUTSTANDING** | Validate an external TraceLedger integration. | Roadmap G8. | Exercise the protocol/library boundary against an actual external integration. |
+| P3 | **OUTSTANDING** | Evaluate NLP/POS tooling for project-text ontology extraction. | Roadmap G7; subject to external-access constraint C1. | Record candidate comparison, corpus, quality threshold, and go/no-go decision. |
+| P3 | **CONDITIONAL** | Decompose the topic-report runner. | Architecture stability gate. | Reconsider only after a third adapter exposes concrete coupling or ontology evolution makes the current serializer unsafe. |
+
+## Refactoring and Optimization Lanes
+
+| Lane | Candidates | Required gate |
+|---|---|---|
+| Low effort / high safety | Remove compatibility wrappers only after import-consumer inventory; prune an empty pipeline compatibility surface; retire obsolete AI copies/stubs only after consumer confirmation. | Record consumers and byte hashes before moving/removing files; preserve external imports or add a compatibility release path. |
+| Medium effort / controlled risk | Canonicalize index logic; organize tests by subsystem; assess the `process_docx_v3_simple` compatibility shim. | Characterization tests first; do not combine a package move with a feature or schema migration. |
+| High value / measured | Split CI runtime/evidence profiles; profile Chronicle ingest→merge on large inputs; determine whether COM/XML flatteners are both live implementations. | Establish current timing/coverage baseline, make one measured change, and preserve current CLI behavior. |
+| Conditional architecture | Topic-runner decomposition. | Follow the explicit third-adapter/unsafe-schema trigger above; extract at most one pure seam and stop to reassess. |
+
+## Operating Rules
+
+- `ARCHITECTURE_AND_MODULES.md` remains the dependency-rule source; run
+  `python tools/check_architecture_boundaries.py --root .` after production
+  import changes.
+- Do not mix a feature, schema migration, and package/filesystem move in one
+  implementation slice.
+- Treat generated evidence as append-only: reserve a new run directory and
+  retain hashes/inventories before any material move.
+- Update this map when an item changes state, but keep dated validation counts
+  in their historical reports rather than rewriting them as current evidence.

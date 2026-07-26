@@ -2,7 +2,7 @@
 
 > **Purpose:** Comprehensive reference documenting all three subsystems — their architecture, module responsibilities, data flow, logic flow, goals, and constraints.
 > **Date:** 2026-02-14 (Jalali: 1404-11-25)
-> **Last Updated:** 2026-07-17 (Jalali: 1405-04-26)
+> **Last Updated:** 2026-07-26 (Jalali: 1405-05-04)
 > **Supersedes:** `docs/architecture/PROJECT_SUMMARY.md`, `docs/TOOLS_MODULES_INTEGRATION_REPORT.md`, `docs/INTEGRATION_MAP_BEFORE_AFTER.md`
 
 ---
@@ -81,7 +81,7 @@ The bounded domains below describe ownership without replacing or renumbering Su
 | Bounded domain | Existing architecture location | Current ownership |
 |----------------|--------------------------------|-------------------|
 | Corpus Governance | Cross-cutting support domain | `inputs/`, `inputs/catalog.json`, and `tools/check_input_catalog.py`; input may instead be another manifest-declared read-only topic source |
-| Chronicle Engine | Subsystem A | `wordpipe/chronicle/` and operator stages in `pipeline/`; index remains an operator stage in `pipeline/index.py`, with canonical extraction deferred |
+| Chronicle Engine | Subsystem A | `wordpipe/chronicle/` and operator stages in `pipeline/`; index remains an operator stage in `pipeline/index.py`, with canonical extraction deferred; its source-coverage reader accepts both documented table shapes |
 | Topic Reporting | Topic Report Runner entry and Subsystem A integration | Runner, topic adapters, manifests, themes, and run-evidence schemas |
 | Evidence Governance | Subsystem B plus root policy | Layout, append-only retention, collision policy, integrity, documentation-link, and security checks |
 | WordPipe Runtime | Subsystem C | Importable DOCX runtime, interfaces, adapters, steps, and orchestration |
@@ -338,6 +338,7 @@ stage deferred from canonical extraction.
 #### `pipeline/index.py` — Stage 5: Index Generation
 - **Purpose:** Generate 4 appendix files from tagged chronicle output
 - **Input:** `chronicle_tagged.md` from Stage 4, optional `source_coverage.md`
+- **Coverage compatibility:** accepts both numbered and unnumbered documented source-coverage table formats
 - **Output:** `appendix/event_index.md`, `appendix/theme_index.md`, `appendix/source_manifest.md`, `appendix/link_registry.md`
 - **Key functions:**
   - `extract_events(text)` — Extracts events with theme tags from tagged markdown
@@ -731,7 +732,13 @@ ERROR: required {name} not found: {abs_path}
 | Topic reports | Both adapters, manifest runner, trends, attribution, ontology | `python -m pytest tests/test_prepare_insurancechatbot_chronicle.py tests/test_prepare_generic_markdown_chronicle.py tests/test_run_topic_report.py -v` |
 | Governance | Root organization allowlist | `python -m pytest tests/test_root_layout.py -v` |
 | Architecture boundaries | Static production-import direction and reviewed path-role registry behavior | `python -m pytest tests/test_architecture_boundaries.py -v` |
+| Third-wave acceptance | Rejection manifests, flatten preflight, coverage parsing, dedup defaults, heading siblings | `python -m pytest tests/test_acceptance_remediation.py -v` |
 | **Current total** | **See `VERIFICATION.md` and the latest CI/full-suite result; architecture prose does not pin a transient count** | `python -m pytest tests -q` |
+
+The Windows CI matrix in `.github/workflows/ci.yml` runs base Python 3.10 and
+3.11 jobs plus a Python 3.11 DOCX-extra job. The DOCX job executes real CLI and
+`pipeline/chain.ps1` integration checks; its raw-input fixture correction is
+commit `7d8e114`.
 
 See also: [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_P2_VALIDATION_REPORT.md)
 

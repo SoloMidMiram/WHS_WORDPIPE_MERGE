@@ -2,7 +2,7 @@
 
 > **Date (Gregorian):** 2026-07-09
 > **Date (Shamsi/Jalali):** 1405-04-18
-> **Last Updated:** 2026-07-25
+> **Last Updated:** 2026-07-26
 > **Branch:** `main`
 
 Current stabilization status:
@@ -26,7 +26,9 @@ Current stabilization status:
   (ingest rejection manifest with provenance, flatten preflight + abort-on-failure,
   source coverage wildcard parser, dedup defaults aligned end-to-end, sibling
   heading context in both implementations) are fixed. CI includes DOCX extra,
-  real DOCX CLI test, and real chain.ps1 execution. 270 tests pass.
+  real DOCX CLI test, and real chain.ps1 execution. The dated third-wave run
+  recorded 270 passing tests. Follow-up `7d8e114` corrects the `chain.ps1` CI
+  fixture to use raw input; the three-job CI revalidation remains a release gate.
 - **2026-07-25: Second-wave P0/P1 remediation complete.** All 7 additional findings
   (flattener fallback decoupling, chain.ps1 abort-on-failure, verify_integrity
   fail-closed default, provenance defects, REVIEW verdict enforcement, API doc
@@ -396,7 +398,7 @@ Broad topic-runner decomposition is conditional, not an active Project Phase 15 
 
 | MS# | Milestone | Phase | Target Date | Status |
 |-----|-----------|-------|-------------|--------|
-| M19 | Third-wave P0/P1 remediation (5 findings + CI gap) | — | 1405-05-03 | ✅ |
+| M19 | Third-wave P0/P1 remediation (5 findings + CI gap) | — | 1405-05-03 | ✅ code complete; CI revalidation pending |
 | M18 | Second-wave P0/P1 remediation (7 additional findings) | — | 1405-05-03 | ✅ |
 | M16 | Project Phase 17 survivor integrity and stable-id repeatability | Ph17 | 1405-04-26 | ✅ |
 | M17 | P0 reliability remediation (6 verified defects fixed) | — | 1405-05-02 | ✅ |
