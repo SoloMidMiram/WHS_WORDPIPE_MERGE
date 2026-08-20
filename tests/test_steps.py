@@ -163,6 +163,44 @@ class TestFlattenStep:
         assert "flatten" in result.error.lower()
         assert result.working_path == cfg.in_path
 
+    def test_failure_preserves_preexisting_artifact(
+        self, tmp_path: Path, sink: EventSink
+    ) -> None:
+        """A failed invocation must not delete an artifact it did not create."""
+        out_path = tmp_path / "out.docx"
+        artifact = Path(str(out_path) + ".work.docx")
+        artifact.write_bytes(b"prior run")
+        cfg = PipelineConfig(in_path=tmp_path / "in.docx", out_path=out_path)
+
+        result = flatten_step(cfg, _FailingFlattener(), sink)
+
+        assert result.error is not None
+        assert artifact.read_bytes() == b"prior run"
+
+    def test_failure_removes_artifact_created_by_current_invocation(
+        self, tmp_path: Path, sink: EventSink
+    ) -> None:
+        """A failed invocation cleans up its own partial artifact."""
+        class _WritingFailingFlattener:
+            def flatten(
+                self,
+                input_docx: Path,
+                output_docx: Path,
+                *,
+                limit_pages: int | None = None,
+            ) -> list[ChangeNote]:
+                output_docx.write_bytes(b"partial")
+                raise IOError("flatten failed after write")
+
+        out_path = tmp_path / "out.docx"
+        artifact = Path(str(out_path) + ".work.docx")
+        cfg = PipelineConfig(in_path=tmp_path / "in.docx", out_path=out_path)
+
+        result = flatten_step(cfg, _WritingFailingFlattener(), sink)
+
+        assert result.error is not None
+        assert not artifact.exists()
+
 
 # ----------------------------------------------------------------------------
 # style_step

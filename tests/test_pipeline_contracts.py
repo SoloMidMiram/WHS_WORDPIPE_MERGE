@@ -6,6 +6,9 @@ elevated to errors; under non-strict, warnings stay as warnings.
 
 from __future__ import annotations
 
+import subprocess
+import sys
+
 from tools.pipeline_contracts import StageResult, StagePaths
 
 
@@ -61,3 +64,16 @@ class TestStageResultFinalize:
         assert "STRICT_WARNINGS" not in codes, (
             "STRICT_WARNINGS should not be added when real errors exist"
         )
+
+
+def test_verify_integrity_help_retains_strict_flag() -> None:
+    """The documented ``--strict`` CLI selector remains accepted."""
+    completed = subprocess.run(
+        [sys.executable, "tools/verify_integrity.py", "--strict", "--help"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert "--strict" in completed.stdout
+    assert "--diagnostic-only" in completed.stdout

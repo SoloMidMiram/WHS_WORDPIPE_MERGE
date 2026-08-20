@@ -397,8 +397,17 @@ def main() -> None:
     )
     parser.add_argument("--workspace-root", default=".")
     parser.add_argument("--summary-json", default="")
-    parser.add_argument("--diagnostic-only", action="store_true",
-                        help="Run in diagnostic-only mode: warnings do not cause non-zero exit.")
+    strictness = parser.add_mutually_exclusive_group()
+    strictness.add_argument(
+        "--strict",
+        action="store_true",
+        help="Treat warnings as errors (the default; retained for compatibility).",
+    )
+    strictness.add_argument(
+        "--diagnostic-only",
+        action="store_true",
+        help="Run in diagnostic-only mode: warnings do not cause non-zero exit.",
+    )
     args = parser.parse_args()
 
     result = run_stage(
