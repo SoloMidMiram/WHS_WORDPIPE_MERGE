@@ -30,7 +30,7 @@ resolved. The four P2 items and the P0 CI confirmation remain **OUTSTANDING**.
 
 | Priority | State | Work | Completion evidence |
 |---|---|---|---|
-| P0 | **OUTSTANDING** | Confirm `7d8e114` on the three current Windows CI jobs (3.10 base, 3.11 base, 3.11 DOCX). | All jobs succeed; retain the run URL/result in PR #2. |
+| P0 | **VERIFIED** | Confirm `7d8e114` on the three current Windows CI jobs (3.10 base, 3.11 base, 3.11 DOCX). | All three matrix jobs green on head `e59852d` (2026-08-21); run https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/32478622595. |
 | P1 | **VERIFIED** | Preserve pre-existing `.work.docx` artifacts on a flatten failure. | Committed `f70b3f0` (2026-08-20) with two regression tests; review thread r3652927664 resolved. |
 | P1 | **VERIFIED** | Restore `tools/verify_integrity.py --strict` as a compatibility selector while strict remains the default. | Committed `f70b3f0` (2026-08-20); review thread r3652927668 resolved. |
 | P2 | **VERIFIED** | Probe the XML flattener dependency on non-Windows default wiring. | `test_make_flattener_non_windows_preflight` added; non-Windows path probes `_can_import_mergedpipeline()` before returning XmlFlattener. |
