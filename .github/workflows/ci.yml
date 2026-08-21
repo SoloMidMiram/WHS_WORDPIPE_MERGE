@@ -93,3 +93,5 @@ jobs:
             Write-Error "chain.ps1 with undated input should have failed but exited 0"
             exit 1
           }
+
+          exit 0
