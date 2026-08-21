@@ -101,6 +101,11 @@ def main() -> None:
 
     manifest_path = out_path.with_suffix(".rejections.json")
 
+    # A stale sidecar from a previous run is removed only after the normalized
+    # output write succeeds, so a failed write never leaves consumers with a
+    # newer output file missing its rejection manifest.
+    stale_manifest_needs_removal = False
+
     # Handle rejection records
     if rejection_records:
         # Annotate records with input filename
@@ -136,8 +141,7 @@ def main() -> None:
             len(rejection_records),
         )
     elif manifest_path.exists():
-        manifest_path.unlink()
-        logging.info("Removed stale rejection manifest %s", manifest_path)
+        stale_manifest_needs_removal = True
 
     preamble = extract_preamble(cleaned_text, events)
 
@@ -152,6 +156,10 @@ def main() -> None:
 
     out_path.write_text(normalised_md, encoding="utf-8")
     logging.info("Normalised file written to %s", out_path)
+
+    if stale_manifest_needs_removal:
+        manifest_path.unlink()
+        logging.info("Removed stale rejection manifest %s", manifest_path)
 
 
 if __name__ == "__main__":

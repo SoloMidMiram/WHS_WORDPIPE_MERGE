@@ -257,6 +257,106 @@ def test_ingest_clean_run_removes_stale_manifest(tmp_path: Path) -> None:
     assert out.exists()
 
 
+def test_ingest_stale_manifest_removed_after_clean_write(tmp_path: Path) -> None:
+    """A clean run over a reused output path removes the stale rejection
+    manifest only after the normalized output write succeeds (ordering fix)."""
+    md = tmp_path / "input.md"
+    out = tmp_path / "output.md"
+    manifest = out.with_suffix(".rejections.json")
+
+    # First run: mixed dated/undated with --allow-undated -> partial output
+    # plus a rejection manifest (exit 0).
+    md.write_text(
+        textwrap.dedent("""\
+        # Source
+
+        - **2025-01-01 - Dated Event:** body text
+        - **unknown - Bad Event:** undated body
+        """),
+        encoding="utf-8",
+    )
+    result = subprocess.run(
+        [sys.executable, "-m", "wordpipe.chronicle.cli.ingest",
+         "--input", str(md), "--output", str(out), "--allow-undated"],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
+    assert out.exists()
+    assert manifest.exists()
+
+    # Second run: fully dated input into the same output path -> stale
+    # manifest removed, normalized output valid.
+    md.write_text(
+        textwrap.dedent("""\
+        # Source
+
+        - **2025-02-02 - Clean Event:** clean body
+        """),
+        encoding="utf-8",
+    )
+    result = subprocess.run(
+        [sys.executable, "-m", "wordpipe.chronicle.cli.ingest",
+         "--input", str(md), "--output", str(out)],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
+    assert not manifest.exists(), "Stale rejection manifest should be removed"
+    content = out.read_text(encoding="utf-8")
+    assert "## Event: 2025-02-02" in content
+    assert "event_count: 1" in content
+
+
+def test_ingest_stale_manifest_preserved_on_write_failure(tmp_path: Path) -> None:
+    """A failed normalized-output write must not delete the stale rejection
+    manifest: cleanup runs only after the output write succeeds."""
+    md = tmp_path / "input.md"
+    out = tmp_path / "output.md"
+    manifest = out.with_suffix(".rejections.json")
+
+    # First run: undated input -> stale rejection manifest exists.
+    md.write_text(
+        textwrap.dedent("""\
+        # Source
+
+        - **unknown - Bad Event:** undated body
+        """),
+        encoding="utf-8",
+    )
+    result = subprocess.run(
+        [sys.executable, "-m", "wordpipe.chronicle.cli.ingest",
+         "--input", str(md), "--output", str(out)],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 1
+    assert manifest.exists()
+
+    # Replace the output path with a directory so the next write_text
+    # deterministically raises.
+    out.mkdir()
+
+    # Second run: fully dated input -> output write fails, but the stale
+    # rejection manifest must survive.
+    md.write_text(
+        textwrap.dedent("""\
+        # Source
+
+        - **2025-03-03 - Dated Event:** body text
+        """),
+        encoding="utf-8",
+    )
+    result = subprocess.run(
+        [sys.executable, "-m", "wordpipe.chronicle.cli.ingest",
+         "--input", str(md), "--output", str(out)],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode != 0, "Output write should have failed"
+    assert manifest.exists(), "Stale manifest must survive a failed output write"
+
+
 # ==============================================================================
 # F2 — Flatten preflight
 # ==============================================================================
