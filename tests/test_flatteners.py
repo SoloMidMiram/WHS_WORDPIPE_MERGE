@@ -61,6 +61,19 @@ class TestMakeFlattenerFallback:
             f"Expected _UnavailableFlattener, got {type(fl).__name__}"
         )
 
+    def test_make_flattener_non_windows_preflight(self, monkeypatch) -> None:
+        """Non-Windows + prefer_win32 probes the legacy dependency up front
+        instead of returning a live XmlFlattener that fails later."""
+        import sys
+
+        from wordpipe.adapters.flatteners.base import _UnavailableFlattener, make_flattener
+
+        monkeypatch.setattr(sys, "platform", "linux")
+        fl = make_flattener(prefer_win32=True)
+        assert isinstance(fl, _UnavailableFlattener), (
+            f"Expected _UnavailableFlattener, got {type(fl).__name__}"
+        )
+
     def test_unavailable_flattener_run_raises(self) -> None:
         """``_UnavailableFlattener.run()`` raises ``RuntimeError``."""
         from wordpipe.adapters.flatteners.base import _UnavailableFlattener

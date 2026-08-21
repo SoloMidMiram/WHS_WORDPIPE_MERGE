@@ -19,12 +19,16 @@ LEGACY_INPUT_DIRS = (
 
 
 def _normalized_content(path: Path) -> bytes:
-    """Read file and normalize CRLF to LF for consistent hashing."""
+    """Read file for hashing: LF-normalize text, hash DOCX as raw binary."""
     raw = path.read_bytes()
+    if path.suffix.lower() == ".docx":
+        return raw
     return raw.replace(b"\r\n", b"\n")
 
 
 def _catalog_entries(catalog: Any) -> list[dict[str, Any]]:
+    if not isinstance(catalog, dict):
+        raise ValueError("catalog must be a JSON object")
     sv = catalog.get("schema_version")
     if sv == 1:
         # v1: hash_mode is implicitly "lf_normalized_utf8" (CRLF was normalized

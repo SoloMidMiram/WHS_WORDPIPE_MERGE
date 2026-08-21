@@ -57,6 +57,13 @@ def make_flattener(prefer_win32: bool) -> Flattener:
             warnings.warn(
                 "prefer_win32 requested on non-Windows platform; using XmlFlattener."
             )
+            if not _can_import_mergedpipeline():
+                msg = (
+                    "XML flattener unavailable: MergedpipelineV3 module is missing. "
+                    "Install the legacy integration module or set do_flatten=False."
+                )
+                warnings.warn(msg)
+                return _UnavailableFlattener(reason=msg)
             from .xml_flattener import XmlFlattener
 
             return XmlFlattener()

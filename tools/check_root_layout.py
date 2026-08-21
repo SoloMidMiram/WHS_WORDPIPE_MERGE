@@ -29,6 +29,7 @@ ALLOWED_FILES = {
 
 ALLOWED_DIRECTORIES = {
     ".agents",
+    ".codex",
     ".continue",
     ".cursor",
     ".git",

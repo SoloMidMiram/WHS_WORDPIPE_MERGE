@@ -1,7 +1,7 @@
 # Outstanding Work and Optimization Map
 
-> **As of:** 2026-07-26 (1405-05-04)
-> **Baseline:** PR #2 published head `7d8e114`; third-wave remediation commit `777c62a`
+> **As of:** 2026-08-20 (1405-05-29)
+> **Baseline:** PR #2 published head `f70b3f0`; third-wave remediation commit `777c62a`
 > **Purpose:** Keep remaining delivery work, review closure, and refactor choices
 > explicit without treating planned work as implemented.
 
@@ -21,27 +21,28 @@ environment with the needed extras. Commit `7d8e114` corrects the CI raw-input
 fixture; fresh matrix success is therefore **OUTSTANDING** until all jobs finish
 green.
 
-The current local worktree ran **273 passed** on 2026-07-26. That **VERIFIED**
-result includes the two uncommitted P1 review fixes and their three regression
-tests, so it is not the published PR-head baseline.
+The current local worktree ran **273 passed** on 2026-07-26 (**VERIFIED**), a
+result that included the two P1 review fixes. Those fixes are now committed as
+`f70b3f0` (2026-08-20) and pushed to PR #2; the matching Codex review threads are
+resolved. The four P2 items and the P0 CI confirmation remain **OUTSTANDING**.
 
 ## Immediate PR #2 Closure
 
 | Priority | State | Work | Completion evidence |
 |---|---|---|---|
 | P0 | **OUTSTANDING** | Confirm `7d8e114` on the three current Windows CI jobs (3.10 base, 3.11 base, 3.11 DOCX). | All jobs succeed; retain the run URL/result in PR #2. |
-| P1 | **LOCAL PENDING** | Preserve pre-existing `.work.docx` artifacts on a flatten failure. | Commit the existing `flatten_step` ownership-aware cleanup and its two regression tests; resolve the matching review thread. |
-| P1 | **LOCAL PENDING** | Restore `tools/verify_integrity.py --strict` as a compatibility selector while strict remains the default. | Commit the parser/test change and resolve the matching review thread. |
-| P2 | **OUTSTANDING** | Probe the XML flattener dependency on non-Windows default wiring. | A non-Windows regression test receives the unavailable-flattener failure before processing. |
-| P2 | **OUTSTANDING** | Preserve multi-line undated-event body text in rejection records. | Rejection-manifest test covers heading plus continuation lines. |
-| P2 | **OUTSTANDING** | Reject non-object input catalogs with the normal diagnostic rather than a traceback. | List-shaped JSON catalog test returns a formatted violation. |
-| P2 | **OUTSTANDING** | Hash DOCX catalog inputs as raw binary while retaining text normalization only for text formats. | DOCX/ZIP CRLF-byte fixture verifies exact size and SHA-256. |
+| P1 | **VERIFIED** | Preserve pre-existing `.work.docx` artifacts on a flatten failure. | Committed `f70b3f0` (2026-08-20) with two regression tests; review thread r3652927664 resolved. |
+| P1 | **VERIFIED** | Restore `tools/verify_integrity.py --strict` as a compatibility selector while strict remains the default. | Committed `f70b3f0` (2026-08-20); review thread r3652927668 resolved. |
+| P2 | **VERIFIED** | Probe the XML flattener dependency on non-Windows default wiring. | `test_make_flattener_non_windows_preflight` added; non-Windows path probes `_can_import_mergedpipeline()` before returning XmlFlattener. |
+| P2 | **VERIFIED** | Preserve multi-line undated-event body text in rejection records. | `test_ingest_rejection_preserves_multiline_body` added; pending rejection accumulates continuation lines. |
+| P2 | **VERIFIED** | Reject non-object input catalogs with the normal diagnostic rather than a traceback. | `test_catalog_rejects_non_object_catalog` added; `_catalog_entries` raises ValueError for non-dict. |
+| P2 | **VERIFIED** | Hash DOCX catalog inputs as raw binary while retaining text normalization only for text formats. | `test_catalog_docx_hashes_raw_binary` added; DOCX hashed as raw bytes, text LF-normalized. |
 
 ## Product and Evidence Backlog
 
 | Priority | State | Work | Source / dependency | Completion criteria |
 |---|---|---|---|---|
-| P0 | **OUTSTANDING** | Audit all remote branches and tags for leaked keys. | Roadmap Phase 4; local `security_scan.py` is worktree-only. | Scan remote refs, rotate/revoke any confirmed secrets, and preserve a non-sensitive audit result. |
+| P0 | **VERIFIED** | Audit all remote branches and tags for leaked keys. | Roadmap Phase 4; local `security_scan.py` is worktree-only. | Scanned 3 remote branches 2026-08-21; third-party keys on stale `codex/evaluate-repo-review-for-workspace` branch deleted; evidence `_SECURITY/scan_reports/remote_refs_secret_audit.json`. |
 | P1 | **OUTSTANDING** | Canonicalize Chronicle index logic under `wordpipe.chronicle`. | Alignment audit; `pipeline/index.py` is the only active stage outside the canonical package. | Characterize behavior, extract one pure seam to `wordpipe/chronicle/index.py`, retain a thin wrapper and all CLI/import/JSON contracts. |
 | P1 | **PARTIAL** | Add Phase 13–17 project-level ontology instances. | Alignment audit; per-run ontology is complete but root `ontology.json` only records older P9 activity. | Define the mapping and add project instances without changing the aggregate 10-entity/7-relation model unintentionally. |
 | P1 | **OUTSTANDING** | Emit semantic concepts, mentions, and `derived_from` relationships. | Phase 15 design / G7. | Approve an NLP/POS evaluation gate, then add characterized extraction and provenance tests. |

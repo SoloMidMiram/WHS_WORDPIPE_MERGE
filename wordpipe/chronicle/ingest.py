@@ -186,6 +186,8 @@ def split_into_events(text: str) -> tuple[list[dict[str, str]], list[dict[str, A
     current_date: Optional[str] = None
     current_title = ""
     current_body: list[str] = []
+    current_rejection: Optional[dict[str, Any]] = None
+    current_rejection_body: list[str] = []
     event_index = 0
 
     def _save_current_event() -> None:
@@ -201,6 +203,13 @@ def split_into_events(text: str) -> tuple[list[dict[str, str]], list[dict[str, A
         current_date = None
         current_title = ""
         current_body = []
+
+    def _flush_rejection() -> None:
+        nonlocal current_rejection, current_rejection_body
+        if current_rejection is not None:
+            current_rejection["rejected_body"] = "\n".join(current_rejection_body).strip()
+        current_rejection = None
+        current_rejection_body = []
 
     def _extract_date_and_title(
         bold_content: str,
@@ -239,6 +248,7 @@ def split_into_events(text: str) -> tuple[list[dict[str, str]], list[dict[str, A
         period_match = period_pattern.match(stripped)
         if period_match:
             _save_current_event()
+            _flush_rejection()
             current_period = period_match.group(0).strip().lstrip("##").strip()
             continue
 
@@ -246,6 +256,7 @@ def split_into_events(text: str) -> tuple[list[dict[str, str]], list[dict[str, A
             bullet_match = bullet_bold_pattern.match(stripped)
             if bullet_match:
                 _save_current_event()
+                _flush_rejection()
                 event_index += 1
                 bold_content = bullet_match.group(1).strip()
                 body_text = bullet_match.group(2).strip()
@@ -261,6 +272,8 @@ def split_into_events(text: str) -> tuple[list[dict[str, str]], list[dict[str, A
                         line_number=line_number,
                     )
                     rejection_records.append(rec)
+                    current_rejection = rec
+                    current_rejection_body = [body_text] if body_text else []
                     logging.warning(
                         "Rejected event at line %d: undated heading %r",
                         line_number,
@@ -274,8 +287,11 @@ def split_into_events(text: str) -> tuple[list[dict[str, str]], list[dict[str, A
 
         if current_date is not None:
             current_body.append(line)
+        elif current_rejection is not None:
+            current_rejection_body.append(line)
 
     _save_current_event()
+    _flush_rejection()
     return events, rejection_records
 
 

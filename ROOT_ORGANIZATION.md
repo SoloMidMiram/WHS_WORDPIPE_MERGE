@@ -29,6 +29,10 @@ Ignored tool-generated caches such as `.pytest_cache/` and `*.egg-info/` may
 appear locally. They are not curated root content, are excluded from version
 control, and are explicit checker exemptions rather than allowed project areas.
 
+Agent and editor workspace directories (`.agents/`, `.codex/`, `.continue/`,
+`.cursor/`) are supported local workspaces and are allowlisted in the checker;
+their contents are not curated root content.
+
 ## Placement Rules
 
 | Material | Required location |

@@ -147,6 +147,28 @@ def test_ingest_rejection_manifest_structured(tmp_path: Path) -> None:
     assert rec["event_index"] == 1
 
 
+def test_ingest_rejection_preserves_multiline_body(tmp_path: Path) -> None:
+    """Undated heading accumulates continuation lines into rejected_body."""
+    md = tmp_path / "input.md"
+    md.write_text(
+        textwrap.dedent("""\
+        # Source
+
+        - **unknown - Bad Event:** undated body
+          continuation line 1
+          continuation line 2
+        """),
+        encoding="utf-8",
+    )
+
+    _, rejections = split_into_events(md.read_text(encoding="utf-8"))
+    assert len(rejections) == 1
+    body = rejections[0]["rejected_body"]
+    assert "undated body" in body
+    assert "continuation line 1" in body
+    assert "continuation line 2" in body
+
+
 def test_ingest_no_undated_no_manifest(tmp_path: Path) -> None:
     """Zero undated events -> no rejection manifest, normal behavior."""
     md = tmp_path / "input.md"
