@@ -25,7 +25,7 @@ wordpipe/
   steps/            # pluggable step engine (flatten, style, segment, finalize, toc)
   plugins/          # optional registry and entrypoint loading
   cli/              # optional CLI entrypoint
-  chronicle/        # importable chronicle pipeline logic (ingest, merge, categorize, verify_ingest; index deferred)
+  chronicle/        # importable Chronicle stage logic, including index generation
   pipeline/         # compatibility wrappers (legacy import paths)
   flatteners/       # compatibility wrappers (legacy import paths)
 ```
@@ -44,6 +44,7 @@ Excluded from distribution (via `pyproject.toml` `[tool.setuptools.packages.find
 | `wordpipe.chronicle.merge` | Multi-file merge, dedup, conflict resolution, source coverage |
 | `wordpipe.chronicle.categorize` | Theme tagging (v2: negative keywords, dry-run, legacy format) |
 | `wordpipe.chronicle.verify_ingest` | Batch ingest verification (parse stderr, classify, report) |
+| `wordpipe.chronicle.index` | Pure appendix index extraction, deduplication, and rendering logic |
 
 CLI wrappers (argparse + I/O, delegating to the above modules):
 - `wordpipe.chronicle.cli.ingest`

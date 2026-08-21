@@ -81,9 +81,9 @@ python -m pip install -e ".[full]"
 wordpipe --in "input.docx" --out "output.docx" --no-flatten
 ```
 
-Flattening is opt-in: it requires the legacy `MergedpipelineV3` module.
-Pass `--flatten` only after installing that module; the example above uses
-`--no-flatten` for the dependency-free default path.
+Flattening remains enabled by default for backward compatibility and requires
+the legacy `MergedpipelineV3` module. Use `--no-flatten` when that module is not
+installed; the example above selects this dependency-free path explicitly.
 
 ## Pre-Push Checks
 

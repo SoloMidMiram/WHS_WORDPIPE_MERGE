@@ -101,6 +101,8 @@ Apply relocation plan via copy-only behavior with conflict-safe writes.
 ### Outputs
 - Created/overwritten:
 - `_ARCHIVE/move_maps/relocation_map.jsonl`
+  - Each row retains `src_abs`/`dst_abs` diagnostics and also emits portable
+    `src_rel`/`dst_rel` identities plus `conflict_path_rel` when applicable.
 - Appended:
 - `_ARCHIVE/logs/apply_reorg.log`
 - `_ARCHIVE/logs/conflicts.log`

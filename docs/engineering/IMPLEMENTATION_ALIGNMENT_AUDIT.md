@@ -1,7 +1,8 @@
 # Implementation-to-Roadmap Alignment Audit
 
-> Date: 2026-07-25 (1405/05/03)<br>
-> Status: Committed baseline audit (`a635ea2`) plus P0 reliability remediation plus second-wave P0/P1 closeout plus third-wave P0/P1 closeout<br>
+> Date: 2026-08-21 (1405/05/30)<br>
+> Status: Committed baseline audit (`a635ea2`) plus reliability, installability,
+> architecture, and evidence-portability closeout<br>
 > Scope: Main roadmap phases, root organization, canonical module boundaries,
 > topic-report evidence, and known implementation debt
 
@@ -28,14 +29,14 @@ tests, generated run evidence, and focused inspection.
 | 14 | Second topic and multi-topic ontology readiness complete | **VERIFIED** | Remediation trend has 50 staged/merged/tagged events, PASS, COMPARED, 10 entity types, and 7 relation types |
 | 13 | Generic topic runner, trends, attribution, ontology spine complete | **VERIFIED** | Registry, manifests, trend/source evidence, ontology output, and focused tests exist |
 | 12 | Topic-neutral adapter performance loop complete | **VERIFIED** | InsuranceChatbot controlled evidence and reusable performance template exist |
-| 11 | P0-P2 repository stabilization complete | **VERIFIED, with follow-ups** | Canonical verify, fail-fast orchestration, O(n) adapter segmenter, CI, and tests exist; canonical index extraction remains deferred |
+| 11 | P0-P2 repository stabilization complete | **VERIFIED** | Canonical verify, fail-fast orchestration, O(n) adapter segmenter, CI, and tests exist; Chronicle index logic is canonical under `wordpipe.chronicle.index` with a compatibility wrapper |
 | 10 | Documentation architecture complete | **VERIFIED after maintenance sync** | Canonical docs exist; this audit corrected later drift and added root enforcement |
 | 9a/9b | Chronicle automation and index builder complete | **VERIFIED** | Ingest/merge/categorize/verify canonical logic and operator index stage execute in the controlled runs |
 | 9c | Reference builder and ontology wiring complete | **PARTIAL / OUTSTANDING** | P9 activity exists in `ontology.json`, but `pipeline/reference.py`, manual-merge validation, and project-level topic-run instances do not |
 | 7 | Layered WordPipe refactor complete | **VERIFIED** | `wordpipe/orchestrator.py` is a thin composition root; orchestration and adapter tests pass |
 | 6 | Foundation portability and ontology building complete | **VERIFIED after path cleanup** | Governance docs and ontology exist; machine-specific command examples were corrected during this audit |
 | 5 | Documentation pack complete | **VERIFIED after mapping sync** | Role-based docs exist and current Phase 14/audit/root guidance are mapped |
-| 4 | Local security and pipeline contracts complete | **VERIFIED locally; remote audit OUTSTANDING** | Local scanner passes and contracts exist; remote-history key audit remains explicitly outstanding |
+| 4 | Local security and pipeline contracts complete | **VERIFIED after remote-ref audit** | Local scanner passes; the 2026-08-21 remote-ref audit found third-party keys only on a stale branch, deleted that branch, and recorded verification in `_SECURITY/scan_reports/remote_refs_secret_audit.json` |
 | 3 | Snapshot and evidence pipeline established | **VERIFIED by preserved artifacts** | Manifest, relocation plan/map, logs, and integrity evidence exist |
 
 ## Major Flaws and Disposition
@@ -44,12 +45,12 @@ tests, generated run evidence, and focused inspection.
 |---------|-------------|----------|
 | Topic runner combines manifest, execution, trends, attribution, verdict, and ontology concerns in one CLI | **CONDITIONAL architecture debt** | Broad topic-runner decomposition is conditional, not an active Project Phase 15 deliverable. Reconsider it only when a third adapter exposes concrete coupling or ontology schema evolution makes the current serializer unsafe |
 | File-level lineage existed without section→event identity | **FIXED through Phases 16–17; semantic concepts OUTSTANDING** | Section/commit locators, stable SourceEvent/ReportEvent sidecars, actual survivor membership, and two-run repeatability are verified; SemanticConcept/mentions/derived_from emission remains deferred |
-| Chronicle `index` is the only active stage not canonical under `wordpipe.chronicle` | **OUTSTANDING** | `pipeline/index.py` exists; `wordpipe/chronicle/index.py` does not |
+| Chronicle `index` was the only active stage not canonical under `wordpipe.chronicle` | **FIXED** | Characterization tests cover the extracted pure seam in `wordpipe/chronicle/index.py`; `pipeline/index.py` remains a thin CLI/import compatibility wrapper |
 | Static project ontology does not contain Phase 13–17 topic-run instances | **PARTIAL** | Per-run ontology JSON is complete and remains aggregate 10/7, while project-level `ontology.json` only contains the older P9 activity |
 | P0 external-review defects (6 findings across verify_integrity, chronicle merge, ComFlattener, TOC adapter, CLI error handling, path guard) | **FIXED in P0 reliability remediation slice** | `--strict` added to orchestration; `validate_event_headings()` pre-scan added; `ComFlattener.__init__` eager import; `Win32MergedpipelineV3TocUpdater` exception blocks removed; CLI rewritten to check `RunReport.errors`; `--in`/`--out` path guard added. 253 tests pass. See `VERIFICATION.md` and `JOURNAL.md` |
 | Second-wave P0/P1 review findings (7 findings across flattener decoupling, chain abort, verify defaults, ingest provenance, categorize preamble, REVIEW verdict, API doc alignment, catalog v2) | **FIXED in second-wave slice** | `_can_import_mergedpipeline()` probe + `_UnavailableFlattener` stub; chain.ps1 aborts on `$IngestFailures -gt 0`; `verify_integrity.py` defaults to strict (`--diagnostic-only` to relax); ingest skips undated events; categorize preserves preamble; `run_topic_report.py` returns exit 2 for REVIEW verdict; TraceLedger contract doc corrected; catalog bumped to v2 with hash_mode. 257 tests pass. See `docs/engineering/SECOND_WAVE_P0P1_VALIDATION.md` |
 | Third-wave P0/P1 review findings (5 findings across ingest rejection manifest, flatten preflight+abort, source coverage parser, dedup defaults, sibling heading context; CI gap) | **FIXED in third-wave slice** | `split_into_events()` returns structured rejection records; CLI `--allow-undated` flag; `build_default_deps()` preflight RuntimeError; `WordPipePipeline.run()` aborts on flatten failure; `build_source_manifest()` accepts both numbered/un-numbered formats; dedup defaults aligned to `date_title`; H2/H3 sibling transition guards removed; CI matrix expanded with DOCX extra, real DOCX CLI test, real chain.ps1 execution. 270 tests pass. |
-| Evidence portability deliverables are incomplete | **OUTSTANDING** | `verify_integrity.py` lacks `--portable`; generated relocation rows omit `src_rel`/`dst_rel` and retain absolute-only paths |
+| Evidence portability deliverables were incomplete | **FIXED** | Relocation rows emit relative identities alongside absolute diagnostics; `verify_integrity.py --portable` prefers those identities and resolves destination/conflict paths against the active workspace; regression tests cover clone-path drift |
 | Roadmap outstanding table described completed Phase 14 work as future | **FIXED** | Outstanding table now lists only current work |
 | Root mixed tracked report scripts and generated DOCX outputs with governance files | **FIXED** | Scripts moved to `scripts/reporting/`; reports preserved in `_ARCHIVE/evidence/generated-reports/`; root checker passes |
 | Fixed month and topic labels weakened the generic Markdown adapter | **FIXED in Phase 14 remediation** | Dynamic headings, manifest-owned topic context, focused tests, and controlled evidence |
