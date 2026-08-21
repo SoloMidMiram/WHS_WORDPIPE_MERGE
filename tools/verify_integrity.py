@@ -23,6 +23,16 @@ def resolve_norm(path: str) -> str:
     return str(Path(path).resolve()).lower()
 
 
+def rel_to_workspace(path: str, workspace_abs: str) -> str:
+    """Return a repo-relative path (forward slashes) when under workspace_abs."""
+    if not path:
+        return path
+    try:
+        return os.path.relpath(path, workspace_abs).replace(os.sep, "/")
+    except ValueError:
+        return path
+
+
 def load_jsonl(path: str) -> list[dict]:
     rows = []
     with open(path, "r", encoding="utf-8") as f:
@@ -122,6 +132,7 @@ def run_stage(
     relocation: str,
     snapshot_root: str,
     strict: bool,
+    portable: bool = False,
 ) -> StageResult:
     workspace_abs = resolve_workspace_root(workspace_root)
     manifest_path = resolve_path(workspace_abs, manifest)
@@ -188,29 +199,32 @@ def run_stage(
             dst_abs = row.get("dst_abs")
             expected = row.get("sha256")
             if not dst_abs or not os.path.isfile(dst_abs):
-                failures.append(
-                    {"type": "missing_dst", "dst_abs": dst_abs, "status": status}
-                )
+                entry = {"type": "missing_dst", "dst_abs": dst_abs, "status": status}
+                if portable:
+                    entry["dst_rel"] = rel_to_workspace(dst_abs, workspace_abs)
+                failures.append(entry)
                 continue
             actual = sha256_file(dst_abs)
             if actual != expected:
-                failures.append(
-                    {
-                        "type": "hash_mismatch",
-                        "dst_abs": dst_abs,
-                        "expected": expected,
-                        "actual": actual,
-                    }
-                )
+                entry = {
+                    "type": "hash_mismatch",
+                    "dst_abs": dst_abs,
+                    "expected": expected,
+                    "actual": actual,
+                }
+                if portable:
+                    entry["dst_rel"] = rel_to_workspace(dst_abs, workspace_abs)
+                failures.append(entry)
         elif status == "conflict":
             conflict_path = row.get("conflict_path")
             if not conflict_path or not os.path.isfile(conflict_path):
-                failures.append(
-                    {
-                        "type": "missing_conflict",
-                        "conflict_path": conflict_path,
-                    }
-                )
+                entry = {
+                    "type": "missing_conflict",
+                    "conflict_path": conflict_path,
+                }
+                if portable:
+                    entry["conflict_path_rel"] = rel_to_workspace(conflict_path, workspace_abs)
+                failures.append(entry)
 
     integrity = {
         "status_counts": status_counts,
@@ -397,6 +411,11 @@ def main() -> None:
     )
     parser.add_argument("--workspace-root", default=".")
     parser.add_argument("--summary-json", default="")
+    parser.add_argument(
+        "--portable",
+        action="store_true",
+        help="Emit src_rel/dst_rel (repo-relative) paths alongside absolute paths.",
+    )
     strictness = parser.add_mutually_exclusive_group()
     strictness.add_argument(
         "--strict",
@@ -417,6 +436,7 @@ def main() -> None:
         relocation=args.relocation,
         snapshot_root=args.snapshot_root,
         strict=not args.diagnostic_only,
+        portable=args.portable,
     )
 
     for line in result.details.get("summary_lines", []):

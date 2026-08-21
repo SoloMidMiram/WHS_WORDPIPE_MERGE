@@ -77,3 +77,22 @@ def test_verify_integrity_help_retains_strict_flag() -> None:
 
     assert "--strict" in completed.stdout
     assert "--diagnostic-only" in completed.stdout
+    assert "--portable" in completed.stdout
+
+
+def test_rel_to_workspace() -> None:
+    import os
+    import sys
+    from pathlib import Path
+
+    tools_dir = str(Path(__file__).resolve().parents[1] / "tools")
+    sys.path.insert(0, tools_dir)
+    try:
+        import verify_integrity as verify
+    finally:
+        sys.path.pop(0)
+
+    ws = os.path.abspath(".")
+    rel = verify.rel_to_workspace(os.path.join(ws, "sub", "file.txt"), ws)
+    assert rel == "sub/file.txt"
+    assert verify.rel_to_workspace("", ws) == ""

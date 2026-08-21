@@ -558,6 +558,7 @@ def test_ontology_output_contains_ten_entity_types(tmp_path):
     }
     assert entity_types == expected_types, f"Missing: {expected_types - entity_types}"
 
+
     evidence_names = {
         e["name"] for e in ontology["entities"] if e["type"] == "EvidenceArtifact"
     }
@@ -581,6 +582,27 @@ def test_ontology_output_contains_ten_entity_types(tmp_path):
     verdict_entities = [e for e in ontology["entities"] if e["type"] == "Verdict"]
     assert len(verdict_entities) == 1
     assert verdict_entities[0]["properties"]["verdict"] == "PASS"
+
+def test_topic_run_manifest_paths_are_repo_relative(tmp_path):
+    manifest = _valid_manifest_dict(_repo_root())
+    run_dir = tmp_path / "portable_test"
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "trend_report.json").write_text("{}", encoding="utf-8")
+    (run_dir / "trend_report.md").write_text("# Trend\n", encoding="utf-8")
+    (run_dir / "source_attribution.json").write_text("{}", encoding="utf-8")
+
+    runner.write_ontology_outputs(
+        manifest, run_dir, {}, {"prepare": 0, "pipeline": 0, "summarize": 0}, 1.0
+    )
+
+    data = json.loads((run_dir / "topic_run_manifest.json").read_text(encoding="utf-8"))
+    assert data["_repo_root"] == manifest["_repo_root"]
+    for key in ("input_dir", "themes_config", "index_config", "output_base_dir"):
+        assert not Path(data[key]).is_absolute(), key
+    assert not Path(data["adapter"]["script"]).is_absolute()
+    assert Path(data["input_dir_abs"]).is_absolute()
+    assert Path(data["adapter_abs"]["script"]).is_absolute()
+
 
 
 def test_ontology_verdict_fail_when_stage_fails(tmp_path):
