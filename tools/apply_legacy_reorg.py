@@ -247,11 +247,20 @@ def run_stage(
                     )
 
                 out_row = {
+                    "src_rel": row["src_rel"],
                     "src_abs": src_abs,
+                    "dst_rel": dst_rel,
                     "dst_abs": dst_abs,
                     "sha256": row["sha256"],
                     "status": status,
                     "conflict_path": conflict_path,
+                    "conflict_path_rel": (
+                        os.path.relpath(conflict_path, workspace_abs).replace(
+                            os.sep, "/"
+                        )
+                        if conflict_path
+                        else None
+                    ),
                     "stamp": row["stamp"],
                     "area": row["area"],
                     "rule_hits": row["rule_hits"],

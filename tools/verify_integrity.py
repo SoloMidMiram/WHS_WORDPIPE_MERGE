@@ -28,9 +28,38 @@ def rel_to_workspace(path: str, workspace_abs: str) -> str:
     if not path:
         return path
     try:
-        return os.path.relpath(path, workspace_abs).replace(os.sep, "/")
+        path_abs = os.path.abspath(path)
+        workspace_abs = os.path.abspath(workspace_abs)
+        common = os.path.normcase(os.path.commonpath([path_abs, workspace_abs]))
+        if common != os.path.normcase(workspace_abs):
+            return path
+        return os.path.relpath(path_abs, workspace_abs).replace(os.sep, "/")
     except ValueError:
         return path
+
+
+def row_path(
+    row: dict,
+    *,
+    rel_key: str,
+    abs_key: str,
+    workspace_abs: str,
+    portable: bool,
+) -> str | None:
+    """Prefer a row's portable path while retaining absolute-path compatibility."""
+    if portable and row.get(rel_key):
+        return resolve_path(workspace_abs, row[rel_key])
+    return row.get(abs_key)
+
+
+def source_identity(row: dict, *, portable: bool) -> tuple[str, str] | None:
+    """Return a normalized relocation source identity for consistency checks."""
+    if portable and row.get("src_rel"):
+        rel = os.path.normpath(row["src_rel"].replace("/", os.sep))
+        return ("rel", rel.replace(os.sep, "/").casefold())
+    if row.get("src_abs"):
+        return ("abs", resolve_norm(row["src_abs"]))
+    return None
 
 
 def load_jsonl(path: str) -> list[dict]:
@@ -47,20 +76,21 @@ def iter_files(root: str):
             yield os.path.join(base, name)
 
 
-def build_consistency(plan_rows: list[dict], relocation_rows: list[dict]) -> dict:
-    plan_keys: dict[str, str] = {}
+def build_consistency(
+    plan_rows: list[dict], relocation_rows: list[dict], *, portable: bool = False
+) -> dict:
+    plan_keys: dict[tuple[str, str], str] = {}
     for row in plan_rows:
-        src_abs = row.get("src_abs")
+        key = source_identity(row, portable=portable)
         src_rel = row.get("src_rel", "")
-        if src_abs:
-            plan_keys[resolve_norm(src_abs)] = src_rel
+        if key:
+            plan_keys[key] = src_rel
 
-    map_keys: dict[str, list[dict]] = {}
+    map_keys: dict[tuple[str, str], list[dict]] = {}
     status_counts: dict[str, int] = {}
     for row in relocation_rows:
-        src_abs = row.get("src_abs")
-        if src_abs:
-            key = resolve_norm(src_abs)
+        key = source_identity(row, portable=portable)
+        if key:
             map_keys.setdefault(key, []).append(row)
         status = row.get("status", "unknown")
         status_counts[status] = status_counts.get(status, 0) + 1
@@ -196,7 +226,13 @@ def run_stage(
         status_counts[status] = status_counts.get(status, 0) + 1
         area_counts[area] = area_counts.get(area, 0) + 1
         if status in {"copied", "skipped_same"}:
-            dst_abs = row.get("dst_abs")
+            dst_abs = row_path(
+                row,
+                rel_key="dst_rel",
+                abs_key="dst_abs",
+                workspace_abs=workspace_abs,
+                portable=portable,
+            )
             expected = row.get("sha256")
             if not dst_abs or not os.path.isfile(dst_abs):
                 entry = {"type": "missing_dst", "dst_abs": dst_abs, "status": status}
@@ -216,7 +252,13 @@ def run_stage(
                     entry["dst_rel"] = rel_to_workspace(dst_abs, workspace_abs)
                 failures.append(entry)
         elif status == "conflict":
-            conflict_path = row.get("conflict_path")
+            conflict_path = row_path(
+                row,
+                rel_key="conflict_path_rel",
+                abs_key="conflict_path",
+                workspace_abs=workspace_abs,
+                portable=portable,
+            )
             if not conflict_path or not os.path.isfile(conflict_path):
                 entry = {
                     "type": "missing_conflict",
@@ -269,7 +311,7 @@ def run_stage(
     with open(report_json, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
-    consistency = build_consistency(plan_rows, relocation_rows)
+    consistency = build_consistency(plan_rows, relocation_rows, portable=portable)
     with open(consistency_json, "w", encoding="utf-8") as f:
         json.dump(consistency, f, ensure_ascii=False, indent=2)
 
@@ -414,7 +456,10 @@ def main() -> None:
     parser.add_argument(
         "--portable",
         action="store_true",
-        help="Emit src_rel/dst_rel (repo-relative) paths alongside absolute paths.",
+        help=(
+            "Prefer repo-relative relocation paths resolved against --workspace-root "
+            "and emit them alongside absolute diagnostics."
+        ),
     )
     strictness = parser.add_mutually_exclusive_group()
     strictness.add_argument(
