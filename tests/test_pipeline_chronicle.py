@@ -454,6 +454,17 @@ class TestMergeCore:
         files = merge.collect_input_files([str(f1), str(f2)], None)
         assert len(files) == 2
 
+    def test_collect_input_files_excludes_unlisted(self, tmp_dir):
+        """Explicit --inputs excludes unlisted (stale) files in the same directory."""
+        merge = self._import_merge()
+        fresh = tmp_dir / "fresh.md"
+        stale = tmp_dir / "stale.md"
+        fresh.write_text("content", encoding="utf-8")
+        stale.write_text("content", encoding="utf-8")
+
+        files = merge.collect_input_files([str(fresh)], None)
+        assert [f.name for f in files] == ["fresh.md"]
+
     def test_collect_input_files_duplicates_skipped(self, tmp_dir):
         """Verify duplicate file paths are skipped with warning."""
         merge = self._import_merge()

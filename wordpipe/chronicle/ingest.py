@@ -162,7 +162,9 @@ def _make_rejection_record(
     }
 
 
-def split_into_events(text: str) -> tuple[list[dict[str, str]], list[dict[str, Any]]]:
+def split_into_events(
+    text: str, default_date: Optional[str] = None
+) -> tuple[list[dict[str, str]], list[dict[str, Any]]]:
     """Split raw markdown into event blocks based on the actual file structure.
 
     Returns:
@@ -263,6 +265,11 @@ def split_into_events(text: str) -> tuple[list[dict[str, str]], list[dict[str, A
 
                 extracted_date, extracted_title = _extract_date_and_title(bold_content)
                 if extracted_date is None:
+                    if default_date is not None:
+                        current_date = default_date
+                        current_title = extracted_title
+                        current_body = [body_text] if body_text else []
+                        continue
                     rec = _make_rejection_record(
                         input_filename="",
                         event_index=event_index,

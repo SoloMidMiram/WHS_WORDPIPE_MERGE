@@ -65,6 +65,7 @@ def main() -> None:
     source = extract_source_name(input_path, args.source_name)
     title = extract_title(cleaned_text, source)
 
+    default_date: str | None = None
     date_start, date_end = parse_date_range(cleaned_text)
     if date_start is None:
         if args.date_override:
@@ -78,6 +79,7 @@ def main() -> None:
                         forced_dt.year,
                     )
                 date_start = date_end = forced_dt
+                default_date = forced_dt.strftime("%Y-%m-%d")
                 logging.info("Date overridden to %s", forced_dt.strftime("%Y-%m-%d"))
             except (ValueError, OverflowError) as e:
                 logging.error(
@@ -87,7 +89,7 @@ def main() -> None:
         else:
             logging.warning("No dates found in content; date will be 'unknown'.")
 
-    events, rejection_records = split_into_events(cleaned_text)
+    events, rejection_records = split_into_events(cleaned_text, default_date=default_date)
     logging.info("Extracted %d events, %d rejected.", len(events), len(rejection_records))
 
     # Determine output path
@@ -96,6 +98,8 @@ def main() -> None:
     else:
         out_stem = input_path.stem + "_normalised"
         out_path = input_path.with_name(out_stem + ".md")
+
+    manifest_path = out_path.with_suffix(".rejections.json")
 
     # Handle rejection records
     if rejection_records:
@@ -112,7 +116,6 @@ def main() -> None:
             "rejected_events": rejection_records,
         }
 
-        manifest_path = out_path.with_suffix(".rejections.json")
         manifest_path.write_text(
             json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
             encoding="utf-8",
@@ -132,6 +135,9 @@ def main() -> None:
             len(events),
             len(rejection_records),
         )
+    elif manifest_path.exists():
+        manifest_path.unlink()
+        logging.info("Removed stale rejection manifest %s", manifest_path)
 
     preamble = extract_preamble(cleaned_text, events)
 

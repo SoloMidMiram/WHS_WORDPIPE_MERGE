@@ -185,6 +185,78 @@ def test_ingest_no_undated_no_manifest(tmp_path: Path) -> None:
     assert len(rejections) == 0
 
 
+def test_ingest_date_override_accepts_undated(tmp_path: Path) -> None:
+    """--date-override applies to undated events instead of rejecting them."""
+    md = tmp_path / "input.md"
+    md.write_text(
+        textwrap.dedent("""\
+        # Source
+
+        - **unknown - Bad Event:** undated body
+        - **TBD - Second:** body two
+        """),
+        encoding="utf-8",
+    )
+
+    out = tmp_path / "output.md"
+    result = subprocess.run(
+        [sys.executable, "-m", "wordpipe.chronicle.cli.ingest",
+         "--input", str(md), "--output", str(out),
+         "--date-override", "2025-03-15"],
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert out.exists()
+    assert "2025-03-15" in out.read_text(encoding="utf-8")
+    assert not out.with_suffix(".rejections.json").exists()
+
+
+def test_ingest_clean_run_removes_stale_manifest(tmp_path: Path) -> None:
+    """A clean run over a reused output path removes a stale rejection manifest."""
+    md = tmp_path / "input.md"
+    out = tmp_path / "output.md"
+    manifest = out.with_suffix(".rejections.json")
+
+    # First run: undated -> manifest written (exit 1 before normalized output).
+    md.write_text(
+        textwrap.dedent("""\
+        # Source
+
+        - **unknown - Bad Event:** undated body
+        """),
+        encoding="utf-8",
+    )
+    result = subprocess.run(
+        [sys.executable, "-m", "wordpipe.chronicle.cli.ingest",
+         "--input", str(md), "--output", str(out)],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 1
+    assert manifest.exists()
+
+    # Second run: fully dated -> stale manifest removed, normalized output valid.
+    md.write_text(
+        textwrap.dedent("""\
+        # Source
+
+        - **2025-01-01 - Dated Event:** body text
+        """),
+        encoding="utf-8",
+    )
+    result = subprocess.run(
+        [sys.executable, "-m", "wordpipe.chronicle.cli.ingest",
+         "--input", str(md), "--output", str(out)],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
+    assert not manifest.exists()
+    assert out.exists()
+
+
 # ==============================================================================
 # F2 — Flatten preflight
 # ==============================================================================

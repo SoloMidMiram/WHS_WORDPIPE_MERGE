@@ -273,7 +273,7 @@ if ($Verify) {
 Write-StageHeader 3 "Merge - $MergePy"
 
 $MergedFile = "$OutputDirAbs/merged.md"
-$mergeArgs = @("--input-dir", $NormalisedDir, "--output", $MergedFile, "--conflict-mode", "keep-both")
+$mergeArgs = @("--inputs") + $IngestFiles + @("--output", $MergedFile, "--conflict-mode", "keep-both")
 if ($Verbose) { $mergeArgs += "--verbose" }
 if ($SourceCoverage) { $mergeArgs += "--source-coverage" }
 $result = & python.exe $MergePy $mergeArgs 2>&1
