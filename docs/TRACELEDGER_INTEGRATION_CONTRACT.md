@@ -54,7 +54,9 @@ Rules:
 - Evidence trees (`_WORK/`, `_ARCHIVE/`) are optional at runtime and must not be required for library import.
 
 ## Capability Reporting
-WordPipe emits a one-time capability report at the start of a run:
+
+Not yet implemented. A one-time capability report is planned but WordPipe does
+not currently emit one. When implemented it will report:
 - `com_available`
 - `toc_updater_available`
 - `openai_available`

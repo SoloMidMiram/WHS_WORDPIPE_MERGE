@@ -12,7 +12,12 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="wordpipe")
     parser.add_argument("--in", dest="in_path", required=True, help="Input .docx path")
     parser.add_argument("--out", dest="out_path", required=True, help="Output .docx path")
-    parser.add_argument("--no-flatten", action="store_true", help="Disable flatten step")
+    parser.add_argument(
+        "--flatten",
+        default=True,
+        action=argparse.BooleanOptionalAction,
+        help="Run the flatten step (requires the legacy MergedpipelineV3 module).",
+    )
     parser.add_argument(
         "--prefer-win32",
         default=True,
@@ -30,7 +35,7 @@ def main(argv: list[str] | None = None) -> int:
     cfg = PipelineConfig(
         in_path=in_resolved,
         out_path=out_resolved,
-        do_flatten=not args.no_flatten,
+        do_flatten=args.flatten,
         prefer_win32=args.prefer_win32,
     )
     rep = process_docx_v3(cfg)

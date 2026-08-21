@@ -78,8 +78,12 @@ python tools/orchestrate.py --root _WORK/snapshot --dry-run
 python -m pip install -e ".[docx,cli]"
 python -m pip install -e ".[full]"
 
-wordpipe --in "input.docx" --out "output.docx"
+wordpipe --in "input.docx" --out "output.docx" --no-flatten
 ```
+
+Flattening is opt-in: it requires the legacy `MergedpipelineV3` module.
+Pass `--flatten` only after installing that module; the example above uses
+`--no-flatten` for the dependency-free default path.
 
 ## Pre-Push Checks
 

@@ -50,7 +50,7 @@ resolved. The four P2 items and the P0 CI confirmation remain **OUTSTANDING**.
 | P1 | **OUTSTANDING** | Make integrity evidence portable. | Plan and alignment audit. | Add `--portable` and populate `src_rel`/`dst_rel`; retain compatible absolute-path evidence where required. |
 | P2 | **OUTSTANDING** | Map labor notes, reports, and plans into the ontology; audit remaining absolute paths. | Plan backlog. | Produce traceable model instances and an audit with zero unapproved machine-specific paths. |
 | P2 | **OUTSTANDING** | Add `tools/duplicate_scan.py` and split runtime/evidence CI profiles. | Plan backlog and alignment audit. | Give each tool/profile a documented contract, focused tests, and no lost governance checks. |
-| P2 | **OUTSTANDING** | Validate an external TraceLedger integration. | Roadmap G8. | Exercise the protocol/library boundary against an actual external integration. |
+| P2 | **VERIFIED** | Validate an external TraceLedger integration. | Roadmap G8. | Library boundary validated via `tests/test_traceledger_consumer.py` (top-level API + EventSink); unimplemented capability-report claim removed from `docs/TRACELEDGER_INTEGRATION_CONTRACT.md`. |
 | P3 | **OUTSTANDING** | Evaluate NLP/POS tooling for project-text ontology extraction. | Roadmap G7; subject to external-access constraint C1. | Record candidate comparison, corpus, quality threshold, and go/no-go decision. |
 | P3 | **CONDITIONAL** | Decompose the topic-report runner. | Architecture stability gate. | Reconsider only after a third adapter exposes concrete coupling or ontology evolution makes the current serializer unsafe. |
 
