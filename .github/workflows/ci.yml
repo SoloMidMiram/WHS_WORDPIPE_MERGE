@@ -71,7 +71,7 @@ jobs:
 
           # Create a valid raw deep-search .md file
           $validPath = Join-Path $tmpDir "valid.md"
-          '- **2025-01-01 - Test Event:** This is a test event.' | Set-Content -Path $validPath -Encoding UTF8
+          [System.IO.File]::WriteAllText($validPath, '- **2025-01-01 - Test Event:** This is a test event.')
 
           # Run chain.ps1 with minimal switches
           $mergeDir = Join-Path $tmpDir "merged"
@@ -84,7 +84,7 @@ jobs:
 
           # Now create a file with an undated heading (raw format)
           $badPath = Join-Path $tmpDir "bad.md"
-          '- **unknown - No Date:** This event has no date.' | Set-Content -Path $badPath -Encoding UTF8
+          [System.IO.File]::WriteAllText($badPath, '- **unknown - No Date:** This event has no date.')
 
           $mergeDir2 = Join-Path $tmpDir "merged_bad"
           $result = & .\pipeline\chain.ps1 -InputDir $tmpDir -OutputDir $mergeDir2 -SkipCategorize -SkipIndex 2>&1
