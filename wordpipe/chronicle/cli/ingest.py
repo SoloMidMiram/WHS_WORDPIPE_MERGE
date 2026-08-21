@@ -52,6 +52,7 @@ def main() -> None:
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
         format="%(levelname)s: %(message)s",
+        stream=sys.stdout,
     )
 
     input_path = Path(args.input)

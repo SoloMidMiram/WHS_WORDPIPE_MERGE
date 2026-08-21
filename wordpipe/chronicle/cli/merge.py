@@ -57,6 +57,7 @@ def main() -> None:
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
         format="%(levelname)s: %(message)s",
+        stream=sys.stdout,
     )
 
     # 1. Collect and validate input files
