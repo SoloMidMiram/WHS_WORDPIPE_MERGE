@@ -129,6 +129,11 @@ if (-not $InputDir -and -not $OutputDir) {
     Show-Help
 }
 
+# chain.ps1 signals failures via exit codes, not thrown errors. Keep
+# Write-Error non-terminating so each abort message is followed by exit N
+# even under a caller's $ErrorActionPreference = "Stop".
+$ErrorActionPreference = "Continue"
+
 # ---------------------------------------------------------------------------
 # Validate input directory
 # ---------------------------------------------------------------------------
