@@ -1,9 +1,11 @@
 # 📋 Project Plan
 
 > **Purpose:** Immutable log of intentions and completions. This is NOT analysis or description.
+> **Status:** Historical record; see `ROADMAP.md` (active source of truth) and
+> `docs/engineering/OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md` (current status).
 > **Date System:** Jalali (Shamsi) only
 > **Created:** 1404-11-25
-> **Ontology Ref:** See `ONTOLOGY.md` for concept definitions
+> **Ontology Ref:** See `ONTOLOGY_MODEL.md` for concept definitions
 
 ---
 

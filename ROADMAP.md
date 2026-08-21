@@ -378,12 +378,8 @@ Completed Phase 13–17 foundation work is intentionally excluded.
 | Priority | Work | Why It Matters | Current Evidence |
 |----------|------|----------------|------------------|
 | P1 | Map Phase 13/14/15/16/17 topic runs into the project-level ontology/activity model | Per-run ontologies exist, but `ontology.json` lacks TopicRun instances | Phase 14–17 prove stable 10-entity/7-relation coverage |
-| P1 | Complete evidence-pipeline portability (`--portable`, `src_rel`/`dst_rel` relocation output, relative report fields) | Older organization phases planned these contracts but current relocation evidence remains absolute-only | `verify_integrity.py` has no `--portable`; relocation output omits relative fields |
-| P1 | Validate the documented TraceLedger consumer integration | Protocol and import boundary exist, but this repository does not prove an external consumer run | EventSink and public library APIs are implemented |
-| P2 | Canonicalize `pipeline/index.py` under `wordpipe.chronicle` | `index` is still the deferred Chronicle stage | Existing Phase 9c deferral |
 | P2 | Build `pipeline/reference.py` / stable secondary TOC | Long reports need stronger navigational references | Existing Phase 9c item |
 | P2 | Validate reference output against the existing manual merge | Phase 9c acceptance evidence is missing | `ChatGPT_Incidents_Merged.md` comparison remains unperformed |
-| P2 | Audit remote refs/history for leaked credentials | Local scanning cannot validate remote history | Local security scan is green |
 | P2 | Add governed duplicate scanning and separate runtime/evidence CI profiles | Original organization Phase 6 deliverables remain incomplete | Minimal combined CI exists; `tools/duplicate_scan.py` does not |
 | P2 | Emit individual ReportEvent entities after Phase 16.4 / Phase 17 gate | Section→event evidence + two-run stability exist; ontology individuals deferred | Phase 16/17 design docs |
 | P3 | Emit SemanticConcept / derived_from / mentions after schema decision | Candidate future additions only; not approved schema yet | Project Phase 15/16 design docs |
