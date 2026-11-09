@@ -73,13 +73,19 @@ jobs:
           $validPath = Join-Path $tmpDir "valid.md"
           [System.IO.File]::WriteAllText($validPath, '- **2025-01-01 - Test Event:** This is a test event.')
 
-          # Run chain.ps1 with minimal switches
+          # Run all five stages under Windows PowerShell.
           $mergeDir = Join-Path $tmpDir "merged"
-          $result = & .\pipeline\chain.ps1 -InputDir $tmpDir -OutputDir $mergeDir -SkipCategorize -SkipIndex 2>&1
+          $result = & .\pipeline\chain.ps1 -InputDir $tmpDir -OutputDir $mergeDir -Verify 2>&1
           $exitCode = $LASTEXITCODE
           if ($exitCode -ne 0) {
             Write-Error "chain.ps1 with valid input exited $exitCode. Output: $result"
             exit 1
+          }
+          $evidence = Get-Content -LiteralPath (Join-Path $mergeDir "run.json") -Raw | ConvertFrom-Json
+          if ($evidence.status -ne "ok" -or ($evidence.stages.status -join ",") -ne "ok,ok,ok,ok,ok" -or
+              $evidence.ingest_files[0].accepted -ne 1 -or $evidence.ingest_files[0].rejected -ne 0 -or
+              -not (Test-Path -LiteralPath (Join-Path $mergeDir "appendix/event_index.md"))) {
+            throw "Full Chronicle run did not produce the expected evidence."
           }
 
           # Now create a file with an undated heading (raw format)
@@ -89,9 +95,15 @@ jobs:
           $mergeDir2 = Join-Path $tmpDir "merged_bad"
           $result = & .\pipeline\chain.ps1 -InputDir $tmpDir -OutputDir $mergeDir2 -SkipCategorize -SkipIndex 2>&1
           $exitCode = $LASTEXITCODE
-          if ($exitCode -eq 0) {
-            Write-Error "chain.ps1 with undated input should have failed but exited 0"
+          if ($exitCode -ne 1) {
+            Write-Error "chain.ps1 with undated input should have exited 1 but exited $exitCode"
             exit 1
+          }
+          $evidence = Get-Content -LiteralPath (Join-Path $mergeDir2 "run.json") -Raw | ConvertFrom-Json
+          if ($evidence.status -ne "failed" -or $evidence.exit_code -ne 1 -or
+              $evidence.merge_inputs.Count -ne 0 -or
+              @($evidence.ingest_files | Where-Object { $_.rejected -eq 1 }).Count -ne 1) {
+            throw "Failed Chronicle run did not produce the expected evidence."
           }
 
           exit 0

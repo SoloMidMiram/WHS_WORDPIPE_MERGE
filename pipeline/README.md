@@ -35,6 +35,34 @@ python tools\run_topic_report.py `
 
 ## Output Files
 
+### Chronicle run evidence
+
+`run.json` is the latest invocation summary for a usable output directory.
+Schema version 1 records a run ID, UTC start and finish times, the operator
+exit code, and a status of `ok`, `partial`, or `failed`. Partial means the
+chain exited successfully after skipping failed inputs under
+`-AllowPartialIngest`. Any nonzero operator exit makes the run failed.
+
+The ordered `stages` array includes ingest, verify, merge, categorize, and
+index. Stage states are `ok`, `partial`, `failed`, `skipped` for an explicit
+flag or omitted verification, and `not_run` for a stage an abort prevented.
+Stage entries record elapsed milliseconds, native exit code when applicable,
+bounded diagnostic codes, and output paths relative to the output directory.
+`merge_inputs` records exactly the ordered paths supplied to merge and is
+empty if merge was never invoked.
+
+`ingest_files` records accepted and rejected counts from the normalized
+front matter or a current rejection manifest. A count of `null` means the
+artifact was missing, malformed, too large to inspect, or could not be
+distinguished from stale evidence. Only diagnostic codes are recorded.
+Document bodies and captured process output stay out of the summary.
+
+The chain invalidates the previous summary before running any stage and
+publishes the new summary by moving a completed temporary file within the same
+directory. Runs sharing an output directory are serialized by an exclusive
+file handle. A hard interruption or an unusable output directory can leave
+the current summary absent.
+
 | Stage | Output File | Description |
 |-------|-------------|-------------|
 | 1 (ingest) | `output/normalised/*.md` | Normalised per-source files |

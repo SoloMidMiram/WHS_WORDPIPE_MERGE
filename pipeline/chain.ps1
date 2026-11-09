@@ -135,45 +135,6 @@ if (-not $InputDir -and -not $OutputDir) {
 $ErrorActionPreference = "Continue"
 
 # ---------------------------------------------------------------------------
-# Validate input directory
-# ---------------------------------------------------------------------------
-try {
-    if (-not (Test-Path -LiteralPath $InputDir -PathType Container -ErrorAction Stop)) {
-        throw "Input directory does not exist: $InputDir"
-    }
-    $InputDirAbs = (Resolve-Path -LiteralPath $InputDir -ErrorAction Stop).Path
-
-    if (-not (Test-Path -LiteralPath $OutputDir -PathType Container -ErrorAction Stop)) {
-        New-Item -ItemType Directory -Path $OutputDir -Force -ErrorAction Stop | Out-Null
-        if (-not (Test-Path -LiteralPath $OutputDir -PathType Container -ErrorAction Stop)) {
-            throw "Output path is not a directory: $OutputDir"
-        }
-    }
-    $OutputDirAbs = (Resolve-Path -LiteralPath $OutputDir -ErrorAction Stop).Path
-} catch {
-    Write-Error "Ingestion setup failed (input '$InputDir', output '$OutputDir'): $_"
-    exit 1
-}
-
-# ---------------------------------------------------------------------------
-# Validate tool scripts
-# ---------------------------------------------------------------------------
-foreach ($script in @($IngestPy, $MergePy, $CategorizePy)) {
-    if (-not (Test-Path $script)) {
-        Write-Error "Required script not found: $script"
-        exit 1
-    }
-}
-if ($Verify -and -not (Test-Path $VerifyPy)) {
-    Write-Error "-Verify requested but verify_ingest.py not found: $VerifyPy"
-    exit 1
-}
-if (-not $SkipCategorize -and -not $SkipIndex -and -not (Test-Path $IndexPy)) {
-    Write-Error "index.py not found: $IndexPy"
-    exit 1
-}
-
-# ---------------------------------------------------------------------------
 # Stage helpers
 # ---------------------------------------------------------------------------
 function Invoke-ChronicleStage {
@@ -237,232 +198,352 @@ function Write-StageFail {
 }
 
 # ---------------------------------------------------------------------------
-# Stage 1: Ingestion
+# Validate input directory
 # ---------------------------------------------------------------------------
-Write-StageHeader 1 "Ingestion - $IngestPy"
+. "$ScriptDir/chain_evidence.ps1"
+$evidence = New-ChronicleEvidence $Verify.IsPresent $SkipCategorize.IsPresent $SkipIndex.IsPresent
+$ingestStage, $verifyStage, $mergeStage, $categorizeStage, $indexStage = $evidence.stages
+$activeStage = $ingestStage
+$runExitCode = 1
+$lock = $null
+$summaryPath = $null
 
-$NormalisedDir = "$OutputDirAbs/normalised"
 try {
-    New-Item -ItemType Directory -Path $NormalisedDir -Force -ErrorAction Stop | Out-Null
-    if (-not (Test-Path -LiteralPath $NormalisedDir -PathType Container -ErrorAction Stop)) {
-        throw "Normalized output path is not a directory: $NormalisedDir"
+    try {
+        if (-not (Test-Path -LiteralPath $OutputDir -PathType Container -ErrorAction Stop)) {
+            New-Item -ItemType Directory -Path $OutputDir -Force -ErrorAction Stop | Out-Null
+            if (-not (Test-Path -LiteralPath $OutputDir -PathType Container -ErrorAction Stop)) {
+                throw "Output path is not a directory: $OutputDir"
+            }
+        }
+        $OutputDirAbs = (Resolve-Path -LiteralPath $OutputDir -ErrorAction Stop).Path
+        $lockPath = Join-Path $OutputDirAbs ".chronicle-run.lock"
+        $lock = [IO.FileStream]::new($lockPath, [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite,
+            [IO.FileShare]::None, 4096, [IO.FileOptions]::DeleteOnClose)
+        $path = Join-Path $OutputDirAbs "run.json"
+        [IO.File]::Delete($path)
+        $summaryPath = $path
+
+        if (-not (Test-Path -LiteralPath $InputDir -PathType Container -ErrorAction Stop)) {
+            throw "Input directory does not exist: $InputDir"
+        }
+        $InputDirAbs = (Resolve-Path -LiteralPath $InputDir -ErrorAction Stop).Path
+    } catch {
+        Write-Error "Ingestion setup failed (input '$InputDir', output '$OutputDir'): $_"
+        exit 1
     }
-    $RawFiles = Get-ChildItem -LiteralPath $InputDirAbs -Filter "*.md" -File -ErrorAction Stop
-} catch {
-    Write-Error "Ingestion setup failed (input '$InputDirAbs', output '$NormalisedDir'): $_"
-    exit 1
-}
-if ($RawFiles.Count -eq 0) {
-    Write-Error "No .md files found in $InputDirAbs"
-    exit 1
-}
 
-$IngestCount = 0
-$IngestFailures = 0
-$IngestFiles = @()
+    # ---------------------------------------------------------------------------
+    # Validate tool scripts
+    # ---------------------------------------------------------------------------
+    foreach ($script in @($IngestPy, $MergePy, $CategorizePy)) {
+        if (-not (Test-Path $script)) {
+            Write-Error "Required script not found: $script"
+            $runExitCode = 1
+            exit $runExitCode
+        }
+    }
+    if ($Verify -and -not (Test-Path $VerifyPy)) {
+        Write-Error "-Verify requested but verify_ingest.py not found: $VerifyPy"
+        $runExitCode = 1
+        exit $runExitCode
+    }
+    if (-not $SkipCategorize -and -not $SkipIndex -and -not (Test-Path $IndexPy)) {
+        Write-Error "index.py not found: $IndexPy"
+        $runExitCode = 1
+        exit $runExitCode
+    }
 
-foreach ($rawFile in $RawFiles) {
-    $filename = $rawFile.Name
-    $outFile = "$NormalisedDir/$filename"
-    Write-Host "  Processing: $filename"
+    # ---------------------------------------------------------------------------
+    # Stage 1: Ingestion
+    # ---------------------------------------------------------------------------
+    Write-StageHeader 1 "Ingestion - $IngestPy"
 
-    $ingestArgs = @("--input", $rawFile.FullName, "--output", $outFile)
-    if ($Verbose) { $ingestArgs += "--verbose" }
-    $result = Invoke-ChronicleStage "Ingestion" $IngestPy $ingestArgs
+    $NormalisedDir = "$OutputDirAbs/normalised"
+    try {
+        New-Item -ItemType Directory -Path $NormalisedDir -Force -ErrorAction Stop | Out-Null
+        if (-not (Test-Path -LiteralPath $NormalisedDir -PathType Container -ErrorAction Stop)) {
+            throw "Normalized output path is not a directory: $NormalisedDir"
+        }
+        $RawFiles = Get-ChildItem -LiteralPath $InputDirAbs -Filter "*.md" -File -ErrorAction Stop
+    } catch {
+        Write-Error "Ingestion setup failed (input '$InputDirAbs', output '$NormalisedDir'): $_"
+        $runExitCode = 1
+        exit $runExitCode
+    }
+    if ($RawFiles.Count -eq 0) {
+        Write-Error "No .md files found in $InputDirAbs"
+        $runExitCode = 1
+        exit $runExitCode
+    }
+
+    $IngestCount = 0
+    $IngestFailures = 0
+    $IngestFiles = @()
+
+    foreach ($rawFile in $RawFiles) {
+        $filename = $rawFile.Name
+        $outFile = "$NormalisedDir/$filename"
+        Write-Host "  Processing: $filename"
+
+        $ingestArgs = @("--input", $rawFile.FullName, "--output", $outFile)
+        if ($Verbose) { $ingestArgs += "--verbose" }
+        $previousOutput = Get-ChronicleArtifactStamp $outFile
+        $previousManifest = Get-ChronicleArtifactStamp ([IO.Path]::ChangeExtension($outFile, ".rejections.json"))
+        $result = Invoke-ChronicleStage "Ingestion" $IngestPy $ingestArgs
+        $fileEvidence = Get-ChronicleIngestEvidence $result $filename $outFile $previousOutput $previousManifest
+        $evidence.ingest_files.Add($fileEvidence)
+        $ingestStage.duration_ms = $ingestStage.duration_ms + $result.DurationMs
+        if ($result.Status -eq "failed" -and $ingestStage.diagnostics.Count -eq 0) {
+            $ingestStage.native_exit_code = $result.ExitCode
+            $ingestStage.diagnostics = @($result.FailureKind)
+        }
+
+        if ($result.Status -eq "ok") {
+            $IngestCount++
+            $IngestFiles += $outFile
+            $ingestStage.outputs += $fileEvidence.output
+            Write-StageOk $filename
+        } else {
+            $IngestFailures++
+            Write-StageFail "$filename ($($result.FailureKind), exit code $($result.ExitCode))"
+            if ($Verbose -or $result.FailureKind -eq "launch_error") {
+                Write-Host "  Output: $($result.Diagnostics)" -ForegroundColor DarkGray
+            }
+        }
+    }
+
+    Write-Host ""
+    Write-Host "  Ingestion complete: $IngestCount succeeded, $IngestFailures failed"
+
+    if ($IngestFailures -gt 0 -and -not $AllowPartialIngest) {
+        Write-Error "One or more files failed to ingest. Aborting. Use -AllowPartialIngest to skip failures."
+        $runExitCode = 1
+        exit $runExitCode
+    }
+
+    if ($IngestCount -eq 0) {
+        Write-Error "No files were successfully ingested. Aborting."
+        $runExitCode = 1
+        exit $runExitCode
+    }
+
+    $ingestStage.status = if ($IngestFailures -gt 0) { "partial" } else { "ok" }
+    if ($IngestFailures -eq 0) { $ingestStage.native_exit_code = 0 }
+
+    # ---------------------------------------------------------------------------
+    # Stage 2: Verification (optional)
+    # ---------------------------------------------------------------------------
+    if ($Verify) {
+        $activeStage = $verifyStage
+        Write-StageHeader 2 "Verification - $VerifyPy"
+
+        $verifyArgs = @("--dir", $InputDirAbs, "--ingest", $IngestPy)
+        if ($Verbose) { $verifyArgs += "--verbose" }
+        $result = Invoke-ChronicleStage "Verification" $VerifyPy $verifyArgs
+        Set-ChronicleStageEvidence $verifyStage $result
+
+        if ($result.Status -eq "ok") {
+            Write-StageOk "All files verified successfully"
+            if ($Verbose) {
+                $result.Diagnostics | ForEach-Object { Write-Host $_ -ForegroundColor DarkGray }
+            }
+        } else {
+            Write-StageFail "Verification failed ($($result.FailureKind), exit code $($result.ExitCode))"
+            if ($Verbose -or $result.FailureKind -eq "launch_error") {
+                Write-Host "  Output: $($result.Diagnostics)" -ForegroundColor DarkGray
+            }
+            Write-Error "Verification failed. Aborting."
+            $runExitCode = 2
+            exit $runExitCode
+        }
+    }
+
+    # ---------------------------------------------------------------------------
+    # Stage 3: Merge
+    # ---------------------------------------------------------------------------
+    $activeStage = $mergeStage
+    Write-StageHeader 3 "Merge - $MergePy"
+
+    $MergedFile = "$OutputDirAbs/merged.md"
+    $mergeArgs = @("--inputs") + $IngestFiles + @("--output", $MergedFile, "--conflict-mode", "keep-both")
+    if ($Verbose) { $mergeArgs += "--verbose" }
+    if ($SourceCoverage) { $mergeArgs += "--source-coverage" }
+    $evidence.merge_inputs = @($ingestStage.outputs)
+    $result = Invoke-ChronicleStage "Merge" $MergePy $mergeArgs
+    Set-ChronicleStageEvidence $mergeStage $result
 
     if ($result.Status -eq "ok") {
-        $IngestCount++
-        $IngestFiles += $outFile
-        Write-StageOk $filename
+        $mergeStage.outputs = @("merged.md", "merged.duplicates.json")
+        if ($SourceCoverage) { $mergeStage.outputs += "merged.source_coverage.md" }
+        Write-StageOk "Merged chronicle written to $MergedFile"
     } else {
-        $IngestFailures++
-        Write-StageFail "$filename ($($result.FailureKind), exit code $($result.ExitCode))"
+        Write-StageFail "Merge failed ($($result.FailureKind), exit code $($result.ExitCode))"
         if ($Verbose -or $result.FailureKind -eq "launch_error") {
             Write-Host "  Output: $($result.Diagnostics)" -ForegroundColor DarkGray
         }
+        Write-Error "Merge failed. Aborting."
+        $runExitCode = 3
+        exit $runExitCode
     }
-}
 
-Write-Host ""
-Write-Host "  Ingestion complete: $IngestCount succeeded, $IngestFailures failed"
+    # ---------------------------------------------------------------------------
+    # Stage 4: Categorisation (optional)
+    # ---------------------------------------------------------------------------
+    if ($SkipCategorize) {
+        Write-Host ""
+        Write-Host ("=" * 72) -ForegroundColor Cyan
+        Write-Host "  Stage 4: Categorisation - SKIPPED (-SkipCategorize)" -ForegroundColor Yellow
+        Write-Host ("=" * 72) -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "Pipeline complete. Output:" -ForegroundColor Green
+        Write-Host "  Normalised files: $NormalisedDir/"
+        Write-Host "  Merged chronicle: $MergedFile"
+        $runExitCode = 0
+        exit $runExitCode
+    }
 
-if ($IngestFailures -gt 0 -and -not $AllowPartialIngest) {
-    Write-Error "One or more files failed to ingest. Aborting. Use -AllowPartialIngest to skip failures."
-    exit 1
-}
+    $activeStage = $categorizeStage
+    Write-StageHeader 4 "Categorisation - $CategorizePy"
 
-if ($IngestCount -eq 0) {
-    Write-Error "No files were successfully ingested. Aborting."
-    exit 1
-}
-
-# ---------------------------------------------------------------------------
-# Stage 2: Verification (optional)
-# ---------------------------------------------------------------------------
-if ($Verify) {
-    Write-StageHeader 2 "Verification - $VerifyPy"
-
-    $verifyArgs = @("--dir", $InputDirAbs, "--ingest", $IngestPy)
-    if ($Verbose) { $verifyArgs += "--verbose" }
-    $result = Invoke-ChronicleStage "Verification" $VerifyPy $verifyArgs
+    $TaggedFile = "$OutputDirAbs/chronicle_tagged.md"
+    $catArgs = @("--input", $MergedFile, "--output", $TaggedFile, "--sidecar")
+    if ($ThemesConfig) {
+        if (-not (Test-Path $ThemesConfig)) {
+            Write-Error "Theme config file not found: $ThemesConfig"
+            $runExitCode = 4
+            exit $runExitCode
+        }
+        $catArgs += @("--config", $ThemesConfig)
+    }
+    if ($Verbose) { $catArgs += "--verbose" }
+    $result = Invoke-ChronicleStage "Categorisation" $CategorizePy $catArgs
+    Set-ChronicleStageEvidence $categorizeStage $result
 
     if ($result.Status -eq "ok") {
-        Write-StageOk "All files verified successfully"
-        if ($Verbose) {
-            $result.Diagnostics | ForEach-Object { Write-Host $_ -ForegroundColor DarkGray }
-        }
+        $categorizeStage.outputs = @("chronicle_tagged.md", "chronicle_tagged.tagged.json")
+        Write-StageOk "Tagged chronicle written to $TaggedFile"
     } else {
-        Write-StageFail "Verification failed ($($result.FailureKind), exit code $($result.ExitCode))"
+        Write-StageFail "Categorisation failed ($($result.FailureKind), exit code $($result.ExitCode))"
         if ($Verbose -or $result.FailureKind -eq "launch_error") {
             Write-Host "  Output: $($result.Diagnostics)" -ForegroundColor DarkGray
         }
-        Write-Error "Verification failed. Aborting."
-        exit 2
+        Write-Error "Categorisation failed. Aborting."
+        $runExitCode = 4
+        exit $runExitCode
     }
-}
 
-# ---------------------------------------------------------------------------
-# Stage 3: Merge
-# ---------------------------------------------------------------------------
-Write-StageHeader 3 "Merge - $MergePy"
-
-$MergedFile = "$OutputDirAbs/merged.md"
-$mergeArgs = @("--inputs") + $IngestFiles + @("--output", $MergedFile, "--conflict-mode", "keep-both")
-if ($Verbose) { $mergeArgs += "--verbose" }
-if ($SourceCoverage) { $mergeArgs += "--source-coverage" }
-$result = Invoke-ChronicleStage "Merge" $MergePy $mergeArgs
-
-if ($result.Status -eq "ok") {
-    Write-StageOk "Merged chronicle written to $MergedFile"
-} else {
-    Write-StageFail "Merge failed ($($result.FailureKind), exit code $($result.ExitCode))"
-    if ($Verbose -or $result.FailureKind -eq "launch_error") {
-        Write-Host "  Output: $($result.Diagnostics)" -ForegroundColor DarkGray
+    # ---------------------------------------------------------------------------
+    # Stage 5: Index Generation (optional)
+    # ---------------------------------------------------------------------------
+    if ($SkipIndex) {
+        Write-Host ""
+        Write-Host ("=" * 72) -ForegroundColor Cyan
+        Write-Host "  Stage 5: Index Generation - SKIPPED (-SkipIndex)" -ForegroundColor Yellow
+        Write-Host ("=" * 72) -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "Pipeline complete. Output:" -ForegroundColor Green
+        Write-Host "  Normalised files: $NormalisedDir/"
+        Write-Host "  Merged chronicle: $MergedFile"
+        Write-Host "  Tagged chronicle: $TaggedFile"
+        Write-Host "  Sidecar JSON:    $([System.IO.Path]::ChangeExtension($TaggedFile, '.tagged.json'))"
+        Write-Host "  Duplicates:      $([System.IO.Path]::ChangeExtension($MergedFile, '.duplicates.json'))"
+        $runExitCode = 0
+        exit $runExitCode
     }
-    Write-Error "Merge failed. Aborting."
-    exit 3
-}
 
-# ---------------------------------------------------------------------------
-# Stage 4: Categorisation (optional)
-# ---------------------------------------------------------------------------
-if ($SkipCategorize) {
-    Write-Host ""
-    Write-Host ("=" * 72) -ForegroundColor Cyan
-    Write-Host "  Stage 4: Categorisation - SKIPPED (-SkipCategorize)" -ForegroundColor Yellow
-    Write-Host ("=" * 72) -ForegroundColor Cyan
-    Write-Host ""
-    Write-Host "Pipeline complete. Output:" -ForegroundColor Green
-    Write-Host "  Normalised files: $NormalisedDir/"
-    Write-Host "  Merged chronicle: $MergedFile"
-    exit 0
-}
+    $activeStage = $indexStage
+    Write-StageHeader 5 "Index Generation - $IndexPy"
 
-Write-StageHeader 4 "Categorisation - $CategorizePy"
-
-$TaggedFile = "$OutputDirAbs/chronicle_tagged.md"
-$catArgs = @("--input", $MergedFile, "--output", $TaggedFile, "--sidecar")
-if ($ThemesConfig) {
-    if (-not (Test-Path $ThemesConfig)) {
-        Write-Error "Theme config file not found: $ThemesConfig"
-        exit 4
+    $AppendixDir = "$OutputDirAbs/appendix"
+    $indexArgs = @("--input", $TaggedFile, "--output-dir", $AppendixDir)
+    if ($IndexConfig) {
+        if (-not (Test-Path $IndexConfig)) {
+            Write-Error "Index config file not found: $IndexConfig"
+            $runExitCode = 5
+            exit $runExitCode
+        }
+        $indexArgs += @("--config", $IndexConfig)
     }
-    $catArgs += @("--config", $ThemesConfig)
-}
-if ($Verbose) { $catArgs += "--verbose" }
-$result = Invoke-ChronicleStage "Categorisation" $CategorizePy $catArgs
-
-if ($result.Status -eq "ok") {
-    Write-StageOk "Tagged chronicle written to $TaggedFile"
-} else {
-    Write-StageFail "Categorisation failed ($($result.FailureKind), exit code $($result.ExitCode))"
-    if ($Verbose -or $result.FailureKind -eq "launch_error") {
-        Write-Host "  Output: $($result.Diagnostics)" -ForegroundColor DarkGray
+    if ($NoLinkRegistry) {
+        $indexArgs += "--no-link-registry"
     }
-    Write-Error "Categorisation failed. Aborting."
-    exit 4
-}
-
-# ---------------------------------------------------------------------------
-# Stage 5: Index Generation (optional)
-# ---------------------------------------------------------------------------
-if ($SkipIndex) {
-    Write-Host ""
-    Write-Host ("=" * 72) -ForegroundColor Cyan
-    Write-Host "  Stage 5: Index Generation - SKIPPED (-SkipIndex)" -ForegroundColor Yellow
-    Write-Host ("=" * 72) -ForegroundColor Cyan
-    Write-Host ""
-    Write-Host "Pipeline complete. Output:" -ForegroundColor Green
-    Write-Host "  Normalised files: $NormalisedDir/"
-    Write-Host "  Merged chronicle: $MergedFile"
-    Write-Host "  Tagged chronicle: $TaggedFile"
-    Write-Host "  Sidecar JSON:    $([System.IO.Path]::ChangeExtension($TaggedFile, '.tagged.json'))"
-    Write-Host "  Duplicates:      $([System.IO.Path]::ChangeExtension($MergedFile, '.duplicates.json'))"
-    exit 0
-}
-
-Write-StageHeader 5 "Index Generation - $IndexPy"
-
-$AppendixDir = "$OutputDirAbs/appendix"
-$indexArgs = @("--input", $TaggedFile, "--output-dir", $AppendixDir)
-if ($IndexConfig) {
-    if (-not (Test-Path $IndexConfig)) {
-        Write-Error "Index config file not found: $IndexConfig"
-        exit 5
+    if ($SourceCoverage) {
+        $sourceCoverageFile = "$OutputDirAbs/merged.source_coverage.md"
+        if (Test-Path $sourceCoverageFile) {
+            $indexArgs += @("--source-coverage", $sourceCoverageFile)
+        } else {
+            Write-Host "  [WARN] Source coverage file not found: $sourceCoverageFile" -ForegroundColor Yellow
+        }
     }
-    $indexArgs += @("--config", $IndexConfig)
-}
-if ($NoLinkRegistry) {
-    $indexArgs += "--no-link-registry"
-}
-if ($SourceCoverage) {
-    $sourceCoverageFile = "$OutputDirAbs/merged.source_coverage.md"
-    if (Test-Path $sourceCoverageFile) {
-        $indexArgs += @("--source-coverage", $sourceCoverageFile)
+    if ($Verbose) { $indexArgs += "--verbose" }
+    $result = Invoke-ChronicleStage "Index generation" $IndexPy $indexArgs
+    Set-ChronicleStageEvidence $indexStage $result
+
+    if ($result.Status -eq "ok") {
+        $indexStage.outputs = @("appendix/event_index.md", "appendix/theme_index.md", "appendix/source_manifest.md")
+        if (-not $NoLinkRegistry) { $indexStage.outputs += "appendix/link_registry.md" }
+        Write-StageOk "Appendix indices written to $AppendixDir"
     } else {
-        Write-Host "  [WARN] Source coverage file not found: $sourceCoverageFile" -ForegroundColor Yellow
+        Write-StageFail "Index generation failed ($($result.FailureKind), exit code $($result.ExitCode))"
+        if ($Verbose -or $result.FailureKind -eq "launch_error") {
+            Write-Host "  Output: $($result.Diagnostics)" -ForegroundColor DarkGray
+        }
+        Write-Error "Index generation failed. Aborting."
+        $runExitCode = 5
+        exit $runExitCode
+    }
+
+    # ---------------------------------------------------------------------------
+    # Summary
+    # ---------------------------------------------------------------------------
+    Write-Host ""
+    Write-Host ("=" * 72) -ForegroundColor Cyan
+    Write-Host "  Pipeline Complete" -ForegroundColor Green
+    Write-Host ("=" * 72) -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "  Input directory:  $InputDirAbs"
+    Write-Host "  Output directory: $OutputDirAbs"
+    Write-Host ""
+    Write-Host "  Files ingested:   $IngestCount"
+    Write-Host "  Merge conflicts:  keep-both (all variants preserved)"
+    Write-Host ""
+    Write-Host "  Output files:"
+    Write-Host "    Normalised:     $NormalisedDir/"
+    Write-Host "    Merged:         $MergedFile"
+    Write-Host "    Tagged:         $TaggedFile"
+    Write-Host "    Sidecar JSON:   $([System.IO.Path]::ChangeExtension($TaggedFile, '.tagged.json'))"
+    Write-Host "    Duplicates:     $([System.IO.Path]::ChangeExtension($MergedFile, '.duplicates.json'))"
+    Write-Host "    Appendix:       $AppendixDir/"
+    Write-Host "      Event index:  $AppendixDir/event_index.md"
+    Write-Host "      Theme index:  $AppendixDir/theme_index.md"
+    Write-Host "      Manifest:     $AppendixDir/source_manifest.md"
+    if (-not $NoLinkRegistry) {
+        Write-Host "      Link registry: $AppendixDir/link_registry.md"
+    }
+    Write-Host ""
+    $runExitCode = 0
+    exit $runExitCode
+} finally {
+    try {
+        if ($summaryPath) {
+            if ($runExitCode -ne 0 -and $activeStage.status -ne "failed") {
+                $activeStage.status = "failed"
+                if ($activeStage.diagnostics.Count -eq 0) {
+                    $activeStage.diagnostics = @("stage_setup_error")
+                }
+            }
+            $evidence.finished_at = [datetime]::UtcNow.ToString("o")
+            $evidence.exit_code = $runExitCode
+            $evidence.status = if ($runExitCode -ne 0) { "failed" }
+                elseif ($ingestStage.status -eq "partial") { "partial" }
+                else { "ok" }
+            Write-ChronicleEvidence $evidence $summaryPath
+        }
+    } catch {
+        Write-Error "Could not publish Chronicle run evidence: $summaryPath"
+        if ($runExitCode -eq 0) { exit 1 }
+    } finally {
+        if ($lock) { $lock.Dispose() }
     }
 }
-if ($Verbose) { $indexArgs += "--verbose" }
-$result = Invoke-ChronicleStage "Index generation" $IndexPy $indexArgs
-
-if ($result.Status -eq "ok") {
-    Write-StageOk "Appendix indices written to $AppendixDir"
-} else {
-    Write-StageFail "Index generation failed ($($result.FailureKind), exit code $($result.ExitCode))"
-    if ($Verbose -or $result.FailureKind -eq "launch_error") {
-        Write-Host "  Output: $($result.Diagnostics)" -ForegroundColor DarkGray
-    }
-    Write-Error "Index generation failed. Aborting."
-    exit 5
-}
-
-# ---------------------------------------------------------------------------
-# Summary
-# ---------------------------------------------------------------------------
-Write-Host ""
-Write-Host ("=" * 72) -ForegroundColor Cyan
-Write-Host "  Pipeline Complete" -ForegroundColor Green
-Write-Host ("=" * 72) -ForegroundColor Cyan
-Write-Host ""
-Write-Host "  Input directory:  $InputDirAbs"
-Write-Host "  Output directory: $OutputDirAbs"
-Write-Host ""
-Write-Host "  Files ingested:   $IngestCount"
-Write-Host "  Merge conflicts:  keep-both (all variants preserved)"
-Write-Host ""
-Write-Host "  Output files:"
-Write-Host "    Normalised:     $NormalisedDir/"
-Write-Host "    Merged:         $MergedFile"
-Write-Host "    Tagged:         $TaggedFile"
-Write-Host "    Sidecar JSON:   $([System.IO.Path]::ChangeExtension($TaggedFile, '.tagged.json'))"
-Write-Host "    Duplicates:     $([System.IO.Path]::ChangeExtension($MergedFile, '.duplicates.json'))"
-Write-Host "    Appendix:       $AppendixDir/"
-Write-Host "      Event index:  $AppendixDir/event_index.md"
-Write-Host "      Theme index:  $AppendixDir/theme_index.md"
-Write-Host "      Manifest:     $AppendixDir/source_manifest.md"
-if (-not $NoLinkRegistry) {
-    Write-Host "      Link registry: $AppendixDir/link_registry.md"
-}
-Write-Host ""
-exit 0
