@@ -92,6 +92,39 @@ def test_ingest_allow_undated_has_partial_output_and_manifest(tmp_path: Path) ->
     assert manifest["rejected_event_count"] == 1
 
 
+def test_ingest_all_undated_partial_keeps_only_overview(tmp_path: Path) -> None:
+    md = tmp_path / "input.md"
+    md.write_text(
+        "# Source\n\nOverview to preserve.\n\n"
+        "  - **unknown - First:** body one\n"
+        "    continuation of body one\n"
+        "- **TBD - Second:** body two\n",
+        encoding="utf-8",
+    )
+    out = tmp_path / "output.md"
+    result = subprocess.run(
+        [sys.executable, "-m", "wordpipe.chronicle.cli.ingest",
+         "--input", str(md), "--output", str(out), "--allow-undated"],
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    normalized = out.read_text(encoding="utf-8")
+    assert "event_count: 0" in normalized
+    assert "> **Overview:** Overview to preserve." in normalized
+    assert "First" not in normalized
+    assert "Second" not in normalized
+    assert "body one" not in normalized
+    assert "body two" not in normalized
+    manifest = json.loads(out.with_suffix(".rejections.json").read_text(encoding="utf-8"))
+    assert manifest["manifest_type"] == "partial"
+    assert manifest["accepted_event_count"] == 0
+    assert manifest["rejected_event_count"] == 2
+    assert [record["rejected_body"] for record in manifest["rejected_events"]] == [
+        "body one\n    continuation of body one", "body two",
+    ]
+
+
 def test_ingest_all_undated_fails_no_output(tmp_path: Path) -> None:
     """Entirely undated input -> exit 1, no output, complete manifest."""
     md = tmp_path / "input.md"
