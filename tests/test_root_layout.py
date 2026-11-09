@@ -20,3 +20,13 @@ def test_current_repository_root_matches_allowlist():
 def test_unknown_root_artifact_is_reported(tmp_path):
     (tmp_path / "unexpected-output.docx").write_bytes(b"test")
     assert checker.find_violations(tmp_path) == ["unexpected-output.docx"]
+
+
+def test_generated_cache_exemptions_are_explicit(tmp_path):
+    cache = tmp_path / ".ruff_cache"
+    cache.mkdir()
+    (cache / "entry").write_bytes(b"cache")
+    assert checker.find_violations(tmp_path) == []
+    (tmp_path / ".gitignore").write_text("unexpected-cache/\n")
+    (tmp_path / "unexpected-cache").mkdir()
+    assert checker.find_violations(tmp_path) == ["unexpected-cache/"]

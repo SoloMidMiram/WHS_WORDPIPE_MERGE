@@ -362,22 +362,53 @@ def test_ingest_stale_manifest_preserved_on_write_failure(tmp_path: Path) -> Non
 # ==============================================================================
 
 
-def test_flatten_unavailable_blocks_before_output() -> None:
+def test_flatten_unavailable_blocks_before_output(monkeypatch, tmp_path) -> None:
     """do_flatten=True with unavailable flattener -> RuntimeError before output."""
-    from wordpipe.core.datatypes import PipelineConfig
+    from wordpipe.adapters import defaults
     from wordpipe.adapters.flatteners.base import _UnavailableFlattener
+    from wordpipe.core.datatypes import PipelineConfig
 
-    from wordpipe.adapters.defaults import build_default_deps
-
+    monkeypatch.setattr(
+        defaults,
+        "make_flattener",
+        lambda prefer_win32: _UnavailableFlattener(reason="forced unavailable"),
+    )
     cfg = PipelineConfig(
-        in_path=Path("in.docx"),
-        out_path=Path("out.docx"),
+        in_path=tmp_path / "in.docx",
+        out_path=tmp_path / "out.docx",
         do_flatten=True,
         prefer_win32=True,
     )
 
     with pytest.raises(RuntimeError, match="Flattening requested"):
-        build_default_deps(cfg)
+        defaults.build_default_deps(cfg)
+    assert not cfg.out_path.exists()
+
+
+def test_available_flattener_wiring(monkeypatch, tmp_path: Path) -> None:
+    from wordpipe.adapters import defaults
+    from wordpipe.adapters.transforms import LegacyFlattenerAdapter
+    from wordpipe.core.datatypes import PipelineConfig
+
+    calls = []
+
+    class AvailableFlattener:
+        def run(self, source, destination, *, limit_pages=None):
+            calls.append((source, destination, limit_pages))
+            return []
+
+    monkeypatch.setattr(defaults, "make_flattener", lambda prefer_win32: AvailableFlattener())
+    monkeypatch.setattr(defaults, "_can_import_mergedpipeline", lambda: False)
+    cfg = PipelineConfig(
+        in_path=tmp_path / "in.docx",
+        out_path=tmp_path / "out.docx",
+        do_flatten=True,
+    )
+    deps = defaults.build_default_deps(cfg)
+    assert isinstance(deps.flattener, LegacyFlattenerAdapter)
+    assert deps.toc_updater is None
+    assert deps.flattener.flatten(cfg.in_path, cfg.out_path, limit_pages=2) == []
+    assert calls == [(cfg.in_path, cfg.out_path, 2)]
 
 
 # ==============================================================================

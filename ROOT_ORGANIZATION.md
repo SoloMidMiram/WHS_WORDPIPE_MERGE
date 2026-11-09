@@ -25,9 +25,9 @@ Canonical top-level directories are described in
 `docs/engineering/REPOSITORY_BOUNDARIES.md`. New root directories require an
 explicit boundary classification and an update to the root-layout checker.
 
-Ignored tool-generated caches such as `.pytest_cache/` and `*.egg-info/` may
-appear locally. They are not curated root content, are excluded from version
-control, and are explicit checker exemptions rather than allowed project areas.
+The checker explicitly exempts generated `.pytest_cache/`, `.ruff_cache/`, and
+`*.egg-info/` directories. Other ignored directories still need an explicit
+classification.
 
 Agent and editor workspace directories (`.agents/`, `.codex/`, `.continue/`,
 `.cursor/`) are supported local workspaces and are allowlisted in the checker;

@@ -13,8 +13,17 @@ Verifies:
 from __future__ import annotations
 
 from pathlib import Path
+import sys
 
 import pytest
+
+
+@pytest.fixture(autouse=True)
+def force_missing_legacy(monkeypatch):
+    from wordpipe.adapters.flatteners import base
+
+    monkeypatch.setattr(base, "_can_import_mergedpipeline", lambda: False)
+    monkeypatch.setitem(sys.modules, "MergedpipelineV3", None)
 
 
 class TestComFlattenerImportSafety:
@@ -41,12 +50,14 @@ class TestMakeFlattenerFallback:
     ``MergedpipelineV3`` is absent (both flattener paths require it).
     """
 
-    def test_make_flattener_falls_back(self) -> None:
+    def test_make_flattener_falls_back(self, monkeypatch) -> None:
         """When ``MergedpipelineV3`` is unavailable, ``make_flattener`` returns
         ``_UnavailableFlattener`` even with ``prefer_win32=True``."""
         from wordpipe.adapters.flatteners.base import _UnavailableFlattener, make_flattener
 
-        fl = make_flattener(prefer_win32=True)
+        monkeypatch.setattr(sys, "platform", "win32")
+        with pytest.warns(UserWarning, match="Legacy flattener unavailable"):
+            fl = make_flattener(prefer_win32=True)
         assert isinstance(fl, _UnavailableFlattener), (
             f"Expected _UnavailableFlattener, got {type(fl).__name__}"
         )
@@ -56,7 +67,8 @@ class TestMakeFlattenerFallback:
         ``_UnavailableFlattener`` even with ``prefer_win32=False``."""
         from wordpipe.adapters.flatteners.base import _UnavailableFlattener, make_flattener
 
-        fl = make_flattener(prefer_win32=False)
+        with pytest.warns(UserWarning, match="XML flattener unavailable"):
+            fl = make_flattener(prefer_win32=False)
         assert isinstance(fl, _UnavailableFlattener), (
             f"Expected _UnavailableFlattener, got {type(fl).__name__}"
         )
@@ -64,12 +76,15 @@ class TestMakeFlattenerFallback:
     def test_make_flattener_non_windows_preflight(self, monkeypatch) -> None:
         """Non-Windows + prefer_win32 probes the legacy dependency up front
         instead of returning a live XmlFlattener that fails later."""
-        import sys
-
         from wordpipe.adapters.flatteners.base import _UnavailableFlattener, make_flattener
 
         monkeypatch.setattr(sys, "platform", "linux")
-        fl = make_flattener(prefer_win32=True)
+        with pytest.warns(UserWarning) as captured:
+            fl = make_flattener(prefer_win32=True)
+        assert [str(warning.message).split(":", 1)[0] for warning in captured] == [
+            "prefer_win32 requested on non-Windows platform; using XmlFlattener.",
+            "XML flattener unavailable",
+        ]
         assert isinstance(fl, _UnavailableFlattener), (
             f"Expected _UnavailableFlattener, got {type(fl).__name__}"
         )

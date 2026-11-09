@@ -49,7 +49,7 @@ ALLOWED_DIRECTORIES = {
     "wordpipe",
 }
 
-IGNORED_GENERATED_DIRECTORIES = {".pytest_cache"}
+IGNORED_GENERATED_DIRECTORIES = {".pytest_cache", ".ruff_cache"}
 
 
 def find_violations(root: Path) -> list[str]:
