@@ -143,13 +143,7 @@ def main() -> None:
     elif manifest_path.exists():
         stale_manifest_needs_removal = True
 
-    preamble_text = cleaned_text
-    if rejection_records and not events:
-        # With no accepted events, the extractor treats its entire input as
-        # preamble. Limit it to the text before the first rejected heading.
-        first_rejected_line = rejection_records[0]["line_number"]
-        preamble_text = "\n".join(cleaned_text.splitlines()[:first_rejected_line - 1])
-    preamble = extract_preamble(preamble_text, events)
+    preamble = extract_preamble(cleaned_text, events)
 
     normalised_md = generate_normalised_md(
         source=source,
