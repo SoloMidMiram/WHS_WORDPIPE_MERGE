@@ -170,9 +170,53 @@ def test_chain_all_five_stages_with_verify(tmp_path: Path) -> None:
         "ingest", "verify", "merge", "categorize", "index",
     ]
     assert all(stage["status"] == "ok" and stage["duration_ms"] >= 0 for stage in evidence["stages"])
+    assert "chronicle_tagged.tagged.json" in evidence["stages"][3]["outputs"]
+    assert "appendix/link_registry.md" in evidence["stages"][4]["outputs"]
     assert evidence["merge_inputs"] == ["normalised/events.md", "normalised/overview.md"]
     assert [(item["accepted"], item["rejected"]) for item in evidence["ingest_files"]] == [(2, 0), (0, 0)]
     assert "No dates found" not in (out_dir / "run.json").read_text(encoding="utf-8")
+
+
+@pytest.mark.skipif(
+    _POWERSHELL is None or _PYTHON_EXE is None,
+    reason="chain.ps1 requires PowerShell and python.exe",
+)
+@pytest.mark.parametrize("preexisting", [False, True], ids=["absent", "stale"])
+@pytest.mark.parametrize("artifact", ["sidecar", "registry"])
+def test_chain_omits_optional_artifacts_not_written_this_run(
+    tmp_path: Path, artifact: str, preexisting: bool,
+) -> None:
+    raw_dir = tmp_path / "raw"
+    raw_dir.mkdir()
+    out_dir = tmp_path / "out"
+    args = ["-InputDir", str(raw_dir), "-OutputDir", str(out_dir)]
+    if artifact == "sidecar":
+        raw_text = "# Overview\n\nNarrative only.\n"
+        relative_path = "chronicle_tagged.tagged.json"
+        stage_index = 3
+        args += ["-SkipIndex"]
+    else:
+        raw_text = "- **2025-01-10 - Alpha Outage:** first event\n"
+        relative_path = "appendix/link_registry.md"
+        stage_index = 4
+        config = tmp_path / "index.json"
+        config.write_text('{"no_link_registry": true}', encoding="utf-8")
+        args += ["-IndexConfig", str(config)]
+    (raw_dir / "input.md").write_text(raw_text, encoding="utf-8")
+    path = out_dir / relative_path
+    if preexisting:
+        path.parent.mkdir(parents=True)
+        path.write_bytes(b"previous run")
+
+    result = _run_chain(args, cwd=REPO_ROOT)
+    assert result.returncode == 0, result.stdout + result.stderr
+    stage = _read_evidence(out_dir)["stages"][stage_index]
+    assert stage["status"] == "ok"
+    assert relative_path not in stage["outputs"]
+    if preexisting:
+        assert path.read_bytes() == b"previous run"
+    else:
+        assert not path.exists()
 
 
 STAGE_SCRIPTS = ("ingest", "verify_ingest", "merge", "categorize", "index")

@@ -407,6 +407,8 @@ try {
     Write-StageHeader 4 "Categorisation - $CategorizePy"
 
     $TaggedFile = "$OutputDirAbs/chronicle_tagged.md"
+    $sidecarName = "chronicle_tagged.tagged.json"
+    $sidecarPath = Join-Path $OutputDirAbs $sidecarName
     $catArgs = @("--input", $MergedFile, "--output", $TaggedFile, "--sidecar")
     if ($ThemesConfig) {
         if (-not (Test-Path $ThemesConfig)) {
@@ -417,11 +419,16 @@ try {
         $catArgs += @("--config", $ThemesConfig)
     }
     if ($Verbose) { $catArgs += "--verbose" }
+    $previousSidecar = Get-ChronicleArtifactStamp $sidecarPath
     $result = Invoke-ChronicleStage "Categorisation" $CategorizePy $catArgs
     Set-ChronicleStageEvidence $categorizeStage $result
 
     if ($result.Status -eq "ok") {
-        $categorizeStage.outputs = @("chronicle_tagged.md", "chronicle_tagged.tagged.json")
+        $categorizeStage.outputs = @("chronicle_tagged.md")
+        $sidecarStamp = Get-ChronicleArtifactStamp $sidecarPath
+        if ($sidecarStamp -and $sidecarStamp -ne $previousSidecar) {
+            $categorizeStage.outputs += $sidecarName
+        }
         Write-StageOk "Tagged chronicle written to $TaggedFile"
     } else {
         Write-StageFail "Categorisation failed ($($result.FailureKind), exit code $($result.ExitCode))"
@@ -446,7 +453,7 @@ try {
         Write-Host "  Normalised files: $NormalisedDir/"
         Write-Host "  Merged chronicle: $MergedFile"
         Write-Host "  Tagged chronicle: $TaggedFile"
-        Write-Host "  Sidecar JSON:    $([System.IO.Path]::ChangeExtension($TaggedFile, '.tagged.json'))"
+        if ($sidecarName -in $categorizeStage.outputs) { Write-Host "  Sidecar JSON:    $sidecarPath" }
         Write-Host "  Duplicates:      $([System.IO.Path]::ChangeExtension($MergedFile, '.duplicates.json'))"
         $runExitCode = 0
         exit $runExitCode
@@ -477,12 +484,18 @@ try {
         }
     }
     if ($Verbose) { $indexArgs += "--verbose" }
+    $registryName = "appendix/link_registry.md"
+    $registryPath = Join-Path $OutputDirAbs $registryName
+    $previousRegistry = Get-ChronicleArtifactStamp $registryPath
     $result = Invoke-ChronicleStage "Index generation" $IndexPy $indexArgs
     Set-ChronicleStageEvidence $indexStage $result
 
     if ($result.Status -eq "ok") {
         $indexStage.outputs = @("appendix/event_index.md", "appendix/theme_index.md", "appendix/source_manifest.md")
-        if (-not $NoLinkRegistry) { $indexStage.outputs += "appendix/link_registry.md" }
+        $registryStamp = Get-ChronicleArtifactStamp $registryPath
+        if ($registryStamp -and $registryStamp -ne $previousRegistry) {
+            $indexStage.outputs += $registryName
+        }
         Write-StageOk "Appendix indices written to $AppendixDir"
     } else {
         Write-StageFail "Index generation failed ($($result.FailureKind), exit code $($result.ExitCode))"
@@ -512,14 +525,14 @@ try {
     Write-Host "    Normalised:     $NormalisedDir/"
     Write-Host "    Merged:         $MergedFile"
     Write-Host "    Tagged:         $TaggedFile"
-    Write-Host "    Sidecar JSON:   $([System.IO.Path]::ChangeExtension($TaggedFile, '.tagged.json'))"
+    if ($sidecarName -in $categorizeStage.outputs) { Write-Host "    Sidecar JSON:   $sidecarPath" }
     Write-Host "    Duplicates:     $([System.IO.Path]::ChangeExtension($MergedFile, '.duplicates.json'))"
     Write-Host "    Appendix:       $AppendixDir/"
     Write-Host "      Event index:  $AppendixDir/event_index.md"
     Write-Host "      Theme index:  $AppendixDir/theme_index.md"
     Write-Host "      Manifest:     $AppendixDir/source_manifest.md"
-    if (-not $NoLinkRegistry) {
-        Write-Host "      Link registry: $AppendixDir/link_registry.md"
+    if ($registryName -in $indexStage.outputs) {
+        Write-Host "      Link registry: $registryPath"
     }
     Write-Host ""
     $runExitCode = 0
