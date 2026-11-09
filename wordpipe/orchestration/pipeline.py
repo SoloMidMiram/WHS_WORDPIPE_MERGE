@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from pathlib import Path
 from time import perf_counter
 
 from wordpipe.core.datatypes import PipelineConfig, RunReport, Segment
@@ -68,7 +67,18 @@ class WordPipePipeline:
         fr: FlattenResult = flatten_step(cfg, self._deps.flattener, sink)
         if fr.error:
             errors.append(fr.error)
-            working = cfg.in_path
+            # Abort immediately on flatten failure — do not continue with original
+            # input or create/overwrite any output.
+            secs = perf_counter() - t0
+            sink.emit("ERROR", "flatten_fatal", {"seconds": round(secs, 2)})
+            sink.emit("INFO", "done", {"notes": 0, "seconds": round(secs, 2)})
+            return RunReport(
+                out_path=cfg.out_path,
+                notes=[],
+                segments=[],
+                seconds=secs,
+                errors=errors,
+            )
         else:
             working = fr.working_path
         notes = fr.notes

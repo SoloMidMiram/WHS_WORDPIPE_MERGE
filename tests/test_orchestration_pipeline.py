@@ -168,19 +168,20 @@ class TestStyleFailure:
 
 
 # ----------------------------------------------------------------------------
-# fail-fast: flatten failure → pipeline continues with cfg.in_path
+# fail-fast: flatten failure → pipeline aborts
 # ----------------------------------------------------------------------------
 
 
 class TestFlattenFailure:
-    def test_flatten_error_continues(self, cfg: PipelineConfig):
-        """Flatten failure should record error but pipeline continues."""
+    def test_flatten_error_aborts(self, cfg: PipelineConfig):
+        """Flatten failure should abort pipeline — no output or segments."""
         p = _make_pipeline(flattener=_FailingFlattener())
         report = p.run(cfg)
         assert len(report.errors) >= 1
         assert "flatten" in report.errors[0].lower()
-        # Pipeline should have continued through style/segment/finalize
-        assert len(report.segments) == 1
+        # Pipeline should abort immediately — no segments or notes
+        assert len(report.segments) == 0
+        assert len(report.notes) == 0
 
 
 # ----------------------------------------------------------------------------

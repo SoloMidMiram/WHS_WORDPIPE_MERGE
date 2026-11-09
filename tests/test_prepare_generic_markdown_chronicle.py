@@ -277,7 +277,7 @@ def test_staged_output_round_trips_through_ingest():
         [adapter.ChronicleEvent("2025-06-14", "Test - Alpha section", "Section body text.")],
     )
 
-    events = split_into_events(staged)
+    events = split_into_events(staged)[0]
 
     assert len(events) == 1
     assert events[0]["date"] == "2025-06-14"

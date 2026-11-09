@@ -1,9 +1,11 @@
 # 📋 Project Plan
 
 > **Purpose:** Immutable log of intentions and completions. This is NOT analysis or description.
+> **Status:** Historical record; see `ROADMAP.md` (active source of truth) and
+> `docs/engineering/OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md` (current status).
 > **Date System:** Jalali (Shamsi) only
 > **Created:** 1404-11-25
-> **Ontology Ref:** See `ONTOLOGY.md` for concept definitions
+> **Ontology Ref:** See `ONTOLOGY_MODEL.md` for concept definitions
 
 ---
 
@@ -44,6 +46,41 @@
 - [ ] Canonicalize `pipeline/index.py` under `wordpipe.chronicle` with a thin operator wrapper (concept: SourceFile, Command)
 - [ ] Map Phase 13/14/15/16 TopicRun evidence into project-level `ontology.json` activity instances (concept: ActivityPeriod, Evidence)
 
+## P0/P1 Third-Wave Remediation — Completed: 1405/05/03
+
+- [x] F1 (P0): Structured rejection manifest from `split_into_events()`; `--allow-undated` flag in CLI; three-mode ingest (fail-no-output, partial-with-manifest, complete-manifest) (completed: 1405/05/03)
+- [x] F2 (P1): Preflight check for `_UnavailableFlattener` in `build_default_deps()`; abort pipeline on runtime flatten failure — no output created or overwritten (completed: 1405/05/03)
+- [x] F3 (P1): Broadened `build_source_manifest()` index parser to accept both numbered and un-numbered coverage formats; reject zero-valid-row coverage; preserve zero-event sources (completed: 1405/05/03)
+- [x] F4 (P1): Changed dedup default to `date_title` in `DEFAULT_CONFIG`, `deduplicate_events()` parameter, unknown-method fallback, CLI help text, and `pipeline/index_config.json` (completed: 1405/05/03)
+- [x] F5 (P1): Removed `is None` guards in both `_precompute_heading_states()` and `_build_hpath()`; sibling H2/H3 transitions now update context unconditionally (completed: 1405/05/03)
+- [x] CI: Added DOCX extra to matrix; added real DOCX CLI test; added real chain.ps1 execution test (completed: 1405/05/03)
+- [x] Acceptance tests: 12 new tests covering all decisive gates (ingest rejection, flatten preflight, coverage parse, dedup, heading sibling, DOCX CLI) (completed: 1405/05/03)
+- [x] Removed tracked `tools/__pycache__/jalali.cpython-311.pyc` (already cleaned); `__pycache__/` gitignored (completed: 1405/05/03)
+- [x] Updates: ROADMAP, PLAN, JOURNAL, VERIFICATION, IMPLEMENTATION_ALIGNMENT_AUDIT (completed: 1405/05/03)
+
+## P0/P1 Second-Wave Remediation — Completed: 1405/05/03
+
+- [x] Add `_can_import_mergedpipeline()` probe and `_UnavailableFlattener` stub so `make_flattener()` fails clearly before processing when `MergedpipelineV3` is absent (concept: SourceFile, Verification) (completed: 1405/05/03)
+- [x] Change `chain.ps1` abort condition from `$IngestCount -eq 0` to `$IngestFailures -gt 0`; add `-AllowPartialIngest` switch (concept: Command, Verification) (completed: 1405/05/03)
+- [x] Flip `verify_integrity.py` warnings to fatal by default; replace `--strict` with `--diagnostic-only`; update orchestration and docs (concept: Verification, Command) (completed: 1405/05/03)
+- [x] Fix ingest provenance: skip undated events instead of emitting `## Event: unknown` (concept: SourceFile) (completed: 1405/05/03)
+- [x] Fix categorize preamble preservation: preserve text between frontmatter and first event heading (concept: SourceFile) (completed: 1405/05/03)
+- [x] Fix SourceCoverage: pass `--source-coverage` to merge CLI from chain.ps1 when requested (concept: Command, Verification) (completed: 1405/05/03)
+- [x] Make REVIEW verdict enforceable in `run_topic_report.py`: return exit 2 when verdict is REVIEW unless `--allow-review` passed (concept: Verification, Command) (completed: 1405/05/03)
+- [x] Align `docs/TRACELEDGER_INTEGRATION_CONTRACT.md` with actual `process_docx_v3(cfg, logger, jsonl_path)` signature (concept: Doc) (completed: 1405/05/03)
+- [x] Bump catalog schema to v2 with explicit `hash_mode` field; update checker and tests (concept: ConfigFile, Verification) (completed: 1405/05/03)
+- [x] Document TOC adapter three-case contract in `wordpipe/steps/toc.py` docstring (concept: Doc) (completed: 1405/05/03)
+
+## P0 Reliability Remediation — Completed: 1405/05/02
+
+- [x] Add `--strict` flag to `verify_integrity.py` invocation in `tools/orchestrate.py` (concept: Verification, Command) (completed: 1405/05/02)
+- [x] Add malformed event heading pre-scan in `wordpipe/chronicle/merge.py` that rejects any `## Event:` line not matching canonical ISO format (concept: Verification, SourceFile) (completed: 1405/05/02)
+- [x] Move `MergedpipelineV3` import from `run()` to `__init__()` in `ComFlattener` for eager failure at construction time (concept: SourceFile, Command) (completed: 1405/05/02)
+- [x] Remove bare `except Exception: return` blocks in `Win32MergedpipelineV3TocUpdater.update()`; conditionalize `toc_updater` in `build_default_deps()` to supply `None` on non-Windows (concept: SourceFile, Verification) (completed: 1405/05/02)
+- [x] Rewrite WordPipe CLI to call `process_docx_v3` directly and return non-zero exit code when `RunReport.errors` is non-empty (concept: Command, Verification) (completed: 1405/05/02)
+- [x] Add `--in`/`--out` resolved-path guard to WordPipe CLI, rejecting identical input/output paths before any mutation (concept: Command, Verification) (completed: 1405/05/02)
+- [x] Add test files: `test_p0_cli.py` (orchestration `--strict`, CLI exit code, path guard), `test_pipeline_contracts.py` (`StageResult.finalize` strict/non-strict), `test_flatteners.py` (import-safety, construction-fail, fallback), plus P0.2 validation tests in `test_pipeline_chronicle.py` and P0.4 adapter test in `test_steps.py` (concept: Verification) (completed: 1405/05/02)
+
 Broad topic-runner decomposition is conditional, not an active Project Phase 15 deliverable. Reconsider it only when a third adapter exposes concrete coupling or ontology schema evolution makes the current serializer unsafe.
 
 The third-adapter and unsafe-serializer conditions are primary triggers. Secondary signals require audited evidence and do not mandate decomposition from one occurrence; repeated cross-module defects must have two dated, path- and test-backed records in `JOURNAL.md` or the implementation-alignment audit.
@@ -65,7 +102,7 @@ The third-adapter and unsafe-serializer conditions are primary triggers. Seconda
 - [x] Add merge-note-aware actual survivor-key verification without changing Chronicle merge behavior (concept: Verification, Evidence) (completed: 1405/04/26 — merged-note-aware-v1 in tools/run_topic_report.py)
 - [x] Compare Phase 16 and a fresh paired Phase 17 run for exact SourceEvent/ReportEvent id stability (concept: Verification, Evidence) (completed: 1405/04/26 — tools/compare_event_provenance_stability.py + phase17_provenance_stability)
 - [x] Assess the Phase 17 repeatability gate before any individual ontology ReportEvent design or emission (concept: Entity, Verification) (completed: 1405/04/26 — docs/PHASE17_EVENT_PROVENANCE_SURVIVOR_AND_REPEATABILITY.md)
-- [x] Inventory and map the actual Phase 13–17 dirty-tree scope before committing (concept: Doc, Verification) (completed: 1405/04/26 — docs/engineering/PHASE13_17_COMMIT_DRAFT.md; no commit created)
+- [x] Inventory, map, and commit the actual Phase 13–17 dirty-tree scope (concept: Doc, Verification) (completed: 1405/04/26 — docs/engineering/PHASE13_17_COMMIT_DRAFT.md; commit `a635ea2`)
 
 ---
 

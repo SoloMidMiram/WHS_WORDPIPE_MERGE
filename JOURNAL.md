@@ -6,6 +6,114 @@
 
 ---
 
+## Third-Wave P0/P1 Remediation
+**Date:** 2026-07-25 (Jalali: 1405/05/03)
+**Phase:** P0/P1 Third-Wave Remediation
+**Ontology Ref:** ActivityPeriod, Verification, SourceFile, Command, Doc
+
+### Context
+An external review of the second-wave P0/P1 remediation (PR #2 head `2ab7bda`) identified 5 additional findings (1 P0, 4 P1) plus a CI gap. This slice resolves all 5 findings, adds CI coverage for DOCX and chain.ps1, and establishes decisive acceptance gates.
+
+### What Was Done
+1. **F1 (P0) — Undated events silently discarded:** `split_into_events()` now returns `tuple[list[dict], list[dict]]` — (events, rejection_records). Each rejection record includes `input_file`, `line_number`, `event_index`, `raw_heading`, `rejected_body`, and `reason_code`. CLI added `--allow-undated` flag. Default mode: exit 1, write `complete` rejection manifest, no normalized output. `--allow-undated`: exit 0, write partial output with `partial` manifest.
+2. **F2 (P1) — Flatten failure writes incomplete output:** Preflight: `build_default_deps()` raises `RuntimeError` if `do_flatten=True` and flattener is `_UnavailableFlattener`. Runtime: `WordPipePipeline.run()` returns immediately on flatten error (no output created/overwritten); cleans up `.work.docx` artifact.
+3. **F3 (P1) — Source coverage format mismatch:** `build_source_manifest()` now detects both numbered (`| Number | Source | Count |`) and un-numbered (`| Source | Unique Events | Duplicates | Status |`) table formats. Rejects coverage files with zero valid rows. Preserves zero-event sources and their status.
+4. **F4 (P1) — Default dedup uses title-only:** Changed default from `"title"` to `"date_title"` in all 5 locations: `DEFAULT_CONFIG`, `deduplicate_events()` parameter, unknown-method fallback, CLI help text, and `pipeline/index_config.json`.
+5. **F5 (P1) — Sibling H2/H3 heading context stale:** Removed `is None` guards in both `_precompute_heading_states()` and legacy `_build_hpath()`. Any Heading 2 or Heading 3 now replaces the current state unconditionally.
+6. **CI gap:** Added `docx: true` matrix entry installing `.[chronicle,docx,test]`. Real DOCX CLI test (create DOCX, run `--no-flatten`, verify re-open). Real chain.ps1 test (valid input exits 0, undated input exits 1).
+
+### Claims Verified
+- **270 passed** (`pytest -q`, 2026-07-25), up from 257 (second-wave baseline).
+- 12 acceptance tests in `tests/test_acceptance_remediation.py`: ingest rejection (5), flatten preflight (1), coverage parse (3), dedup default (2), heading sibling (1).
+- Sibling transition test added to `tests/test_segmenter_hpath.py`.
+- Existing `split_into_events()` call sites updated in 5 test files.
+- All CI checks pass: root layout, input catalog, architecture boundaries, docs links, security scan.
+- `tools/__pycache__/` is gitignored (already clean).
+
+### Artifacts Produced
+- `tests/test_acceptance_remediation.py` — 12 new acceptance tests
+- Updated: `wordpipe/chronicle/ingest.py`, `wordpipe/chronicle/cli/ingest.py`,
+  `wordpipe/adapters/defaults.py`, `wordpipe/orchestration/pipeline.py`,
+  `pipeline/index.py`, `wordpipe/adapters/docx/segmenter.py`, `.github/workflows/ci.yml`
+- Updated tests: `tests/test_pipeline_chronicle.py`, `tests/test_prepare_generic_markdown_chronicle.py`,
+  `tests/test_prepare_insurancechatbot_chronicle.py`, `tests/test_phase16_event_identity_characterization.py`,
+  `tests/test_orchestration_pipeline.py`, `tests/test_segmenter_hpath.py`
+- Updated docs: `ROADMAP.md`, `PLAN.md`, `JOURNAL.md`, `VERIFICATION.md`,
+  `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`
+
+---
+
+## Second-Wave P0/P1 Remediation
+**Date:** 2026-07-25 (Jalali: 1405/05/03)
+**Phase:** P0/P1 Second-Wave Remediation
+**Ontology Ref:** ActivityPeriod, Verification, SourceFile, Command, Doc
+
+### Context
+An external review of the first-wave P0 reliability remediation identified 7 additional findings (3 P0, 4 P1) that must be resolved before claiming P0 readiness. This slice addresses all 7 as a follow-up closeout.
+
+### What Was Done
+1. **F1 (P0) — Flattener fallback not self-contained:** Added `_can_import_mergedpipeline()` probe and `_UnavailableFlattener` stub. `make_flattener()` now fails clearly before processing when `MergedpipelineV3` is absent. TOC updater also gated on the probe.
+2. **F2 (P0) — chain.ps1 continues past ingest failures:** Changed abort condition from `$IngestCount -eq 0` to `$IngestFailures -gt 0` (unless `-AllowPartialIngest`).
+3. **F3 (P0) — verify_integrity standalone is fail-open:** Flipped default: warnings are now fatal. Replaced `--strict` with `--diagnostic-only`. Updated orchestration and docs.
+4. **F4a (P1) — Ingest emits "unknown" dates:** Undated events are now skipped with a logging warning instead of emitting `## Event: unknown`.
+5. **F4b (P1) — Categorize drops preamble:** `rebuild_tagged_md()` now preserves text between frontmatter and first event heading.
+6. **F4c (P1) — SourceCoverage not auto-generated:** `chain.ps1` passes `--source-coverage` to merge when `-SourceCoverage` is set.
+7. **F5 (P1) — REVIEW verdict non-enforceable:** `run_report()` includes `verdict` in return; `main()` returns exit 2 for REVIEW (unless `--allow-review`).
+8. **F6 (P1) — Documented API vs actual:** Updated `docs/TRACELEDGER_INTEGRATION_CONTRACT.md` to match actual `process_docx_v3` signature.
+9. **F7 (P1) — Catalog hash semantics silently changed:** Bumped to schema v2 with explicit `hash_mode` field; checker accepts v1 and v2.
+10. **TOC Contract Documentation:** Expanded `toc_step()` docstring with explicit three-case contract.
+
+### Claims Verified
+- All 7 findings verified at code level before changes.
+- **257 passed** (`pytest -q`, 2026-07-25), up from 253 (P0 first-wave baseline).
+- 17 production files changed, 3 test files updated, 5 documentation files created/updated.
+- All new v2 catalog tests pass (valid, missing hash_mode, invalid hash_mode).
+
+### Artifacts Produced
+- `docs/engineering/SECOND_WAVE_P0P1_VALIDATION.md` — detailed validation per finding
+- Updated: `wordpipe/adapters/flatteners/base.py`, `wordpipe/adapters/defaults.py`,
+  `pipeline/chain.ps1`, `tools/verify_integrity.py`, `tools/orchestrate.py`,
+  `wordpipe/chronicle/ingest.py`, `wordpipe/chronicle/categorize.py`,
+  `tools/run_topic_report.py`, `inputs/catalog.json`, `tools/check_input_catalog.py`,
+  `wordpipe/steps/toc.py`
+- Updated tests: `tests/test_flatteners.py`, `tests/test_p0_cli.py`,
+  `tests/test_input_catalog.py`
+- Updated docs: `docs/PIPELINE_RUNBOOK.md`, `docs/TOOLS_MODULES_INTEGRATION_REPORT.md`,
+  `docs/TRACELEDGER_INTEGRATION_CONTRACT.md`
+
+---
+
+## P0 Reliability Remediation
+**Date:** 2026-07-24 (Jalali: 1405/05/02)
+**Phase:** P0 Reliability Remediation
+**Ontology Ref:** ActivityPeriod, Verification, SourceFile, Command
+
+### Context
+An external code review identified 6 P0 reliability defects in the repository. All 6 were verified against the actual codebase and remediated in a single slice. No P1 fixes, refactoring, or evidence reruns were performed.
+
+### What Was Done
+1. **P0.1 — verify_integrity warnings in orchestration:** Added `--strict` flag to `verify_integrity.py` invocation in `tools/orchestrate.py`. Warnings now become errors under orchestrated runs.
+2. **P0.2 — Malformed Chronicle event headings silently vanish:** Added `validate_event_headings()` pre-scan in `wordpipe/chronicle/merge.py` that rejects any `## Event:` line not matching the canonical ISO format (`## Event: YYYY-MM-DD [- Optional Title]`). This catches `unknown`, `TBD`, non-ISO dates, blank dates, etc.
+3. **P0.3 — ComFlattener runtime import failure:** Moved the `MergedpipelineV3` import from `run()` into `__init__()` in `ComFlattener`. Construction now raises `RuntimeError` eagerly if the dependency is missing; `make_flattener` falls back to `XmlFlattener`. Module-level import remains safe.
+4. **P0.4 — TOC adapter silently reports success:** Removed both bare `except Exception: return` blocks in `Win32MergedpipelineV3TocUpdater.update()`. On Windows, imports/execution failures now raise, which `toc_step` catches and returns `TocResult(updated=False, error=...)`. On non-Windows, `build_default_deps()` supplies `toc_updater=None` so `toc_step` skips cleanly.
+5. **P0.5 — WordPipe CLI discards errors:** Rewrote `wordpipe/cli/main.py` to construct `PipelineConfig` and call `process_docx_v3` directly, checking `RunReport.errors` and exiting non-zero on error.
+6. **P0.6 — No `--in`/`--out` guard:** Added resolved-path comparison in the CLI, failing before any mutation when input and output resolve to the same file.
+
+### Claims Verified
+- All 6 P0 findings verified at code level before changes.
+- **253 passed** (`pytest -q`, 2026-07-24), up from 231 (Phase 17 baseline).
+- Architecture boundaries: OK (296 edges, 6 reviewed roles, 0 bypasses).
+- Root layout, input catalog, docs links, security scan: all OK.
+
+### Artifacts Produced
+- `tests/test_p0_cli.py` — orchestration `--strict`, CLI exit code, path guard tests
+- `tests/test_pipeline_contracts.py` — `StageResult.finalize` strict/non-strict contract
+- `tests/test_flatteners.py` — ComFlattener import-safety, construction-fail, fallback tests
+- P0.2 validation tests added to `tests/test_pipeline_chronicle.py`
+- P0.4 adapter test added to `tests/test_steps.py`
+
+---
+
 ## Project Phase 17 Survivor Integrity & Repeatability
 **Date:** 2026-07-17 (Jalali: 1405/04/26)
 **Phase:** Phase 17 — Event-Provenance Survivor Integrity and Repeatability
@@ -34,9 +142,9 @@ existed per topic.
 - `docs/PHASE17_EVENT_PROVENANCE_SURVIVOR_AND_REPEATABILITY.md`
 - `tools/compare_event_provenance_stability.py`
 - Topic runs + reserved stability evidence under both `WordHorrorStories/*/output/`
-- `docs/engineering/PHASE13_17_COMMIT_DRAFT.md` records that the current Git
-  baseline predates Phase 13, maps the pending implementation/evidence, and
-  proposes guarded commit boundaries without creating a commit.
+- `docs/engineering/PHASE13_17_COMMIT_DRAFT.md` records that the inspected Git
+  baseline predated Phase 13, maps the implementation/evidence, and records the
+  guarded consolidated closeout commit `a635ea2`.
 
 ---
 

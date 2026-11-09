@@ -70,3 +70,106 @@ def test_catalog_rejects_legacy_input_location(tmp_path):
     legacy.mkdir(parents=True)
     violations = checker.find_violations(tmp_path)
     assert any("legacy input location" in item for item in violations)
+
+
+def test_catalog_v2_with_valid_hash_mode_passes(tmp_path):
+    """A v2 catalog with valid hash_mode is accepted."""
+    source = tmp_path / "inputs/demo/markdown/source.md"
+    source.parent.mkdir(parents=True, exist_ok=True)
+    source.write_text("source", encoding="utf-8")
+    payload = source.read_bytes()
+    catalog = {
+        "schema_version": 2,
+        "hash_mode": "lf_normalized_utf8",
+        "entries": [{
+            "corpus": "demo",
+            "format": "markdown",
+            "path": "inputs/demo/markdown/source.md",
+            "size_bytes": len(payload),
+            "sha256": hashlib.sha256(payload).hexdigest(),
+            "classification": "source",
+        }],
+    }
+    catalog_path = tmp_path / "inputs" / "catalog.json"
+    catalog_path.write_text(json.dumps(catalog), encoding="utf-8")
+    assert checker.find_violations(tmp_path) == []
+
+
+def test_catalog_v2_missing_hash_mode_fails(tmp_path):
+    """A v2 catalog without hash_mode returns a violation."""
+    source = tmp_path / "inputs/demo/markdown/source.md"
+    source.parent.mkdir(parents=True, exist_ok=True)
+    source.write_text("source", encoding="utf-8")
+    catalog = {
+        "schema_version": 2,
+        "entries": [{
+            "corpus": "demo",
+            "format": "markdown",
+            "path": "inputs/demo/markdown/source.md",
+            "size_bytes": 6,
+            "sha256": "0000",
+            "classification": "source",
+        }],
+    }
+    catalog_path = tmp_path / "inputs" / "catalog.json"
+    catalog_path.write_text(json.dumps(catalog), encoding="utf-8")
+    violations = checker.find_violations(tmp_path)
+    assert any("hash_mode" in item for item in violations)
+
+
+def test_catalog_v2_invalid_hash_mode_fails(tmp_path):
+    """A v2 catalog with wrong hash_mode returns a violation."""
+    source = tmp_path / "inputs/demo/markdown/source.md"
+    source.parent.mkdir(parents=True, exist_ok=True)
+    source.write_text("source", encoding="utf-8")
+    catalog = {
+        "schema_version": 2,
+        "hash_mode": "raw_bytes",
+        "entries": [{
+            "corpus": "demo",
+            "format": "markdown",
+            "path": "inputs/demo/markdown/source.md",
+            "size_bytes": 6,
+            "sha256": "0000",
+            "classification": "source",
+        }],
+    }
+    catalog_path = tmp_path / "inputs" / "catalog.json"
+    catalog_path.write_text(json.dumps(catalog), encoding="utf-8")
+    violations = checker.find_violations(tmp_path)
+    assert any("hash_mode" in item for item in violations)
+
+
+def test_catalog_rejects_non_object_catalog(tmp_path):
+    """A list-shaped catalog returns a normal catalog diagnostic, not a traceback."""
+    catalog_path = tmp_path / "inputs" / "catalog.json"
+    catalog_path.parent.mkdir(parents=True, exist_ok=True)
+    catalog_path.write_text("[]", encoding="utf-8")
+    violations = checker.find_violations(tmp_path, catalog_path)
+    assert len(violations) == 1
+    assert violations[0].startswith("catalog:")
+
+
+def test_catalog_docx_hashes_raw_binary(tmp_path):
+    """DOCX (binary ZIP) entries are hashed raw, not CRLF-normalized."""
+    docx = tmp_path / "inputs/demo/docx/sample.docx"
+    docx.parent.mkdir(parents=True, exist_ok=True)
+    # Binary content containing CRLF pairs; normalizing them would change both
+    # the size and the SHA-256, so the checker must hash DOCX bytes verbatim.
+    payload = b"PK\x03\x04\x0d\x0a\x00\x00content\r\nmore\x00"
+    docx.write_bytes(payload)
+    catalog = {
+        "schema_version": 2,
+        "hash_mode": "lf_normalized_utf8",
+        "entries": [{
+            "corpus": "demo",
+            "format": "docx",
+            "path": "inputs/demo/docx/sample.docx",
+            "size_bytes": len(payload),
+            "sha256": hashlib.sha256(payload).hexdigest(),
+            "classification": "source",
+        }],
+    }
+    catalog_path = tmp_path / "inputs" / "catalog.json"
+    catalog_path.write_text(json.dumps(catalog), encoding="utf-8")
+    assert checker.find_violations(tmp_path) == []

@@ -2,7 +2,7 @@
 
 > **Purpose:** Comprehensive reference documenting all three subsystems — their architecture, module responsibilities, data flow, logic flow, goals, and constraints.
 > **Date:** 2026-02-14 (Jalali: 1404-11-25)
-> **Last Updated:** 2026-07-17 (Jalali: 1405-04-26)
+> **Last Updated:** 2026-07-26 (Jalali: 1405-05-04)
 > **Supersedes:** `docs/architecture/PROJECT_SUMMARY.md`, `docs/TOOLS_MODULES_INTEGRATION_REPORT.md`, `docs/INTEGRATION_MAP_BEFORE_AFTER.md`
 
 ---
@@ -81,7 +81,7 @@ The bounded domains below describe ownership without replacing or renumbering Su
 | Bounded domain | Existing architecture location | Current ownership |
 |----------------|--------------------------------|-------------------|
 | Corpus Governance | Cross-cutting support domain | `inputs/`, `inputs/catalog.json`, and `tools/check_input_catalog.py`; input may instead be another manifest-declared read-only topic source |
-| Chronicle Engine | Subsystem A | `wordpipe/chronicle/` and operator stages in `pipeline/`; index remains an operator stage in `pipeline/index.py`, with canonical extraction deferred |
+| Chronicle Engine | Subsystem A | `wordpipe/chronicle/` and operator stages in `pipeline/`; `wordpipe.chronicle.index` owns reusable index logic, with `pipeline/index.py` retaining the operator CLI and compatibility exports |
 | Topic Reporting | Topic Report Runner entry and Subsystem A integration | Runner, topic adapters, manifests, themes, and run-evidence schemas |
 | Evidence Governance | Subsystem B plus root policy | Layout, append-only retention, collision policy, integrity, documentation-link, and security checks |
 | WordPipe Runtime | Subsystem C | Importable DOCX runtime, interfaces, adapters, steps, and orchestration |
@@ -193,7 +193,7 @@ flowchart TD
     Validate --> Stop["Stop and reassess; do not continue package fission"]
 ```
 
-Current gate decisions are intentionally conservative: broad runner decomposition is blocked; shared adapter utilities are blocked until a third adapter or an audited repeated defect; ontology-projector or verdict extraction is blocked until serializer/schema pressure; Chronicle index extraction remains a separate deferred track; and WordPipe restructuring is not justified because its current layering is already the target pattern.
+Current gate decisions are intentionally conservative: broad runner decomposition is blocked; shared adapter utilities are blocked until a third adapter or an audited repeated defect; ontology-projector or verdict extraction is blocked until serializer/schema pressure; WordPipe restructuring is not justified because its current layering is already the target pattern.
 
 ---
 
@@ -275,8 +275,7 @@ stage deferred from canonical extraction.
 - **Input:** Directory of raw `.md` files, path to `ingest.py`
 - **Output:** Report of which files pass/fail ingestion
 - **Key functions:**
-  - `verify_files(input_dir, ingest_script)` — Runs ingest.py on each file in dry-run mode
-  - `generate_report(results)` — Produces pass/fail summary
+  - `verify_directory(raw_dir, ingest_script)` runs ingest on each input in a temporary directory, reads accepted counts from normalized front matter, and reports diagnostics from stdout and stderr.
 - **CLI flags:** `--dir`, `--ingest`, `--verbose`
 - **Integration:** Only runs when `chain.ps1 -Verify` is used
 
@@ -338,6 +337,7 @@ stage deferred from canonical extraction.
 #### `pipeline/index.py` — Stage 5: Index Generation
 - **Purpose:** Generate 4 appendix files from tagged chronicle output
 - **Input:** `chronicle_tagged.md` from Stage 4, optional `source_coverage.md`
+- **Coverage compatibility:** accepts both numbered and unnumbered documented source-coverage table formats
 - **Output:** `appendix/event_index.md`, `appendix/theme_index.md`, `appendix/source_manifest.md`, `appendix/link_registry.md`
 - **Key functions:**
   - `extract_events(text)` — Extracts events with theme tags from tagged markdown
@@ -731,7 +731,13 @@ ERROR: required {name} not found: {abs_path}
 | Topic reports | Both adapters, manifest runner, trends, attribution, ontology | `python -m pytest tests/test_prepare_insurancechatbot_chronicle.py tests/test_prepare_generic_markdown_chronicle.py tests/test_run_topic_report.py -v` |
 | Governance | Root organization allowlist | `python -m pytest tests/test_root_layout.py -v` |
 | Architecture boundaries | Static production-import direction and reviewed path-role registry behavior | `python -m pytest tests/test_architecture_boundaries.py -v` |
+| Third-wave acceptance | Rejection manifests, flatten preflight, coverage parsing, dedup defaults, heading siblings | `python -m pytest tests/test_acceptance_remediation.py -v` |
 | **Current total** | **See `VERIFICATION.md` and the latest CI/full-suite result; architecture prose does not pin a transient count** | `python -m pytest tests -q` |
+
+The Windows CI matrix in `.github/workflows/ci.yml` runs base Python 3.10 and
+3.11 jobs plus a Python 3.11 DOCX-extra job. The DOCX job executes real CLI and
+`pipeline/chain.ps1` integration checks; its raw-input fixture correction is
+commit `7d8e114`.
 
 See also: [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_P2_VALIDATION_REPORT.md)
 
@@ -766,7 +772,7 @@ This appendix records observations, not module-design commands. The inventory wa
 | Current file | Lines | Functions | Classes | Interpretation |
 |--------------|------:|----------:|--------:|----------------|
 | `tools/run_topic_report.py` | 1,256 | 29 | 3 | Concentrated orchestration is a watch point, not by itself a split trigger |
-| `pipeline/index.py` | 700 | 15 | Operator-stage index remains the separately deferred extraction track |
+| `pipeline/index.py` | 700 | 15 | - | Historical inventory before extraction to `wordpipe.chronicle.index` |
 | `tools/prepare_generic_markdown_chronicle.py` | 343 | 14 | Second registered topic adapter |
 | `tools/prepare_insurancechatbot_chronicle.py` | 392 | 16 | First registered topic adapter |
 

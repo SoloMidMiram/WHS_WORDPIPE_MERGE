@@ -2,6 +2,14 @@
 
 This step is optional — it only runs when a TocUpdater implementation
 is available. It operates on the final output file path.
+
+Contract (three cases):
+1. No updater configured (``toc_updater=None``) — skip with ``TocResult(updated=False)``,
+   no error.
+2. Updater configured and succeeds — ``TocResult(updated=True)``.
+3. Updater configured and raises — ``Exception`` is caught, ``TocResult(updated=False,
+   error=...)`` is returned with a descriptive message. The pipeline does not abort;
+   the caller decides whether to continue.
 """
 # wordpipe/steps/toc.py
 # Created: 2026-02-14 (Jalali: 1404/11/25)

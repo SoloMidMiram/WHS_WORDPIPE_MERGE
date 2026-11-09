@@ -1,20 +1,20 @@
 # Phase 13–17 Working-Tree Commit Draft
 
 > Date: 2026-07-17 / 1405/04/26<br>
-> Status: Draft only — no commit has been created<br>
+> Status: Executed as consolidated commit `a635ea2`<br>
 > Baseline inspected: `dcb4c01` (`docs: record P0-P2 validation and reconcile top-level docs`)
 
 ## Why the scope starts at Phase 13
 
-The current `main` commit predates the generic topic-report runner. The dirty
-working tree contains the Phase 13 runner and adapters, Phase 14 second-topic
-validation, Phase 15 provenance and repository guardrails, Phase 16 event
-identity sidecars, and Phase 17 survivor/repeatability evidence. A commit
+The inspected `main` baseline predated the generic topic-report runner. The
+pre-commit working tree contained the Phase 13 runner and adapters, Phase 14
+second-topic validation, Phase 15 provenance and repository guardrails, Phase
+16 event identity sidecars, and Phase 17 survivor/repeatability evidence. A commit
 described as “Phase 15 only” or “Phase 17 only” would therefore omit material
 dependencies that are not yet represented in Git history.
 
-This draft records the real pending scope. It does not authorize `git add .`,
-rewrite evidence, or perform another repository reorganization.
+This record describes the scope committed in `a635ea2`. It does not authorize
+rewriting evidence or performing another repository reorganization.
 
 ## Traceability map
 
@@ -141,10 +141,11 @@ Results: 231 tests passed; all five repository checks passed; the security scan
 reported zero findings; `git diff --check` exited successfully with line-ending
 conversion notices only.
 
-## Before committing
+## Recorded closeout conditions
 
-- Apply and test the small comparator-hardening follow-ups recorded by the
-  Phase 17 review, or explicitly defer them in the Phase 17 design record.
-- Re-run the commands above after the final documentation and staging changes.
-- Review the complete staged diff. This document is a draft, not proof that the
-  staged commit matches it.
+- Small comparator-hardening follow-ups remain explicitly recorded in the
+  Phase 17 design record; they were not silently folded into this closeout.
+- The complete staged inventory was reviewed before commit and excluded
+  `_WORK/codex_smoke_chronicle/`.
+- Commit `a635ea2` is the authoritative Git trace; this document explains its
+  scope but does not replace inspection of the commit itself.

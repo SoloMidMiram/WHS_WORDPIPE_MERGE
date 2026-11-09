@@ -1524,11 +1524,14 @@ def run_report(manifest: dict[str, Any], *, dry_run: bool = False, run_id: str |
     )
 
     print(f"\n[DONE] Topic report complete. Output in: {run_dir}")
+
+    verdict = _compute_verdict(manifest, run_metrics, exit_codes)
     return {
         "run_dir": str(run_dir),
         "exit_codes": exit_codes,
         "run_metrics": run_metrics,
         "timing_seconds": timing_seconds,
+        "verdict": verdict,
     }
 
 
@@ -1572,20 +1575,35 @@ def write_ontology_outputs(
     repo_root = Path(manifest["_repo_root"])
 
     # --- Write both JSON output files FIRST so they exist on disk ---
+    def _rel(p: str) -> str:
+        try:
+            return Path(p).resolve().relative_to(repo_root.resolve()).as_posix()
+        except ValueError:
+            return p
+
+    adapter_rel = dict(manifest["adapter"])
+    adapter_rel["script"] = _rel(adapter_rel["script"])
+
     run_manifest: dict[str, Any] = {
         "schema_version": manifest["schema_version"],
         "topic": topic,
         "run_id": run_id,
         "created_at": now_iso,
-        "input_dir": manifest["input_dir"],
-        "adapter": dict(manifest["adapter"]),
-        "themes_config": manifest["themes_config"],
-        "index_config": manifest["index_config"],
-        "output_base_dir": manifest["output"]["base_dir"],
+        "_repo_root": str(repo_root),
+        "input_dir": _rel(manifest["input_dir"]),
+        "adapter": adapter_rel,
+        "themes_config": _rel(manifest["themes_config"]),
+        "index_config": _rel(manifest["index_config"]),
+        "output_base_dir": _rel(manifest["output"]["base_dir"]),
         "quality_gates": dict(manifest["quality_gates"]),
         "commands": build_commands(manifest, run_dir),
         "exit_codes": dict(exit_codes),
         "timing_seconds": timing_seconds,
+        "input_dir_abs": manifest["input_dir"],
+        "adapter_abs": dict(manifest["adapter"]),
+        "themes_config_abs": manifest["themes_config"],
+        "index_config_abs": manifest["index_config"],
+        "output_base_dir_abs": manifest["output"]["base_dir"],
     }
     (run_dir / "topic_run_manifest.json").write_text(
         json.dumps(run_manifest, indent=2, ensure_ascii=False) + "\n",
@@ -1838,6 +1856,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Explicit run ID (default: auto-generated timestamp)",
     )
+    parser.add_argument(
+        "--allow-review",
+        action="store_true",
+        help="Return exit code 0 even when verdict is REVIEW",
+    )
     return parser
 
 
@@ -1866,6 +1889,10 @@ def main(argv: list[str] | None = None) -> int:
         if any(code != 0 for code in exit_codes.values()):
             print(f"\nRun had failures. Exit codes: {exit_codes}", file=sys.stderr)
             return 1
+        verdict = result.get("verdict", "PASS")
+        if verdict == "REVIEW" and not args.allow_review:
+            print(f"\nVerdict: REVIEW (use --allow-review to skip enforcement)", file=sys.stderr)
+            return 2
         timing = result.get("timing_seconds", 0.0)
         print(f"Wall-clock time: {timing:.2f}s")
 

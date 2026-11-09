@@ -7,6 +7,64 @@
 
 ---
 
+## Latest Third-Wave P0/P1 Remediation Result
+
+Observed on 2026-07-25 (1405/05/03):
+
+| Check | Observed result |
+|-------|-----------------|
+| `pytest -q` | **270 passed** (up from 257) |
+| Ingest rejection manifest | 5 tests pass (mixed fails, allow-undated works, all-undated fails, structured manifest, no-undated-no-manifest) |
+| Flatten preflight + abort | `_UnavailableFlattener` raises RuntimeError; pipeline aborts on flatten failure (0 segments, no output) |
+| Source coverage parser | Both numbered and un-numbered formats parse; malformed coverage raises; zero-event sources preserved |
+| Dedup default `date_title` | All 5 locations updated; same-title different-dates events both survive |
+| Heading sibling transition | Both precomputed and legacy paths handle H2-B→H3-A→H2-B→H3-B correctly |
+| DOCX CLI test | Real DOCX created, processed with `--no-flatten`, reopened through python-docx |
+| chain.ps1 test | Valid input exits 0; undated input exits non-zero |
+| root_layout | OK |
+| input_catalog | OK (v2 with hash_mode) |
+| docs_link_check | 37 files, 34 refs valid |
+
+## Latest Second-Wave P0/P1 Remediation Result
+
+Observed on 2026-07-25 (1405/05/03):
+
+| Check | Observed result |
+|-------|-----------------|
+| `pytest -q` | **257 passed** (up from 253) |
+| Flattener probe + stub | 4 tests pass (import-safe, construction-raise, stub-return, stub-run-raises) |
+| Catalog v2 schema | 3 new tests: valid v2 passes, missing hash_mode fails, invalid hash_mode fails |
+| chain.ps1 abort | `$IngestFailures -gt 0` condition in place; `-AllowPartialIngest` switch added |
+| verify_integrity default | `--diagnostic-only` replaces `--strict`; default is fail-closed |
+| REVIEW verdict enforcement | `--allow-review` flag added; exit 2 returned for REVIEW without flag |
+| TraceLedger API doc | Signature corrected, `WARNING` → `WARN` |
+| TOC contract doc | Three-case contract documented in `toc.py` |
+| Ingest no-unknown dates | Undated events skipped (not written as `## Event: unknown`) |
+| Categorize preamble preserved | Text between frontmatter and first `## Event:` heading retained |
+| SourceCoverage auto-generation | `--source-coverage` flag passed to merge from chain.ps1 |
+
+## Latest P0 Reliability Remediation Result
+
+Observed on 2026-07-24 (1405/05/02):
+
+| Check | Observed result |
+|-------|-----------------|
+| P0-focused tests (`test_p0_cli`, `test_pipeline_contracts`, `test_flatteners`, P0.2/P0.4 additions) | **22 new tests** |
+| `pytest -q` | **253 passed** (up from 231) |
+| Architecture boundaries | OK; 296 static edges; 6 reviewed path roles; 0 active v1 bypasses |
+| Root layout / input catalog | Both OK |
+| Documentation links | 36 files scanned; 33 references valid |
+| Security scan | 911 files scanned; 0 findings |
+| `git diff --check` | Exit 0; CRLF conversion notices only |
+| P0.1: `verify_integrity --strict` flag in orchestration | Verified via `--dry-run` subprocess test |
+| P0.2: Malformed event heading pre-scan | 6 validation tests + merge-integration test pass |
+| P0.3: ComFlattener eager fail | Import-safe + construction-raise tests pass |
+| P0.4: TOC adapter explicit failure | Adapter test raises `ImportError` on Windows; returns None on non-Windows |
+| P0.5: CLI error exit code | Success exits 0; error exits 1 (monkeypatched pipeline) |
+| P0.6: `--in`/`--out` path guard | Same path, relative-vs-absolute, case-insensitive (Windows) all rejected |
+
+---
+
 ## Latest Phase 17 Closeout Result
 
 Observed on 2026-07-17 (1405/04/26):

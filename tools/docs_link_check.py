@@ -19,11 +19,13 @@ DOC_REF_RE = re.compile(
 
 
 def iter_scan_files(repo_root: Path) -> list[Path]:
-    docs_root = repo_root / "docs"
     files: list[Path] = []
+    docs_root = repo_root / "docs"
     if docs_root.is_dir():
         files.extend(sorted(docs_root.rglob("*.md")))
-    for p in [repo_root / "WORKSPACE_OVERVIEW.md", repo_root / "tools" / "README_tools.md"]:
+    # Root-level governance docs.
+    files.extend(sorted(repo_root.glob("*.md")))
+    for p in [repo_root / "tools" / "README_tools.md"]:
         if p.is_file():
             files.append(p)
     return files

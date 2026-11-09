@@ -9,6 +9,7 @@ from pathlib import Path
 
 ALLOWED_FILES = {
     ".env.example",
+    ".gitattributes",
     ".gitignore",
     "AGENTS.md",
     "ARCHITECTURE_AND_MODULES.md",
@@ -28,7 +29,9 @@ ALLOWED_FILES = {
 
 ALLOWED_DIRECTORIES = {
     ".agents",
+    ".codex",
     ".continue",
+    ".cursor",
     ".git",
     ".github",
     "_ARCHIVE",
@@ -46,7 +49,7 @@ ALLOWED_DIRECTORIES = {
     "wordpipe",
 }
 
-IGNORED_GENERATED_DIRECTORIES = {".pytest_cache"}
+IGNORED_GENERATED_DIRECTORIES = {".pytest_cache", ".ruff_cache"}
 
 
 def find_violations(root: Path) -> list[str]:

@@ -50,7 +50,7 @@ python tools/apply_legacy_reorg.py --summary-json _ARCHIVE/logs/apply_summary.js
 - Treat `_ARCHIVE/raw_zips/snapshot_*.zip` and extracted snapshot input as immutable evidence sources.
 - Keep append-only logs as historical evidence (`setup.log`, `plan.log`, `apply_reorg.log`, `legacy_index.log`, `conflicts.log`).
 - Use `--workspace-root` explicitly when running from outside repo root.
-- Use `--strict` for CI-like enforcement.
+- Use `--diagnostic-only` for exploratory analysis without enforcement.
 
 ### Don't
 - Don't delete or rewrite historical append-only logs.

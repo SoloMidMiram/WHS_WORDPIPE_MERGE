@@ -213,7 +213,7 @@ Columns:
 | `--snapshot-root` | path | `_WORK/snapshot` | Yes (directory) | `<SNAPSHOT_ROOT>` | Source root for immutability check; auto-normalized internally. | `ERROR: required snapshot root directory not found: {abs_path}`, exit non-zero. | Additive explicit input flag. |
 | `--workspace-root` | path | `.` | No | `<WORKSPACE_ROOT>` | Relative path base. | Bad path can fail downstream IO. | Added shared contract flag. |
 | `--summary-json` | path | `` | No | `<SUMMARY_JSON_PATH>` | Optional structured stage summary output. | Write error if unwritable. | Added shared contract flag. |
-| `--strict` | bool | `false` | No | `(none)` | Escalates warnings to errors. | Exit non-zero on warning states. | Added shared contract flag. |
+| `--diagnostic-only` | bool | `false` | No | `(none)` | Warnings do not cause non-zero exit. | Exit non-zero on actual error states. | Replaced `--strict` (now default-true). |
 
 ### `tools/route_unmapped_misc.py`
 | Flag | Type | Default | Required | Placeholder Token | Behavior | Invalid Input Outcome | Compatibility Note |

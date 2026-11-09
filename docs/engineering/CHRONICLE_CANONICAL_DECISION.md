@@ -18,7 +18,7 @@ It accumulated across three generations:
 |----------|------------|--------------|
 | `_ARCHIVE/pipeline-chronicle/tools/` | Gen 1 | Frozen archive; not active |
 | `tools/pipeline-chronicle/` | Gen 2 | Legacy/reference CLI location; Python entry points are wrappers where canonical modules exist |
-| `pipeline/` | Gen 3 | Operator CLI surface, `chain.ps1`, config, templates, and deferred `index.py` |
+| `pipeline/` | Gen 3 | Operator CLI surface, `chain.ps1`, config, templates, and index compatibility wrapper |
 | `wordpipe/chronicle/` | Current | Canonical importable Chronicle library |
 
 ## Decision
@@ -26,7 +26,7 @@ It accumulated across three generations:
 1. `wordpipe.chronicle` is the single importable library for reusable Chronicle stage logic.
 2. `pipeline/` remains operator CLI tooling. It is not a runtime import surface.
 3. `tools/pipeline-chronicle/` remains a legacy/reference CLI location. Python entry points delegate to canonical modules where migration is complete.
-4. `index.py` remains in `pipeline/` until canonical extraction is done.
+4. `wordpipe.chronicle.index` owns reusable index logic. `pipeline/index.py` retains the operator CLI and compatibility exports.
 
 ## Canonical Modules
 
@@ -36,7 +36,7 @@ It accumulated across three generations:
 | Verify ingest | `wordpipe.chronicle.verify_ingest` | Complete |
 | Merge | `wordpipe.chronicle.merge` | Complete |
 | Categorize | `wordpipe.chronicle.categorize` | Complete |
-| Index | `pipeline.index` | Deferred |
+| Index | `wordpipe.chronicle.index` | Complete |
 
 ## Compatibility Surface
 
@@ -58,7 +58,7 @@ That extra owns:
 - `pyyaml`
 - `python-dateutil`
 
-`jinja2` is not part of the `chronicle` extra because the remaining index path is still operator tooling under `pipeline/` and has fallback formatting.
+`jinja2` is not part of the `chronicle` extra because the index renderer has fallback formatting.
 
 ## Timeline
 
@@ -70,7 +70,7 @@ That extra owns:
 | 3d | Convert Python CLI entry points to wrappers | Complete |
 | 3e | Extract `wordpipe.chronicle.verify_ingest` | Complete |
 | 3f | Update Chronicle tests to import canonical modules | Complete |
-| 3g | Extract `wordpipe.chronicle.index` | Pending |
+| 3g | Extract `wordpipe.chronicle.index` | Complete |
 
 ## Packaging
 

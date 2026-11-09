@@ -5,6 +5,7 @@ Uses fake/dummy implementations — no python-docx, no real filesystem I/O.
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 from typing import Any, Optional
 
@@ -162,6 +163,44 @@ class TestFlattenStep:
         assert "flatten" in result.error.lower()
         assert result.working_path == cfg.in_path
 
+    def test_failure_preserves_preexisting_artifact(
+        self, tmp_path: Path, sink: EventSink
+    ) -> None:
+        """A failed invocation must not delete an artifact it did not create."""
+        out_path = tmp_path / "out.docx"
+        artifact = Path(str(out_path) + ".work.docx")
+        artifact.write_bytes(b"prior run")
+        cfg = PipelineConfig(in_path=tmp_path / "in.docx", out_path=out_path)
+
+        result = flatten_step(cfg, _FailingFlattener(), sink)
+
+        assert result.error is not None
+        assert artifact.read_bytes() == b"prior run"
+
+    def test_failure_removes_artifact_created_by_current_invocation(
+        self, tmp_path: Path, sink: EventSink
+    ) -> None:
+        """A failed invocation cleans up its own partial artifact."""
+        class _WritingFailingFlattener:
+            def flatten(
+                self,
+                input_docx: Path,
+                output_docx: Path,
+                *,
+                limit_pages: int | None = None,
+            ) -> list[ChangeNote]:
+                output_docx.write_bytes(b"partial")
+                raise IOError("flatten failed after write")
+
+        out_path = tmp_path / "out.docx"
+        artifact = Path(str(out_path) + ".work.docx")
+        cfg = PipelineConfig(in_path=tmp_path / "in.docx", out_path=out_path)
+
+        result = flatten_step(cfg, _WritingFailingFlattener(), sink)
+
+        assert result.error is not None
+        assert not artifact.exists()
+
 
 # ----------------------------------------------------------------------------
 # style_step
@@ -266,3 +305,22 @@ class TestTocStep:
         assert result.updated is False
         assert result.error is not None
         assert "TOC update failed" in result.error
+
+    # ------------------------------------------------------------------
+    # P0.4 — Real Win32MergedpipelineV3TocUpdater behaviour
+    # ------------------------------------------------------------------
+
+    def test_real_toc_adapter_raises_on_windows_missing_import(self):
+        """``Win32MergedpipelineV3TocUpdater().update()`` raises ``ImportError``
+        on Windows (MergedpipelineV3 absent), else returns None on non-Windows."""
+        from wordpipe.adapters.transforms import Win32MergedpipelineV3TocUpdater
+
+        updater = Win32MergedpipelineV3TocUpdater()
+        p = Path("out.docx")
+
+        if sys.platform.startswith("win"):
+            with pytest.raises(ImportError):
+                updater.update(p)
+        else:
+            # Non-Windows: platform guard returns early
+            assert updater.update(p) is None

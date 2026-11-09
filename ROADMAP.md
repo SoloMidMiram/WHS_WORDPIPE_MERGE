@@ -2,7 +2,7 @@
 
 > **Date (Gregorian):** 2026-07-09
 > **Date (Shamsi/Jalali):** 1405-04-18
-> **Last Updated:** 2026-07-17
+> **Last Updated:** 2026-07-26
 > **Branch:** `main`
 
 Current stabilization status:
@@ -22,6 +22,24 @@ Current stabilization status:
 - Phase 14 genericity remediation is validated on the second topic; root layout
   is enforced by `tools/check_root_layout.py`. See the
   [implementation alignment audit](docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md).
+- **2026-07-25: Third-wave P0/P1 remediation complete.** All 5 additional findings
+  (ingest rejection manifest with provenance, flatten preflight + abort-on-failure,
+  source coverage wildcard parser, dedup defaults aligned end-to-end, sibling
+  heading context in both implementations) are fixed. CI includes DOCX extra,
+  real DOCX CLI test, and real chain.ps1 execution. The dated third-wave run
+  recorded 270 passing tests. Follow-up `7d8e114` corrects the `chain.ps1` CI
+  fixture to use raw input; the three-job CI revalidation remains a release gate.
+- **2026-07-25: Second-wave P0/P1 remediation complete.** All 7 additional findings
+  (flattener fallback decoupling, chain.ps1 abort-on-failure, verify_integrity
+  fail-closed default, provenance defects, REVIEW verdict enforcement, API doc
+  alignment, catalog v2 schema) are fixed. See
+  [`docs/engineering/SECOND_WAVE_P0P1_VALIDATION.md`](docs/engineering/SECOND_WAVE_P0P1_VALIDATION.md)
+  for results.
+- **2026-07-24: P0 reliability remediation complete.** All 6 verified P0 defects
+  (verify-integrity strict mode, malformed event heading validation, ComFlattener
+  eager fail, TOC adapter explicit failure, CLI error propagation,
+  `--in`/`--out` path guard) are fixed. See
+  [`VERIFICATION.md`](VERIFICATION.md) for results.
 
 ---
 
@@ -146,7 +164,7 @@ Design doc: [`docs/PHASE17_EVENT_PROVENANCE_SURVIVOR_AND_REPEATABILITY.md`](docs
 
 Controlled evidence: `phase17_event_provenance_repeatability` and reserved `phase17_provenance_stability` under both topic output bases. Phase 16 `unmerged_source_event_count` remains keep-both count-parity history; Phase 17 uses actual survivor membership (`merged-note-aware-v1`).
 
-Pending Git scope and commit boundaries are recorded in [`docs/engineering/PHASE13_17_COMMIT_DRAFT.md`](docs/engineering/PHASE13_17_COMMIT_DRAFT.md); the inspected Git baseline predates Phase 13, so this working tree must not be described as Phase 15-only.
+The committed Git scope and boundaries are recorded in [`docs/engineering/PHASE13_17_COMMIT_DRAFT.md`](docs/engineering/PHASE13_17_COMMIT_DRAFT.md). Commit `a635ea2` closes the implementation/evidence stack that began after a Git baseline predating Phase 13; it is not a Phase 15-only change.
 
 Broad topic-runner decomposition is conditional, not an active Project Phase 15 deliverable. Reconsider it only when a third adapter exposes concrete coupling or ontology schema evolution makes the current serializer unsafe.
 
@@ -360,12 +378,8 @@ Completed Phase 13–17 foundation work is intentionally excluded.
 | Priority | Work | Why It Matters | Current Evidence |
 |----------|------|----------------|------------------|
 | P1 | Map Phase 13/14/15/16/17 topic runs into the project-level ontology/activity model | Per-run ontologies exist, but `ontology.json` lacks TopicRun instances | Phase 14–17 prove stable 10-entity/7-relation coverage |
-| P1 | Complete evidence-pipeline portability (`--portable`, `src_rel`/`dst_rel` relocation output, relative report fields) | Older organization phases planned these contracts but current relocation evidence remains absolute-only | `verify_integrity.py` has no `--portable`; relocation output omits relative fields |
-| P1 | Validate the documented TraceLedger consumer integration | Protocol and import boundary exist, but this repository does not prove an external consumer run | EventSink and public library APIs are implemented |
-| P2 | Canonicalize `pipeline/index.py` under `wordpipe.chronicle` | `index` is still the deferred Chronicle stage | Existing Phase 9c deferral |
 | P2 | Build `pipeline/reference.py` / stable secondary TOC | Long reports need stronger navigational references | Existing Phase 9c item |
 | P2 | Validate reference output against the existing manual merge | Phase 9c acceptance evidence is missing | `ChatGPT_Incidents_Merged.md` comparison remains unperformed |
-| P2 | Audit remote refs/history for leaked credentials | Local scanning cannot validate remote history | Local security scan is green |
 | P2 | Add governed duplicate scanning and separate runtime/evidence CI profiles | Original organization Phase 6 deliverables remain incomplete | Minimal combined CI exists; `tools/duplicate_scan.py` does not |
 | P2 | Emit individual ReportEvent entities after Phase 16.4 / Phase 17 gate | Section→event evidence + two-run stability exist; ontology individuals deferred | Phase 16/17 design docs |
 | P3 | Emit SemanticConcept / derived_from / mentions after schema decision | Candidate future additions only; not approved schema yet | Project Phase 15/16 design docs |
@@ -380,7 +394,10 @@ Broad topic-runner decomposition is conditional, not an active Project Phase 15 
 
 | MS# | Milestone | Phase | Target Date | Status |
 |-----|-----------|-------|-------------|--------|
+| M19 | Third-wave P0/P1 remediation (5 findings + CI gap) | — | 1405-05-03 | ✅ code complete; CI revalidation pending |
+| M18 | Second-wave P0/P1 remediation (7 additional findings) | — | 1405-05-03 | ✅ |
 | M16 | Project Phase 17 survivor integrity and stable-id repeatability | Ph17 | 1405-04-26 | ✅ |
+| M17 | P0 reliability remediation (6 verified defects fixed) | — | 1405-05-02 | ✅ |
 | M15 | Project Phase 16 section provenance sidecars and correlation | Ph16 | 1405-04-26 | ✅ |
 | M14 | Project Phase 15 provenance foundation and semantic design gate | Ph15 | 1405-04-26 | ✅ |
 | M13 | Second-topic genericity remediation and root organization enforcement | Ph14 | 1405-04-25 | ✅ |

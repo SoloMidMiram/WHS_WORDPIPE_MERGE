@@ -18,6 +18,11 @@ This repository contains three active subsystems plus preserved evidence trees:
 preserved evidence or working trees and should not be treated as packaged
 runtime code.
 
+**Third-wave reliability status:** commit `777c62a` records five additional
+P0/P1 fixes and 270 passing tests; `7d8e114` corrects the CI chain fixture to
+use raw Chronicle input. The current work and follow-up gates are tracked in
+[`docs/engineering/OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md`](docs/engineering/OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md).
+
 ## Quick Start
 
 ### Chronicle Library / CLI
@@ -73,10 +78,19 @@ python tools/orchestrate.py --root _WORK/snapshot --dry-run
 python -m pip install -e ".[docx,cli]"
 python -m pip install -e ".[full]"
 
-wordpipe --in "input.docx" --out "output.docx"
+wordpipe --in "input.docx" --out "output.docx" --no-flatten
 ```
 
+Flattening remains enabled by default for backward compatibility and requires
+the legacy `MergedpipelineV3` module. Use `--no-flatten` when that module is not
+installed; the example above selects this dependency-free path explicitly.
+
 ## Pre-Push Checks
+
+The third-wave full-suite result was **270 passed** on 2026-07-25. It is
+historical evidence, not a substitute for rerunning this command before a new
+push. The Chronicle ingest CLI also supports `--allow-undated` when partial
+output plus a rejection manifest is explicitly intended.
 
 ```powershell
 python -m pytest tests -q
@@ -103,7 +117,8 @@ python tools/security_scan.py --root . --fail-on-findings
 | [`docs/ITERATIVE_PERFORMANCE_CHECK_TEMPLATE.md`](docs/ITERATIVE_PERFORMANCE_CHECK_TEMPLATE.md) | Topic-neutral template for repeated report performance checks |
 | [`ROOT_ORGANIZATION.md`](ROOT_ORGANIZATION.md) | Root allowlist, placement rules, and generated-output policy |
 | [`docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`](docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md) | Phase evidence crosswalk, corrected flaw claims, and outstanding work |
-| [`docs/engineering/PHASE13_17_COMMIT_DRAFT.md`](docs/engineering/PHASE13_17_COMMIT_DRAFT.md) | Current dirty-tree scope, Phase 13–17 trace map, staging guardrails, and commit drafts |
+| [`docs/engineering/OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md`](docs/engineering/OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md) | Prioritized outstanding work, PR-review closure, and refactor/optimization gates |
+| [`docs/engineering/PHASE13_17_COMMIT_DRAFT.md`](docs/engineering/PHASE13_17_COMMIT_DRAFT.md) | Phase 13–17 committed scope, trace map, staging guardrails, and closeout commit record |
 
 ## Documentation Entry Points
 
@@ -119,12 +134,13 @@ python tools/security_scan.py --root . --fail-on-findings
 | Area | Status |
 |------|--------|
 | Chronicle dependency contract | Declared through the `chronicle` extra: `pyyaml` and `python-dateutil` |
-| Canonical Chronicle package | `ingest`, `merge`, `categorize`, `verify_ingest` have canonical modules (`wordpipe.chronicle`); `index` remains in `pipeline/` (deferred) |
+| Canonical Chronicle package | `ingest`, `verify_ingest`, `merge`, `categorize`, and `index` have canonical modules under `wordpipe.chronicle`. `pipeline/index.py` preserves the operator entry point and compatibility exports. |
 | Topic report runner | Manifest-driven generic runner with adapter registry, trend reports, source attribution, and ontology spine |
 | Legacy Chronicle scripts | Compatibility wrappers; not runtime import surfaces |
 | WordPipe orchestration | Step-based; read/style failures are fatal |
+| Third-wave acceptance | Five P0/P1 findings are covered by `tests/test_acceptance_remediation.py`; the dated full-suite result is 270 passed |
 | Test command | `python -m pytest tests -q` — use the latest command/CI result for the current count |
-| CI | Windows GitHub Actions workflow in `.github/workflows/ci.yml` (matches pre-push checks) |
+| CI | Windows GitHub Actions workflow in `.github/workflows/ci.yml`: Python 3.10/3.11 base jobs plus a Python 3.11 DOCX-extra integration job |
 | Validation report | [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_P2_VALIDATION_REPORT.md) |
 | Root organization | Enforced by `python tools/check_root_layout.py --root .` |
 | Corpus inputs | Hash-catalogued under `inputs/`; enforce with `python tools/check_input_catalog.py --root .` |

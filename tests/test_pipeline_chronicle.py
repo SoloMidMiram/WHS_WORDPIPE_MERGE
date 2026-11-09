@@ -232,7 +232,7 @@ class TestIngestCore:
     def test_extract_preamble_with_events(self, sample_raw_md):
         """Verify preamble extraction captures content before first event."""
         ingest = self._import_ingest()
-        events = ingest.split_into_events(sample_raw_md)
+        events = ingest.split_into_events(sample_raw_md)[0]
         preamble = ingest.extract_preamble(sample_raw_md, events)
         # The preamble should contain the H1 title or be empty (headings stripped)
         assert isinstance(preamble, str)
@@ -241,7 +241,7 @@ class TestIngestCore:
         """Verify preamble returns full text (minus headings) when no events."""
         ingest = self._import_ingest()
         text = "# Just a narrative\n\nNo bullet points here."
-        events = ingest.split_into_events(text)
+        events = ingest.split_into_events(text)[0]
         preamble = ingest.extract_preamble(text, events)
         assert len(preamble) > 0
         # Headings are stripped, so "narrative" is removed; body text remains
@@ -250,7 +250,7 @@ class TestIngestCore:
     def test_split_into_events(self, sample_raw_md):
         """Verify event splitting produces correct number of events."""
         ingest = self._import_ingest()
-        events = ingest.split_into_events(sample_raw_md)
+        events = ingest.split_into_events(sample_raw_md)[0]
         assert len(events) == 4
         assert events[0]["title"] == "Global ChatGPT Outage"
         assert events[1]["title"] == "Memory Glitch"
@@ -260,7 +260,7 @@ class TestIngestCore:
     def test_split_into_events_dates(self, sample_raw_md):
         """Verify event dates are correctly extracted."""
         ingest = self._import_ingest()
-        events = ingest.split_into_events(sample_raw_md)
+        events = ingest.split_into_events(sample_raw_md)[0]
         assert events[0]["date"] == "2025-06-10"
         assert events[1]["date"] == "2025-06-15"
         assert events[2]["date"] == "2025-07-03"
@@ -454,6 +454,17 @@ class TestMergeCore:
         files = merge.collect_input_files([str(f1), str(f2)], None)
         assert len(files) == 2
 
+    def test_collect_input_files_excludes_unlisted(self, tmp_dir):
+        """Explicit --inputs excludes unlisted (stale) files in the same directory."""
+        merge = self._import_merge()
+        fresh = tmp_dir / "fresh.md"
+        stale = tmp_dir / "stale.md"
+        fresh.write_text("content", encoding="utf-8")
+        stale.write_text("content", encoding="utf-8")
+
+        files = merge.collect_input_files([str(fresh)], None)
+        assert [f.name for f in files] == ["fresh.md"]
+
     def test_collect_input_files_duplicates_skipped(self, tmp_dir):
         """Verify duplicate file paths are skipped with warning."""
         merge = self._import_merge()
@@ -462,6 +473,69 @@ class TestMergeCore:
 
         files = merge.collect_input_files([str(f), str(f)], None)
         assert len(files) == 1  # duplicate skipped
+
+    # ------------------------------------------------------------------
+    # P0.2 — Malformed event heading validation
+    # ------------------------------------------------------------------
+
+    def test_validate_event_headings_rejects_unknown(self):
+        """``validate_event_headings`` raises ``ValueError`` for ``## Event: unknown``."""
+        merge = self._import_merge()
+        text = "## Event: unknown\n\nSome content."
+        with pytest.raises(ValueError, match="Malformed event heading"):
+            merge.validate_event_headings(text)
+
+    def test_validate_event_headings_rejects_non_iso(self):
+        """``validate_event_headings`` rejects non-ISO date formats."""
+        merge = self._import_merge()
+        cases = [
+            "## Event: 2026/01/01",
+            "## Event: TBD",
+            "## Event:",
+            "## Event : 2025-06-10",
+        ]
+        for heading in cases:
+            with pytest.raises(ValueError, match="Malformed event heading"):
+                merge.validate_event_headings(heading)
+
+    def test_validate_event_headings_accepts_valid(self):
+        """``validate_event_headings`` passes valid ISO headings."""
+        merge = self._import_merge()
+        cases = [
+            "## Event: 2025-06-10\n\nBody.",
+            "## Event: 2025-06-10 - With Title\n\nBody.",
+            "## Event: 2025-06-10 – En Dash\n\nBody.",
+            "## Event: 2025-12-31 -  \n\nBody with trailing space in title.",
+            "## Event: 2025-06-10\n",
+            "## Event: 2025-06-10 -\n",
+        ]
+        for heading in cases:
+            # Should not raise
+            merge.validate_event_headings(heading)
+
+    def test_validate_event_headings_empty_passes(self):
+        """Empty text or text without any ``## Event:`` line passes."""
+        merge = self._import_merge()
+        merge.validate_event_headings("")  # no raise
+        merge.validate_event_headings("# Just a heading\n\nNo events.\n")  # no raise
+
+    def test_merge_files_malformed_heading_rejected(self, tmp_dir):
+        """``merge_files`` raises ``ValueError`` when a file contains a malformed
+        heading before any processing."""
+        merge = self._import_merge()
+        bad = tmp_dir / "bad.md"
+        bad.write_text(
+            "---\nsource: Bad\n---\n\n"
+            "## Event: unknown\n\nSome content.\n",
+            encoding="utf-8",
+        )
+        with pytest.raises(ValueError, match="Malformed event heading"):
+            merge.merge_files([bad])
+
+    def test_validate_event_headings_normal_text_no_events(self):
+        """``validate_event_headings`` passes on normal text without ``## Event:`` lines."""
+        merge = self._import_merge()
+        merge.validate_event_headings("# Regular markdown\n\nNo event headings.\n")
 
 
 # ==============================================================================

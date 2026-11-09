@@ -20,17 +20,17 @@ class LegacyFlattenerAdapter:
 
 
 class Win32MergedpipelineV3TocUpdater:
-    """Optional TOC updater for Windows environments with legacy integration."""
+    """Optional TOC updater for Windows environments with legacy integration.
+
+    Only intended for use on Windows. Raises ``ImportError`` (or the
+    underlying exception) if ``MergedpipelineV3`` is unavailable or
+    the update call fails. Callers (``toc_step``) catch ``Exception`` and
+    return ``TocResult(updated=False, error=...)``.
+    """
 
     def update(self, docx_path: Path) -> None:
         if not sys.platform.startswith("win"):
             return
-        try:
-            from MergedpipelineV3 import update_tocs_win32  # type: ignore
-        except Exception:
-            return
-        try:
-            update_tocs_win32(str(docx_path))
-        except Exception:
-            return
+        from MergedpipelineV3 import update_tocs_win32  # type: ignore
 
+        update_tocs_win32(str(docx_path))

@@ -23,6 +23,45 @@ def resolve_norm(path: str) -> str:
     return str(Path(path).resolve()).lower()
 
 
+def rel_to_workspace(path: str, workspace_abs: str) -> str:
+    """Return a repo-relative path (forward slashes) when under workspace_abs."""
+    if not path:
+        return path
+    try:
+        path_abs = os.path.abspath(path)
+        workspace_abs = os.path.abspath(workspace_abs)
+        common = os.path.normcase(os.path.commonpath([path_abs, workspace_abs]))
+        if common != os.path.normcase(workspace_abs):
+            return path
+        return os.path.relpath(path_abs, workspace_abs).replace(os.sep, "/")
+    except ValueError:
+        return path
+
+
+def row_path(
+    row: dict,
+    *,
+    rel_key: str,
+    abs_key: str,
+    workspace_abs: str,
+    portable: bool,
+) -> str | None:
+    """Prefer a row's portable path while retaining absolute-path compatibility."""
+    if portable and row.get(rel_key):
+        return resolve_path(workspace_abs, row[rel_key])
+    return row.get(abs_key)
+
+
+def source_identity(row: dict, *, portable: bool) -> tuple[str, str] | None:
+    """Return a normalized relocation source identity for consistency checks."""
+    if portable and row.get("src_rel"):
+        rel = os.path.normpath(row["src_rel"].replace("/", os.sep))
+        return ("rel", rel.replace(os.sep, "/").casefold())
+    if row.get("src_abs"):
+        return ("abs", resolve_norm(row["src_abs"]))
+    return None
+
+
 def load_jsonl(path: str) -> list[dict]:
     rows = []
     with open(path, "r", encoding="utf-8") as f:
@@ -37,20 +76,21 @@ def iter_files(root: str):
             yield os.path.join(base, name)
 
 
-def build_consistency(plan_rows: list[dict], relocation_rows: list[dict]) -> dict:
-    plan_keys: dict[str, str] = {}
+def build_consistency(
+    plan_rows: list[dict], relocation_rows: list[dict], *, portable: bool = False
+) -> dict:
+    plan_keys: dict[tuple[str, str], str] = {}
     for row in plan_rows:
-        src_abs = row.get("src_abs")
+        key = source_identity(row, portable=portable)
         src_rel = row.get("src_rel", "")
-        if src_abs:
-            plan_keys[resolve_norm(src_abs)] = src_rel
+        if key:
+            plan_keys[key] = src_rel
 
-    map_keys: dict[str, list[dict]] = {}
+    map_keys: dict[tuple[str, str], list[dict]] = {}
     status_counts: dict[str, int] = {}
     for row in relocation_rows:
-        src_abs = row.get("src_abs")
-        if src_abs:
-            key = resolve_norm(src_abs)
+        key = source_identity(row, portable=portable)
+        if key:
             map_keys.setdefault(key, []).append(row)
         status = row.get("status", "unknown")
         status_counts[status] = status_counts.get(status, 0) + 1
@@ -122,6 +162,7 @@ def run_stage(
     relocation: str,
     snapshot_root: str,
     strict: bool,
+    portable: bool = False,
 ) -> StageResult:
     workspace_abs = resolve_workspace_root(workspace_root)
     manifest_path = resolve_path(workspace_abs, manifest)
@@ -185,32 +226,47 @@ def run_stage(
         status_counts[status] = status_counts.get(status, 0) + 1
         area_counts[area] = area_counts.get(area, 0) + 1
         if status in {"copied", "skipped_same"}:
-            dst_abs = row.get("dst_abs")
+            dst_abs = row_path(
+                row,
+                rel_key="dst_rel",
+                abs_key="dst_abs",
+                workspace_abs=workspace_abs,
+                portable=portable,
+            )
             expected = row.get("sha256")
             if not dst_abs or not os.path.isfile(dst_abs):
-                failures.append(
-                    {"type": "missing_dst", "dst_abs": dst_abs, "status": status}
-                )
+                entry = {"type": "missing_dst", "dst_abs": dst_abs, "status": status}
+                if portable:
+                    entry["dst_rel"] = rel_to_workspace(dst_abs, workspace_abs)
+                failures.append(entry)
                 continue
             actual = sha256_file(dst_abs)
             if actual != expected:
-                failures.append(
-                    {
-                        "type": "hash_mismatch",
-                        "dst_abs": dst_abs,
-                        "expected": expected,
-                        "actual": actual,
-                    }
-                )
+                entry = {
+                    "type": "hash_mismatch",
+                    "dst_abs": dst_abs,
+                    "expected": expected,
+                    "actual": actual,
+                }
+                if portable:
+                    entry["dst_rel"] = rel_to_workspace(dst_abs, workspace_abs)
+                failures.append(entry)
         elif status == "conflict":
-            conflict_path = row.get("conflict_path")
+            conflict_path = row_path(
+                row,
+                rel_key="conflict_path_rel",
+                abs_key="conflict_path",
+                workspace_abs=workspace_abs,
+                portable=portable,
+            )
             if not conflict_path or not os.path.isfile(conflict_path):
-                failures.append(
-                    {
-                        "type": "missing_conflict",
-                        "conflict_path": conflict_path,
-                    }
-                )
+                entry = {
+                    "type": "missing_conflict",
+                    "conflict_path": conflict_path,
+                }
+                if portable:
+                    entry["conflict_path_rel"] = rel_to_workspace(conflict_path, workspace_abs)
+                failures.append(entry)
 
     integrity = {
         "status_counts": status_counts,
@@ -255,7 +311,7 @@ def run_stage(
     with open(report_json, "w", encoding="utf-8") as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
-    consistency = build_consistency(plan_rows, relocation_rows)
+    consistency = build_consistency(plan_rows, relocation_rows, portable=portable)
     with open(consistency_json, "w", encoding="utf-8") as f:
         json.dump(consistency, f, ensure_ascii=False, indent=2)
 
@@ -397,7 +453,25 @@ def main() -> None:
     )
     parser.add_argument("--workspace-root", default=".")
     parser.add_argument("--summary-json", default="")
-    parser.add_argument("--strict", action="store_true")
+    parser.add_argument(
+        "--portable",
+        action="store_true",
+        help=(
+            "Prefer repo-relative relocation paths resolved against --workspace-root "
+            "and emit them alongside absolute diagnostics."
+        ),
+    )
+    strictness = parser.add_mutually_exclusive_group()
+    strictness.add_argument(
+        "--strict",
+        action="store_true",
+        help="Treat warnings as errors (the default; retained for compatibility).",
+    )
+    strictness.add_argument(
+        "--diagnostic-only",
+        action="store_true",
+        help="Run in diagnostic-only mode: warnings do not cause non-zero exit.",
+    )
     args = parser.parse_args()
 
     result = run_stage(
@@ -406,7 +480,8 @@ def main() -> None:
         plan=args.plan,
         relocation=args.relocation,
         snapshot_root=args.snapshot_root,
-        strict=args.strict,
+        strict=not args.diagnostic_only,
+        portable=args.portable,
     )
 
     for line in result.details.get("summary_lines", []):

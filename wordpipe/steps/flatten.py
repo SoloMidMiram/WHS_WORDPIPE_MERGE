@@ -53,6 +53,7 @@ def flatten_step(
         return FlattenResult(working_path=working, skipped=True)
 
     tmp = Path(str(cfg.out_path) + ".work.docx")
+    artifact_existed = tmp.exists()
     try:
         sink.emit(
             "INFO",
@@ -73,6 +74,11 @@ def flatten_step(
         )
         return FlattenResult(working_path=tmp, notes=notes)
     except Exception as e:
+        # A failed flattener may leave a partial artifact behind. Remove it only
+        # when this invocation created it; an artifact from an earlier run is
+        # not ours to delete.
+        if not artifact_existed and tmp.exists():
+            tmp.unlink()
         msg = f"Flatten failed: {e}"
         sink.emit("WARNING", "flatten_fail", {"error": str(e)})
         return FlattenResult(working_path=working, error=msg)

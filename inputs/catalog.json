@@ -1,25 +1,161 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "generated_on": "2026-07-17",
+  "hash_mode": "lf_normalized_utf8",
   "entries": [
-    {"corpus":"chatgpt-chronicle","format":"markdown","path":"inputs/chatgpt-chronicle/markdown/2025-06-30-ChatGPTLitrature.md","size_bytes":61100,"sha256":"cab1cdecfed6ad4c3ec0017b6c17777a632268dd03a406009f0af6d80054dca2","classification":"source"},
-    {"corpus":"chatgpt-chronicle","format":"markdown","path":"inputs/chatgpt-chronicle/markdown/2025-07-13-Enhanced_Crypto_AI_Bot_Timeline_Prompt.md","size_bytes":3635,"sha256":"5fa98d01aa3fa53dfd95ba19bd6f886e1a55e49a9e2e3ea321314353f02a6a58","classification":"source"},
-    {"corpus":"chatgpt-chronicle","format":"markdown","path":"inputs/chatgpt-chronicle/markdown/2025-08-04-Timeline_of_ChatGPT_Incidents_-_June_and_July_2025.md","size_bytes":30434,"sha256":"6c7ee1f511c4e527228221b46985eb1c2cb6f2b09124cf4b45f4dcf754c5644a","classification":"source"},
-    {"corpus":"chatgpt-chronicle","format":"markdown","path":"inputs/chatgpt-chronicle/markdown/2025-08-06-1950s-1980s_Early_Logic-Based_AI_and_Its_Rigid_Limitations.md","size_bytes":33575,"sha256":"78c8f55263c9c46288f3edbd5db70d61446b182f4d5a1702f062f5dc334d0b5a","classification":"source"},
-    {"corpus":"chatgpt-chronicle","format":"markdown","path":"inputs/chatgpt-chronicle/markdown/2025-08-06-ChatGPT_Agent_Mode_-_Bugs,_Exploits,_and_Cultural_Phenomena_(June-July_2025).md","size_bytes":96768,"sha256":"c17f7ee708eba9f2b3587cb36cd6fef9aca59e9b2054e23817c832292328ff73","classification":"source"},
-    {"corpus":"chatgpt-chronicle","format":"markdown","path":"inputs/chatgpt-chronicle/markdown/2025-08-06-ChatGPT's_Bugs_and_Lore_-_May_to_July_2025_Timeline.md","size_bytes":43315,"sha256":"da8dfa6d6182fbbbcd712600bed4850d4b491419b38fc881dd57f6e855ecaa33","classification":"source"},
-    {"corpus":"chatgpt-chronicle","format":"markdown","path":"inputs/chatgpt-chronicle/markdown/2025-08-06-Evolution_of_ChatGPT_Hilarious_Bugs,_Creative_Uses,_and_Viral_Moments_(2022-2025).md","size_bytes":43489,"sha256":"99252977a6311023e6ed3d560bf9d482e607e1eefc8f776c9a04e6862db1cde8","classification":"source"},
-    {"corpus":"chatgpt-chronicle","format":"markdown","path":"inputs/chatgpt-chronicle/markdown/2025-08-06-Hilarious_ChatGPT_Bugs_and_Creative_Uses_(Past_18_Weeks).md","size_bytes":35575,"sha256":"282211525aecacd54114dd38b1139a8236c30f62dc219b745995cb3bcac04211","classification":"source"},
-    {"corpus":"chatgpt-chronicle","format":"markdown","path":"inputs/chatgpt-chronicle/markdown/2025-08-06-Project_Activity_Summary.md","size_bytes":7284,"sha256":"1adce6845aa540841ee24641dd424cabda88297a12004bf1b2ce269d9a9a4d25","classification":"source"},
-    {"corpus":"chatgpt-chronicle","format":"markdown","path":"inputs/chatgpt-chronicle/markdown/2025-08-06-Timeline_of_ChatGPT_Incidents_-_June_and_July_2025_(1).md","size_bytes":30434,"sha256":"6c7ee1f511c4e527228221b46985eb1c2cb6f2b09124cf4b45f4dcf754c5644a","classification":"exact_duplicate","duplicate_of":"inputs/chatgpt-chronicle/markdown/2025-08-04-Timeline_of_ChatGPT_Incidents_-_June_and_July_2025.md"},
-    {"corpus":"chatgpt-chronicle","format":"markdown","path":"inputs/chatgpt-chronicle/markdown/2025-08-07-Agent_mode_prompt_creation.md","size_bytes":21391,"sha256":"405da8cfc5db7e9e80bbaf830e754584d0ba824718596d8b7d6e247944c59db8","classification":"source"},
-    {"corpus":"chatgpt-chronicle","format":"markdown","path":"inputs/chatgpt-chronicle/markdown/2025-08-07-Investigating_AI_Vision_Picture_Generation,_GPT_Models,_Hacks_and_Memory.md","size_bytes":57059,"sha256":"41d6cb50a0611f7040929127ee141a94a44c2c46d0bf717a404b5a662b0679fc","classification":"source"},
-    {"corpus":"chatgpt-chronicle","format":"markdown","path":"inputs/chatgpt-chronicle/markdown/2025-08-07-Timeline_of_ChatGPT_Incidents_-_June_and_July_2025_(2).md","size_bytes":30434,"sha256":"6c7ee1f511c4e527228221b46985eb1c2cb6f2b09124cf4b45f4dcf754c5644a","classification":"exact_duplicate","duplicate_of":"inputs/chatgpt-chronicle/markdown/2025-08-04-Timeline_of_ChatGPT_Incidents_-_June_and_July_2025.md"},
-    {"corpus":"chatgpt-chronicle","format":"markdown","path":"inputs/chatgpt-chronicle/markdown/2025-08-08-Desired_Traits_for_chatgpt_customizations.md","size_bytes":10858,"sha256":"b9b76dcad60f988350ba065444d6755b83968a22f24b559f0473ca5aac2fb01d","classification":"source"},
-    {"corpus":"chatgpt-chronicle","format":"markdown","path":"inputs/chatgpt-chronicle/markdown/2025-08-09-Word_Horror_Stories_14040517-18.md","size_bytes":351679,"sha256":"6a930b6a8c47c3cb4820fb59b4190cc0bcc6b3db5d56e1cdea59304c7f1ca512","classification":"source"},
-    {"corpus":"chatgpt-chronicle","format":"markdown","path":"inputs/chatgpt-chronicle/markdown/ChatGPT_Incidents_Merged.md","size_bytes":4000,"sha256":"80c2a7a20998b5209b538a19c2b0d04bae5a3bd4b9f86b4233a63e49c67e3062","classification":"derived_input"},
-    {"corpus":"insurancechatbot","format":"markdown","path":"inputs/insurancechatbot/markdown/Commit history.md","size_bytes":76263,"sha256":"e39033242b7f5644fe1044fa80c54f9e84f59bc7b959e1a873b3cf54013e576c","classification":"source"},
-    {"corpus":"insurancechatbot","format":"markdown","path":"inputs/insurancechatbot/markdown/combined_git_history_digest (2).md","size_bytes":48609,"sha256":"81b3db7a54ae21afab3cde17c31ead348a2e70842f3d85eaeddb43ca95f1abb8","classification":"source"},
-    {"corpus":"insurancechatbot","format":"markdown","path":"inputs/insurancechatbot/markdown/ROADMAP.md","size_bytes":70421,"sha256":"122f04c6577b2ffe90ce79e13431631dc2e9c436819b65000fab14dc26324d04","classification":"source"}
+    {
+      "corpus": "chatgpt-chronicle",
+      "format": "markdown",
+      "path": "inputs/chatgpt-chronicle/markdown/2025-06-30-ChatGPTLitrature.md",
+      "size_bytes": 60294,
+      "sha256": "190a78fdfc161f9f7932d7bcf2575e66471ab7166c8427234953ba938cd1402c",
+      "classification": "source"
+    },
+    {
+      "corpus": "chatgpt-chronicle",
+      "format": "markdown",
+      "path": "inputs/chatgpt-chronicle/markdown/2025-07-13-Enhanced_Crypto_AI_Bot_Timeline_Prompt.md",
+      "size_bytes": 3554,
+      "sha256": "b233dc0eeecce520ee7c64eec9bb252839a13fbfa0de96276cd06c2268c9fb11",
+      "classification": "source"
+    },
+    {
+      "corpus": "chatgpt-chronicle",
+      "format": "markdown",
+      "path": "inputs/chatgpt-chronicle/markdown/2025-08-04-Timeline_of_ChatGPT_Incidents_-_June_and_July_2025.md",
+      "size_bytes": 30092,
+      "sha256": "58e70987d60fc56f702ee46371a1ffd3666bc97fe04fe191137393418e45c256",
+      "classification": "source"
+    },
+    {
+      "corpus": "chatgpt-chronicle",
+      "format": "markdown",
+      "path": "inputs/chatgpt-chronicle/markdown/2025-08-06-1950s-1980s_Early_Logic-Based_AI_and_Its_Rigid_Limitations.md",
+      "size_bytes": 33165,
+      "sha256": "f25bae30257f887b3a6758555f81dc7a350c20495619833af22582f43ae86bf6",
+      "classification": "source"
+    },
+    {
+      "corpus": "chatgpt-chronicle",
+      "format": "markdown",
+      "path": "inputs/chatgpt-chronicle/markdown/2025-08-06-ChatGPT_Agent_Mode_-_Bugs,_Exploits,_and_Cultural_Phenomena_(June-July_2025).md",
+      "size_bytes": 96114,
+      "sha256": "c90bb6938a56015178cc42dae604544da675f0eeae197be6d96a2a089fe3fa5a",
+      "classification": "source"
+    },
+    {
+      "corpus": "chatgpt-chronicle",
+      "format": "markdown",
+      "path": "inputs/chatgpt-chronicle/markdown/2025-08-06-ChatGPT's_Bugs_and_Lore_-_May_to_July_2025_Timeline.md",
+      "size_bytes": 42798,
+      "sha256": "f4ba39fc2200e088ad868a032f36c695d4dafa71b9890fd47e1960a1ccc65e81",
+      "classification": "source"
+    },
+    {
+      "corpus": "chatgpt-chronicle",
+      "format": "markdown",
+      "path": "inputs/chatgpt-chronicle/markdown/2025-08-06-Evolution_of_ChatGPT_Hilarious_Bugs,_Creative_Uses,_and_Viral_Moments_(2022-2025).md",
+      "size_bytes": 42948,
+      "sha256": "710310e122fe2c38980cbe7204c0dbc6c6b7fc44fbbc1a30dcd1ba9b8cfaa804",
+      "classification": "source"
+    },
+    {
+      "corpus": "chatgpt-chronicle",
+      "format": "markdown",
+      "path": "inputs/chatgpt-chronicle/markdown/2025-08-06-Hilarious_ChatGPT_Bugs_and_Creative_Uses_(Past_18_Weeks).md",
+      "size_bytes": 35094,
+      "sha256": "fe3614903a25fdd88cd304f78eae0738de386f44a3477cb3a7c7654dd41bae37",
+      "classification": "source"
+    },
+    {
+      "corpus": "chatgpt-chronicle",
+      "format": "markdown",
+      "path": "inputs/chatgpt-chronicle/markdown/2025-08-06-Project_Activity_Summary.md",
+      "size_bytes": 7227,
+      "sha256": "a2452680944f02a407ebf5ef77fff5d781165a5516bc40e0e670bc96afef7b33",
+      "classification": "source"
+    },
+    {
+      "corpus": "chatgpt-chronicle",
+      "format": "markdown",
+      "path": "inputs/chatgpt-chronicle/markdown/2025-08-06-Timeline_of_ChatGPT_Incidents_-_June_and_July_2025_(1).md",
+      "size_bytes": 30092,
+      "sha256": "58e70987d60fc56f702ee46371a1ffd3666bc97fe04fe191137393418e45c256",
+      "classification": "exact_duplicate",
+      "duplicate_of": "inputs/chatgpt-chronicle/markdown/2025-08-04-Timeline_of_ChatGPT_Incidents_-_June_and_July_2025.md"
+    },
+    {
+      "corpus": "chatgpt-chronicle",
+      "format": "markdown",
+      "path": "inputs/chatgpt-chronicle/markdown/2025-08-07-Agent_mode_prompt_creation.md",
+      "size_bytes": 20978,
+      "sha256": "fe992685c61de6b1724e6a748b47bc4fa80ff667c4ec27925a7441275885b540",
+      "classification": "source"
+    },
+    {
+      "corpus": "chatgpt-chronicle",
+      "format": "markdown",
+      "path": "inputs/chatgpt-chronicle/markdown/2025-08-07-Investigating_AI_Vision_Picture_Generation,_GPT_Models,_Hacks_and_Memory.md",
+      "size_bytes": 56276,
+      "sha256": "3299ec26a6ac0f15ebe1ef7cbcefb36bd426790e8ce820217c0d3329d297a2cf",
+      "classification": "source"
+    },
+    {
+      "corpus": "chatgpt-chronicle",
+      "format": "markdown",
+      "path": "inputs/chatgpt-chronicle/markdown/2025-08-07-Timeline_of_ChatGPT_Incidents_-_June_and_July_2025_(2).md",
+      "size_bytes": 30092,
+      "sha256": "58e70987d60fc56f702ee46371a1ffd3666bc97fe04fe191137393418e45c256",
+      "classification": "exact_duplicate",
+      "duplicate_of": "inputs/chatgpt-chronicle/markdown/2025-08-04-Timeline_of_ChatGPT_Incidents_-_June_and_July_2025.md"
+    },
+    {
+      "corpus": "chatgpt-chronicle",
+      "format": "markdown",
+      "path": "inputs/chatgpt-chronicle/markdown/2025-08-08-Desired_Traits_for_chatgpt_customizations.md",
+      "size_bytes": 10497,
+      "sha256": "670335d5cd6201c5d8cea6ac49d8b493a4905ad266954439b9fbc7f0090881ca",
+      "classification": "source"
+    },
+    {
+      "corpus": "chatgpt-chronicle",
+      "format": "markdown",
+      "path": "inputs/chatgpt-chronicle/markdown/2025-08-09-Word_Horror_Stories_14040517-18.md",
+      "size_bytes": 340541,
+      "sha256": "5097cb17570b3fa508457ca589a35da4d5e9e28d3f20ce6891d26efc69bc40d7",
+      "classification": "source"
+    },
+    {
+      "corpus": "chatgpt-chronicle",
+      "format": "markdown",
+      "path": "inputs/chatgpt-chronicle/markdown/ChatGPT_Incidents_Merged.md",
+      "size_bytes": 3999,
+      "sha256": "f5f7f169baf0a45909e20de576904397ac74813859ca4b30a82ff799dd624ee8",
+      "classification": "derived_input"
+    },
+    {
+      "corpus": "insurancechatbot",
+      "format": "markdown",
+      "path": "inputs/insurancechatbot/markdown/Commit history.md",
+      "size_bytes": 74348,
+      "sha256": "331a469f2c6e6640b2a1e9cf44e3143b5c1dfacf143a9cc1cf198645e78c90f0",
+      "classification": "source"
+    },
+    {
+      "corpus": "insurancechatbot",
+      "format": "markdown",
+      "path": "inputs/insurancechatbot/markdown/combined_git_history_digest (2).md",
+      "size_bytes": 48163,
+      "sha256": "26f7841fca64c9f91abc8e84f522184f85802aeac1ad4b2c9503ee43799675ff",
+      "classification": "source"
+    },
+    {
+      "corpus": "insurancechatbot",
+      "format": "markdown",
+      "path": "inputs/insurancechatbot/markdown/ROADMAP.md",
+      "size_bytes": 69556,
+      "sha256": "9d7e1b752f504efbe8cdb487f9796cc4485d5478291a642413125b29d8b5449c",
+      "classification": "source"
+    }
   ]
 }

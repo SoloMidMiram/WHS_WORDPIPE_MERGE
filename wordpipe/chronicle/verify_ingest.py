@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 import shutil
 import subprocess
 import sys
@@ -10,25 +11,38 @@ import tempfile
 from pathlib import Path
 from typing import Sequence
 
+import yaml
+
 DEFAULT_RAW_DIR = Path("inputs/chatgpt-chronicle/markdown")
 DEFAULT_INGEST = Path("pipeline/ingest.py")
 
 
 def parse_ingest_stderr(stderr: str) -> tuple[int, list[str]]:
-    """Parse ingest.py stderr to extract event count and warning/error lines."""
+    """Parse legacy or current ingest logs for callers of this compatibility helper."""
     event_count = 0
     warnings: list[str] = []
     for line in stderr.splitlines():
-        if "Extracted" in line and "events" in line:
-            try:
-                event_count = int(line.split()[-2])
-            except (ValueError, IndexError):
-                pass
+        match = re.search(r"\bExtracted (\d+) events(?:, \d+ rejected)?\.", line)
+        if match:
+            event_count = int(match[1])
         if "WARNING" in line or "warning" in line.lower():
             warnings.append(line.strip())
         if "ERROR" in line or "error" in line.lower():
             warnings.append(line.strip())
     return event_count, warnings
+
+
+def _read_event_count(path: Path) -> int:
+    """Read the accepted event count from normalized output front matter."""
+    opening, _, rest = path.read_text(encoding="utf-8").partition("\n")
+    header, closing, _ = rest.partition("\n---\n")
+    if opening != "---" or not closing:
+        raise ValueError("missing normalized front matter")
+    metadata = yaml.safe_load(header)
+    count = metadata.get("event_count") if isinstance(metadata, dict) else None
+    if type(count) is not int or count < 0:
+        raise ValueError("invalid normalized event_count")
+    return count
 
 
 def classify_file_result(
@@ -76,16 +90,28 @@ def verify_directory(raw_dir: Path, ingest_script: Path, *, verbose: bool = Fals
         for md_file in md_files:
             out_path = tmp_dir / md_file.name
             result = subprocess.run(
-                [sys.executable, str(ingest_script), "--input", str(md_file), "--output", str(out_path)],
+                [sys.executable, "-X", "utf8", str(ingest_script), "--input", str(md_file), "--output", str(out_path)],
                 capture_output=True,
-                text=True,
+                encoding="utf-8",
+                errors="replace",
                 check=False,
             )
 
-            event_count, warnings = parse_ingest_stderr(result.stderr)
+            warnings = [
+                line.strip()
+                for stream in (result.stdout, result.stderr)
+                for line in stream.splitlines()
+                if line.lstrip().startswith(("WARNING:", "ERROR:"))
+            ]
+            event_count = 0
+            try:
+                if result.returncode == 0:
+                    event_count = _read_event_count(out_path)
+            except (OSError, ValueError, yaml.YAMLError) as exc:
+                status, issue_reason = "[ERROR]", f"invalid normalized output: {exc}"
+            else:
+                status, issue_reason = classify_file_result(result.returncode, event_count, warnings)
             total_events += event_count
-
-            status, issue_reason = classify_file_result(result.returncode, event_count, warnings)
             if issue_reason is not None:
                 exit_code = 1
                 files_with_issues.append((md_file.name, issue_reason))

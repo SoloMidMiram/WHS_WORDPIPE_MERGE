@@ -7,6 +7,7 @@ CLI argument parsing, I/O, and logging.
 from __future__ import annotations
 
 import argparse
+import json
 import logging
 import sys
 from datetime import datetime
@@ -40,12 +41,18 @@ def main() -> None:
         "--date-override",
         help="Force a date (YYYY-MM-DD or YYYY-MM) when file has no parseable dates",
     )
+    parser.add_argument(
+        "--allow-undated",
+        action="store_true",
+        help="Allow undated events (written with a rejection manifest)",
+    )
     parser.add_argument("--verbose", "-v", action="store_true", help="Enable debug logging")
     args = parser.parse_args()
 
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
         format="%(levelname)s: %(message)s",
+        stream=sys.stdout,
     )
 
     input_path = Path(args.input)
@@ -58,6 +65,7 @@ def main() -> None:
     source = extract_source_name(input_path, args.source_name)
     title = extract_title(cleaned_text, source)
 
+    default_date: str | None = None
     date_start, date_end = parse_date_range(cleaned_text)
     if date_start is None:
         if args.date_override:
@@ -71,6 +79,7 @@ def main() -> None:
                         forced_dt.year,
                     )
                 date_start = date_end = forced_dt
+                default_date = forced_dt.strftime("%Y-%m-%d")
                 logging.info("Date overridden to %s", forced_dt.strftime("%Y-%m-%d"))
             except (ValueError, OverflowError) as e:
                 logging.error(
@@ -80,8 +89,59 @@ def main() -> None:
         else:
             logging.warning("No dates found in content; date will be 'unknown'.")
 
-    events = split_into_events(cleaned_text)
-    logging.info("Extracted %d events.", len(events))
+    events, rejection_records = split_into_events(cleaned_text, default_date=default_date)
+    logging.info("Extracted %d events, %d rejected.", len(events), len(rejection_records))
+
+    # Determine output path
+    if args.output:
+        out_path = Path(args.output)
+    else:
+        out_stem = input_path.stem + "_normalised"
+        out_path = input_path.with_name(out_stem + ".md")
+
+    manifest_path = out_path.with_suffix(".rejections.json")
+
+    # A stale sidecar from a previous run is removed only after the normalized
+    # output write succeeds, so a failed write never leaves consumers with a
+    # newer output file missing its rejection manifest.
+    stale_manifest_needs_removal = False
+
+    # Handle rejection records
+    if rejection_records:
+        # Annotate records with input filename
+        input_name = input_path.name
+        for rec in rejection_records:
+            rec["input_file"] = input_name
+
+        manifest = {
+            "manifest_type": "partial" if args.allow_undated else "complete",
+            "input_file": input_name,
+            "accepted_event_count": len(events),
+            "rejected_event_count": len(rejection_records),
+            "rejected_events": rejection_records,
+        }
+
+        manifest_path.write_text(
+            json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        logging.info("Rejection manifest written to %s", manifest_path)
+
+        if not args.allow_undated:
+            logging.error(
+                "%d event(s) rejected due to undated headings. "
+                "Use --allow-undated to write partial output instead.",
+                len(rejection_records),
+            )
+            sys.exit(1)
+        # --allow-undated: fall through to write partial output
+        logging.warning(
+            "Writing partial output with %d accepted events (%d rejected).",
+            len(events),
+            len(rejection_records),
+        )
+    elif manifest_path.exists():
+        stale_manifest_needs_removal = True
 
     preamble = extract_preamble(cleaned_text, events)
 
@@ -94,13 +154,12 @@ def main() -> None:
         preamble=preamble,
     )
 
-    if args.output:
-        out_path = Path(args.output)
-    else:
-        out_stem = input_path.stem + "_normalised"
-        out_path = input_path.with_name(out_stem + ".md")
     out_path.write_text(normalised_md, encoding="utf-8")
     logging.info("Normalised file written to %s", out_path)
+
+    if stale_manifest_needs_removal:
+        manifest_path.unlink()
+        logging.info("Removed stale rejection manifest %s", manifest_path)
 
 
 if __name__ == "__main__":

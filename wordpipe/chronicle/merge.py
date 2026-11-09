@@ -23,6 +23,23 @@ EVENT_HEADING_RE = re.compile(
     r"^## Event:\s*(\d{4}-\d{2}-\d{2})(?:\s*[–-]\s*(.*?))?\s*$",
     re.MULTILINE,
 )
+# Wide-net matcher: any line starting with ## Event: (catches malformed headings).
+EVENT_HEADING_LINE_RE = re.compile(r"^## Event\s*:.*$", re.MULTILINE)
+
+
+def validate_event_headings(text: str) -> None:
+    """Raise ValueError if any ## Event: line doesn't match canonical format.
+
+    Every heading must match ``## Event: YYYY-MM-DD [- Optional Title]``.
+    This catches ``unknown``, ``TBD``, ``2026/01/01``, blank dates, etc.
+    """
+    for match in EVENT_HEADING_LINE_RE.finditer(text):
+        line = match.group()
+        if not EVENT_HEADING_RE.match(line):
+            raise ValueError(
+                f"Malformed event heading: {line!r}. "
+                "Expected format: ## Event: YYYY-MM-DD [- Optional Title]"
+            )
 
 
 # ------------------------------------------------------------------------------
@@ -174,6 +191,7 @@ def merge_files(
     for file_path in file_paths:
         logging.info("Reading %s", file_path)
         text = file_path.read_text(encoding="utf-8")
+        validate_event_headings(text)
         metadata, body = parse_yaml_frontmatter(text)
 
         src = metadata.get("source", file_path.stem)

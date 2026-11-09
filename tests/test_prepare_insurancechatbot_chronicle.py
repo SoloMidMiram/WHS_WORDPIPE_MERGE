@@ -202,7 +202,7 @@ def test_staged_iso_date_round_trips_through_chronicle_ingest():
 * **Nested bold bullet:** preserved as body, not a new event.
 """
 
-    events = split_into_events(staged)
+    events = split_into_events(staged)[0]
 
     assert len(events) == 1
     assert events[0]["date"] == "2026-05-14"

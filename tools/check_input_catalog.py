@@ -18,17 +18,35 @@ LEGACY_INPUT_DIRS = (
 )
 
 
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+def _normalized_content(path: Path) -> bytes:
+    """Read file for hashing: LF-normalize text, hash DOCX as raw binary."""
+    raw = path.read_bytes()
+    if path.suffix.lower() == ".docx":
+        return raw
+    return raw.replace(b"\r\n", b"\n")
 
 
 def _catalog_entries(catalog: Any) -> list[dict[str, Any]]:
-    if not isinstance(catalog, dict) or catalog.get("schema_version") != 1:
-        raise ValueError("catalog must be an object with schema_version 1")
+    if not isinstance(catalog, dict):
+        raise ValueError("catalog must be a JSON object")
+    sv = catalog.get("schema_version")
+    if sv == 1:
+        # v1: hash_mode is implicitly "lf_normalized_utf8" (CRLF was normalized
+        # before hashing). Accept without requiring an explicit field.
+        pass
+    elif sv == 2:
+        hm = catalog.get("hash_mode")
+        if hm is None:
+            raise ValueError("catalog v2 requires 'hash_mode' field")
+        expected = "lf_normalized_utf8"
+        if hm != expected:
+            raise ValueError(
+                f"catalog v2 hash_mode must be {expected!r}, got {hm!r}"
+            )
+    else:
+        raise ValueError(
+            f"catalog schema_version must be 1 or 2, got {sv!r}"
+        )
     entries = catalog.get("entries")
     if not isinstance(entries, list):
         raise ValueError("catalog.entries must be a list")
@@ -87,9 +105,10 @@ def find_violations(root: Path, catalog_path: Path | None = None) -> list[str]:
         if not path.is_file():
             violations.append(f"{rel}: missing input")
             continue
-        if path.stat().st_size != entry.get("size_bytes"):
+        norm = _normalized_content(path)
+        if len(norm) != entry.get("size_bytes"):
             violations.append(f"{rel}: size differs from catalog")
-        if _sha256(path) != expected_hash:
+        if hashlib.sha256(norm).hexdigest() != expected_hash:
             violations.append(f"{rel}: SHA-256 differs from catalog")
 
     for digest, same_hash in hashes.items():

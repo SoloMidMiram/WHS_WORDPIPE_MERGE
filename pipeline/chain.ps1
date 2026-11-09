@@ -68,6 +68,7 @@ param(
     [switch]$SkipIndex,
     [switch]$NoLinkRegistry,
     [switch]$SourceCoverage,
+    [switch]$AllowPartialIngest,
     [switch]$Verbose
 )
 
@@ -104,6 +105,7 @@ Options:
   -SkipIndex            Stop after categorise (skip index generation)
   -NoLinkRegistry       Skip link registry generation in index.py
   -SourceCoverage       Pass source_coverage.md to index.py
+  -AllowPartialIngest    Continue pipeline when some (not all) files fail to ingest
   -Verbose              Enable debug logging in all stages
 
 Exit codes:
@@ -126,6 +128,11 @@ Examples:
 if (-not $InputDir -and -not $OutputDir) {
     Show-Help
 }
+
+# chain.ps1 signals failures via exit codes, not thrown errors. Keep
+# Write-Error non-terminating so each abort message is followed by exit N
+# even under a caller's $ErrorActionPreference = "Stop".
+$ErrorActionPreference = "Continue"
 
 # ---------------------------------------------------------------------------
 # Validate input directory
@@ -227,6 +234,11 @@ foreach ($rawFile in $RawFiles) {
 Write-Host ""
 Write-Host "  Ingestion complete: $IngestCount succeeded, $IngestFailures failed"
 
+if ($IngestFailures -gt 0 -and -not $AllowPartialIngest) {
+    Write-Error "One or more files failed to ingest. Aborting. Use -AllowPartialIngest to skip failures."
+    exit 1
+}
+
 if ($IngestCount -eq 0) {
     Write-Error "No files were successfully ingested. Aborting."
     exit 1
@@ -245,6 +257,9 @@ if ($Verify) {
 
     if ($exitCode -eq 0) {
         Write-StageOk "All files verified successfully"
+        if ($Verbose) {
+            $result | ForEach-Object { Write-Host $_ -ForegroundColor DarkGray }
+        }
     } else {
         Write-StageFail "Verification failed (exit code $exitCode)"
         if ($Verbose) {
@@ -261,8 +276,9 @@ if ($Verify) {
 Write-StageHeader 3 "Merge - $MergePy"
 
 $MergedFile = "$OutputDirAbs/merged.md"
-$mergeArgs = @("--input-dir", $NormalisedDir, "--output", $MergedFile, "--conflict-mode", "keep-both")
+$mergeArgs = @("--inputs") + $IngestFiles + @("--output", $MergedFile, "--conflict-mode", "keep-both")
 if ($Verbose) { $mergeArgs += "--verbose" }
+if ($SourceCoverage) { $mergeArgs += "--source-coverage" }
 $result = & python.exe $MergePy $mergeArgs 2>&1
 $exitCode = $LASTEXITCODE
 
