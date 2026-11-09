@@ -137,18 +137,22 @@ $ErrorActionPreference = "Continue"
 # ---------------------------------------------------------------------------
 # Validate input directory
 # ---------------------------------------------------------------------------
-if (-not (Test-Path $InputDir -PathType Container)) {
-    Write-Error "Input directory does not exist: $InputDir"
-    exit 1
-}
-$InputDirAbs = (Resolve-Path $InputDir).Path
+try {
+    if (-not (Test-Path -LiteralPath $InputDir -PathType Container -ErrorAction Stop)) {
+        throw "Input directory does not exist: $InputDir"
+    }
+    $InputDirAbs = (Resolve-Path -LiteralPath $InputDir -ErrorAction Stop).Path
 
-# Create output directory
-$OutputDirAbs = if (Test-Path $OutputDir -PathType Container) {
-    (Resolve-Path $OutputDir).Path
-} else {
-    New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
-    (Resolve-Path $OutputDir).Path
+    if (-not (Test-Path -LiteralPath $OutputDir -PathType Container -ErrorAction Stop)) {
+        New-Item -ItemType Directory -Path $OutputDir -Force -ErrorAction Stop | Out-Null
+        if (-not (Test-Path -LiteralPath $OutputDir -PathType Container -ErrorAction Stop)) {
+            throw "Output path is not a directory: $OutputDir"
+        }
+    }
+    $OutputDirAbs = (Resolve-Path -LiteralPath $OutputDir -ErrorAction Stop).Path
+} catch {
+    Write-Error "Ingestion setup failed (input '$InputDir', output '$OutputDir'): $_"
+    exit 1
 }
 
 # ---------------------------------------------------------------------------
@@ -172,6 +176,48 @@ if (-not $SkipCategorize -and -not $SkipIndex -and -not (Test-Path $IndexPy)) {
 # ---------------------------------------------------------------------------
 # Stage helpers
 # ---------------------------------------------------------------------------
+function Invoke-ChronicleStage {
+    param([string]$StageName, [string]$ScriptPath, [string[]]$Arguments)
+
+    $timer = [System.Diagnostics.Stopwatch]::StartNew()
+    $status = "failed"
+    $failureKind = "launch_error"
+    $exitCode = $null
+    $diagnostics = @()
+    $previousExitCode = $global:LASTEXITCODE
+
+    try {
+        $python = Get-Command -Name python.exe -CommandType Application -TotalCount 1 -ErrorAction Stop
+        # Keep native stderr diagnostic-only in Windows PowerShell and PowerShell 7.
+        $ErrorActionPreference = "Continue"
+        $PSNativeCommandUseErrorActionPreference = $false
+        $global:LASTEXITCODE = $null
+        $diagnostics = @(& $python.Source $ScriptPath @Arguments 2>&1)
+        $exitCode = $global:LASTEXITCODE
+
+        if ($exitCode -eq 0) {
+            $status = "ok"
+            $failureKind = $null
+        } elseif ($null -ne $exitCode) {
+            $failureKind = "native_exit"
+        }
+    } catch {
+        $diagnostics += $_
+    } finally {
+        $global:LASTEXITCODE = $previousExitCode
+        $timer.Stop()
+    }
+
+    [pscustomobject]@{
+        Stage       = $StageName
+        Status      = $status
+        FailureKind = $failureKind
+        ExitCode    = $exitCode
+        Diagnostics = $diagnostics
+        DurationMs  = $timer.ElapsedMilliseconds
+    }
+}
+
 function Write-StageHeader {
     param([int]$Number, [string]$Name)
     Write-Host ""
@@ -196,9 +242,16 @@ function Write-StageFail {
 Write-StageHeader 1 "Ingestion - $IngestPy"
 
 $NormalisedDir = "$OutputDirAbs/normalised"
-New-Item -ItemType Directory -Path $NormalisedDir -Force | Out-Null
-
-$RawFiles = Get-ChildItem -Path "$InputDirAbs\*.md" -File
+try {
+    New-Item -ItemType Directory -Path $NormalisedDir -Force -ErrorAction Stop | Out-Null
+    if (-not (Test-Path -LiteralPath $NormalisedDir -PathType Container -ErrorAction Stop)) {
+        throw "Normalized output path is not a directory: $NormalisedDir"
+    }
+    $RawFiles = Get-ChildItem -LiteralPath $InputDirAbs -Filter "*.md" -File -ErrorAction Stop
+} catch {
+    Write-Error "Ingestion setup failed (input '$InputDirAbs', output '$NormalisedDir'): $_"
+    exit 1
+}
 if ($RawFiles.Count -eq 0) {
     Write-Error "No .md files found in $InputDirAbs"
     exit 1
@@ -215,18 +268,17 @@ foreach ($rawFile in $RawFiles) {
 
     $ingestArgs = @("--input", $rawFile.FullName, "--output", $outFile)
     if ($Verbose) { $ingestArgs += "--verbose" }
-    $result = & python.exe $IngestPy $ingestArgs 2>&1
-    $exitCode = $LASTEXITCODE
+    $result = Invoke-ChronicleStage "Ingestion" $IngestPy $ingestArgs
 
-    if ($exitCode -eq 0) {
+    if ($result.Status -eq "ok") {
         $IngestCount++
         $IngestFiles += $outFile
         Write-StageOk $filename
     } else {
         $IngestFailures++
-        Write-StageFail "$filename (exit code $exitCode)"
-        if ($Verbose) {
-            Write-Host "  stderr: $result" -ForegroundColor DarkGray
+        Write-StageFail "$filename ($($result.FailureKind), exit code $($result.ExitCode))"
+        if ($Verbose -or $result.FailureKind -eq "launch_error") {
+            Write-Host "  Output: $($result.Diagnostics)" -ForegroundColor DarkGray
         }
     }
 }
@@ -252,18 +304,17 @@ if ($Verify) {
 
     $verifyArgs = @("--dir", $InputDirAbs, "--ingest", $IngestPy)
     if ($Verbose) { $verifyArgs += "--verbose" }
-    $result = & python.exe $VerifyPy $verifyArgs 2>&1
-    $exitCode = $LASTEXITCODE
+    $result = Invoke-ChronicleStage "Verification" $VerifyPy $verifyArgs
 
-    if ($exitCode -eq 0) {
+    if ($result.Status -eq "ok") {
         Write-StageOk "All files verified successfully"
         if ($Verbose) {
-            $result | ForEach-Object { Write-Host $_ -ForegroundColor DarkGray }
+            $result.Diagnostics | ForEach-Object { Write-Host $_ -ForegroundColor DarkGray }
         }
     } else {
-        Write-StageFail "Verification failed (exit code $exitCode)"
-        if ($Verbose) {
-            Write-Host "  Output: $result" -ForegroundColor DarkGray
+        Write-StageFail "Verification failed ($($result.FailureKind), exit code $($result.ExitCode))"
+        if ($Verbose -or $result.FailureKind -eq "launch_error") {
+            Write-Host "  Output: $($result.Diagnostics)" -ForegroundColor DarkGray
         }
         Write-Error "Verification failed. Aborting."
         exit 2
@@ -279,15 +330,14 @@ $MergedFile = "$OutputDirAbs/merged.md"
 $mergeArgs = @("--inputs") + $IngestFiles + @("--output", $MergedFile, "--conflict-mode", "keep-both")
 if ($Verbose) { $mergeArgs += "--verbose" }
 if ($SourceCoverage) { $mergeArgs += "--source-coverage" }
-$result = & python.exe $MergePy $mergeArgs 2>&1
-$exitCode = $LASTEXITCODE
+$result = Invoke-ChronicleStage "Merge" $MergePy $mergeArgs
 
-if ($exitCode -eq 0) {
+if ($result.Status -eq "ok") {
     Write-StageOk "Merged chronicle written to $MergedFile"
 } else {
-    Write-StageFail "Merge failed (exit code $exitCode)"
-    if ($Verbose) {
-        Write-Host "  Output: $result" -ForegroundColor DarkGray
+    Write-StageFail "Merge failed ($($result.FailureKind), exit code $($result.ExitCode))"
+    if ($Verbose -or $result.FailureKind -eq "launch_error") {
+        Write-Host "  Output: $($result.Diagnostics)" -ForegroundColor DarkGray
     }
     Write-Error "Merge failed. Aborting."
     exit 3
@@ -320,15 +370,14 @@ if ($ThemesConfig) {
     $catArgs += @("--config", $ThemesConfig)
 }
 if ($Verbose) { $catArgs += "--verbose" }
-$result = & python.exe $CategorizePy $catArgs 2>&1
-$exitCode = $LASTEXITCODE
+$result = Invoke-ChronicleStage "Categorisation" $CategorizePy $catArgs
 
-if ($exitCode -eq 0) {
+if ($result.Status -eq "ok") {
     Write-StageOk "Tagged chronicle written to $TaggedFile"
 } else {
-    Write-StageFail "Categorisation failed (exit code $exitCode)"
-    if ($Verbose) {
-        Write-Host "  Output: $result" -ForegroundColor DarkGray
+    Write-StageFail "Categorisation failed ($($result.FailureKind), exit code $($result.ExitCode))"
+    if ($Verbose -or $result.FailureKind -eq "launch_error") {
+        Write-Host "  Output: $($result.Diagnostics)" -ForegroundColor DarkGray
     }
     Write-Error "Categorisation failed. Aborting."
     exit 4
@@ -375,15 +424,14 @@ if ($SourceCoverage) {
     }
 }
 if ($Verbose) { $indexArgs += "--verbose" }
-$result = & python.exe $IndexPy $indexArgs 2>&1
-$exitCode = $LASTEXITCODE
+$result = Invoke-ChronicleStage "Index generation" $IndexPy $indexArgs
 
-if ($exitCode -eq 0) {
+if ($result.Status -eq "ok") {
     Write-StageOk "Appendix indices written to $AppendixDir"
 } else {
-    Write-StageFail "Index generation failed (exit code $exitCode)"
-    if ($Verbose) {
-        Write-Host "  Output: $result" -ForegroundColor DarkGray
+    Write-StageFail "Index generation failed ($($result.FailureKind), exit code $($result.ExitCode))"
+    if ($Verbose -or $result.FailureKind -eq "launch_error") {
+        Write-Host "  Output: $($result.Diagnostics)" -ForegroundColor DarkGray
     }
     Write-Error "Index generation failed. Aborting."
     exit 5
