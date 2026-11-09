@@ -96,3 +96,31 @@ def test_chain_allow_partial_ingest_reused_output_dir(tmp_path: Path) -> None:
     assert "Alpha Outage" not in merged_text, (
         "Stale event from the previous run's normalised file must not be merged"
     )
+
+
+@pytest.mark.skipif(
+    _POWERSHELL is None or _PYTHON_EXE is None,
+    reason="chain.ps1 requires PowerShell and python.exe",
+)
+def test_chain_verify_counts_events_and_accepts_no_date_warning(tmp_path: Path) -> None:
+    raw_dir = tmp_path / "raw"
+    raw_dir.mkdir()
+    (raw_dir / "events.md").write_text(
+        "- **2025-01-10 - Alpha Outage:** first event\n"
+        "- **2025-01-11 - Beta Launch:** second event\n",
+        encoding="utf-8",
+    )
+    (raw_dir / "overview.md").write_text("# Overview\n\nNarrative only.\n", encoding="utf-8")
+    out_dir = tmp_path / "out"
+    result = _run_chain(
+        ["-InputDir", str(raw_dir), "-OutputDir", str(out_dir),
+         "-Verify", "-Verbose", "-SkipCategorize", "-SkipIndex"],
+        cwd=REPO_ROOT,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "Total events extracted: 2" in result.stdout
+    assert "WARNING: No dates found in content" in result.stdout
+    assert "Files with issues: 0" in result.stdout
+    merged = (out_dir / "merged.md").read_text(encoding="utf-8")
+    assert "Alpha Outage" in merged
+    assert "Beta Launch" in merged

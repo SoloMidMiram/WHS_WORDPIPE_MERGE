@@ -257,6 +257,9 @@ if ($Verify) {
 
     if ($exitCode -eq 0) {
         Write-StageOk "All files verified successfully"
+        if ($Verbose) {
+            $result | ForEach-Object { Write-Host $_ -ForegroundColor DarkGray }
+        }
     } else {
         Write-StageFail "Verification failed (exit code $exitCode)"
         if ($Verbose) {

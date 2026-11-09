@@ -196,13 +196,13 @@ def deduplicate_events(
         if key in seen:
             existing = seen[key]
             # Merge themes
-            existing["themes"] = list(set(existing["themes"] + ev["themes"]))
+            existing["themes"] = list(dict.fromkeys(existing["themes"] + ev["themes"]))
             # Keep longest body
             if len(ev["body"]) > len(existing["body"]):
                 existing["body"] = ev["body"]
                 existing["snippet"] = ev["snippet"]
             # Merge sources
-            existing["sources"] = list(set(existing["sources"] + ev["sources"]))
+            existing["sources"] = list(dict.fromkeys(existing["sources"] + ev["sources"]))
         else:
             seen[key] = dict(ev)
 

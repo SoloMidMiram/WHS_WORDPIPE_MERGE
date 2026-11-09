@@ -1,7 +1,6 @@
 # Outstanding Work and Optimization Map
 
-> **As of:** 2026-08-20 (1405-05-29)
-> **Baseline:** PR #2 published head `f70b3f0`; third-wave remediation commit `777c62a`
+> **Historical baseline:** August 2026 PR #2 review and third-wave remediation
 > **Purpose:** Keep remaining delivery work, review closure, and refactor choices
 > explicit without treating planned work as implemented.
 
@@ -15,18 +14,13 @@
 | **OUTSTANDING** | Required behavior or evidence is not yet present. |
 | **CONDITIONAL** | Reassess only when the documented architecture trigger is met. |
 
-`777c62a` records **270 passed** for the third-wave suite. That is
-**HISTORICAL** evidence; a fresh result requires a configured Python 3.10/3.11
-environment with the needed extras. Commit `7d8e114` corrects the CI raw-input
-fixture; fresh matrix success is therefore **OUTSTANDING** until all jobs finish
-green.
+## Historical PR #2 Review Closure
 
-The current local worktree ran **273 passed** on 2026-07-26 (**VERIFIED**), a
-result that included the two P1 review fixes. Those fixes are now committed as
-`f70b3f0` (2026-08-20) and pushed to PR #2; the matching Codex review threads are
-resolved. The four P2 items and the P0 CI confirmation remain **OUTSTANDING**.
-
-## Immediate PR #2 Closure
+The August review tracked CI confirmation and four P2 findings as open. The
+table below records their subsequent closure. The 270-test run at `777c62a`
+and the 273-test local run from 2026-07-26 are historical evidence. See the
+[PR #2 description](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/2)
+for validation tied to the published head.
 
 | Priority | State | Work | Completion evidence |
 |---|---|---|---|
@@ -43,7 +37,7 @@ resolved. The four P2 items and the P0 CI confirmation remain **OUTSTANDING**.
 | Priority | State | Work | Source / dependency | Completion criteria |
 |---|---|---|---|---|
 | P0 | **VERIFIED** | Audit all remote branches and tags for leaked keys. | Roadmap Phase 4; local `security_scan.py` is worktree-only. | Scanned 3 remote branches 2026-08-21; third-party keys on stale `codex/evaluate-repo-review-for-workspace` branch deleted; evidence `_SECURITY/scan_reports/remote_refs_secret_audit.json`. |
-| P1 | **VERIFIED** | Canonicalize Chronicle index logic under `wordpipe.chronicle`. | Alignment audit; `pipeline/index.py` is the only active stage outside the canonical package. | Characterized via `tests/test_index_extraction.py`; pure seam extracted to `wordpipe/chronicle/index.py`; `pipeline/index.py` retained as a thin wrapper preserving CLI/import/JSON contracts. |
+| P1 | **VERIFIED** | Canonicalize Chronicle index logic under `wordpipe.chronicle`. | Alignment audit and index extraction tests. | Characterized via `tests/test_index_extraction.py`; pure seam extracted to `wordpipe/chronicle/index.py`; `pipeline/index.py` retained as a thin wrapper preserving CLI/import/JSON contracts. |
 | P1 | **PARTIAL** | Add Phase 13–17 project-level ontology instances. | Alignment audit; per-run ontology is complete but root `ontology.json` only records older P9 activity. | Define the mapping and add project instances without changing the aggregate 10-entity/7-relation model unintentionally. |
 | P1 | **OUTSTANDING** | Emit semantic concepts, mentions, and `derived_from` relationships. | Phase 15 design / G7. | Approve an NLP/POS evaluation gate, then add characterized extraction and provenance tests. |
 | P1 | **OUTSTANDING** | Build the reference stage and validate the manual merge. | Roadmap Phase 9c. | Implement `pipeline/reference.py` and compare automated output against `ChatGPT_Incidents_Merged.md`. |

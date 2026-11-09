@@ -43,7 +43,7 @@ Excluded from distribution (via `pyproject.toml` `[tool.setuptools.packages.find
 | `wordpipe.chronicle.ingest` | Raw MD normalisation (mojibake, date parsing, event splitting) |
 | `wordpipe.chronicle.merge` | Multi-file merge, dedup, conflict resolution, source coverage |
 | `wordpipe.chronicle.categorize` | Theme tagging (v2: negative keywords, dry-run, legacy format) |
-| `wordpipe.chronicle.verify_ingest` | Batch ingest verification (parse stderr, classify, report) |
+| `wordpipe.chronicle.verify_ingest` | Batch ingest verification (read normalized event counts, classify, report) |
 | `wordpipe.chronicle.index` | Pure appendix index extraction, deduplication, and rendering logic |
 
 CLI wrappers (argparse + I/O, delegating to the above modules):

@@ -9,6 +9,7 @@ after extraction.
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import textwrap
@@ -88,6 +89,29 @@ def test_deduplicate_events_date_title_keeps_both():
     ]
     result = deduplicate_events(events, method="date_title")
     assert len(result) == 2
+
+
+def test_deduplicate_events_keeps_first_seen_order_across_hash_seeds():
+    script = """
+import json
+from wordpipe.chronicle.index import deduplicate_events
+
+common = dict(date="2025-01-01", title="Outage", body="body", snippet="body")
+events = [
+    dict(common, themes=["web", "api"], sources=["b", "a"]),
+    dict(common, themes=["api", "cache"], sources=["a", "c"]),
+]
+print(json.dumps(deduplicate_events(events)))
+"""
+    for seed in ("1", "2"):
+        output = subprocess.check_output(
+            [sys.executable, "-c", script],
+            env={**os.environ, "PYTHONHASHSEED": seed},
+            text=True,
+        )
+        (event,) = json.loads(output)
+        assert event["themes"] == ["web", "api", "cache"]
+        assert event["sources"] == ["b", "a", "c"]
 
 
 def test_build_event_index_sorts_and_ranges():

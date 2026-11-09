@@ -134,7 +134,7 @@ python tools/security_scan.py --root . --fail-on-findings
 | Area | Status |
 |------|--------|
 | Chronicle dependency contract | Declared through the `chronicle` extra: `pyyaml` and `python-dateutil` |
-| Canonical Chronicle package | `ingest`, `merge`, `categorize`, `verify_ingest` have canonical modules (`wordpipe.chronicle`); `index` remains in `pipeline/` (deferred) |
+| Canonical Chronicle package | `ingest`, `verify_ingest`, `merge`, `categorize`, and `index` have canonical modules under `wordpipe.chronicle`. `pipeline/index.py` preserves the operator entry point and compatibility exports. |
 | Topic report runner | Manifest-driven generic runner with adapter registry, trend reports, source attribution, and ontology spine |
 | Legacy Chronicle scripts | Compatibility wrappers; not runtime import surfaces |
 | WordPipe orchestration | Step-based; read/style failures are fatal |
