@@ -1,6 +1,7 @@
 import logging
 import sys
 from html.parser import HTMLParser
+from pathlib import Path
 from urllib.parse import unquote
 
 import pytest
@@ -63,6 +64,35 @@ def test_keep_both_survivors_remain_discoverable(tagged_chronicle, tmp_path, mon
     output = (appendix / "event_index.md").read_text(encoding="utf-8")
     assert output.count("گزارش API") == 2
     assert "**Total events:** 4" in output
+
+
+@pytest.mark.parametrize("extra_survivor_link", [False, True])
+def test_custom_templates_can_include_documentation_links(
+    tagged_chronicle, tmp_path, monkeypatch, extra_survivor_link,
+):
+    templates = tmp_path / "templates"
+    templates.mkdir()
+    for name in ("event_index.md.j2", "theme_index.md.j2"):
+        original = (Path("pipeline/templates") / name).read_text(encoding="utf-8")
+        extra = "\n[Documentation](README.md)\n"
+        if extra_survivor_link:
+            anchor = index.extract_events_from_tagged(tagged_chronicle.read_text(encoding="utf-8"))[0]["anchor"]
+            extra += f"\n[Wrong destination](README.md#{anchor})\n"
+        (templates / name).write_text(original + extra, encoding="utf-8")
+    appendix = tmp_path / "appendix"
+    appendix.mkdir()
+    (appendix / "README.md").write_text("# Documentation\n", encoding="utf-8")
+    if extra_survivor_link:
+        with pytest.raises(SystemExit) as error:
+            run_index(tagged_chronicle, appendix, monkeypatch, "--templates-dir", str(templates))
+        assert error.value.code == 1
+        assert not (appendix / "event_index.md").exists()
+        return
+    run_index(tagged_chronicle, appendix, monkeypatch, "--templates-dir", str(templates))
+    for name in ("event_index.md", "theme_index.md"):
+        links = NavigationHTML((appendix / name).read_text(encoding="utf-8")).hrefs
+        assert "README.md" in links
+        assert len({link for link in links if "#event-" in link}) == 4
 
 
 @pytest.mark.parametrize("renderer", ["jinja", "fallback"])

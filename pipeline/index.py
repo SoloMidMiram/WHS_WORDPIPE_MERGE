@@ -14,13 +14,14 @@ import sys
 from collections import Counter
 from os.path import relpath
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 from wordpipe.chronicle.index import (
     DEFAULT_CONFIG,
     EVENT_HEADING_RE,
     HAS_JINJA2,
     SOURCE_LINE_RE,
+    SURVIVOR_FRAGMENT_RE,
     THEME_COMMENT_RE,
     URL_RE,
     _fallback_render,
@@ -193,7 +194,11 @@ def generate_indices(input_path: Path, config: dict, merged_path: Path | None,
             (f"{target_url}#{event['anchor']}", event["title"] or "Untitled event")
             for event in rows
         )
-        actual_links = Counter(rendered_navigation(rendered[name])[1])
+        actual_links = Counter(
+            (href, label)
+            for href, label in rendered_navigation(rendered[name])[1]
+            if SURVIVOR_FRAGMENT_RE.fullmatch(unquote(href.partition("#")[2]))
+        )
         if actual_links != expected_links:
             raise ValueError(f"{name} does not link to exactly the expected Chronicle events")
 

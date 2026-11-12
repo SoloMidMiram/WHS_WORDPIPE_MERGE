@@ -106,7 +106,10 @@ under CommonMark with Markdown tables enabled.
 The chain passes `--merged` to verify the ordered tagged keys against its
 merged output before indexing. The index checks navigation and required files
 before returning success. Custom event and theme templates should use
-`{{ event_link(event) }}` for each expected event row. The chain rejects
+`{{ event_link(event) }}` for each expected event row. Templates may also link
+to documentation and other resources. Fragments in the survivor-anchor
+format are reserved for event links and are checked for target, label, and
+multiplicity. The chain rejects
 missing or stale required index artifacts even when the index process exits 0.
 
 Explicit `title` and `date_title` projections retain the compatibility

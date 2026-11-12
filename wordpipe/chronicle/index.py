@@ -52,7 +52,8 @@ EVENT_HEADING_RE = re.compile(
     re.MULTILINE,
 )
 THEME_COMMENT_RE = re.compile(r"<!--\s*themes:\s*(.*?)\s*-->")
-EVENT_ANCHOR_RE = re.compile(r'<a id="(event-\d{4}-\d{2}-\d{2}-[0-9a-f]{64})"></a>')
+SURVIVOR_FRAGMENT_RE = re.compile(r"event-\d{4}-\d{2}-\d{2}-[0-9a-f]{64}")
+EVENT_ANCHOR_RE = re.compile(rf'<a id="({SURVIVOR_FRAGMENT_RE.pattern})"></a>')
 LEADING_THEME_RE = re.compile(r"\s*" + THEME_COMMENT_RE.pattern)
 URL_RE = re.compile(r"https?://[^\s\)\]>\"'<>]+")
 SOURCE_LINE_RE = re.compile(r"^#\s*Source:\s*(.+)$", re.MULTILINE)
