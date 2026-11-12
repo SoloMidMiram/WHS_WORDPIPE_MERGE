@@ -7,5 +7,5 @@
 | # | Date | Title | Themes |
 |---|------|-------|--------|
 {% for event in events -%}
-| {{ loop.index }} | {{ event.date }} | [{{ event.title }}](#{{ event.anchor }}) | {{ event.themes | join(', ') }} |
+| {{ loop.index }} | {{ event.date }} | {{ event_link(event) }} | {{ event.themes | join(', ') }} |
 {% endfor %}

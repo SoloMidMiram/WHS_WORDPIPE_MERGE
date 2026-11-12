@@ -265,12 +265,16 @@ def rebuild_tagged_md(original_text: str, events: list[dict[str, Any]]) -> str:
     tagged_blocks: list[str] = []
     for ev in events:
         raw = ev["block"]
-        if ev.get("themes"):
+        if ev.get("themes") or ev.get("anchor"):
             heading = ev["heading_line"]
-            comment = f"<!-- themes: {', '.join(ev['themes'])} -->"
+            metadata = ""
+            if ev.get("themes"):
+                metadata += f"\n<!-- themes: {', '.join(ev['themes'])} -->"
+            if ev.get("anchor"):
+                metadata += f'\n\n<a id="{ev["anchor"]}"></a>\n'
             newline_pos = raw.find("\n")
             rest = raw[newline_pos:] if newline_pos >= 0 else ""
-            tagged_blocks.append(f"{heading}\n{comment}{rest}")
+            tagged_blocks.append(f"{heading}{metadata}{rest}")
         else:
             tagged_blocks.append(raw)
 

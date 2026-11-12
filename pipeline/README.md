@@ -86,6 +86,31 @@ the current summary absent.
 | `chain.ps1` | Orchestrator — runs all 5 stages | PowerShell + Python |
 | `themes.json` | External theme config (6 themes, 62 pos + 16 neg keywords) | JSON |
 | `index_config.json` | Index generation config | JSON |
+| `templates/` | 4 Jinja2 templates for appendix rendering | Optional Jinja2 |
+| `CODEX_WORKING.md` | Working code reference, evolution, known issues | Read this first |
+
+## Index identity and navigation
+
+The default `survivor` projection lists every tagged survivor. Anchors use
+`event-<date>-<normalized-body-sha256>`, the topic-neutral key used by Phase 17
+survivor verification. New tagged files carry explicit anchors. Standalone
+indexing of older unanchored tagged files writes a navigation copy named
+`chronicle_tagged_anchored.md` in the appendix directory and keeps the input
+bytes intact. Event and theme indices use relative, URL-encoded links in both
+Jinja2 and fallback rendering.
+Install the `chronicle` extra to validate the rendered links and targets
+under CommonMark with Markdown tables enabled.
+
+The chain passes `--merged` to verify the ordered tagged keys against its
+merged output before indexing. The index checks navigation and required files
+before returning success. Custom event and theme templates should use
+`{{ event_link(event) }}` for each expected event row. The chain rejects
+missing or stale required index artifacts even when the index process exits 0.
+
+Explicit `title` and `date_title` projections retain the compatibility
+grouping and report the number of omitted survivor entries. A grouped row
+links to its first survivor. Set `dedup_method` to `survivor` in older
+configs to list all survivors.
 
 The index CLI uses built-in defaults and logs a warning if a supplied config
 cannot be read, decoded, or validated. Pass `--strict-config` to
@@ -97,8 +122,6 @@ Theme configuration must have a mapping at its root and, when present, a
 mapping under `themes`. Blank positive and negative keywords are ignored.
 Merge ignores non-mapping YAML front matter with a warning and retains the
 event body.
-| `templates/` | 4 Jinja2 templates for appendix rendering | Optional Jinja2 |
-| `CODEX_WORKING.md` | Working code reference, evolution, known issues | Read this first |
 
 ## Status
 
