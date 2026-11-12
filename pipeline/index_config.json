@@ -5,6 +5,5 @@
   "dedup_method": "date_title",
   "theme_sort": "name",
   "no_link_registry": false,
-  "link_check_timeout": 5,
   "event_snippet_max_chars": 200
 }

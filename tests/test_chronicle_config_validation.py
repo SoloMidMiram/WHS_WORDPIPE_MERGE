@@ -40,6 +40,18 @@ def test_strict_index_cli_rejects_missing_config_before_publication(tmp_path: Pa
     assert not output.exists()
 
 
+def test_bundled_index_config_passes_strict_validation():
+    path = Path(__file__).resolve().parents[1] / "pipeline" / "index_config.json"
+    assert load_config(path, strict=True) == DEFAULT_CONFIG
+
+
+def test_strict_index_config_rejects_unknown_settings(tmp_path: Path):
+    path = tmp_path / "index.json"
+    path.write_text('{"no_link_regsitry": true}', encoding="utf-8")
+    with pytest.raises(ValueError, match="unknown setting"):
+        load_config(path, strict=True)
+
+
 @pytest.mark.parametrize("raw", [b"null", b"[]", b"true", b"\xff", b"- YAML list", b'{"themes": false}'])
 def test_invalid_theme_config(tmp_path: Path, raw: bytes):
     path = tmp_path / "themes.json"

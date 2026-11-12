@@ -76,6 +76,10 @@ def load_config(config_path: Optional[Path], *, strict: bool = False) -> Dict[st
             raise ValueError("expected a JSON object")
         config = dict(DEFAULT_CONFIG)
         for key, value in user_config.items():
+            if key == "_comment":
+                if strict and not isinstance(value, str):
+                    raise ValueError("_comment must be str")
+                continue
             if key not in DEFAULT_CONFIG:
                 if strict:
                     raise ValueError(f"unknown setting {key!r}")
