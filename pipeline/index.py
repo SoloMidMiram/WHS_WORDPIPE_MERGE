@@ -10,9 +10,9 @@ from __future__ import annotations
 
 import argparse
 import logging
-import os
 import sys
 from collections import Counter
+from os.path import relpath
 from pathlib import Path
 from urllib.parse import quote
 
@@ -140,9 +140,27 @@ def generate_indices(input_path: Path, config: dict, merged_path: Path | None,
         raise ValueError("Tagged Chronicle must render exactly one target per survivor")
 
     output_dir = Path(config["output_dir"])
-    target = input_path if target_md == tagged_md else output_dir / "chronicle_tagged_anchored.md"
-    target_path = target.resolve() if target == input_path else output_dir.resolve() / target.name
-    relative_path = os.path.relpath(target_path, output_dir.resolve())
+    protected = {input_path.resolve()}
+    if merged_path is not None:
+        protected.add(merged_path.resolve())
+    if source_coverage is not None:
+        protected.add(Path(source_coverage).resolve())
+    target = input_path
+    relative_path = None
+    if target_md == tagged_md:
+        try:
+            relative_path = relpath(input_path.resolve(), output_dir.resolve())
+        except ValueError:
+            # Windows cannot make a relative path across volumes.
+            pass
+    write_target = relative_path is None
+    if write_target:
+        target = output_dir / "chronicle_tagged_anchored.md"
+        suffix = 2
+        while target.resolve() in protected:
+            target = output_dir / f"chronicle_tagged_anchored-{suffix}.md"
+            suffix += 1
+        relative_path = target.name
     target_url = quote(Path(relative_path).as_posix(), safe="/")
     for event in events:
         event["target"] = target_url
@@ -182,11 +200,8 @@ def generate_indices(input_path: Path, config: dict, merged_path: Path | None,
             raise ValueError(f"{name} does not link to exactly the expected Chronicle events")
 
     outputs = {output_dir / name: content for name, content in rendered.items()}
-    if target != input_path:
+    if write_target:
         outputs = {target: target_md, **outputs}
-    protected = {input_path.resolve()}
-    if merged_path is not None:
-        protected.add(merged_path.resolve())
     if any(path.resolve() in protected for path in outputs):
         raise ValueError("An index output would overwrite a Chronicle input")
 

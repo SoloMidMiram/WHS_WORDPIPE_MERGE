@@ -132,6 +132,37 @@ def test_unanchored_input_gets_a_separate_navigation_target(tmp_path, monkeypatc
     assert tagged.read_bytes() == before
 
 
+def test_cross_volume_uses_navigation_copy(tagged_chronicle, tmp_path, monkeypatch):
+    # Windows relpath raises this for distinct drive roots. Simulate it on any host.
+    def different_volume(*args):
+        raise ValueError("path is on a different mount")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(index_cli, "relpath", different_volume)
+        appendix = tmp_path / "appendix"
+        before = tagged_chronicle.read_bytes()
+        run_index(tagged_chronicle, appendix, patch)
+    copy = appendix / "chronicle_tagged_anchored.md"
+    assert copy.read_bytes() == before
+    assert tagged_chronicle.read_bytes() == before
+    links = NavigationHTML((appendix / "event_index.md").read_text(encoding="utf-8")).hrefs
+    assert len(links) == 4
+    assert all(link.startswith(f"{copy.name}#") for link in links)
+
+
+def test_legacy_input_named_like_navigation_copy_is_preserved(tmp_path, monkeypatch):
+    tagged = tmp_path / "chronicle_tagged_anchored.md"
+    tagged.write_text("## Event: 2026-01-01 - Legacy\n\nbody\n", encoding="utf-8")
+    before = tagged.read_bytes()
+    run_index(tagged, tmp_path, monkeypatch)
+    assert tagged.read_bytes() == before
+    output = (tmp_path / "event_index.md").read_text(encoding="utf-8")
+    (link,) = NavigationHTML(output).hrefs
+    path, anchor = link.split("#")
+    assert path != tagged.name
+    assert NavigationHTML((tmp_path / path).read_text(encoding="utf-8")).ids == [anchor]
+
+
 @pytest.mark.parametrize("damage", ["missing_event", "wrong_anchor", "invalid_renderer", "fenced_links"])
 def test_index_rejects_invalid_navigation_before_publication(
     tagged_chronicle, tmp_path, monkeypatch, damage,
