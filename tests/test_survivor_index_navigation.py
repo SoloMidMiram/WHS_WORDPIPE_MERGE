@@ -162,6 +162,22 @@ def test_unanchored_input_gets_a_separate_navigation_target(tmp_path, monkeypatc
     assert tagged.read_bytes() == before
 
 
+def test_titleless_unthemed_bullet_survives_categorize_and_index(tmp_path, monkeypatch):
+    merged = tmp_path / "merged.md"
+    original = "## Event: 2026-01-01\n\n- bullet\n"
+    merged.write_text(original, encoding="utf-8")
+    tagged = tmp_path / "tagged.md"
+    monkeypatch.setattr(sys, "argv", ["categorize", "--input", str(merged), "--output", str(tagged)])
+    categorize.main()
+    text = tagged.read_text(encoding="utf-8")
+    assert text.count("- bullet") == 1
+    appendix = tmp_path / "appendix"
+    run_index(tagged, appendix, monkeypatch, "--merged", str(merged))
+    output = (appendix / "event_index.md").read_text(encoding="utf-8")
+    assert "Untitled event" in output
+    assert len(NavigationHTML(output).hrefs) == 1
+
+
 def test_cross_volume_uses_navigation_copy(tagged_chronicle, tmp_path, monkeypatch):
     # Windows relpath raises this for distinct drive roots. Simulate it on any host.
     def different_volume(*args):

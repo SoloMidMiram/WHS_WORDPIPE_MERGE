@@ -170,7 +170,7 @@ def extract_events(md_body: str) -> list[dict[str, str]]:
         return events
 
     for i, match in enumerate(matches):
-        heading_line = match.group(1).strip()
+        heading_line = match.group(1).partition("\n")[0].strip()
         start = match.start()
         end = matches[i + 1].start() if i + 1 < len(matches) else len(md_body)
         raw_block = md_body[start:end].strip()
@@ -266,15 +266,14 @@ def rebuild_tagged_md(original_text: str, events: list[dict[str, Any]]) -> str:
     for ev in events:
         raw = ev["block"]
         if ev.get("themes") or ev.get("anchor"):
-            heading = ev["heading_line"]
+            heading, newline, rest = raw.partition("\n")
+            heading = heading.rstrip("\r")
             metadata = ""
             if ev.get("themes"):
                 metadata += f"\n<!-- themes: {', '.join(ev['themes'])} -->"
             if ev.get("anchor"):
                 metadata += f'\n\n<a id="{ev["anchor"]}"></a>\n'
-            newline_pos = raw.find("\n")
-            rest = raw[newline_pos:] if newline_pos >= 0 else ""
-            tagged_blocks.append(f"{heading}{metadata}{rest}")
+            tagged_blocks.append(f"{heading}{metadata}{newline}{rest}")
         else:
             tagged_blocks.append(raw)
 

@@ -154,7 +154,7 @@ def extract_events_from_tagged(tagged_md: str) -> List[Dict[str, Any]]:
         return events
 
     for i, match in enumerate(matches):
-        heading_line = match.group(1).strip()
+        heading_line = match.group(1).partition("\n")[0].strip()
         start = match.start()
         end = matches[i + 1].start() if i + 1 < len(matches) else len(tagged_md)
         raw_block = tagged_md[start:end].strip()
@@ -219,7 +219,7 @@ def prepare_index_targets(tagged_md: str, events: List[Dict[str, Any]]) -> str:
     parts = []
     cursor = 0
     for heading, anchor in zip(EVENT_HEADING_RE.finditer(tagged_md), anchors, strict=True):
-        newline = tagged_md.find("\n", heading.end(1))
+        newline = tagged_md.find("\n", heading.start())
         end = len(tagged_md) if newline == -1 else newline + 1
         theme = LEADING_THEME_RE.match(tagged_md, end)
         if theme:
