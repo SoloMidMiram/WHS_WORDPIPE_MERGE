@@ -20,7 +20,7 @@ import json
 import logging
 import re
 import tempfile
-from collections import defaultdict
+from collections import Counter, defaultdict
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -255,16 +255,57 @@ class _NavigationHTML(HTMLParser):
             self._label.clear()
 
 
-def rendered_navigation(markdown: str) -> tuple[list[str], list[tuple[str, str]]]:
-    """Inspect actual Markdown navigation, excluding links and IDs in code blocks."""
+def _markdown_renderer():
     try:
         from markdown_it import MarkdownIt
     except ImportError as exc:
         raise ValueError("Index navigation requires the wordpipe[chronicle] extra") from exc
+    return MarkdownIt("commonmark").enable("table")
+
+
+def rendered_navigation(markdown: str) -> tuple[list[str], list[tuple[str, str]]]:
+    """Inspect actual Markdown navigation, excluding links and IDs in code blocks."""
     result = _NavigationHTML()
-    result.feed(MarkdownIt("commonmark").enable("table").render(markdown))
+    result.feed(_markdown_renderer().render(markdown))
     result.close()
     return result.anchors, result.links
+
+
+def verify_index_targets(markdown: str, events: List[Dict[str, Any]]) -> str:
+    """Verify rendered targets, splitting spanning fences in a navigation copy."""
+    expected = [event["anchor"] for event in events]
+    counts = Counter(rendered_navigation(markdown)[0])
+    if any(counts[anchor] == 0 for anchor in expected):
+        markdown = _split_fences_at_events(markdown)
+        counts = Counter(rendered_navigation(markdown)[0])
+    if any(counts[anchor] != 1 for anchor in expected):
+        raise ValueError("Tagged Chronicle must render exactly one target per survivor")
+    return markdown
+
+
+def _split_fences_at_events(markdown: str) -> str:
+    """Expose event headings hidden inside a fence without changing the input."""
+    lines = re.split(r"(?<=\n)", markdown)
+    headings = (i for i, line in enumerate(lines) if EVENT_HEADING_RE.match(line))
+    anchors = (i for i, line in enumerate(lines) if EVENT_ANCHOR_RE.fullmatch(line.strip()))
+    anchor_lines = dict(zip(headings, anchors, strict=True))
+    insertions: dict[int, list[str]] = defaultdict(list)
+    for token in _markdown_renderer().parse(markdown):
+        if token.type != "fence" or token.map is None:
+            continue
+        start, end = token.map
+        for row in range(start + 1, end):
+            anchor = anchor_lines.get(row)
+            if anchor is not None and row < anchor < end:
+                insertions[row].append(f"\n{token.markup}\n\n")
+                insertions[anchor + 1].append(f"\n{token.markup}{token.info}\n")
+    if not insertions:
+        return markdown
+    parts = []
+    for i, line in enumerate([*lines, ""]):
+        parts.extend(insertions.get(i, ()))
+        parts.append(line)
+    return "".join(parts)
 
 
 # ------------------------------------------------------------------------------

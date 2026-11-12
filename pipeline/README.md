@@ -94,8 +94,9 @@ the current summary absent.
 The default `survivor` projection lists every tagged survivor. Anchors use
 `event-<date>-<normalized-body-sha256>`, the topic-neutral key used by Phase 17
 survivor verification. New tagged files carry explicit anchors. Standalone
-indexing writes a navigation copy for older unanchored tagged files or when
-the tagged file is on a different Windows volume. The copy is named
+indexing writes a navigation copy for older unanchored tagged files, when
+the tagged file is on a different Windows volume, or when a code fence spans
+event headings and would hide their anchors. The copy is named
 `chronicle_tagged_anchored.md` by default and uses a numbered suffix if that
 name would overwrite an input. Event and theme indices use relative,
 URL-encoded links in both Jinja2 and fallback rendering.

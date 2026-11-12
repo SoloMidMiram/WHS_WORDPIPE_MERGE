@@ -486,10 +486,10 @@ try {
     if ($Verbose) { $indexArgs += "--verbose" }
     $registryName = "appendix/link_registry.md"
     $registryPath = Join-Path $OutputDirAbs $registryName
-    $previousRegistry = Get-ChronicleArtifactStamp $registryPath
     $requiredIndex = @("appendix/event_index.md", "appendix/theme_index.md", "appendix/source_manifest.md")
+    $optionalIndex = @($registryName, "appendix/chronicle_tagged_anchored.md")
     $previousIndex = @{}
-    foreach ($name in $requiredIndex) {
+    foreach ($name in ($requiredIndex + $optionalIndex)) {
         $previousIndex[$name] = Get-ChronicleArtifactStamp (Join-Path $OutputDirAbs $name)
     }
     $result = Invoke-ChronicleStage "Index generation" $IndexPy $indexArgs
@@ -507,9 +507,11 @@ try {
             }
         }
         $indexStage.outputs = $requiredIndex
-        $registryStamp = Get-ChronicleArtifactStamp $registryPath
-        if ($registryStamp -and $registryStamp -ne $previousRegistry) {
-            $indexStage.outputs += $registryName
+        foreach ($name in $optionalIndex) {
+            $stamp = Get-ChronicleArtifactStamp (Join-Path $OutputDirAbs $name)
+            if ($stamp -and $stamp -ne $previousIndex[$name]) {
+                $indexStage.outputs += $name
+            }
         }
         Write-StageOk "Appendix indices written to $AppendixDir"
     } else {

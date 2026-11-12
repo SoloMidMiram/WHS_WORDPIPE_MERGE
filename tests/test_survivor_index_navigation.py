@@ -163,6 +163,28 @@ def test_legacy_input_named_like_navigation_copy_is_preserved(tmp_path, monkeypa
     assert NavigationHTML((tmp_path / path).read_text(encoding="utf-8")).ids == [anchor]
 
 
+def test_navigation_preserves_survivors_inside_a_spanning_fence(tmp_path, monkeypatch):
+    merged = tmp_path / "merged.md"
+    merged.write_text(
+        "## Event: 2026-01-01 - First\n\n```markdown\nExample:\n\n"
+        "## Event: 2026-01-02 - Second\n\nCode within example.\n```\n\n"
+        "## Event: 2026-01-03 - Third\n\nAfter example.\n",
+        encoding="utf-8",
+    )
+    tagged = tmp_path / "tagged.md"
+    monkeypatch.setattr(sys, "argv", ["categorize", "--input", str(merged), "--output", str(tagged)])
+    categorize.main()
+    before = tagged.read_bytes()
+    appendix = tmp_path / "appendix"
+    run_index(tagged, appendix, monkeypatch, "--merged", str(merged))
+    rendered = NavigationHTML((appendix / "event_index.md").read_text(encoding="utf-8"))
+    expected = index.merged_survivor_anchors(merged.read_text(encoding="utf-8"))
+    assert [link.split("#")[1] for link in rendered.hrefs] == expected
+    path = rendered.hrefs[1].split("#")[0]
+    assert NavigationHTML((appendix / unquote(path)).read_text(encoding="utf-8")).ids == expected
+    assert tagged.read_bytes() == before
+
+
 @pytest.mark.parametrize("damage", ["missing_event", "wrong_anchor", "invalid_renderer", "fenced_links"])
 def test_index_rejects_invalid_navigation_before_publication(
     tagged_chronicle, tmp_path, monkeypatch, damage,

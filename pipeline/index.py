@@ -40,6 +40,7 @@ from wordpipe.chronicle.index import (
     rendered_navigation,
     render_template,
     safe_write,
+    verify_index_targets,
 )
 
 from wordpipe.chronicle.merge import validate_event_headings
@@ -134,10 +135,7 @@ def generate_indices(input_path: Path, config: dict, merged_path: Path | None,
         expected = merged_survivor_anchors(merged_path.read_text(encoding="utf-8"))
         if [event["anchor"] for event in events] != expected:
             raise ValueError("Tagged events do not match the ordered merged survivor keys")
-    target_md = prepare_index_targets(tagged_md, events)
-    anchor_counts = Counter(rendered_navigation(target_md)[0])
-    if any(anchor_counts[event["anchor"]] != 1 for event in events):
-        raise ValueError("Tagged Chronicle must render exactly one target per survivor")
+    target_md = verify_index_targets(prepare_index_targets(tagged_md, events), events)
 
     output_dir = Path(config["output_dir"])
     protected = {input_path.resolve()}
