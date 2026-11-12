@@ -59,6 +59,9 @@ def parse_yaml_frontmatter(text: str) -> Tuple[Dict[str, Any], str]:
     if len(parts) >= 3:
         try:
             metadata = yaml.safe_load(parts[1])
+            if metadata is not None and not isinstance(metadata, dict):
+                logging.warning("YAML front-matter must be a mapping; ignoring metadata.")
+                metadata = {}
             return (metadata or {}), parts[2].lstrip("\n")
         except yaml.YAMLError as e:
             logging.warning("Malformed YAML front-matter: %s", e)

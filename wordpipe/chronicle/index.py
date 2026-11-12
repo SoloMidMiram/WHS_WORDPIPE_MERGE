@@ -59,27 +59,43 @@ DEFAULT_CONFIG: Dict[str, Any] = {
 # ------------------------------------------------------------------------------
 # Config loading
 # ------------------------------------------------------------------------------
-def load_config(config_path: Optional[Path]) -> Dict[str, Any]:
+def load_config(config_path: Optional[Path], *, strict: bool = False) -> Dict[str, Any]:
     """
     Load index configuration from JSON file.
 
-    Falls back to DEFAULT_CONFIG if file is missing or malformed.
+    Invalid files fall back to defaults unless strict mode is enabled.
+    Omitting the file always uses defaults.
     """
-    if config_path is None or not config_path.exists():
-        if config_path is not None:
-            logging.warning("Config file not found: %s; using defaults.", config_path)
+    if config_path is None:
         return dict(DEFAULT_CONFIG)
 
     try:
         with open(config_path, encoding="utf-8") as f:
             user_config = json.load(f)
-    except (json.JSONDecodeError, OSError) as e:
-        logging.warning("Failed to load config %s: %s; using defaults.", config_path, e)
+        if not isinstance(user_config, dict):
+            raise ValueError("expected a JSON object")
+        config = dict(DEFAULT_CONFIG)
+        for key, value in user_config.items():
+            if key not in DEFAULT_CONFIG:
+                if strict:
+                    raise ValueError(f"unknown setting {key!r}")
+                continue
+            if type(value) is not type(DEFAULT_CONFIG[key]):
+                raise ValueError(f"{key} must be {type(DEFAULT_CONFIG[key]).__name__}")
+            if key in ("output_dir", "templates_dir") and (not value.strip() or "\x00" in value):
+                raise ValueError(f"{key} must be a nonempty path")
+            if key == "event_snippet_max_chars" and value < 0:
+                raise ValueError(f"{key} must be nonnegative")
+            if key == "dedup_method" and value not in ("title", "date_title"):
+                raise ValueError(f"{key} must be title or date_title")
+            if key == "theme_sort" and value not in ("name", "count"):
+                raise ValueError(f"{key} must be name or count")
+            config[key] = value
+    except (OSError, ValueError) as e:
+        if strict:
+            raise ValueError(f"Invalid index config {config_path}: {e}") from e
+        logging.warning("Invalid index config %s: %s; using defaults.", config_path, e)
         return dict(DEFAULT_CONFIG)
-
-    # Merge with defaults (user values take precedence)
-    config = dict(DEFAULT_CONFIG)
-    config.update({k: v for k, v in user_config.items() if k in DEFAULT_CONFIG})
     return config
 
 

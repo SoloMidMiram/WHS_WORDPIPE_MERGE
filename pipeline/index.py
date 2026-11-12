@@ -61,6 +61,8 @@ def main() -> None:
         "--templates-dir", "-t",
         help="Directory containing Jinja2 templates (default: pipeline/templates)",
     )
+    parser.add_argument("--strict-config", action="store_true",
+                        help="Fail if the supplied index configuration is invalid")
     parser.add_argument(
         "--source-coverage", "-s",
         help="Path to source_coverage.md from merge.py (optional; extracts from inline annotations if omitted)",
@@ -88,7 +90,10 @@ def main() -> None:
 
     # 1. Load config
     config_path = Path(args.config) if args.config else None
-    config = load_config(config_path)
+    try:
+        config = load_config(config_path, strict=args.strict_config)
+    except ValueError as exc:
+        parser.error(str(exc))
 
     # Override config with CLI flags
     if args.output_dir:

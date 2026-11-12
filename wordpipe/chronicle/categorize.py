@@ -62,7 +62,11 @@ def load_themes(config_path: Path | None) -> dict[str, list[str]]:
         logging.error("Config file not found: %s", config_path)
         sys.exit(1)
 
-    raw = config_path.read_text(encoding="utf-8")
+    try:
+        raw = config_path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as e:
+        logging.error("Cannot read theme config %s: %s", config_path, e)
+        sys.exit(1)
     config: dict[str, Any] = {}
 
     try:
@@ -76,14 +80,16 @@ def load_themes(config_path: Path | None) -> dict[str, list[str]]:
             logging.error("Config file %s is neither valid JSON nor valid YAML: %s", config_path, e)
             sys.exit(1)
 
-    themes = config.get("themes")
-    if not themes:
-        logging.warning("Config file %s has no 'themes' key; using built-in defaults.", config_path)
-        return _normalise_themes(DEFAULT_THEMES)
-
+    if not isinstance(config, dict):
+        logging.error("Theme config %s must contain a mapping.", config_path)
+        sys.exit(1)
+    themes = config.get("themes", {})
     if not isinstance(themes, dict):
         logging.error("'themes' must be a dictionary, got %s.", type(themes).__name__)
         sys.exit(1)
+    if not themes:
+        logging.warning("Config file %s has no 'themes' key; using built-in defaults.", config_path)
+        return _normalise_themes(DEFAULT_THEMES)
 
     return _normalise_themes(themes)
 
@@ -132,6 +138,8 @@ def _load_negative_keywords(config_path: Path | None) -> dict[str, list[str]]:
         except yaml.YAMLError:
             return {}
 
+    if not isinstance(config, dict):
+        return {}
     themes = config.get("themes")
     if not isinstance(themes, dict):
         return {}
@@ -213,10 +221,10 @@ def match_themes(
 
     for theme_name, keywords in themes.items():
         for kw in keywords:
-            if kw.lower() in body_lower:
+            if kw.strip() and kw.lower() in body_lower:
                 # Check negative keywords
                 neg_kws = neg.get(theme_name, [])
-                if any(nk.lower() in body_lower for nk in neg_kws):
+                if any(nk.strip() and nk.lower() in body_lower for nk in neg_kws):
                     continue  # negative match -- skip this theme
                 matched.append(theme_name)
                 break
