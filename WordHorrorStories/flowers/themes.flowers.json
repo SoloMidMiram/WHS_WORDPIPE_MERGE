@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "taxonomy_version": "flowers-1",
+  "themes": {
+    "Plant identity": {
+      "keywords": [
+        "taxonomy",
+        "scientific name",
+        "pothos",
+        "نام علمی"
+      ],
+      "negative_keywords": [
+        "synthetic regression only"
+      ]
+    },
+    "Environment": {
+      "keywords": [
+        "light",
+        "humidity",
+        "temperature",
+        "نور",
+        "رطوبت"
+      ],
+      "negative_keywords": [
+        "synthetic regression only"
+      ]
+    },
+    "Water soil nutrition": {
+      "keywords": [
+        "watering",
+        "soil",
+        "fertilizer",
+        "آبیاری",
+        "خاک"
+      ],
+      "negative_keywords": [
+        "synthetic regression only"
+      ]
+    },
+    "Propagation repotting": {
+      "keywords": [
+        "propagation",
+        "repotting",
+        "تکثیر",
+        "قلمه"
+      ],
+      "negative_keywords": [
+        "synthetic regression only"
+      ]
+    },
+    "Pests diagnostics": {
+      "keywords": [
+        "pest",
+        "disease",
+        "symptom",
+        "آفت",
+        "بیماری"
+      ],
+      "negative_keywords": [
+        "synthetic regression only"
+      ]
+    },
+    "Flowering pruning growth": {
+      "keywords": [
+        "flowering",
+        "pruning",
+        "growth",
+        "گلدهی",
+        "هرس"
+      ],
+      "negative_keywords": [
+        "synthetic regression only"
+      ]
+    },
+    "Commercial regional market": {
+      "keywords": [
+        "retail",
+        "market",
+        "price",
+        "Tehran",
+        "بازار",
+        "قیمت"
+      ],
+      "negative_keywords": [
+        "synthetic regression only"
+      ]
+    }
+  }
+}

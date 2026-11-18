@@ -1,0 +1,453 @@
+[
+  {
+    "basename": "Cross-Market Plant Retail Benchmark for FlowerMarketOntology7.md",
+    "sha256": "a3ad5ad414220aff83fc59d2cdf4214281589483ad2bcb2ad14674e8c28fa0a6",
+    "bytes": 33895,
+    "lines": 127,
+    "encoding": "UTF-8 (strict decode)",
+    "title": "# Cross-Market Plant Retail Benchmark for FlowerMarketOntology",
+    "headings": [
+      {
+        "line": 1,
+        "text": "# Cross-Market Plant Retail Benchmark for FlowerMarketOntology"
+      },
+      {
+        "line": 3,
+        "text": "## Executive comparison"
+      },
+      {
+        "line": 19,
+        "text": "## Market-by-market page matrix"
+      },
+      {
+        "line": 35,
+        "text": "## Evidence register and horticultural authority check"
+      },
+      {
+        "line": 68,
+        "text": "## Persian-first mobile page specifications"
+      },
+      {
+        "line": 72,
+        "text": "### Home and discovery"
+      },
+      {
+        "line": 78,
+        "text": "### Searchable collection and results"
+      },
+      {
+        "line": 84,
+        "text": "### Plant detail"
+      },
+      {
+        "line": 92,
+        "text": "### Post-purchase care, troubleshooting and support"
+      },
+      {
+        "line": 98,
+        "text": "## Knowledge-to-commerce hypotheses and test program"
+      },
+      {
+        "line": 119,
+        "text": "## Florist gifting as a separate segment"
+      }
+    ],
+    "language": "mixed English/Persian",
+    "provenance": "User-supplied research report; embedded citations not independently verified",
+    "redistribution": "Unverified; source and derived text kept local"
+  },
+  {
+    "basename": "FlowerMarketOntology Deep Research First Collection Batch and Research Program1.md",
+    "sha256": "56a749a39ecd43552186bc80fc5879c12c7da13f2589f776112425e8fc1b2a69",
+    "bytes": 35811,
+    "lines": 147,
+    "encoding": "UTF-8 (strict decode)",
+    "title": "# FlowerMarketOntology Deep Research: First Collection Batch and Research Program",
+    "headings": [
+      {
+        "line": 1,
+        "text": "# FlowerMarketOntology Deep Research: First Collection Batch and Research Program"
+      },
+      {
+        "line": 3,
+        "text": "## Research frame, evidence rules, and tested assumptions"
+      },
+      {
+        "line": 13,
+        "text": "## First collection batch: seller observations"
+      },
+      {
+        "line": 31,
+        "text": "## Initial five-name identity register"
+      },
+      {
+        "line": 45,
+        "text": "## Pilot profile and ambiguous-name workflow test"
+      },
+      {
+        "line": 47,
+        "text": "### Pilot profile: پتوس"
+      },
+      {
+        "line": 70,
+        "text": "### Ambiguity test: برگ‌انجیری"
+      },
+      {
+        "line": 80,
+        "text": "## Remaining roadmap phases: feasibility, evidence design, and risks"
+      },
+      {
+        "line": 82,
+        "text": "### Search and navigation"
+      },
+      {
+        "line": 90,
+        "text": "### Decision support"
+      },
+      {
+        "line": 96,
+        "text": "### Floristry and commerce"
+      },
+      {
+        "line": 102,
+        "text": "### Mahallati and Imam Reza/Khavaran"
+      },
+      {
+        "line": 110,
+        "text": "### English-market expansion"
+      },
+      {
+        "line": 116,
+        "text": "## Evidence schema, gaps, priorities, and explicit next actions"
+      }
+    ],
+    "language": "mixed English/Persian",
+    "provenance": "User-supplied research report; embedded citations not independently verified",
+    "redistribution": "Unverified; source and derived text kept local"
+  },
+  {
+    "basename": "FlowerMarketOntology DR-01 — Golden-pothos evidence dossier5.md",
+    "sha256": "ecf5e37ec7223b7a9ae9d95d23462b05fe8359453e54c072d3189f22965c3933",
+    "bytes": 32784,
+    "lines": 213,
+    "encoding": "UTF-8 (strict decode)",
+    "title": "# FlowerMarketOntology DR-01 — Golden-pothos evidence dossier",
+    "headings": [
+      {
+        "line": 1,
+        "text": "# FlowerMarketOntology DR-01 — Golden-pothos evidence dossier"
+      },
+      {
+        "line": 3,
+        "text": "## Decision memo"
+      },
+      {
+        "line": 15,
+        "text": "## Repository state and provenance boundary"
+      },
+      {
+        "line": 17,
+        "text": "### Live repository access"
+      },
+      {
+        "line": 38,
+        "text": "### Source classes used"
+      },
+      {
+        "line": 44,
+        "text": "## Botanical identity dossier"
+      },
+      {
+        "line": 54,
+        "text": "## Six bilingual claim candidates"
+      },
+      {
+        "line": 56,
+        "text": "### Light"
+      },
+      {
+        "line": 70,
+        "text": "### Watering"
+      },
+      {
+        "line": 84,
+        "text": "### Humidity"
+      },
+      {
+        "line": 100,
+        "text": "### Substrate"
+      },
+      {
+        "line": 112,
+        "text": "### Repotting"
+      },
+      {
+        "line": 126,
+        "text": "### Pet toxicity"
+      },
+      {
+        "line": 140,
+        "text": "## Reproducible evidence register and JSONL-ready records"
+      },
+      {
+        "line": 184,
+        "text": "## Issue #7 release-gate mapping and blockers"
+      },
+      {
+        "line": 205,
+        "text": "## Media-rights ledger and next review steps"
+      }
+    ],
+    "language": "mixed English/Persian",
+    "provenance": "User-supplied research report; embedded citations not independently verified",
+    "redistribution": "Unverified; source and derived text kept local"
+  },
+  {
+    "basename": "FlowerMarketOntology Research Tranche Pothos, Ambiguous Trade Names, Search Readiness, and Commerce Evidence4.md",
+    "sha256": "81c9bbd2b48a14f76e9d7399c0064d85de4a3ee15d89620eaba53da90c207f77",
+    "bytes": 44202,
+    "lines": 284,
+    "encoding": "UTF-8 (strict decode)",
+    "title": "# FlowerMarketOntology Research Tranche: Pothos, Ambiguous Trade Names, Search Readiness, and Commerce Evidence",
+    "headings": [
+      {
+        "line": 1,
+        "text": "# FlowerMarketOntology Research Tranche: Pothos, Ambiguous Trade Names, Search Readiness, and Commerce Evidence"
+      },
+      {
+        "line": 7,
+        "text": "## Executive delta"
+      },
+      {
+        "line": 23,
+        "text": "## Golden pothos bilingual pilot"
+      },
+      {
+        "line": 81,
+        "text": "## Identity, Persian vocabulary, and diagnostic examples"
+      },
+      {
+        "line": 139,
+        "text": "## Search, symptom evidence, and diagnostic readiness"
+      },
+      {
+        "line": 208,
+        "text": "## Seller, delivery, and wholesale audit"
+      },
+      {
+        "line": 245,
+        "text": "## Structured evidence package, unresolved questions, and release gates"
+      }
+    ],
+    "language": "mixed English/Persian",
+    "provenance": "User-supplied research report; embedded citations not independently verified",
+    "redistribution": "Unverified; source and derived text kept local"
+  },
+  {
+    "basename": "Persian Houseplant Question Discovery for FlowerMarketOntology6.md",
+    "sha256": "b4d8f38a12546d102051463822fe63033cf69b128b3901af5d857210a789276a",
+    "bytes": 23490,
+    "lines": 160,
+    "encoding": "UTF-8 (strict decode)",
+    "title": "# Persian Houseplant Question Discovery for FlowerMarketOntology",
+    "headings": [
+      {
+        "line": 1,
+        "text": "# Persian Houseplant Question Discovery for FlowerMarketOntology"
+      },
+      {
+        "line": 3,
+        "text": "## Scope, evidence rules, and what was actually observed"
+      },
+      {
+        "line": 13,
+        "text": "## Source-linked question corpus"
+      },
+      {
+        "line": 64,
+        "text": "## What the questions imply for discovery and troubleshooting"
+      },
+      {
+        "line": 72,
+        "text": "## Independent search fixtures and proposed user tasks"
+      },
+      {
+        "line": 101,
+        "text": "## Consent-based interview and mobile-search protocol"
+      },
+      {
+        "line": 127,
+        "text": "## Persian-first mobile information architecture and unresolved questions"
+      }
+    ],
+    "language": "mixed English/Persian",
+    "provenance": "User-supplied research report; embedded citations not independently verified",
+    "redistribution": "Unverified; source and derived text kept local"
+  },
+  {
+    "basename": "Tehran Apartment-Grower Flower Market — Execution Update2.md",
+    "sha256": "c82be9a2ca02c30696e97312514fdc7173bb27524e59d0bcbdc6ab2fedecaa65",
+    "bytes": 39449,
+    "lines": 178,
+    "encoding": "UTF-8 (strict decode)",
+    "title": "# Tehran Apartment-Grower Flower Market — Execution Update",
+    "headings": [
+      {
+        "line": 1,
+        "text": "# Tehran Apartment-Grower Flower Market — Execution Update"
+      },
+      {
+        "line": 3,
+        "text": "## Research frame and status"
+      },
+      {
+        "line": 11,
+        "text": "## Page-level seller evidence"
+      },
+      {
+        "line": 13,
+        "text": "### Iranian seller surfaces recovered"
+      },
+      {
+        "line": 34,
+        "text": "### Mashhad permalink recovery trail"
+      },
+      {
+        "line": 40,
+        "text": "### The Sill comparison status"
+      },
+      {
+        "line": 46,
+        "text": "## Identity and care resolution"
+      },
+      {
+        "line": 48,
+        "text": "### Authority-backed identity records"
+      },
+      {
+        "line": 60,
+        "text": "### Split-leaf philodendron conflict"
+      },
+      {
+        "line": 68,
+        "text": "### Pothos care claims"
+      },
+      {
+        "line": 90,
+        "text": "## Persian search and symptom evidence"
+      },
+      {
+        "line": 106,
+        "text": "## Commerce and wholesale evidence"
+      },
+      {
+        "line": 108,
+        "text": "### Product-level substitution and delivery"
+      },
+      {
+        "line": 114,
+        "text": "### Imam Reza / Khavaran"
+      },
+      {
+        "line": 124,
+        "text": "### Mahallati"
+      },
+      {
+        "line": 134,
+        "text": "## Evidence register"
+      },
+      {
+        "line": 160,
+        "text": "## Unresolved questions and prioritized next actions"
+      }
+    ],
+    "language": "mixed English/Persian",
+    "provenance": "User-supplied research report; embedded citations not independently verified",
+    "redistribution": "Unverified; source and derived text kept local"
+  },
+  {
+    "basename": "Tehran Apartment-Grower Market Execution Tranche Update3.md",
+    "sha256": "a19868254d8226afb142549dc6b0361c41f1081c62dd56b54ba4feb243a0de41",
+    "bytes": 23563,
+    "lines": 231,
+    "encoding": "UTF-8 (strict decode)",
+    "title": "# Tehran Apartment-Grower Market: Execution Tranche Update",
+    "headings": [
+      {
+        "line": 1,
+        "text": "# Tehran Apartment-Grower Market: Execution Tranche Update"
+      },
+      {
+        "line": 7,
+        "text": "## Bilingual pothos pilot"
+      },
+      {
+        "line": 14,
+        "text": "### Light wording"
+      },
+      {
+        "line": 28,
+        "text": "### Humidity wording"
+      },
+      {
+        "line": 42,
+        "text": "### Toxicity wording"
+      },
+      {
+        "line": 56,
+        "text": "### Photo rights"
+      },
+      {
+        "line": 65,
+        "text": "## Identification examples and Persian trade names"
+      },
+      {
+        "line": 89,
+        "text": "### Seller modifiers"
+      },
+      {
+        "line": 101,
+        "text": "## Mobile search and symptom evidence"
+      },
+      {
+        "line": 103,
+        "text": "### Real mobile testing"
+      },
+      {
+        "line": 122,
+        "text": "### Symptom cases"
+      },
+      {
+        "line": 147,
+        "text": "## Commerce and seller-policy gaps"
+      },
+      {
+        "line": 149,
+        "text": "### Mashhad permalink"
+      },
+      {
+        "line": 155,
+        "text": "### VIPShop basket/product URL"
+      },
+      {
+        "line": 167,
+        "text": "### Nargil versus linked vendors"
+      },
+      {
+        "line": 181,
+        "text": "### Wholesale markets"
+      },
+      {
+        "line": 191,
+        "text": "## Updated evidence register"
+      },
+      {
+        "line": 219,
+        "text": "## Unresolved questions and exit-criteria status"
+      }
+    ],
+    "language": "mixed English/Persian",
+    "provenance": "User-supplied research report; embedded citations not independently verified",
+    "redistribution": "Unverified; source and derived text kept local"
+  }
+]
