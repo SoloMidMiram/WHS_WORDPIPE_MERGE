@@ -36,7 +36,9 @@ The user authorized expanding draft PR #7 to include the context workflow.
 Changes were prepared on `codex/context-loop-20261118` from reviewed parent
 `364d7fdd14203439e8518209e4e2d8210a319ddc` and will be applied to
 `pilot/flowers-seven-md-20261118`, whose last verified head was `39a730a`.
-Remote base/head must be reconciled again before push. This adds rules, a
+PR #7 was reverified as draft at `39a730a`, base main, before integration.
+The integrated reviewed head is `6518018041f2d9f205cd6bdc8a7650827c79d09a`;
+last fetched main is `d9ef212`, with refresh initially failing on DNS. This adds rules, a
 repository-local skill, bounded Git retrieval, the map and reverse roadmap;
 it does not change Flowers extraction, taxonomy, or PR #5/#6 implementations.
 
@@ -45,8 +47,13 @@ accounts for all 54 preexisting/new untracked files, retains a private hash
 inventory, and keeps restricted inputs, scratch scripts, generated artifacts and
 the editor plan out of the commit. The apparent engineering README modification
 has the same normalized Git blob as HEAD. The map was rechecked; two retrieval
-tests passed in this iteration. Validate the integrated PR worktree, then verify
-new exact-head CI. Historical acceptance limits remain in force; do not merge.
+tests passed in the original checkout. On integrated head `6518018`, full pytest
+recorded 328 passed in 76.46 seconds; all five governance checks passed (security:
+1000 files, zero findings), skill validation passed, and the five-stage PowerShell
+synthetic smoke passed. All 79 source/archive hashes remain unchanged. Separately,
+all 50 unrelated untracked files in the original checkout retain their inventoried
+byte hashes. This documentation follow-up changes the head; verify new exact-head
+CI after pushing. Historical acceptance limits remain in force; do not merge.
 
 ### 2026-11-18 — Reusable context workflow (implemented locally; validation below)
 

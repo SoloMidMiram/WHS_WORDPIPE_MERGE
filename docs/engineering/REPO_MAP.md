@@ -1,6 +1,6 @@
 # WHS repository retrieval map
 
-Checked: 2026-11-18 on `codex/chronicle-run-evidence` at `364d7fd`.
+Checked: 2026-11-18 on `pilot/flowers-seven-md-20261118`, reviewed head `6518018`.
 This is a routing map, not live PR status or an acceptance certificate.
 Canonical dependency rules remain in [architecture](../../ARCHITECTURE_AND_MODULES.md).
 The broad file inventory remains [INDEX.md](../../INDEX.md).
@@ -50,8 +50,8 @@ python tools/security_scan.py --root . --fail-on-findings
 ```
 
 Use existing PowerShell integration in `.github/workflows/ci.yml` when applicable.
-`tools/smoke_flowers.py` exists on the Flowers PR branch, not this checked-out
-revision: verify presence before invoking it. PR #6 owns configuration/metadata
+`python tools/smoke_flowers.py` runs the synthetic five-stage smoke on this
+Flowers branch; verify presence when using another checkout. PR #6 owns configuration/metadata
 validation; PR #5 owns survivor navigation. Those are reported workstream
 boundaries, not a reason to import their code or assume their current heads.
 
