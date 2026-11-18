@@ -2,8 +2,96 @@
 
 > **Date (Gregorian):** 2026-07-09
 > **Date (Shamsi/Jalali):** 1405-04-18
-> **Last Updated:** 2026-07-26
-> **Branch:** `main`
+> **Last Updated:** 2026-11-18
+> **Iteration checkout:** `codex/chronicle-run-evidence`; entries below identify their own branch/PR.
+
+## Active narrative roadmap — newest first
+
+This section is the reverse roadmap: put the latest plans and changes first.
+Dates identify when a plan or result was recorded; proposed targets are not
+delivery promises. Keep older evidence attached to its original revision.
+The phase catalogue below remains historical planning context, not live PR status.
+
+### 2026-11-18 — Next acceptance decisions (planned; no merge authorized)
+
+The next Flowers decision is whether independently reviewed category labels and
+claim-level date/duplicate evidence support corpus acceptance. Complete those
+reviews on the Flowers branch before claiming precision/recall or publication
+readiness. Keep configuration validation with PR #6 and survivor navigation with
+PR #5, reconciling their current heads before taking dependencies. Semantic NLP,
+general literature extraction and ontology migrations remain separate future
+slices; no delivery date or implementation commitment is assigned here.
+
+For the next merge-readiness iteration on any branch, first refresh local and
+remote revision identity, then prepend a dated narrative with branch/PR, reviewed
+head/base, bounded change, actual checks, map review, remaining uncertainty and
+next decision. A documentation commit changes the head: verify its CI afterward
+rather than attaching its parent's passing run. Use the
+[retrieval map](docs/engineering/REPO_MAP.md) and the repository-local
+`whs-context-loop` skill to avoid rebuilding context from whole archives.
+
+### 2026-11-18 — Commit context workflow into PR #7 (integration iteration)
+
+The user authorized expanding draft PR #7 to include the context workflow.
+Changes were prepared on `codex/context-loop-20261118` from reviewed parent
+`364d7fdd14203439e8518209e4e2d8210a319ddc` and will be applied to
+`pilot/flowers-seven-md-20261118`, whose last verified head was `39a730a`.
+Remote base/head must be reconciled again before push. This adds rules, a
+repository-local skill, bounded Git retrieval, the map and reverse roadmap;
+it does not change Flowers extraction, taxonomy, or PR #5/#6 implementations.
+
+The [local organization review](docs/engineering/LOCAL_ORGANIZATION_REVIEW_20261118.md)
+accounts for all 54 preexisting/new untracked files, retains a private hash
+inventory, and keeps restricted inputs, scratch scripts, generated artifacts and
+the editor plan out of the commit. The apparent engineering README modification
+has the same normalized Git blob as HEAD. The map was rechecked; two retrieval
+tests passed in this iteration. Validate the integrated PR worktree, then verify
+new exact-head CI. Historical acceptance limits remain in force; do not merge.
+
+### 2026-11-18 — Reusable context workflow (implemented locally; validation below)
+
+Branch `codex/chronicle-run-evidence`, reviewed head
+`364d7fdd14203439e8518209e4e2d8210a319ddc`. `gh pr list --head
+codex/chronicle-run-evidence --state all` verified that this branch's PR #4 is
+already MERGED against `main`; this documentation/tooling iteration is uncommitted
+and has no new PR. The remote main SHA has not been refreshed in this iteration.
+Unrelated dirty documentation, scripts and local corpus inputs are preserved.
+
+The goal is cheaper, more reliable context retrieval without weakening evidence
+or acceptance rules. `tools/repo_context.py` now exposes a local Git snapshot and
+bounded literal keyword grep. The new skill routes decisions to existing tools;
+`docs/engineering/REPO_MAP.md` maps code, tests, manifests and their limits. The
+map was checked against local files and Git grep references. This adds no model
+or network dependency and makes no measured token-saving claim. Two focused
+retrieval tests passed; skill frontmatter validation passed. Root-layout,
+architecture and documentation-link checks passed; the security scan inspected
+943 files with zero findings. Input-catalog validation failed on eight existing
+unregistered local Flowers files; these were present in the initial dirty
+inventory and were preserved. The focused suite including catalog checks
+recorded 22 passed and one failure on that same catalog condition; the retrieval,
+root-layout and architecture subset recorded 13 passed. `git diff --check`
+passed. No full pytest or new exact-head CI was run for this uncommitted
+iteration. Merge readiness still requires a dedicated reviewed branch/PR and
+exact-head checks; none is created by this workflow.
+
+### 2026-11-18 — Flowers acceptance hardening (reported prior workstream)
+
+The preceding handoff reports draft PR #7 on
+`pilot/flowers-seven-md-20261118` at
+`39a730a2149fcf62c29b78c2af3d9248d5d75673`, based on main, with all five jobs
+passing in runs `44372900369` and `44372911640`. These are historical reported
+results, not reverified remote status in this iteration, and the Flowers files
+are not present on this checkout. The reported narrow fix validates linked
+worktree Git pointers; it does not broaden root governance.
+
+The reported audit accounts for 44 H2 sections and seven omitted preambles.
+Taxonomy ground truth and exhaustive semantic review remain incomplete; the
+reported 36/44 contextual title acceptance is not publication approval. Reported
+navigation failures remain owned by PR #5. Preserve source rights and keep merge
+readiness, corpus acceptance and future engine capabilities separate. Recheck
+`WordHorrorStories/flowers/ACCEPTANCE_02.md` on that branch before using its facts.
+
+## Earlier phase catalogue and dated stabilization evidence
 
 Current stabilization status:
 - Chronicle dependency ownership is declared through the `chronicle` extra.
