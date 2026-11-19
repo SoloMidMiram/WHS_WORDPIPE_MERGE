@@ -86,6 +86,17 @@ the current summary absent.
 | `chain.ps1` | Orchestrator — runs all 5 stages | PowerShell + Python |
 | `themes.json` | External theme config (6 themes, 62 pos + 16 neg keywords) | JSON |
 | `index_config.json` | Index generation config | JSON |
+
+The index CLI uses built-in defaults and logs a warning if a supplied config
+cannot be read, decoded, or validated. Pass `--strict-config` to
+`python -m pipeline.index` to reject an invalid config or unknown setting with
+exit code 2 before writing any appendix files. Omitting `--config` uses defaults
+in either mode.
+
+Theme configuration must have a mapping at its root and, when present, a
+mapping under `themes`. Blank positive and negative keywords are ignored.
+Merge ignores non-mapping YAML front matter with a warning and retains the
+event body.
 | `templates/` | 4 Jinja2 templates for appendix rendering | Optional Jinja2 |
 | `CODEX_WORKING.md` | Working code reference, evolution, known issues | Read this first |
 
