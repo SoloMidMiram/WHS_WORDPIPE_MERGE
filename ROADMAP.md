@@ -7,6 +7,30 @@
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-19 — WHS-AI-01 structural context-pack fidelity
+
+Branch `experiment/whs-08-context-pack-fidelity`, [draft PR #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13).
+Reviewed parent `b25c02c8055e532b87bd88e747acb87ad102377c` on
+main `e2f1c17643b05016f5617a43c07f850033c6acbd`. The optional exporter
+validates pinned generic Markdown run evidence and reuses survivor anchors.
+The [repository map](docs/engineering/REPO_MAP.md) now locates the exporter,
+benchmark, fixtures and tests.
+
+The 24-case synthetic benchmark froze B1 at `d685e56` before scoring the
+holdout. B1 retained 43/45 critical and 63/65 total facts across all cases.
+All 21 delivered packets passed provenance checks. Median complete-packet
+GPT-2 reduction was 46.07% versus raw, including fallback and refusals.
+The real synthetic topic-runner and read-only CLI replay passed. Local pytest
+observed 390 passed and six platform skips. The frozen B0 artifacts and
+historical paraphrase evidence matched their original hashes.
+
+The [pilot report](docs/engineering/WHS_CONTEXT_PACK_FIDELITY.md) recommends
+**REVISE** because one delivered holdout packet omitted a distant critical
+qualification. One budget refusal withheld evidence. Independent annotation
+review and target-consumer accounting remain open. NCM and related #9 and #11
+remain deferred. Review the published documentation head and CI before any
+acceptance decision.
+
 ### 2026-11-19 — WHS-INTEGRATION-09 PR #12 research reconciliation
 
 Branch `experiment/whs-ncm-flowers-pilot`, [PR #12](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/12).

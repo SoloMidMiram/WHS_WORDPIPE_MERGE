@@ -16,10 +16,10 @@
     "B1": 46.07
   },
   "fixture_sha256": {
-    "whs_context_holdout.json": "69bb258b7d452a3f38d8252341fbdac7683d506724ccfa111df162126982727a",
-    "whs_context_holdout_gold.json": "305c9521665661342ad82f26a4644ac0ca774748caea9b314c355e3072fbb10a",
-    "whs_context_tuning.json": "acaec6eab506ba8afa0e2e5de1e1cd146c66b6f6e11fbee8cc55064bc2995cb0",
-    "whs_context_tuning_gold.json": "97f9a2a113f82a1b954b71e238b585eb4ff6706042e04e1b834f36ef86d768a4"
+    "whs_context_holdout.json": "9f821f5189703916ec6b16f9872e4dfcb4de45469deb627a708ca5e3fe78b5e2",
+    "whs_context_holdout_gold.json": "f492ede227c5173d5a2f8581eca2c643fc50503e243b9b398d037d456e4df30d",
+    "whs_context_tuning.json": "a15331abc107085125629325662d512c2ad4a8a5d1693688218212b482871691",
+    "whs_context_tuning_gold.json": "c835fe5488ef71d31438125ba57cd2abf9c9828593b9b5bd0b11b930ce83bcf0"
   },
   "partitions": {
     "tuning": {
@@ -284,5 +284,6 @@
       "artifact_verification_peak_python_bytes": 33593073
     }
   },
-  "recommendation": "REVISE"
+  "recommendation": "REVISE",
+  "fixture_sha256_basis": "Canonical fixture bytes in Git, with LF line endings."
 }
