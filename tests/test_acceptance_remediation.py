@@ -535,11 +535,11 @@ def test_dedup_date_title_keeps_same_title_different_dates() -> None:
     assert len(result) == 2, "Both events should survive with date_title dedup"
 
 
-def test_dedup_date_title_default_used() -> None:
-    """Default dedup method preserves same-title different-date events."""
+def test_survivor_index_default_used() -> None:
+    """The default index preserves every survivor."""
     from pipeline.index import DEFAULT_CONFIG
 
-    assert DEFAULT_CONFIG["dedup_method"] == "date_title"
+    assert DEFAULT_CONFIG["dedup_method"] == "survivor"
 
 
 # ==============================================================================

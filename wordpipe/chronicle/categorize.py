@@ -62,7 +62,11 @@ def load_themes(config_path: Path | None) -> dict[str, list[str]]:
         logging.error("Config file not found: %s", config_path)
         sys.exit(1)
 
-    raw = config_path.read_text(encoding="utf-8")
+    try:
+        raw = config_path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as e:
+        logging.error("Cannot read theme config %s: %s", config_path, e)
+        sys.exit(1)
     config: dict[str, Any] = {}
 
     try:
@@ -76,14 +80,16 @@ def load_themes(config_path: Path | None) -> dict[str, list[str]]:
             logging.error("Config file %s is neither valid JSON nor valid YAML: %s", config_path, e)
             sys.exit(1)
 
-    themes = config.get("themes")
-    if not themes:
-        logging.warning("Config file %s has no 'themes' key; using built-in defaults.", config_path)
-        return _normalise_themes(DEFAULT_THEMES)
-
+    if not isinstance(config, dict):
+        logging.error("Theme config %s must contain a mapping.", config_path)
+        sys.exit(1)
+    themes = config.get("themes", {})
     if not isinstance(themes, dict):
         logging.error("'themes' must be a dictionary, got %s.", type(themes).__name__)
         sys.exit(1)
+    if not themes:
+        logging.warning("Config file %s has no 'themes' key; using built-in defaults.", config_path)
+        return _normalise_themes(DEFAULT_THEMES)
 
     return _normalise_themes(themes)
 
@@ -132,6 +138,8 @@ def _load_negative_keywords(config_path: Path | None) -> dict[str, list[str]]:
         except yaml.YAMLError:
             return {}
 
+    if not isinstance(config, dict):
+        return {}
     themes = config.get("themes")
     if not isinstance(themes, dict):
         return {}
@@ -162,7 +170,7 @@ def extract_events(md_body: str) -> list[dict[str, str]]:
         return events
 
     for i, match in enumerate(matches):
-        heading_line = match.group(1).strip()
+        heading_line = match.group(1).partition("\n")[0].strip()
         start = match.start()
         end = matches[i + 1].start() if i + 1 < len(matches) else len(md_body)
         raw_block = md_body[start:end].strip()
@@ -213,10 +221,10 @@ def match_themes(
 
     for theme_name, keywords in themes.items():
         for kw in keywords:
-            if kw.lower() in body_lower:
+            if kw.strip() and kw.lower() in body_lower:
                 # Check negative keywords
                 neg_kws = neg.get(theme_name, [])
-                if any(nk.lower() in body_lower for nk in neg_kws):
+                if any(nk.strip() and nk.lower() in body_lower for nk in neg_kws):
                     continue  # negative match -- skip this theme
                 matched.append(theme_name)
                 break
@@ -257,12 +265,15 @@ def rebuild_tagged_md(original_text: str, events: list[dict[str, Any]]) -> str:
     tagged_blocks: list[str] = []
     for ev in events:
         raw = ev["block"]
-        if ev.get("themes"):
-            heading = ev["heading_line"]
-            comment = f"<!-- themes: {', '.join(ev['themes'])} -->"
-            newline_pos = raw.find("\n")
-            rest = raw[newline_pos:] if newline_pos >= 0 else ""
-            tagged_blocks.append(f"{heading}\n{comment}{rest}")
+        if ev.get("themes") or ev.get("anchor"):
+            heading, newline, rest = raw.partition("\n")
+            heading = heading.rstrip("\r")
+            metadata = ""
+            if ev.get("themes"):
+                metadata += f"\n<!-- themes: {', '.join(ev['themes'])} -->"
+            if ev.get("anchor"):
+                metadata += f'\n\n<a id="{ev["anchor"]}"></a>\n'
+            tagged_blocks.append(f"{heading}{metadata}{newline}{rest}")
         else:
             tagged_blocks.append(raw)
 

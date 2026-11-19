@@ -2,9 +2,8 @@
   "_comment": "Configuration for index.py. All fields are optional — defaults are used if missing.",
   "output_dir": "appendix",
   "templates_dir": "pipeline/templates",
-  "dedup_method": "date_title",
+  "dedup_method": "survivor",
   "theme_sort": "name",
   "no_link_registry": false,
-  "link_check_timeout": 5,
   "event_snippet_max_chars": 200
 }

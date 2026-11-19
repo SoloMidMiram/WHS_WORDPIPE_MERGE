@@ -11,7 +11,7 @@
 | Date | Title |
 |------|-------|
 {% for event in theme_events -%}
-| {{ event.date }} | [{{ event.title }}](#{{ event.anchor }}) |
+| {{ event.date }} | {{ event_link(event) }} |
 {% endfor %}
 
 {% endfor %}

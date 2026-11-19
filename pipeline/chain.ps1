@@ -463,7 +463,7 @@ try {
     Write-StageHeader 5 "Index Generation - $IndexPy"
 
     $AppendixDir = "$OutputDirAbs/appendix"
-    $indexArgs = @("--input", $TaggedFile, "--output-dir", $AppendixDir)
+    $indexArgs = @("--input", $TaggedFile, "--merged", $MergedFile, "--output-dir", $AppendixDir)
     if ($IndexConfig) {
         if (-not (Test-Path $IndexConfig)) {
             Write-Error "Index config file not found: $IndexConfig"
@@ -486,15 +486,32 @@ try {
     if ($Verbose) { $indexArgs += "--verbose" }
     $registryName = "appendix/link_registry.md"
     $registryPath = Join-Path $OutputDirAbs $registryName
-    $previousRegistry = Get-ChronicleArtifactStamp $registryPath
+    $requiredIndex = @("appendix/event_index.md", "appendix/theme_index.md", "appendix/source_manifest.md")
+    $optionalIndex = @($registryName, "appendix/chronicle_tagged_anchored.md")
+    $previousIndex = @{}
+    foreach ($name in ($requiredIndex + $optionalIndex)) {
+        $previousIndex[$name] = Get-ChronicleArtifactStamp (Join-Path $OutputDirAbs $name)
+    }
     $result = Invoke-ChronicleStage "Index generation" $IndexPy $indexArgs
     Set-ChronicleStageEvidence $indexStage $result
 
     if ($result.Status -eq "ok") {
-        $indexStage.outputs = @("appendix/event_index.md", "appendix/theme_index.md", "appendix/source_manifest.md")
-        $registryStamp = Get-ChronicleArtifactStamp $registryPath
-        if ($registryStamp -and $registryStamp -ne $previousRegistry) {
-            $indexStage.outputs += $registryName
+        foreach ($name in $requiredIndex) {
+            $stamp = Get-ChronicleArtifactStamp (Join-Path $OutputDirAbs $name)
+            if (-not $stamp -or $stamp -eq $previousIndex[$name]) {
+                $indexStage.status = "failed"
+                $indexStage.diagnostics = @("missing_or_stale_index_artifact")
+                Write-Error "Index generation did not publish a fresh $name."
+                $runExitCode = 5
+                exit $runExitCode
+            }
+        }
+        $indexStage.outputs = $requiredIndex
+        foreach ($name in $optionalIndex) {
+            $stamp = Get-ChronicleArtifactStamp (Join-Path $OutputDirAbs $name)
+            if ($stamp -and $stamp -ne $previousIndex[$name]) {
+                $indexStage.outputs += $name
+            }
         }
         Write-StageOk "Appendix indices written to $AppendixDir"
     } else {
