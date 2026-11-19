@@ -1,0 +1,44 @@
+{
+  "schema": "whs-ncm-pilot-metrics-v1",
+  "scope": "independently authored synthetic fixtures",
+  "case_count": 8,
+  "tokenizer": {
+    "name": "GPT-2 BPE",
+    "kind": "consumer-token estimate",
+    "asset_sha256": "8414cab924d8b9b33013f0d221c5862f365ee9be39c5c2bfae8a5a9e970478a6",
+    "engine": "tokenizers 0.23.3"
+  },
+  "arm_a": {
+    "retained_facts": 33,
+    "annotated_facts": 33,
+    "retained_critical_facts": 23,
+    "annotated_critical_facts": 23,
+    "estimated_consumer_tokens": 1168,
+    "utf8_bytes": 3971,
+    "median_wall_ms": 0.9763,
+    "maximum_peak_python_bytes": 7551,
+    "verified_source_identities": 8
+  },
+  "arm_b": {
+    "retained_facts": 25,
+    "annotated_facts": 33,
+    "retained_critical_facts": 23,
+    "annotated_critical_facts": 23,
+    "estimated_consumer_tokens": 1007,
+    "utf8_bytes": 3442,
+    "median_wall_ms": 1.0136,
+    "maximum_peak_python_bytes": 7239,
+    "verified_source_identities": 8
+  },
+  "arm_b_raw_fallbacks": 1,
+  "median_b_vs_a_byte_reduction_pct": 13.0,
+  "median_b_vs_a_token_reduction_pct": 14.19,
+  "ncm_median_c_vs_b_token_reduction_pct": null,
+  "ncm_cold_start_ms": null,
+  "ncm_generation_ms": null,
+  "ncm_peak_rss_bytes": null,
+  "ncm_fallback_rate": null,
+  "real_flowers_status": "blocked",
+  "synthetic_ncm_smoke_status": "not_run",
+  "adoption_decision": "blocked_no_runtime_evidence"
+}

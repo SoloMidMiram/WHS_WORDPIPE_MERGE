@@ -1,6 +1,6 @@
 # WHS repository retrieval map
 
-Checked: 2026-11-19 for `pilot/flowers-seven-md-20261118`, reconciliation head `0a97fe6` on main `a2ca8a4`.
+Checked: 2026-11-19 for WHS-INTEGRATION-09, experiment/whs-ncm-flowers-pilot (PR #12), reviewed parent b7f1627 on main 87c69d3.
 This is a routing map, not live PR status or an acceptance certificate.
 Canonical dependency rules remain in [architecture](../../ARCHITECTURE_AND_MODULES.md).
 The broad file inventory remains [INDEX.md](../../INDEX.md).
@@ -25,6 +25,7 @@ semantic index; verify the caller and contract before editing.
 | topic, adapter, lineage, correlation | `tools/run_topic_report.py`, `tools/prepare_generic_markdown_chronicle.py`, `tools/prepare_insurancechatbot_chronicle.py` | `tests/test_run_topic_report.py`, `tests/test_prepare_generic_markdown_chronicle.py`, `tests/test_phase16_event_lineage_runner.py` |
 | catalog, hashes, preservation | `inputs/README.md`, `inputs/catalog.json`, `tools/verify_integrity.py` | `tests/test_input_catalog.py`; inspect specific evidence only on demand |
 | boundaries, root, imports | `ROOT_ORGANIZATION.md`, `tools/check_root_layout.py`, `tools/check_architecture_boundaries.py` | `tests/test_root_layout.py`, `tests/test_architecture_boundaries.py` |
+| NCM Flowers pilot, B0, worker fallback | `scripts/experiments/ncm_flowers_pilot.py` (offline synthetic harness) | `tests/test_ncm_flowers_pilot.py`, `tests/fixtures/ncm_flowers_synthetic.json`, `tests/fixtures/ncm_flowers_synthetic_gold.json`; [report and metrics](NCM_FLOWERS_PILOT.md). Genuine inference remains blocked. |
 | priorities, architecture, ontology | `ROADMAP.md`, `ARCHITECTURE_AND_MODULES.md`, `ONTOLOGY_MODEL.md` | `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`, `docs/engineering/OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md` |
 
 ## Reuse tools and interpret their limits

@@ -1,0 +1,46 @@
+{
+  "schema": "whs-ncm-pilot-metrics-v2",
+  "scope": "independently authored synthetic fixtures",
+  "arm_b_mode": "unassisted",
+  "tokenizer": {
+    "name": "GPT-2 BPE",
+    "kind": "consumer-token estimate",
+    "asset_sha256": "8414cab924d8b9b33013f0d221c5862f365ee9be39c5c2bfae8a5a9e970478a6",
+    "engine": "tokenizers 0.23.3"
+  },
+  "median_b_vs_a_token_reduction_pct": 21.4,
+  "median_b_vs_a_byte_reduction_pct": 24.16,
+  "case_count": 8,
+  "arm_a": {
+    "retained_facts": 33,
+    "annotated_facts": 33,
+    "retained_critical_facts": 23,
+    "annotated_critical_facts": 23,
+    "estimated_consumer_tokens": 1168,
+    "utf8_bytes": 3971,
+    "source_integrity": 8,
+    "median_wall_ms": 0.80635,
+    "max_peak_python_bytes": 7431
+  },
+  "arm_b": {
+    "retained_facts": 18,
+    "annotated_facts": 33,
+    "retained_critical_facts": 16,
+    "annotated_critical_facts": 23,
+    "estimated_consumer_tokens": 939,
+    "utf8_bytes": 3110,
+    "source_integrity": 8,
+    "median_wall_ms": 0.70715,
+    "max_peak_python_bytes": 7239
+  },
+  "arm_b_raw_fallbacks": 1,
+  "arm_c": {
+    "status": "blocked",
+    "incremental_token_reduction_pct": null,
+    "latency_ms": null,
+    "peak_rss_bytes": null,
+    "fallback_rate": null
+  },
+  "flowers_quality": "unmeasured",
+  "recommendation": "defer"
+}
