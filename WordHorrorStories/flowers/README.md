@@ -1,5 +1,11 @@
 # Flowers seven-document pilot
 
+Current status (2026-11-19): engineering navigation PASS after integrating merged
+PRs #6/#5 and repeating the full seven-source topic run. Semantic corpus
+acceptance remains REVIEW; PR #7 stays draft. See the newest matrix in
+[ACCEPTANCE_02.md](ACCEPTANCE_02.md). Earlier observations below are preserved
+as historical results and are superseded where the current matrix says so.
+
 Verdict: REVIEW. This is partial evaluation, not publication acceptance.
 
 Seven user-supplied UTF-8 research reports total 233194 bytes. Raw hashes and heading inventories are in source_inventory.json. Source text and derived standard runner artifacts remain local under output/ because redistribution rights are unverified. Embedded citation tokens are historical source claims, not independently verified references. Dates in bodies must not be interpreted as publication dates.

@@ -1,6 +1,6 @@
 # WHS repository retrieval map
 
-Checked: 2026-11-18 on `pilot/flowers-seven-md-20261118`, reviewed head `6518018`.
+Checked: 2026-11-19 for `pilot/flowers-seven-md-20261118`, reconciliation head `0a97fe6` on main `a2ca8a4`.
 This is a routing map, not live PR status or an acceptance certificate.
 Canonical dependency rules remain in [architecture](../../ARCHITECTURE_AND_MODULES.md).
 The broad file inventory remains [INDEX.md](../../INDEX.md).
@@ -20,7 +20,7 @@ semantic index; verify the caller and contract before editing.
 | ingest, rejected, allow-undated | `wordpipe/chronicle/ingest.py`, `pipeline/ingest.py` | `tests/test_pipeline_chronicle.py`, `tests/test_chain_partial_ingest.py` |
 | merge, survivor, dedup, conflict | `wordpipe/chronicle/merge.py`, `pipeline/merge.py` | `tests/test_phase17_survivor_verification.py`, `tests/test_phase17_provenance_stability.py` |
 | theme, negative_keywords, substring | `wordpipe/chronicle/categorize.py`, `pipeline/themes.json` | `tests/test_pipeline_chronicle.py`, `tests/test_acceptance_remediation.py` |
-| index, anchors, Unicode | `pipeline/index.py`, `pipeline/index_config.json`, `pipeline/templates/` | `tests/test_index_extraction.py`; PR #5 ownership must be refreshed live |
+| index, anchors, Unicode | `wordpipe/chronicle/index.py`, `pipeline/index.py`, `pipeline/index_config.json`, `pipeline/templates/` | `tests/test_index_extraction.py`; PR #5 implementation merged; refresh current refs before work |
 | chain, stages, run.json, fresh artifacts | `pipeline/chain.ps1`, `pipeline/chain_evidence.ps1` | `tests/test_pipeline_contracts.py`, `.github/workflows/ci.yml` |
 | topic, adapter, lineage, correlation | `tools/run_topic_report.py`, `tools/prepare_generic_markdown_chronicle.py`, `tools/prepare_insurancechatbot_chronicle.py` | `tests/test_run_topic_report.py`, `tests/test_prepare_generic_markdown_chronicle.py`, `tests/test_phase16_event_lineage_runner.py` |
 | catalog, hashes, preservation | `inputs/README.md`, `inputs/catalog.json`, `tools/verify_integrity.py` | `tests/test_input_catalog.py`; inspect specific evidence only on demand |
@@ -51,8 +51,8 @@ python tools/security_scan.py --root . --fail-on-findings
 
 Use existing PowerShell integration in `.github/workflows/ci.yml` when applicable.
 `python tools/smoke_flowers.py` runs the synthetic five-stage smoke on this
-Flowers branch; verify presence when using another checkout. PR #6 owns configuration/metadata
-validation; PR #5 owns survivor navigation. Those are reported workstream
+Flowers branch; verify presence when using another checkout. PR #6 configuration/metadata validation and PR #5 survivor navigation are now
+merged into main. Those are reported workstream
 boundaries, not a reason to import their code or assume their current heads.
 
 ## Context cost and preservation

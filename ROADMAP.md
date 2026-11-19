@@ -2,10 +2,38 @@
 
 > **Date (Gregorian):** 2026-07-09
 > **Date (Shamsi/Jalali):** 1405-04-18
-> **Last Updated:** 2026-11-18
+> **Last Updated:** 2026-11-19
 > **Iteration checkout:** `codex/chronicle-run-evidence`; entries below identify their own branch/PR.
 
 ## Active narrative roadmap — newest first
+
+### 2026-11-19 — WHS-INTEGRATION-06 PR #7 engineering reconciliation
+
+Owner authorized normal main-into-PR7 reconciliation and safe status updates,
+not merging PR7. Reviewed refs: main a2ca8a4, PR7 2b08079. PRs #6/#5 are merged
+and main CI 44467106766 passed all five jobs. GitHub reported PR7 mergeable but
+its baseRefOid still showed the historical d9ef212; live main-ref verification
+and the conflict-free local preview established the current base contents.
+
+Clean detached reconciliation commit 0a97fe643245666daa1013ed7a4cf2fea532ebbb has
+ordered parents 2b08079 then a2ca8a4. Its tree exactly equals prior tested tree
+f6ff67370d899cd0cf9849394e4c7e317edd3872. The fresh seven-source topic run passed
+prepare/chain/summarize in 37.24 seconds, preserving 44 survivors, explicit
+anchors and valid source locators/lineage, 44 event links and 176 theme links.
+The repository map was checked and index/config ownership updated for merged
+main. No implementation or taxonomy changes were added. Full pytest passed 364 tests in 176.11 seconds. All five governance checks
+passed (security: 878 files, zero findings), as did the synthetic five-stage
+PowerShell smoke. All 146 inventoried original files and the detached experiment
+remain unchanged. Final exact-head CI is reported in the PR description after
+the documentation commit.
+
+Engineering navigation PASS supersedes the historical navigation failure;
+semantic corpus acceptance remains REVIEW. Seven preambles, unverified date
+semantics, incomplete manual category truth, contextual title acceptability,
+semantic duplicate/contradiction review and restricted publication rights stay
+open. Persian title navigation is synthetic evidence, not real-corpus coverage.
+Keep PR7 draft. No issue #8, NCM, Jev, semantic engine or schema migration work.
+
 
 This section is the reverse roadmap: put the latest plans and changes first.
 Dates identify when a plan or result was recorded; proposed targets are not

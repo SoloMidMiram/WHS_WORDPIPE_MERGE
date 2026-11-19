@@ -1,5 +1,43 @@
 # WHS-FLOWERS-PILOT-02 acceptance hardening
 
+## 2026-11-19 — WHS-INTEGRATION-06 current engineering acceptance
+
+Verified now on reconciliation commit `0a97fe643245666daa1013ed7a4cf2fea532ebbb`:
+ordered parents are prior PR #7 head `2b08079` then integrated main `a2ca8a4`.
+Its tree is `f6ff67370d899cd0cf9849394e4c7e317edd3872`, exactly matching the
+WHS-INTEGRATION-01 tested tree. PRs #6 and #5 are merged. No production or
+configuration edits were added during this reconciliation.
+
+| Decision | Current verdict | Fresh evidence / remaining limit |
+|---|---|---|
+| Engineering implementation and pilot execution | PASS | Complete topic runner: prepare, chain, summarize exit 0; seven inputs, 44 candidates/staged/merged/tagged events; zero reported warnings/errors/duplicate conflicts. Observed runner time 37.24s. |
+| Survivor and actual navigation acceptance | PASS | Independently matched all 44 normalized survivor identities in order, 44 explicit anchors, 44 event links and 176 theme links to unique existing targets in chronicle_tagged.md. Supersedes the dated pre-integration navigation FAIL below. |
+| Source locators and lineage | PASS | All 44 file/line/heading locators verified; source identities, body hashes, candidate ordinals and dates match historical lineage; no unexplained event loss or duplicate removal. |
+| Source preservation | PASS | Seven raw source hashes match inventory. Original/archive/dirty-file preservation is checked separately against the 146-file investigation inventory. |
+| Configuration and metadata compatibility | PASS | Integrated survivor configuration and seven Flowers themes load; configuration, nonmapping metadata, and negative-keyword characterization regressions remain in the full suite. |
+| Real Persian title coverage | UNVERIFIED | Corpus has zero Persian event titles. Persian/mixed-script coverage is from separate synthetic navigation regressions, including both renderers. |
+| Complete-document recall | REVIEW | Seven preambles remain omitted. Candidate counts/byte proportions do not prove semantic recall. |
+| Publication dates | REVIEW | Assigned dates retain historical derivation; publication-date semantics remain unverified. No dates rewritten. |
+| Taxonomy quality | REVIEW | Manual 308-cell ground truth incomplete; precision/recall unavailable. Taxonomy implementation unchanged. |
+| Contextual titles | REVIEW | Historical review: 36/44 acceptable (81.818%), eight generic titles need context; below the proposed acceptance goal. No numerical target is newly invented here. |
+| Semantic duplicates / contradictions | REVIEW | Exhaustive claim-level adjudication remains incomplete; zero pipeline conflicts is not semantic proof. |
+| Restricted corpus publication | REVIEW | No redistribution authorization; sources, run outputs and row-level audit remain local. |
+| Local validation | PASS | Full pytest: 364 passed in 176.11s on reconciliation code; all five governance checks passed (security: 878 files, zero findings); synthetic five-stage PowerShell smoke passed. Final exact-head hosted CI is recorded separately in the PR description. |
+| Engineering merge-readiness recommendation | Conditional PASS | Subject to the final documentation diff, governance/full-test results and fresh exact-head hosted CI recorded in the PR description. Keep draft; no merge authorized. |
+| Semantic corpus acceptance | REVIEW | Navigation PASS does not approve publication or settle literature quality. |
+| Future literature engine | Deferred | No issue #8/NCM/Jev/NLP/general extraction/ontology migration implementation. |
+
+The fresh local run is retained under the WHS-INTEGRATION-06 evidence directory
+as `topic-runs/flowers-reconciled`; navigation.local.json and lineage-audit.json
+retain aggregate verification and local scripts retain the procedure. Standard
+run artifacts contain restricted text and must not be uploaded. This is local
+CommonMark link/anchor analysis, not a claim of live browser inspection.
+
+## Historical WHS-FLOWERS-PILOT-02 observations (preserved)
+
+The following failures, counts and ownership statements describe the earlier
+pre-integration checkout. They remain historical evidence, not current status.
+
 Evidence classification: observations below are verified now by local commands unless marked inferred or unverified. Source-derived row-level files remain ignored under `output/acceptance_02b/`; no redistribution approval is inferred. This is a partial acceptance report, not completed semantic acceptance.
 
 ## Reconciliation
