@@ -23,7 +23,7 @@ configuration edits were added during this reconciliation.
 | Semantic duplicates / contradictions | REVIEW | Exhaustive claim-level adjudication remains incomplete; zero pipeline conflicts is not semantic proof. |
 | Restricted corpus publication | REVIEW | No redistribution authorization; sources, run outputs and row-level audit remain local. |
 | Local validation | PASS | Full pytest: 364 passed in 176.11s on reconciliation code; all five governance checks passed (security: 878 files, zero findings); synthetic five-stage PowerShell smoke passed. Final exact-head hosted CI is recorded separately in the PR description. |
-| Engineering merge-readiness recommendation | Conditional PASS | Subject to the final documentation diff, governance/full-test results and fresh exact-head hosted CI recorded in the PR description. Keep draft; no merge authorized. |
+| Engineering merge-readiness recommendation | BLOCKED (hosted CI) | Local implementation/pilot checks pass. Exact-head attempts at 96727b9 (PR run 44468789637; push run 44468784712) could not start jobs because GitHub reports account payment/spending-limit restrictions; matrix jobs cancelled. This is an execution-service blocker, not a passing hosted test result. Reverify final-head CI after the owner restores Actions capacity. Keep draft. |
 | Semantic corpus acceptance | REVIEW | Navigation PASS does not approve publication or settle literature quality. |
 | Future literature engine | Deferred | No issue #8/NCM/Jev/NLP/general extraction/ontology migration implementation. |
 

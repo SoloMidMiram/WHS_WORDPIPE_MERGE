@@ -7,6 +7,18 @@
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-19 — WHS-INTEGRATION-06 hosted CI execution blocker
+
+After normal push at head 96727b9, PR workflow 44468789637 and push workflow
+44468784712 failed/cancelled before executing any steps. GitHub annotations
+report failed account payments or a spending limit requiring increase. No code
+regression was observed by those jobs because they never started. Local tests
+and navigation remain PASS, but engineering merge readiness is BLOCKED pending
+restored Actions capacity and fresh final-head CI. Owner billing action is
+required; no account changes or speculative job retries were attempted. Record
+this documentation follow-up's actual hosted results in the PR description.
+Semantic corpus acceptance remains REVIEW; keep PR7 draft and do not merge.
+
 ### 2026-11-19 — WHS-INTEGRATION-06 PR #7 engineering reconciliation
 
 Owner authorized normal main-into-PR7 reconciliation and safe status updates,
