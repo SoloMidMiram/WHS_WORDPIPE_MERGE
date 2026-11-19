@@ -1,0 +1,288 @@
+{
+  "schema": "whs-context-pack-metrics-v1",
+  "b1_frozen_revision": "d685e56111a83b54bc4b58d00ae83ff95dd9543c",
+  "b0_reference_revision": "8090152dafa855bf7af34c9b32d57f00de19fde5",
+  "tokenizer": {
+    "name": "GPT-2 BPE",
+    "kind": "consumer-token estimate",
+    "asset_sha256": "8414cab924d8b9b33013f0d221c5862f365ee9be39c5c2bfae8a5a9e970478a6",
+    "engine": "tokenizers 0.23.3"
+  },
+  "tested_cases": 24,
+  "refusal_token_reduction_convention": "Zero credited savings for any refusal; fallbacks use the full delivered packet count.",
+  "median_reduction_all_cases_pct": {
+    "A": 0.0,
+    "B0": 56.74,
+    "B1": 46.07
+  },
+  "fixture_sha256": {
+    "whs_context_holdout.json": "69bb258b7d452a3f38d8252341fbdac7683d506724ccfa111df162126982727a",
+    "whs_context_holdout_gold.json": "305c9521665661342ad82f26a4644ac0ca774748caea9b314c355e3072fbb10a",
+    "whs_context_tuning.json": "acaec6eab506ba8afa0e2e5de1e1cd146c66b6f6e11fbee8cc55064bc2995cb0",
+    "whs_context_tuning_gold.json": "97f9a2a113f82a1b954b71e238b585eb4ff6706042e04e1b834f36ef86d768a4"
+  },
+  "partitions": {
+    "tuning": {
+      "partition": "tuning",
+      "case_count": 12,
+      "source_reread_bytes_once": 1518,
+      "consumer_source_reread_tokens": 0,
+      "deterministic_replay": true,
+      "input_hashes_unchanged": true,
+      "summary": {
+        "A": {
+          "critical": [
+            22,
+            22
+          ],
+          "overall": [
+            32,
+            32
+          ],
+          "provenance_ok": [
+            10,
+            10
+          ],
+          "unsupported_units": 0,
+          "routes": {
+            "raw": 10
+          },
+          "provenance_refusals": 2,
+          "median_wall_ms": 0.08025,
+          "max_peak_python_bytes": 10997,
+          "tokens": 7321,
+          "metadata_tokens": 2061,
+          "raw_fallback_tokens": 0,
+          "median_token_reduction_pct": 0.0
+        },
+        "B0": {
+          "critical": [
+            3,
+            22
+          ],
+          "overall": [
+            12,
+            32
+          ],
+          "provenance_ok": [
+            10,
+            10
+          ],
+          "unsupported_units": 0,
+          "routes": {
+            "baseline": 9,
+            "raw": 1
+          },
+          "provenance_refusals": 2,
+          "median_wall_ms": 0.715,
+          "max_peak_python_bytes": 16383,
+          "tokens": 2701,
+          "metadata_tokens": 2103,
+          "raw_fallback_tokens": 739,
+          "median_token_reduction_pct": 70.54
+        },
+        "B1": {
+          "critical": [
+            22,
+            22
+          ],
+          "overall": [
+            32,
+            32
+          ],
+          "provenance_ok": [
+            10,
+            10
+          ],
+          "unsupported_units": 0,
+          "routes": {
+            "structural": 9,
+            "raw": 1
+          },
+          "provenance_refusals": 2,
+          "median_wall_ms": 1.0704500000000001,
+          "max_peak_python_bytes": 16248,
+          "tokens": 4346,
+          "metadata_tokens": 3443,
+          "raw_fallback_tokens": 737,
+          "median_token_reduction_pct": 35.43
+        }
+      },
+      "b1_delivered_critical": [
+        22,
+        22
+      ],
+      "b1_delivered_additional": [
+        10,
+        10
+      ],
+      "b1_refusals_fallbacks_and_misses": [
+        {
+          "case": "empty-match",
+          "route": "raw",
+          "reason": "insufficient_exact_evidence",
+          "misses": {
+            "critical": [],
+            "additional": []
+          },
+          "tokens": 737
+        },
+        {
+          "case": "stale-anchor",
+          "reason": "pinned hash mismatch: pipeline/appendix/event_index.md"
+        },
+        {
+          "case": "missing-anchor",
+          "reason": "missing, duplicate or stale event navigation"
+        }
+      ],
+      "artifact_verification_wall_ms_one_run": 2537.429,
+      "artifact_verification_peak_python_bytes": 33598166
+    },
+    "holdout": {
+      "partition": "holdout",
+      "case_count": 12,
+      "source_reread_bytes_once": 1697,
+      "consumer_source_reread_tokens": 0,
+      "deterministic_replay": true,
+      "input_hashes_unchanged": true,
+      "summary": {
+        "A": {
+          "critical": [
+            23,
+            23
+          ],
+          "overall": [
+            33,
+            33
+          ],
+          "provenance_ok": [
+            12,
+            12
+          ],
+          "unsupported_units": 0,
+          "routes": {
+            "raw": 12
+          },
+          "provenance_refusals": 0,
+          "median_wall_ms": 0.08655,
+          "max_peak_python_bytes": 12191,
+          "tokens": 10249,
+          "metadata_tokens": 3097,
+          "raw_fallback_tokens": 0,
+          "median_token_reduction_pct": 0.0
+        },
+        "B0": {
+          "critical": [
+            4,
+            23
+          ],
+          "overall": [
+            13,
+            33
+          ],
+          "provenance_ok": [
+            12,
+            12
+          ],
+          "unsupported_units": 0,
+          "routes": {
+            "baseline": 10,
+            "raw": 2
+          },
+          "provenance_refusals": 0,
+          "median_wall_ms": 0.7558,
+          "max_peak_python_bytes": 14290,
+          "tokens": 5367,
+          "metadata_tokens": 3149,
+          "raw_fallback_tokens": 1720,
+          "median_token_reduction_pct": 56.53
+        },
+        "B1": {
+          "critical": [
+            21,
+            23
+          ],
+          "overall": [
+            31,
+            33
+          ],
+          "provenance_ok": [
+            11,
+            11
+          ],
+          "unsupported_units": 0,
+          "routes": {
+            "structural": 9,
+            "raw": 2,
+            "refused": 1
+          },
+          "provenance_refusals": 0,
+          "median_wall_ms": 1.01765,
+          "max_peak_python_bytes": 17890,
+          "tokens": 5114,
+          "metadata_tokens": 3547,
+          "raw_fallback_tokens": 1717,
+          "median_token_reduction_pct": 52.0
+        }
+      },
+      "b1_delivered_critical": [
+        21,
+        22
+      ],
+      "b1_delivered_additional": [
+        10,
+        10
+      ],
+      "b1_refusals_fallbacks_and_misses": [
+        {
+          "case": "far-condition",
+          "route": "structural",
+          "reason": "matching_structural_units",
+          "misses": {
+            "critical": [
+              "Use distilled coolant only"
+            ],
+            "additional": []
+          },
+          "tokens": 463
+        },
+        {
+          "case": "empty",
+          "route": "raw",
+          "reason": "insufficient_exact_evidence",
+          "misses": {
+            "critical": [],
+            "additional": []
+          },
+          "tokens": 858
+        },
+        {
+          "case": "ingest-refusal",
+          "route": "raw",
+          "reason": "rejected_ingest",
+          "misses": {
+            "critical": [],
+            "additional": []
+          },
+          "tokens": 859
+        },
+        {
+          "case": "budget-refusal",
+          "route": "refused",
+          "reason": "verified_raw_exceeds_budget",
+          "misses": {
+            "critical": [
+              "Live mode is prohibited"
+            ],
+            "additional": []
+          },
+          "tokens": null
+        }
+      ],
+      "artifact_verification_wall_ms_one_run": 1174.622,
+      "artifact_verification_peak_python_bytes": 33593073
+    }
+  },
+  "recommendation": "REVISE"
+}

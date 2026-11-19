@@ -1,0 +1,111 @@
+{
+  "partition": "holdout",
+  "references": {
+    "meter": {
+      "critical": [
+        "27 mV",
+        "Do not run with the probe disconnected"
+      ],
+      "additional": [
+        "LK-312 meter check"
+      ]
+    },
+    "mixed": {
+      "critical": [
+        "۴۲ درجه",
+        "درپوش را باز نکنید"
+      ],
+      "additional": [
+        "دمای SV-81"
+      ]
+    },
+    "limits": {
+      "critical": [
+        "2.7 A",
+        "4.1 V"
+      ],
+      "additional": [
+        "BR-608 supply"
+      ]
+    },
+    "checklist": {
+      "critical": [
+        "gauge reads zero",
+        "seal number 191"
+      ],
+      "additional": [
+        "GD-44 maintenance"
+      ]
+    },
+    "command": {
+      "critical": [
+        "test_mode=simulation",
+        "cycles=3",
+        "Live mode is prohibited"
+      ],
+      "additional": [
+        "RV-80 valve test"
+      ]
+    },
+    "cross-source": {
+      "critical": [
+        "may start at 06:00",
+        "hold until 09:30"
+      ],
+      "additional": [
+        "Decision record"
+      ]
+    },
+    "near-condition": {
+      "critical": [
+        "only for a bench trial",
+        "shield must be installed"
+      ],
+      "additional": [
+        "DC-52 certification"
+      ]
+    },
+    "far-condition": {
+      "critical": [
+        "Approved for 9 litres",
+        "Use distilled coolant only"
+      ],
+      "additional": [
+        "HP-37 coolant trial"
+      ]
+    },
+    "fallback-date": {
+      "critical": [
+        "Status stays REVIEW",
+        "No publication date is known"
+      ],
+      "additional": [
+        "WH-17 disposition"
+      ]
+    },
+    "empty": {
+      "critical": [
+        "A draft label applies only to demonstration crates"
+      ],
+      "additional": [
+        "Unrelated shift log"
+      ],
+      "expected": "raw"
+    },
+    "ingest-refusal": {
+      "critical": [
+        "27 mV",
+        "Do not run with the probe disconnected"
+      ],
+      "additional": [],
+      "expected": "raw"
+    },
+    "budget-refusal": {
+      "critical": [
+        "Live mode is prohibited"
+      ],
+      "additional": [],
+      "expected": "refused"
+    }
+  }
+}
