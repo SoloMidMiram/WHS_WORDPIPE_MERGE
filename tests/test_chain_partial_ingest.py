@@ -247,6 +247,33 @@ def isolated_chain(tmp_path: Path) -> tuple[Path, Path, Path]:
     _POWERSHELL is None or _PYTHON_EXE is None,
     reason="chain.ps1 requires PowerShell and python.exe",
 )
+@pytest.mark.parametrize("stale", [False, True])
+def test_chain_rejects_zero_exit_without_fresh_index_outputs(isolated_chain, stale):
+    chain, raw_dir, out_dir = isolated_chain
+    if stale:
+        appendix = out_dir / "appendix"
+        appendix.mkdir(parents=True)
+        for name in ("event_index.md", "theme_index.md", "source_manifest.md"):
+            (appendix / name).write_text("previous output", encoding="utf-8")
+    result = _run_chain(
+        ["-InputDir", str(raw_dir), "-OutputDir", str(out_dir)],
+        cwd=raw_dir.parent,
+        script=chain,
+    )
+    assert result.returncode == 5, result.stdout + result.stderr
+    evidence = _read_evidence(out_dir)
+    assert evidence["status"] == "failed"
+    index_stage = evidence["stages"][-1]
+    assert index_stage["status"] == "failed"
+    assert index_stage["native_exit_code"] == 0
+    assert index_stage["outputs"] == []
+    assert index_stage["diagnostics"] == ["missing_or_stale_index_artifact"]
+
+
+@pytest.mark.skipif(
+    _POWERSHELL is None or _PYTHON_EXE is None,
+    reason="chain.ps1 requires PowerShell and python.exe",
+)
 @pytest.mark.parametrize("stage_code", range(1, 6))
 def test_chain_maps_native_failure_to_operator_code(isolated_chain, stage_code: int) -> None:
     chain, raw_dir, out_dir = isolated_chain

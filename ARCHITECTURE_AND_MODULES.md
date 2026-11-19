@@ -336,20 +336,20 @@ stage deferred from canonical extraction.
 
 #### `pipeline/index.py` — Stage 5: Index Generation
 - **Purpose:** Generate 4 appendix files from tagged chronicle output
-- **Input:** `chronicle_tagged.md` from Stage 4, optional `source_coverage.md`
+- **Input:** `chronicle_tagged.md` from Stage 4, optional `source_coverage.md` and merged Chronicle for survivor verification
 - **Coverage compatibility:** accepts both numbered and unnumbered documented source-coverage table formats
 - **Output:** `appendix/event_index.md`, `appendix/theme_index.md`, `appendix/source_manifest.md`, `appendix/link_registry.md`
 - **Key functions:**
   - `extract_events(text)` — Extracts events with theme tags from tagged markdown
-  - `deduplicate_events(events, method)` — Deduplicates by title or date+title; merges themes, keeps longest body
+  - `deduplicate_events(events, method)` — Implements explicit legacy title and date/title projections
   - `generate_event_index(events, output_path)` — Sorted event table
   - `generate_theme_index(events, output_path)` — Events grouped by theme
   - `generate_source_manifest(events, source_coverage, output_path)` — Source contribution table
   - `generate_link_registry(events, output_path)` — All URLs sorted by domain
-- **CLI flags:** `--input`, `--output-dir`, `--config`, `--no-link-registry`, `--source-coverage`, `--verbose`
+- **CLI flags:** `--input`, `--merged`, `--output-dir`, `--config`, `--dedup-method`, `--no-link-registry`, `--source-coverage`, `--verbose`
 - **Jinja2 templates:** Uses `pipeline/templates/*.j2` if Jinja2 is installed; falls back to string formatting
 - **Atomic writes:** Writes to temp file, then renames to final destination (prevents half-written files)
-- **Dedup method:** Default `title` — normalizes title (lowercase, collapse whitespace), merges themes via set union
+- **Identity and navigation:** Default `survivor` preserves each date/body-hash key, using the Phase 17 merge-note-aware parser. Event and theme links resolve to explicit anchors in the tagged Chronicle. Legacy unanchored input gets a separate navigation copy.
 
 #### `pipeline/themes.json` — Theme Configuration
 - **Purpose:** External config for theme definitions (keywords + negative keywords)
