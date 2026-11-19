@@ -1,0 +1,250 @@
+{
+  "schema": "whs-ncm-pilot-v1",
+  "scope": "synthetic",
+  "cases": [
+    {
+      "id": "taxon",
+      "title": "Plant taxonomy",
+      "query": "botanical name label",
+      "lines": [
+        "The teaching label uses Epipremnum aureum.",
+        "A vendor calls it pothos in the sales listing.",
+        "The classroom labels are being replaced on Friday.",
+        "A common name alone does not confirm a cultivar."
+      ],
+      "source_reference": "SYN-TAXON",
+      "facts": [
+        {
+          "literal": "Epipremnum aureum",
+          "critical": true
+        },
+        {
+          "literal": "pothos",
+          "critical": false
+        },
+        {
+          "literal": "Friday",
+          "critical": false
+        },
+        {
+          "literal": "does not confirm a cultivar",
+          "critical": true
+        }
+      ]
+    },
+    {
+      "id": "indoor",
+      "title": "Indoor care",
+      "query": "window light constraint",
+      "lines": [
+        "The fictional trial places the pot one metre from an east window.",
+        "Keep the plant in bright indirect light.",
+        "Do not move it into direct afternoon sun.",
+        "The pot is on a blue tray."
+      ],
+      "source_reference": "SYN-INDOOR",
+      "facts": [
+        {
+          "literal": "one metre",
+          "critical": true
+        },
+        {
+          "literal": "bright indirect light",
+          "critical": false
+        },
+        {
+          "literal": "Do not move it into direct afternoon sun",
+          "critical": true
+        },
+        {
+          "literal": "blue tray",
+          "critical": false
+        }
+      ]
+    },
+    {
+      "id": "watering",
+      "title": "Watering and drainage",
+      "query": "watering soil depth",
+      "lines": [
+        "Water only after the upper 2 cm of soil feels dry.",
+        "The teaching pot has drainage holes.",
+        "Never leave standing water in the saucer.",
+        "The group logs checks each Tuesday."
+      ],
+      "source_reference": "SYN-WATERING",
+      "facts": [
+        {
+          "literal": "upper 2 cm",
+          "critical": true
+        },
+        {
+          "literal": "drainage holes",
+          "critical": false
+        },
+        {
+          "literal": "Never leave standing water",
+          "critical": true
+        },
+        {
+          "literal": "Tuesday",
+          "critical": false
+        }
+      ]
+    },
+    {
+      "id": "temperature",
+      "title": "Growth constraints",
+      "query": "temperature minimum night",
+      "lines": [
+        "The chamber is held at 19–24 °C during the day.",
+        "Night temperature must stay above 15 °C.",
+        "The fan runs at its lowest setting.",
+        "The experiment does not establish outdoor hardiness."
+      ],
+      "source_reference": "SYN-TEMPERATURE",
+      "facts": [
+        {
+          "literal": "19–24 °C",
+          "critical": true
+        },
+        {
+          "literal": "above 15 °C",
+          "critical": true
+        },
+        {
+          "literal": "lowest setting",
+          "critical": false
+        },
+        {
+          "literal": "does not establish outdoor hardiness",
+          "critical": true
+        }
+      ]
+    },
+    {
+      "id": "market",
+      "title": "Seller listing",
+      "query": "seller price stock date",
+      "lines": [
+        "The fictional seller advertised 45 units at 12 credits each on 7 May.",
+        "Delivery was excluded from that price.",
+        "Current stock is unknown.",
+        "A photograph shows a white container."
+      ],
+      "source_reference": "SYN-MARKET",
+      "facts": [
+        {
+          "literal": "45 units",
+          "critical": true
+        },
+        {
+          "literal": "12 credits",
+          "critical": true
+        },
+        {
+          "literal": "7 May",
+          "critical": true
+        },
+        {
+          "literal": "Delivery was excluded",
+          "critical": true
+        },
+        {
+          "literal": "Current stock is unknown",
+          "critical": true
+        }
+      ]
+    },
+    {
+      "id": "conflict",
+      "title": "Conflicting care notes",
+      "query": "watering disagreement unresolved",
+      "lines": [
+        "Guide A recommends weekly watering.",
+        "Guide B recommends waiting until the soil dries.",
+        "Neither guide reports the pot size.",
+        "The disagreement is unresolved."
+      ],
+      "source_reference": "SYN-CONFLICT",
+      "facts": [
+        {
+          "literal": "Guide A recommends weekly watering",
+          "critical": true
+        },
+        {
+          "literal": "Guide B recommends waiting until the soil dries",
+          "critical": true
+        },
+        {
+          "literal": "Neither guide reports the pot size",
+          "critical": false
+        },
+        {
+          "literal": "disagreement is unresolved",
+          "critical": true
+        }
+      ]
+    },
+    {
+      "id": "nutrient",
+      "title": "Technical measurement",
+      "query": "nutrient measured sample",
+      "lines": [
+        "The fictional sample measured pH 6.2 before dilution.",
+        "Readings were taken from three containers.",
+        "The result does not establish a target pH for other species.",
+        "The observer marked the sample F-17."
+      ],
+      "source_reference": "SYN-NUTRIENT",
+      "facts": [
+        {
+          "literal": "pH 6.2",
+          "critical": true
+        },
+        {
+          "literal": "three containers",
+          "critical": false
+        },
+        {
+          "literal": "does not establish a target pH",
+          "critical": true
+        },
+        {
+          "literal": "F-17",
+          "critical": true
+        }
+      ]
+    },
+    {
+      "id": "mixed",
+      "title": "Mixed-script note",
+      "query": "shade فارسی",
+      "lines": [
+        "The label reads نور غیرمستقیم (indirect light).",
+        "The handwritten note uses the word سایه.",
+        "The translation of the second note remains uncertain.",
+        "Do not infer a light threshold from this note."
+      ],
+      "source_reference": "SYN-MIXED",
+      "facts": [
+        {
+          "literal": "نور غیرمستقیم",
+          "critical": true
+        },
+        {
+          "literal": "سایه",
+          "critical": false
+        },
+        {
+          "literal": "remains uncertain",
+          "critical": true
+        },
+        {
+          "literal": "Do not infer a light threshold",
+          "critical": true
+        }
+      ]
+    }
+  ]
+}
