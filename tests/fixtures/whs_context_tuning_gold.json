@@ -1,0 +1,108 @@
+{
+  "partition": "tuning",
+  "references": {
+    "pumps": {
+      "critical": [
+        "16 bar",
+        "Never calibrate while the bypass valve is open",
+        "Only at 20 °C"
+      ],
+      "additional": [
+        "MX-120 calibration"
+      ]
+    },
+    "persian": {
+      "critical": [
+        "۵ بار",
+        "در حالت گرم روشن نکنید"
+      ],
+      "additional": [
+        "فشار KX-20"
+      ]
+    },
+    "date": {
+      "critical": [
+        "2025-05-21",
+        "remains REVIEW",
+        "do not deploy"
+      ],
+      "additional": [
+        "RT-800 release"
+      ]
+    },
+    "table": {
+      "critical": [
+        "18 s",
+        "3 °C"
+      ],
+      "additional": [
+        "NX-30 thresholds"
+      ]
+    },
+    "lists": {
+      "critical": [
+        "12 minutes",
+        "Do not open the gate"
+      ],
+      "additional": [
+        "VT-94 steps"
+      ]
+    },
+    "fence": {
+      "critical": [
+        "retries=2",
+        "mode=offline",
+        "Do not perform a live call"
+      ],
+      "additional": [
+        "TX-56 checks"
+      ]
+    },
+    "conflict": {
+      "critical": [
+        "permits 8 units",
+        "limits the same run to 6 units"
+      ],
+      "additional": [
+        "AF-25 disputed results"
+      ]
+    },
+    "duplicate": {
+      "critical": [
+        "JS-66 is archived",
+        "not active"
+      ],
+      "additional": [
+        "Status"
+      ]
+    },
+    "fallback-date": {
+      "critical": [
+        "provisional",
+        "no publication date was supplied"
+      ],
+      "additional": [
+        "QZ-15 status"
+      ]
+    },
+    "empty-match": {
+      "critical": [
+        "empty heading above has no event body"
+      ],
+      "additional": [
+        "Public agenda"
+      ],
+      "expected": "raw"
+    },
+    "stale-anchor": {
+      "critical": [],
+      "additional": [],
+      "expected": "refused"
+    },
+    "missing-anchor": {
+      "critical": [],
+      "additional": [],
+      "expected": "refused"
+    }
+  }
+}
