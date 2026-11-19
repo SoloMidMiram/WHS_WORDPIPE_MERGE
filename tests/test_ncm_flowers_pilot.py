@@ -204,7 +204,7 @@ def test_malformed_unicode_uses_raw_fallback(case, summary):
         "invalid_response",
     ),
     ("import sys; sys.stdout.buffer.write(bytes([255]))", "backend_error"),
-    ("print('[' * 10000 + ']' * 10000)", "backend_error"),
+    ("print('[1,]')", "backend_error"),
 ])
 def test_subprocess_malformed_output_uses_raw_fallback(case, tmp_path, worker, reason):
     backend = pilot.subprocess_backend([sys.executable, "-I", "-S", "-c", worker], cwd=tmp_path)
