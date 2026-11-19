@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import re
+import selectors
 import signal
 import statistics
 import subprocess
@@ -83,40 +84,52 @@ def extractive_packet(case):
 
 
 def subprocess_backend(argv, *, cwd):
-    """Adapt a qualified worker that must use input_ids and report the number it consumed."""
+    """Adapt a trusted POSIX test worker using bounded UTF-8 JSON over stdout."""
+    if os.name != "posix":
+        raise NotImplementedError("The subprocess adapter requires POSIX process groups")
     argv = tuple(argv)
     if not argv or not Path(argv[0]).is_absolute():
         raise ValueError("Worker executable must be an explicit absolute path")
-    environment = {key: os.environ[key] for key in ("SYSTEMROOT",) if key in os.environ}
 
     def run(request, *, timeout_seconds):
-        # A file avoids pipe deadlock on timeout; the external isolation owns disk limits.
-        with tempfile.TemporaryFile() as stdin, tempfile.TemporaryFile() as stdout:
+        deadline = time.monotonic() + timeout_seconds
+        # The request is bounded. Using a file for stdin lets stdout drain independently.
+        with tempfile.TemporaryFile() as stdin, selectors.DefaultSelector() as selector:
             stdin.write(serialize(request).encode("utf-8"))
             stdin.seek(0)
             with subprocess.Popen(
-                argv, cwd=cwd, env=environment, start_new_session=os.name == "posix",
-                stdin=stdin, stdout=stdout, stderr=subprocess.DEVNULL,
+                argv, cwd=cwd, env={}, start_new_session=True,
+                stdin=stdin, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
             ) as child:
                 try:
-                    code = child.wait(timeout=timeout_seconds)
+                    raw = bytearray()
+                    selector.register(child.stdout, selectors.EVENT_READ)
+                    while True:
+                        remaining = deadline - time.monotonic()
+                        if remaining <= 0 or not selector.select(remaining):
+                            raise TimeoutError("Worker deadline exceeded")
+                        chunk = os.read(child.stdout.fileno(), MAX_RESPONSE_BYTES + 1 - len(raw))
+                        if not chunk:
+                            break
+                        raw.extend(chunk)
+                        if len(raw) > MAX_RESPONSE_BYTES:
+                            raise ValueError("Worker response exceeds its byte limit")
+                    code = child.wait(timeout=max(0, deadline - time.monotonic()))
+                    if code != 0:
+                        raise OSError(f"Worker exited with status {code}")
                 except subprocess.TimeoutExpired as exc:
-                    try:
-                        if os.name == "posix":
-                            os.killpg(child.pid, signal.SIGKILL)
-                        else:
-                            child.kill()
-                    except ProcessLookupError:
-                        pass
-                    child.wait()
                     raise TimeoutError("Worker deadline exceeded") from exc
-                if code != 0:
-                    raise OSError(f"Worker exited with status {code}")
-            stdout.seek(0)
-            raw = stdout.read(MAX_RESPONSE_BYTES + 1)
-            if len(raw) > MAX_RESPONSE_BYTES:
-                raise ValueError("Worker response exceeds its byte limit")
-            return json.loads(raw)
+                finally:
+                    if child.returncode is None:
+                        try:
+                            os.killpg(child.pid, signal.SIGKILL)
+                        except ProcessLookupError:
+                            pass
+                        child.wait()
+            try:
+                return json.loads(raw.decode("utf-8"))
+            except RecursionError as exc:
+                raise ValueError("Worker JSON nesting is too deep") from exc
 
     return run
 
@@ -164,7 +177,11 @@ def evaluate_candidate(case, backend=None, review=None, *, encode_input=None, ti
     if type(consumed) is not int or consumed != len(input_ids):
         return fallback("input_token_count_mismatch")
     summary = response["summary"]
-    if not summary.strip() or len(summary.encode("utf-8")) > MAX_OUTPUT_BYTES:
+    try:
+        summary_size = len(summary.encode("utf-8"))
+    except UnicodeEncodeError:
+        return fallback("invalid_response")
+    if not summary.strip() or summary_size > MAX_OUTPUT_BYTES:
         return fallback("output_limit")
     candidate = packet(case, summary)
     if review is None or review(case, candidate) is not True:

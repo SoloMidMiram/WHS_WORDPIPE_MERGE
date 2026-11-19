@@ -1,10 +1,14 @@
 """Synthetic contract tests with fakes and standard-library worker processes."""
 import json
+import os
 import sys
 
 import pytest
 
 from scripts.experiments import ncm_flowers_pilot as pilot
+
+
+requires_posix = pytest.mark.skipif(os.name != "posix", reason="Worker adapter requires POSIX")
 
 
 @pytest.fixture
@@ -134,6 +138,7 @@ def test_unmatched_extraction_returns_original(case):
     assert bundle == pilot.packet(case, pilot.source_text(case))
 
 
+@requires_posix
 def test_comparison_can_use_subprocess_with_only_source_inputs(case, tmp_path):
     script = (
         "import json, sys;"
@@ -151,6 +156,7 @@ def test_comparison_can_use_subprocess_with_only_source_inputs(case, tmp_path):
     assert result["median_c_vs_b_token_reduction_pct"] is not None
 
 
+@requires_posix
 def test_subprocess_deadline_returns_fallback(case, tmp_path):
     backend = pilot.subprocess_backend(
         [sys.executable, "-I", "-S", "-c", "import time; time.sleep(30)"], cwd=tmp_path,
@@ -158,11 +164,12 @@ def test_subprocess_deadline_returns_fallback(case, tmp_path):
     assert evaluate(case, backend, timeout_seconds=0.1)["reason"] == "timeout"
 
 
+@requires_posix
 def test_subprocess_response_size_is_bounded(case, tmp_path):
     backend = pilot.subprocess_backend(
-        [sys.executable, "-I", "-S", "-c", f"print('x' * {pilot.MAX_RESPONSE_BYTES})"], cwd=tmp_path,
+        [sys.executable, "-I", "-S", "-c", f"import time; print('x' * {pilot.MAX_RESPONSE_BYTES}, flush=True); time.sleep(30)"], cwd=tmp_path,
     )
-    assert evaluate(case, backend)["reason"] == "backend_error"
+    assert evaluate(case, backend, timeout_seconds=3)["reason"] == "backend_error"
 
 
 def test_worker_partial_input_is_rejected_and_raw_fallback_is_counted(case):
@@ -176,3 +183,37 @@ def test_worker_partial_input_is_rejected_and_raw_fallback_is_counted(case):
     assert row["arm_c"]["reason"] == "input_token_count_mismatch"
     assert row["arm_c_metrics"]["estimated_consumer_tokens"] == row["arm_a"]["estimated_consumer_tokens"]
     assert result["arm_c_fallback_rate"] == 1
+
+
+@pytest.mark.parametrize("summary", ["\ud800", "\udfff"])
+def test_malformed_unicode_uses_raw_fallback(case, summary):
+    def backend(*_args, **_kwargs):
+        return response(case, summary)
+
+    result = evaluate(case, backend, never_called)
+    assert result["reason"] == "invalid_response"
+    assert result["effective"] == pilot.packet(case, pilot.source_text(case))
+
+
+@requires_posix
+@pytest.mark.parametrize(("worker", "reason"), [
+    (
+        "import json, sys; r = json.load(sys.stdin); "
+        "print(json.dumps(dict(summary=chr(0xd800), source=r['source'], "
+        "input_token_count=len(r['input_ids']))))",
+        "invalid_response",
+    ),
+    ("import sys; sys.stdout.buffer.write(bytes([255]))", "backend_error"),
+    ("print('[' * 10000 + ']' * 10000)", "backend_error"),
+])
+def test_subprocess_malformed_output_uses_raw_fallback(case, tmp_path, worker, reason):
+    backend = pilot.subprocess_backend([sys.executable, "-I", "-S", "-c", worker], cwd=tmp_path)
+    result = evaluate(case, backend, never_called)
+    assert result["reason"] == reason
+    assert result["effective"] == pilot.packet(case, pilot.source_text(case))
+
+
+@pytest.mark.skipif(os.name == "posix", reason="POSIX is supported")
+def test_subprocess_adapter_rejects_unsupported_platform(tmp_path):
+    with pytest.raises(NotImplementedError, match="POSIX"):
+        pilot.subprocess_backend([sys.executable], cwd=tmp_path)
