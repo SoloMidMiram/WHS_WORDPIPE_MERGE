@@ -1,0 +1,36 @@
+{
+  "baseline": {
+    "input_file_count": 7,
+    "candidate_total_sections": 44,
+    "staged_event_count": 44,
+    "merged_event_count": 44,
+    "tagged_event_count": 44,
+    "warning_count": 0,
+    "error_count": 0,
+    "runner_timing_seconds": 13.315022
+  },
+  "candidate": {
+    "input_file_count": 7,
+    "candidate_total_sections": 44,
+    "staged_event_count": 44,
+    "merged_event_count": 44,
+    "tagged_event_count": 44,
+    "warning_count": 0,
+    "error_count": 0,
+    "runner_timing_seconds": 13.531171
+  },
+  "repeat": {
+    "input_file_count": 7,
+    "candidate_total_sections": 44,
+    "staged_event_count": 44,
+    "merged_event_count": 44,
+    "tagged_event_count": 44,
+    "warning_count": 0,
+    "error_count": 0,
+    "runner_timing_seconds": 20.780896
+  },
+  "staged_repeat_byte_identical": true,
+  "verdict": "REVIEW",
+  "manual_precision_recall": "not measured",
+  "source_hashes_unchanged": true
+}

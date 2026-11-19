@@ -96,7 +96,7 @@ def parse_file(
     Each matching heading is a candidate (including empty bodies). Empty
     sections advance ``candidate_ordinal`` but are omitted from emit/lineage.
     """
-    text = path.read_text(encoding="utf-8", errors="replace")
+    text = path.read_text(encoding="utf-8")
     fallback_date = first_date(text)
     levels = {int(level) for level in heading_levels}
     matches = [

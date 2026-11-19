@@ -9,6 +9,11 @@
 
 ## Legend
 
+For bounded agent retrieval, start with
+[`docs/engineering/REPO_MAP.md`](docs/engineering/REPO_MAP.md) and
+`python tools/repo_context.py snapshot`. The map routes keywords to canonical
+code, tests and existing tools; this index retains the broader file catalogue.
+
 | Symbol | Kind | Description |
 |--------|------|-------------|
 | 📄 | Doc | Documentation (markdown) |
