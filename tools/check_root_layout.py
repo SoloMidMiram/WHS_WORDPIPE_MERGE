@@ -52,10 +52,46 @@ ALLOWED_DIRECTORIES = {
 IGNORED_GENERATED_DIRECTORIES = {".pytest_cache", ".ruff_cache"}
 
 
+def is_linked_worktree_pointer(entry: Path) -> bool:
+    """Accept only a reciprocally linked Git worktree administrative record.
+
+    Do not execute Git or accept an arbitrary gitdir directive (e.g. submodules).
+    Both directions and the shared repository structure must exist.
+    """
+    if entry.name != ".git" or entry.is_symlink():
+        return False
+    try:
+        lines = entry.read_text(encoding="utf-8").splitlines()
+        if len(lines) != 1 or not lines[0].startswith("gitdir: "):
+            return False
+        target = lines[0][8:]
+        if not target:
+            return False
+        admin = (entry.parent / target).resolve(strict=True)
+        common_text = (admin / "commondir").read_text(encoding="utf-8").splitlines()
+        back_text = (admin / "gitdir").read_text(encoding="utf-8").splitlines()
+        if len(common_text) != 1 or not common_text[0] or len(back_text) != 1 or not back_text[0]:
+            return False
+        common = (admin / common_text[0]).resolve(strict=True)
+        back = (admin / back_text[0]).resolve(strict=True)
+        return (
+            back == entry.resolve(strict=True)
+            and admin.parent == common / "worktrees"
+            and (admin / "HEAD").is_file()
+            and (common / "HEAD").is_file()
+            and (common / "objects").is_dir()
+            and (common / "refs").is_dir()
+        )
+    except (OSError, UnicodeError, ValueError, RuntimeError):
+        return False
+
+
 def find_violations(root: Path) -> list[str]:
     violations: list[str] = []
     for entry in root.iterdir():
         if entry.is_file() and entry.name not in ALLOWED_FILES:
+            if is_linked_worktree_pointer(entry):
+                continue
             violations.append(entry.name)
         elif entry.is_dir():
             if entry.name in ALLOWED_DIRECTORIES or entry.name in IGNORED_GENERATED_DIRECTORIES:

@@ -318,3 +318,11 @@ def test_summarize_uses_manifest_topic_from_prepare_metrics(tmp_path):
     assert metrics["topic"] == "third-topic"
     assert summary.startswith("# third-topic Report Run Summary")
     assert "Pipeline Chronicle" not in summary
+
+
+def test_invalid_encoding_is_not_silently_replaced(tmp_path):
+    import pytest
+    source = tmp_path / "invalid.md"
+    source.write_bytes(b"## Care\nInvalid \xff text\n")
+    with pytest.raises(UnicodeDecodeError):
+        adapter.parse_file(source)
