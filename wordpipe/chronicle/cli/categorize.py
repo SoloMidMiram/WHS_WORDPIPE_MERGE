@@ -20,6 +20,7 @@ from wordpipe.chronicle.categorize import (
     match_themes,
     rebuild_tagged_md,
 )
+from wordpipe.chronicle.index import merged_survivor_anchors
 
 
 def main() -> None:
@@ -68,6 +69,13 @@ def main() -> None:
     for ev in events:
         ev["themes"] = match_themes(ev["body"], themes, neg_keywords)
 
+    try:
+        anchors = merged_survivor_anchors(original_text)
+        for event, anchor in zip(events, anchors, strict=True):
+            event["anchor"] = anchor
+    except ValueError as exc:
+        logging.error("Cannot identify Chronicle events: %s", exc)
+        sys.exit(1)
     tagged_md = rebuild_tagged_md(original_text, events)
 
     tagged_count = sum(1 for ev in events if ev["themes"])

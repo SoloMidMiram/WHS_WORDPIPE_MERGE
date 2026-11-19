@@ -894,60 +894,16 @@ def validate_and_finalize_event_lineage(
 
 # Exact keep-both conflict note emitted by wordpipe.chronicle.merge (keep-both path).
 KEEP_BOTH_CONFLICT_NOTE = "<!-- Duplicate date, different content -->"
-# Note line, then optional whitespace-only blank lines, immediately before an Event heading.
-_KEEP_BOTH_NOTE_BEFORE_EVENT_RE = re.compile(
-    r"(?m)^[ \t]*"
-    + re.escape(KEEP_BOTH_CONFLICT_NOTE)
-    + r"[ \t]*\r?\n"
-    + r"(?:[ \t]*\r?\n)*"
-    + r"(?=## Event:)"
-)
-_EVENT_DATE_HEADING_RE = re.compile(
-    r"(?m)^## Event:\s*(\d{4}-\d{2}-\d{2})(?:\s*[–-]\s*(.*?))?\s*$",
-)
 
 
 def strip_keep_both_conflict_notes(body: str) -> str:
-    """Remove merge-generated keep-both notes that precede same-date Event headings.
+    """Preserve the topic runner's provenance failure classification."""
+    try:
+        from wordpipe.chronicle.merge import strip_keep_both_conflict_notes as strip_notes
 
-    Strips only when the exact conflict note sits immediately before an Event
-    heading (allowing whitespace-only blank lines) and the previous Event
-    heading shares that date. Mid-body notes and different-date adjacency are
-    preserved. If the previous event body already ends with the exact note
-    before a same-date next Event, raises ProvenanceError (ambiguous).
-    """
-    spans_to_remove: list[tuple[int, int]] = []
-    for match in _KEEP_BOTH_NOTE_BEFORE_EVENT_RE.finditer(body):
-        # Lookahead ends at the start of the next Event heading.
-        next_heading = _EVENT_DATE_HEADING_RE.match(body, match.end())
-        if next_heading is None:
-            continue
-        next_date = next_heading.group(1)
-        prev_headings = list(_EVENT_DATE_HEADING_RE.finditer(body, 0, match.start()))
-        if not prev_headings:
-            continue
-        prev = prev_headings[-1]
-        prev_date = prev.group(1)
-        if prev_date != next_date:
-            continue
-        # Body region of previous event, excluding the candidate note.
-        prev_body = body[prev.end() : match.start()]
-        if prev_body.rstrip().endswith(KEEP_BOTH_CONFLICT_NOTE):
-            raise ProvenanceError(
-                "ambiguous_merge_note_vs_body_content: previous event body already "
-                "ends with the keep-both conflict note before a same-date Event heading"
-            )
-        spans_to_remove.append((match.start(), match.end()))
-
-    if not spans_to_remove:
-        return body
-    parts: list[str] = []
-    cursor = 0
-    for start, end in spans_to_remove:
-        parts.append(body[cursor:start])
-        cursor = end
-    parts.append(body[cursor:])
-    return "".join(parts)
+        return strip_notes(body)
+    except ValueError as exc:
+        raise ProvenanceError(str(exc)) from exc
 
 
 def _sorted_key_records(keys: set[tuple[str, str]]) -> list[dict[str, str]]:

@@ -118,6 +118,59 @@ def compute_body_hash(body: str) -> str:
     return hashlib.sha256(normalised.encode("utf-8")).hexdigest()
 
 
+KEEP_BOTH_CONFLICT_NOTE = "<!-- Duplicate date, different content -->"
+# Note line, then optional whitespace-only blank lines, immediately before an Event heading.
+_KEEP_BOTH_NOTE_BEFORE_EVENT_RE = re.compile(
+    r"(?m)^[ \t]*"
+    + re.escape(KEEP_BOTH_CONFLICT_NOTE)
+    + r"[ \t]*\r?\n"
+    + r"(?:[ \t]*\r?\n)*"
+    + r"(?=## Event:)"
+)
+
+def strip_keep_both_conflict_notes(body: str) -> str:
+    """Remove merge-generated keep-both notes that precede same-date Event headings.
+
+    Strips only when the exact conflict note sits immediately before an Event
+    heading (allowing whitespace-only blank lines) and the previous Event
+    heading shares that date. Mid-body notes and different-date adjacency are
+    preserved. If the previous event body already ends with the exact note
+    before a same-date next Event, raises ValueError (ambiguous).
+    """
+    spans_to_remove: list[tuple[int, int]] = []
+    for match in _KEEP_BOTH_NOTE_BEFORE_EVENT_RE.finditer(body):
+        # Lookahead ends at the start of the next Event heading.
+        next_heading = EVENT_HEADING_RE.match(body, match.end())
+        if next_heading is None:
+            continue
+        next_date = next_heading.group(1)
+        prev_headings = list(EVENT_HEADING_RE.finditer(body, 0, match.start()))
+        if not prev_headings:
+            continue
+        prev = prev_headings[-1]
+        prev_date = prev.group(1)
+        if prev_date != next_date:
+            continue
+        # Body region of previous event, excluding the candidate note.
+        prev_body = body[prev.end() : match.start()]
+        if prev_body.rstrip().endswith(KEEP_BOTH_CONFLICT_NOTE):
+            raise ValueError(
+                "ambiguous_merge_note_vs_body_content: previous event body already "
+                "ends with the keep-both conflict note before a same-date Event heading"
+            )
+        spans_to_remove.append((match.start(), match.end()))
+
+    if not spans_to_remove:
+        return body
+    parts: list[str] = []
+    cursor = 0
+    for start, end in spans_to_remove:
+        parts.append(body[cursor:start])
+        cursor = end
+    parts.append(body[cursor:])
+    return "".join(parts)
+
+
 def parse_date_tuple(date_str: str) -> Tuple[int, int, int]:
     """Convert 'YYYY-MM-DD' to (year, month, day) tuple for sorting."""
     parts = date_str.split("-")
@@ -301,7 +354,7 @@ def merge_files(
                 for i, (_, entry) in enumerate(hashed_entries):
                     note = None
                     if i > 0:
-                        note = "<!-- Duplicate date, different content -->"
+                        note = KEEP_BOTH_CONFLICT_NOTE
                     final_events.append({
                         "date": date,
                         "block": entry["event"]["block"],
