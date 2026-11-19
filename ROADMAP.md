@@ -7,6 +7,31 @@
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-19 — WHS-INTEGRATION-09 PR #12 research reconciliation
+
+Branch `experiment/whs-ncm-flowers-pilot`, [PR #12](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/12).
+Reviewed parent `b7f162745c4c6f2b01352dcd71764c594666768f` on main
+`87c69d3e89a189ce7a2be89562f748b1e0637540`. The conflict-free merge
+`db06e5e58ffd3102e21b4caaf96062c1bcb34c8e` preserved the experimental history.
+The correction at `7f84522` bounded POSIX worker stdout and returned the raw
+packet for malformed Unicode. The reviewed parent changes only the parser
+regression input. Python 3.14.4 accepted the former, valid nested array.
+The replacement uses invalid JSON and the focused tests passed on POSIX
+Python 3.11.15 and 3.14.4 (24 passed and one platform skip each).
+
+The [pilot report](docs/engineering/NCM_FLOWERS_PILOT.md) records the prior
+383-test Windows result, governance checks, and synthetic replay. The frozen
+WHS #8 baseline B0 retained 16/23 critical and 18/33 total facts, with a
+21.40% median estimated GPT-2 reduction versus raw. The oracle-assisted result
+remains historical and the fixture and metric files are preserved.
+
+The [repository map](docs/engineering/REPO_MAP.md) now routes the harness,
+focused tests, fixtures and evidence. Genuine inference remains BLOCKED.
+Flowers quality and incremental NCM reduction remain UNMEASURED, and adoption
+remains DEFER. The optional worker is limited to trusted POSIX synthetic tests.
+Next decision is research-only acceptance after the final documentation
+head's hosted CI and explicit owner approval.
+
 ### 2026-11-19 — WHS-INTEGRATION-06 hosted CI execution blocker
 
 After normal push at head 96727b9, PR workflow 44468789637 and push workflow
