@@ -771,3 +771,88 @@ new interpretation after exposure. If any mandatory metric fails or is
 unmeasurable, no G1 ACCEPT; retain the first result and stop for maintainer
 disposition. Otherwise submit scoped ACCEPT evidence for maintainer review.
 No merge, closure, or next candidate is authorized at this step.
+
+
+## Frozen G1 first-run evidence · 2026-11-20
+
+**Submitted disposition: REVISE.** Candidate
+`920c8e044ad7553d11d010bdba6ae580626db961`, tree
+`9bfa8c3a33054984518bd0cfebf1275c9ecaddeb`, was scored once under
+interpretation `5ae4c5af0927ac51f83d0e2ce6ee022bd361aca8`. The clean
+candidate, intended package origins, CPython 3.11.4, tokenizers 0.23.3,
+GPT-2 asset, sealed hashes and re-reviewed final input/gold pairing
+passed preflight. The operator ran the unchanged scorer. An external
+evidence-only observer saved exact serialized envelopes during that
+execution without changing scorer code or acceptance accounting.
+All 88 packet hashes matched the scorer record. Six provenance
+refusals produced no packets in either arm.
+
+| Mandatory metric | First run | Requirement | Result |
+| --- | ---: | ---: | --- |
+| Verified valid deliveries | 28/30 | At least 29/30 | FAIL |
+| Correct expected refusals | 9/20 | 20/20 | FAIL |
+| Correct absent-field refusals | 1/10 | 10/10 | FAIL |
+| Median estimated complete-packet GPT-2 reduction | Exactly 0% (0.00% scorer) | At least 20% | FAIL |
+| Delivered protected facts | 34/34 | 100% | PASS |
+| Delivered required IDs | 28/28 | 100% | PASS |
+| Applicable verified anchors | 1/1 | 100% | PASS |
+| Unsupported facts | 0 observed | 0 | PASS |
+| Deterministic replay and unchanged canonical pins | Verified | Both required | PASS |
+
+All 30 raw comparator token counts were available. Same-run GPT-2
+estimates included receipt metadata and zero consumer rereads in both
+arms. The 27 valid raw fallbacks and two valid refusals received zero
+savings credit. One valid delivery was structural. All 39 B2 deliveries
+passed identity verification. The 38 raw packets have no structural
+unit anchors.
+
+| Stratum | Denominator | Verified delivery or correct refusal | Outcome |
+| --- | ---: | ---: | --- |
+| Exact valid | 15 | 14 | 1 structural, 13 raw, 1 `unverified_entity_field` refusal |
+| Paraphrase valid | 15 | 14 | 14 raw, 1 `no_verified_query_evidence` refusal |
+| Absent field | 10 | 1 | 9 raw false deliveries, 1 `unverified_entity_field` refusal |
+| Other unanswerable | 3 | 1 | 2 raw false deliveries, 1 `no_verified_query_evidence` refusal |
+| Stale anchor | 2 | 2 | Pinned index digest mismatch |
+| Missing anchor | 2 | 2 | Event navigation failed validation |
+| Ambiguous correlation | 2 | 2 | Survivor map ambiguous or incomplete |
+| Blank request | 1 | 1 | `invalid_query` |
+
+All raw routes reported `insufficient_exact_evidence`. Across all
+valid B2 requests, retention was 34/36 protected facts, 3/3 additional
+facts and 28/30 required IDs. The two valid refusals account for two
+protected-fact and two ID misses. Delivered additional facts were 3/3.
+The raw comparator retained 36/36 protected facts, 3/3 additional facts
+and 30/30 IDs across the valid population. The mechanical report holds
+per-case token counts, unrounded savings, routes, reasons and misses.
+
+The assigned semantic reviewer received the first result, sealed pair
+and actual packets. The reviewer matched all 88 packet digests and
+agreed with the mechanical classifications for all 50 cases. Valid
+deliveries preserved the facts, IDs and applicable qualifiers. The
+11 false deliveries carried authentic source text that lacked the
+requested evidence. The reviewer observed zero unsupported or
+contradictory factual units. The sole structural anchor matched its
+source locator and text. The scorer separately validated receipt and
+navigation. The semantic review covered source evidence and delivered
+packets. Downstream answer quality remains unmeasured.
+
+Private evidence SHA-256 values, relative to the frozen checkout's `_WORK/`:
+
+| Artifact | SHA-256 |
+| --- | --- |
+| `whs-b2-g1-first-20261120/case-results.json` | `b4155ce912586299f81a4edf99ccabe039b63c21882ff89af3153ae449ce9c76` |
+| `whs-b2-g1-first-20261120/receipt.json` | `2cbb81b7a7a30698df4ba34f3373e88dd4f5a004dc599f01141e94539846c058` |
+| `whs-b2-g1-first-20261120-observer/mechanical-report.json` | `07fefd1b5ed2da54926979db6510f051fc6d54b4c227bff3ae59094e17e2b79a` |
+| `whs-b2-g1-first-20261120-observer/sha256-inventory.json` | `125e6e56bc7de65ad22025aa25f1fae83559448bcc49019c692607ba40025068` |
+| `whs-b2-g1-first-20261120-semantic-review/semantic-review.md` | `3837b73408c14f031155002beba3e4665549f0e4bac6ff2dc76c5610d8a1bbb4` |
+
+The three source pins, seven canonical artifact pins and sealed file
+hashes remained unchanged. The receipt digest in each of the 88
+envelopes was
+`7f0c6c06678e6e047853f881e326ebdef0ca7d4ee3c9ececfc15f7b258f061c1`.
+This was an agent-only, role-separated synthetic evaluation. Three
+shared sources and model-family biases can correlate errors. GPT-2 is
+the approved packet-token proxy. Actual consumer usage remains unmeasured.
+G3 retains its existing authorization, annotation, adjudication and
+statistical requirements. Keep PR #13 draft and issue #8 open for
+maintainer review. The first run is preserved and implementation is paused.
