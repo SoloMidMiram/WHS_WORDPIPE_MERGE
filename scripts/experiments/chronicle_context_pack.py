@@ -42,6 +42,22 @@ COMMON_SUBJECTS = STOP | REFERENCE | CONSTRAINT | {
 IDENTIFIER = re.compile(r"[a-z][a-z0-9]*-[0-9][a-z0-9-]*", re.ASCII)
 IMPLICIT_HEADINGS = QUALIFIERS | {"addendum", "appendix", "notice", "clarification"}
 NUMBER = re.compile(r"\d+(?:[.,]\d+)?")
+SPACED_IDENTIFIER = re.compile(r"\b([A-Z][A-Z0-9]{1,9})[ \t]+([0-9][A-Za-z0-9-]*)\b")
+FIELD_ALIASES = {
+    "maximum": "maximum", "ceiling": "maximum", "cap": "maximum",
+    "upper limit": "maximum", "حداکثر": "maximum",
+    "minimum": "minimum", "floor": "minimum", "lower bound": "minimum",
+    "lower limit": "minimum", "حداقل": "minimum",
+    "deadline": "deadline", "cutoff": "deadline", "due": "deadline", "مهلت": "deadline",
+    "required": "required", "require": "required", "mandatory": "required",
+    "compulsory": "required", "لازم": "required",
+    "prohibited": "prohibited", "forbidden": "prohibited", "banned": "prohibited",
+    "ممنوع": "prohibited",
+}
+FIELD_PHRASE = re.compile(r"\b(?:" + "|".join(map(re.escape, FIELD_ALIASES)) + r")\b")
+QUESTION_WORDS = {
+    "does", "give", "me", "when", "چقدر", "است", "چه", "زمانی", "برای",
+}
 MAX_INPUT_BYTES = 32 * 1024 * 1024
 
 
@@ -319,6 +335,26 @@ def export(run, query, max_bytes):
     return _export(run, query, max_bytes, close_qualifications=True)
 
 
+def _ground_field_request(run, query):
+    """Resolve explicit single-entity requests for supported source field labels."""
+    normalized = unicodedata.normalize("NFKC", query)
+    normalized = SPACED_IDENTIFIER.sub(r"\1-\2", normalized).casefold()
+    if not FIELD_PHRASE.search(normalized):
+        return None
+    normalized = re.sub(r"^which procedure\b", "which", normalized)
+    normalized = re.sub(r"\bچه (?:کاری|چیزی)\b", "چه", normalized)
+    query_terms = terms(FIELD_PHRASE.sub(lambda match: FIELD_ALIASES[match[0]], normalized))
+    entities = {term for term in query_terms if IDENTIFIER.fullmatch(term)}
+    if len(entities) != 1:
+        return None
+    required = query_terms - QUESTION_WORDS
+    # Match canonical source terms together in a verified section for this entity.
+    # Alias expansion on the source side could treat a physical cap as a maximum.
+    if any(required <= terms(unit["text"]) for unit in run["units"]):
+        return entities
+    return set()
+
+
 def _export(run, query, max_bytes, *, close_qualifications):
     if type(max_bytes) is not int or not 1 <= max_bytes <= MAX_INPUT_BYTES:
         raise ValueError("max_bytes must be between 1 and 32 MiB")
@@ -326,7 +362,10 @@ def _export(run, query, max_bytes, *, close_qualifications):
         if close_qualifications:
             return packet(run, query, "refused", "invalid_query")
         raise ValueError("query must contain 1–2048 UTF-8 bytes")
-    wanted = terms(query)
+    grounded = _ground_field_request(run, query) if close_qualifications else None
+    if grounded == set():
+        return packet(run, query, "refused", "unverified_entity_field")
+    wanted = terms(query) if grounded is None else grounded
     matches = [terms(u["text"]) & wanted for u in run["units"]]
     wanted_ids = {token for token in wanted if any(c.isdigit() for c in token) and "-" in token}
     complete = set().union(*matches) == wanted and bool(wanted)

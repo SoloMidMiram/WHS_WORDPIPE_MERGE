@@ -217,3 +217,29 @@ def test_g1_scores_valid_population_and_expected_refusals_separately():
     assert summary["unexpected_deliveries"] == ["unanswerable"]
     assert summary["valid_full_population_protected_fact_misses"] == 1
     assert summary["median_valid_token_reduction_pct"] == 0
+
+
+@pytest.mark.parametrize("query", ["BC 81 ceiling?", "حداکثر BC-81 چقدر است؟"])
+def test_field_paraphrase_requires_verified_same_entity(query):
+    run = _retrieval_run()
+    run["units"][0]["text"] += "\nMaximum: 18 bar."
+    packet = pack.export(run, query, 20_000)
+    assert packet["route"] == "structural"
+    assert packet["query"] == query
+    assert [unit["anchor"] for unit in packet["units"]] == ["unit-1", "unit-3"]
+    assert "Maximum: 18 bar." in packet["units"][0]["text"]
+
+
+@pytest.mark.parametrize("query", [
+    "What is the warranty maximum for BC-81?",
+    "KS 62 maximum?",
+    "BC-81 maximum procedure?",
+])
+def test_field_request_does_not_use_partial_or_cross_entity_overlap(query):
+    run = _retrieval_run()
+    run["units"][0]["text"] += "\nMaximum: 18 bar."
+    run["units"][2]["text"] += "\nWarranty: 2 years."
+    packet = pack.export(run, query, 20_000)
+    assert packet["route"] == "refused"
+    assert packet["reason"] == "unverified_entity_field"
+    assert not packet["units"] and not packet["sources"]
