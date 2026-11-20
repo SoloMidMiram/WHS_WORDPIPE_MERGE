@@ -12,12 +12,12 @@ own the [gateway matrix](docs/engineering/DELIVERY_PHASES_AND_GATES.md#acceptanc
 [24-package issue map](docs/engineering/DELIVERY_PHASES_AND_GATES.md#backlog-activation-and-synchronization)
 and [proposed release milestones](docs/engineering/DELIVERY_PHASES_AND_GATES.md#proposed-release-boundaries).
 The deterministic Chronicle and context-export target, v0.2, requires
-G0–G5 with core G4. WordPipe DOCX has its own readiness decision. Optional
+G0, G1, G2, G3-core, G4-core and G5. Full semantic Flowers evaluation and ontology expansion belong to v0.3. WordPipe DOCX has its own readiness decision. Optional
 AI qualification belongs to the v0.5 target. Delivery gateway IDs are scoped
 to the matrix. The historical goals and phases below retain their identifiers.
 
 The [three-slot queue](docs/engineering/DELIVERY_PHASES_AND_GATES.md#active-execution-queue)
-covers GOV-01, B2 and SEC-01. SAFE-01 follows SEC-01 in the hardening slot.
+covers GOV-01 (#14 / draft #19), B2 and SEC-01. Ready MD-01 (#15) follows GOV-01 in slot 1; SAFE-01 follows SEC-01 in slot 3. READY does not mean admitted. At most three packages can execute.
 
 | Order | Phase | Current execution |
 |---|---|---|
@@ -30,6 +30,19 @@ covers GOV-01, B2 and SEC-01. SAFE-01 follows SEC-01 in the hardening slot.
 | 7 | Optional AI research | [NCM #9](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/9) is blocked for real inference. [Jev #10](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/10) has offline preparation available. [Combined benchmark #11](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/11) is blocked on upstream evidence. |
 
 ## Active narrative roadmap — newest first
+
+### 2026-11-20 — G0 corrective planning contract
+
+Draft PR #19 remains the sole governance implementation for issue #14.
+The canonical delivery plan now explicitly maps seven phases to G1–G7,
+with G0 cross-cutting, nine existing issues and 15 future activation contracts.
+The revised plan defines scoped G3/G4, numerical fidelity, annotation,
+liveness, performance and AI thresholds (proposed pending owner approval),
+platform qualification via CI-01/CLI-01, owners, queue admission, cadence and
+risks. Existing Windows and Ubuntu jobs are baseline evidence, not fresh
+release-candidate qualification. All planning statuses remain provisional
+until G0 acceptance. No additional issue or PR is needed. Fresh validation
+and independent acceptance remain pending for the corrective head.
 
 ### 2026-11-20 — Work packages, gateways and release milestones
 
