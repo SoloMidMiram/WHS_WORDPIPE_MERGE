@@ -616,3 +616,158 @@ only after verifying this freeze manifest, pinned checkout and import
 origins, instrument, and holdout file hashes. Keep PR #13 draft and #8
 open. G1 remains REVISE until the independent evaluation and semantic
 adjudication are recorded.
+
+
+## Pre-scoring interpretation lock · 2026-11-20
+
+**Maintainer approves the sealed holdout pin and authorizes scoring at the
+unchanged experimental candidate `920c8e044ad7553d11d010bdba6ae580626db961`, subject to
+the previously registered runtime/hash preflight.** This amendment freezes
+interpretation, not the implementation or the sealed data. No fresh
+predictions or scoring are reported as executed at publication. Keep G1
+REVISE pending the complete first run and independent agent semantic
+review. If exposure occurred before this amendment, stop and disclose the
+ordering rather than claim prospective registration.
+
+### A — Efficiency and receipt accounting
+
+The historical 12-case reproduced tuning ledger reports **35.29% median
+estimated complete-packet GPT-2 reduction versus A**, with zero credit for
+the one ordinary refusal and the two provenance refusals. The previous
+run reported 35.53%. Recalculation from the published per-case counts
+gives 35.29% using the same 12-row median. Delivered totals
+are A 7,351 tokens and B2 3,636 tokens, a 50.54% aggregate
+difference; A 21,617 bytes and B2 9,192 bytes, a 57.48%
+aggregate difference. Aggregate differences include the effect of
+non-delivery and are supplemental only, not the G1 efficiency formula.
+The historical median exceeds 20% numerically but is not evidence of
+passing the independent G1 gate. A historical median below 20% would be a
+development warning, not an automatic independent G1 verdict.
+
+Retain the approved pinned GPT-2 BPE asset and engine/runtime, complete
+serialized-packet accounting, and zero consumer rereads in both arms.
+**Receipt metadata stays IN the metric.** Freeze the existing
+`whs-context-receipt-v1` and `whs-context-pack-v1` schemas, candidate
+serialization, SHA-256 hexadecimal receipt digest in
+`run.receipt_sha256`, and the candidate scorer's tokenization of the
+complete envelope. The actual digest value varies with the particular
+receipt; do not replace it with a placeholder or remove metadata.
+The exporter blob `463056defa60488c09c7345564437f9bf589d4d9` and
+scorer blob `00b566453b0c66cdf68a16b34ac34edfee0418ee` are pinned.
+Compare A and B2 within the same fresh run using the same verified source
+and receipt context for each case; persist actual receipt and packet
+hashes and token counts. Preserve the first complete run. Explain
+cross-run digest-related variation separately; never choose an alternate
+receipt or repeat until a threshold passes. Any format, serialization or
+accounting change is a new protocol, not a post-hoc correction.
+
+For the 30 pre-labeled valid requests, compute per-case 1 - B2 complete
+packet tokens / A complete packet tokens for structural deliveries;
+raw fallback and refusal contribute zero savings. Take the median over
+all 30 valid requests. Require >=20% with the pinned GPT-2 estimator.
+No actual downstream consumer-token or reread savings is claimed.
+Missing raw-arm counts for a valid request make efficiency unmeasurable
+under the registered scorer, not a pass; report the instrument failure
+and retain all evidence. Report unrounded/per-case values and the
+scorer's reported rounded percentage; do not round a subthreshold
+unrounded result up into a pass.
+
+### B — Retention, classification and historical loss
+
+The [canonical G1 contract](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/blob/920c8e044ad7553d11d010bdba6ae580626db961/docs/engineering/DELIVERY_PHASES_AND_GATES.md#quantified-gateway-contracts)
+already requires 100% protected facts and required IDs in delivered
+packets, 100% valid applicable anchors and zero unsupported facts, plus
+separate delivery coverage and correct refusal gates. Keep both delivered
+and full-population metrics. Delivered protected-fact/ID retention is the
+100% retention gate; all applicable gold on valid refused requests remains
+missing in full-valid-population fact/ID coverage. Correctly refused
+expected-refusal cases do not incur answerable-fact retention penalties;
+incorrect deliveries fail the refusal gate regardless of literal overlap.
+Do not alter any pinned label or gold after the predictions. Report
+additional-fact retention separately, including all applicable misses;
+not a new 100% additional-fact threshold.
+
+Historical initial B2 delivered 32/32 literals; the final original and
+replacement B2 refuse the historical `empty-match` query. The replacement
+retains 21/22 critical and 9/10 additional, 30/32 overall and 30/30
+delivered. This is a real two-literal full-population retention loss
+relative to the initial raw-fallback measurement, not a new regression
+relative to the final original B2. The historical gold expects raw
+delivery; the query uses unrelated words. Do not silently relabel that
+historical case as a correctly refused fresh case or erase its misses.
+The new holdout has pre-labeled valid and expected-refusal classes,
+which govern interpretation independently of historical labeling.
+
+### C — Independence scope
+
+Independence class: **agent-only, procedurally role-separated synthetic
+evaluation; no human adjudication or established epistemic/statistical
+independence.** Named roles remain `/root/holdout_author`,
+`/root/scoring_operator`, and `/root/semantic_reviewer`.
+Shared model-family biases and shared source corpus (three synthetic
+sources) can correlate errors. G1 acceptance, if achieved, will apply only
+to the declared synthetic scope and approved proxy accounting. This is
+not external production or human-validated semantic qualification.
+No precedent or waiver for G3-full: retain its existing authorized
+blinded annotators, independent adjudicator, support, pre-adjudication
+kappa and quality requirements. Do not infer G3 qualification from
+separated G1 agent roles.
+
+### D — Post-fix gold alignment
+
+The preceding published record states that the separate semantic reviewer
+re-reviewed the revised inputs after two wording fixes, confirmed both
+fixes and passed answerability/literal-grounding preflight with unchanged
+gold. Treat this as reported re-verification against the revised wording,
+not proof the edits were purely non-semantic. Bind the recorded review
+to the sealed revision:
+- `holdout-inputs.json` SHA-256 `8b436227cf0802db7337d03f85ff5be798fc6042d21cdaf5c7b7199d08da6343`
+- `holdout-gold.json` SHA-256 `d8adabd839aa65b0746fc911ded774ca6046938d8cb1bd3204c77e3eaa7fcee0`
+- `semantic-preflight.md` SHA-256 `8e7994f8d293b6cdfb2d5b4f3ee3abb72bcf04059a0142bcef38ed54064aad46`
+- `freeze-manifest.json` SHA-256 `483ad9789726609621fb145f275ae5689495690f51bcfd4501749bfff61271c2`
+
+These are published pins, not independently rehashed local files in this
+repository audit. Before prediction the assigned scoring operator must
+verify them and the reviewer record's binding to the final input/gold
+pair; request a blinded confirmation if the binding is absent. No
+gold edit or case replacement is authorized by this interpretation lock.
+A mismatch is a preflight blocker; do not score altered inputs.
+
+### E — Exact experiment identity
+
+GitHub commit metadata verifies candidate `920c8e044ad7553d11d010bdba6ae580626db961`, tree
+`9bfa8c3a33054984518bd0cfebf1275c9ecaddeb`, and previous documentation
+head `fc671fc1c7f04d1a2ef71295143ba280802d66df`, tree
+`0d15476cdbc6595022faa17d7bca931e022f90c0`. The comparison is exclusively
+`docs/engineering/WHS_CONTEXT_PACK_B2.md` (+391 lines, no deletions).
+Full tree hashes differ because of documentation; all experiment code,
+config and non-report paths are unchanged. The candidate run
+[44709174672](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/44709174672) and
+documentation-head run [44719443458](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/44719443458)
+are associated with their respective exact SHAs; all five jobs on each
+were independently read as successful via the GitHub connector.
+The local tested checkout/tree, sealed artifacts and agent isolation
+remain reported evidence, to be verified by the operator before scoring.
+This documentation-only amendment does not replace the candidate.
+
+### F — Exact gate arithmetic and first-run interpretation
+
+30 valid requests imply minimum 29 verified deliveries:
+30/30 = 100%, 29/30 = 96.666...% (coverage PASS), 28/30 =
+93.333...% (coverage FAIL). Exactly one valid failure is allowed across
+both strata combined; a single paraphrase refusal alone does not fail
+coverage. No separate 95% per-stratum gate was approved. Report 15 exact
+and 15 paraphrased outcomes individually. All 20 expected-refusal cases
+must refuse correctly, including all 10 absent-field controls. Any
+unexpected delivery fails that gate. Every delivered packet must meet
+protected-fact, exact-ID, provenance and unsupported-fact requirements.
+The operator must report full-valid-population ID misses (derive from
+pinned gold and delivered results without modifying the frozen scorer),
+all fact misses, route/reason, token median, deterministic replay and
+unchanged canonical input/output hashes. Complete the assigned independent
+agent semantic review; a literal match cannot overrule semantic evidence.
+No selective exclusions, retry-for-pass behavior, threshold changes or
+new interpretation after exposure. If any mandatory metric fails or is
+unmeasurable, no G1 ACCEPT; retain the first result and stop for maintainer
+disposition. Otherwise submit scoped ACCEPT evidence for maintainer review.
+No merge, closure, or next candidate is authorized at this step.
