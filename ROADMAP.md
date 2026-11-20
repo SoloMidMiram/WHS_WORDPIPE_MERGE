@@ -23,13 +23,38 @@ covers GOV-01 (#14 / draft #19), B2 and SEC-01. Ready MD-01 (#15) follows GOV-01
 |---|---|---|
 | 1 | Context fidelity | **REVISE** [#8](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/8) / [draft #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13). Freeze B2 and independently evaluate a fresh holdout. |
 | 2 | Document understanding | [Markdown structure #15](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/15) is ready. Temporal evidence and multilingual normalization follow characterization. |
-| 3 | Corpus acceptance | [Flowers #16](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/16) is queued for real-corpus evaluation. Rubric preparation can start offline. |
+| 3 | Corpus acceptance | [Flowers #16](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/16) is queued for real-corpus evaluation. Offline rubric preparation requires an available slot and admission. |
 | 4 | References and ontology | Complete Phase 9c using existing survivor contracts and populate the project ontology before schema expansion. |
-| 5 | Product stabilization | [Public audit #17](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17) is ready now. [Atomic DOCX #18](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/18) follows in the same slot. Bound execution and verify the installed Chronicle workflow for v0.2. |
+| 5 | Product stabilization | [Public audit #17](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17) occupies slot 3. [Atomic DOCX #18](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/18) follows in the same slot. Bound execution and verify the installed Chronicle workflow for v0.2. |
 | 6 | Knowledge intelligence | Ground citations, claims and relations in provenance. Measure search needs before indexing. |
 | 7 | Optional AI research | [NCM #9](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/9) is blocked for real inference. [Jev #10](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/10) has offline preparation available. [Combined benchmark #11](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/11) is blocked on upstream evidence. |
 
 ## Active narrative roadmap — newest first
+
+### 2026-11-20 — G0 acceptance review and contract alignment
+
+Branch `docs/whs-delivery-roadmap`, [draft PR #19](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/19).
+Reviewed head `fd2851d2bf1aa2c6dae4171172eaef5eab9ab96d` and base
+`e2f1c17643b05016f5617a43c07f850033c6acbd`. GitHub confirms the head is
+five commits ahead of the base and changes four Markdown files. Verified
+24 unique packages, links to nine open issues, 15 future activation contracts
+and eight gateways. The [retrieval map](docs/engineering/REPO_MAP.md) was
+checked against this scope.
+
+[Hosted run 44684189554](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/44684189554)
+passed all five jobs on the reviewed head. Local validation reconstructed
+the candidate over the pinned base using the four GitHub blob IDs. All five
+governance checks passed. With the review checkout first on Python's import
+path, the local suite passed 383 tests with six skips, and the Windows
+PowerShell CI integration passed its success and rejection cases. The first
+local attempt loaded Chronicle code from a different checkout and failed
+four tests. The corrected run applies to the review checkout.
+
+This revision aligns slot admission, protected-label qualification, G7 cost
+scope and SQLite activation. Existing numerical thresholds remain proposed.
+Recheck hosted CI at the new head and record the maintainer's decision on
+the proposed thresholds before accepting G0. Admit MD-01 after documented
+slot release and reconcile PR #13 against the integrated base.
 
 ### 2026-11-20 — G0 corrective planning contract
 

@@ -93,7 +93,7 @@ exit and successor; no fourth active package.
 | Slot | Current package | Next decision |
 |---|---|---|
 | Governance | GOV-01 [#14][i14] | Review and integrate [#19][pr19]; then admit READY MD-01 [#15][i15] in this slot. |
-| Research fidelity | [#8][i8] / [draft PR #13][pr13] | Preserve B1, freeze B2 and evaluate a fresh independently adjudicated holdout. |
+| Research fidelity | [#8][i8] / [draft PR #13][pr13] | Preserve B1, freeze B2 and evaluate a fresh independently adjudicated holdout. After disposition and recorded slot release, admit the next eligible package by dependency and priority. |
 | Independent hardening | SEC-01 [#17][i17] | Complete the public release audit, then admit SAFE-01 [#18][i18] to this slot. |
 
 MD-01 [#15][i15] remains READY, reserved as the successor to GOV-01 in slot 1.
@@ -158,7 +158,8 @@ follow-ups to issues when their interfaces are characterized.
 
 **Gateway.** [G3 Corpus](#acceptance-gateway-matrix).
 
-**Entry.** [#16][i16] may prepare an offline rubric immediately. Real-corpus
+**Entry.** [#16][i16] may prepare an offline rubric once admitted to an
+available slot. Real-corpus
 scoring requires the applicable Phase 2 decisions, an authorized local
 inventory and independent adjudication.
 
@@ -286,7 +287,8 @@ versions, machine, denominators, failures and raw measurements.
   resolves all disagreements. Report pre-adjudication per-binary-label
   Cohen's kappa >= 0.70 and macro kappa >= 0.75, raw agreement and support.
   Labels with undefined kappa or fewer than 10 positives or 10 negatives are
-  unqualified; report them explicitly. On adequately supported predeclared
+  unqualified; report them explicitly. Every predeclared protected label
+  must qualify before acceptance of the declared scope. On adequately supported predeclared
   scope require macro F1 >= 0.80, micro F1 >= 0.85 and recall >= 0.90 for
   predeclared protected labels. No qualified reviewers or authorization =
   BLOCKED for G3-full only. Keep restricted material local.
@@ -322,9 +324,10 @@ versions, machine, denominators, failures and raw measurements.
   #11 >= 20% median end-to-end consumer-token saving vs B across all
   cases including fallback and no critical-task degradation. For #10 propose
   >= 5 percentage-point macro F1 improvement vs frozen normalized keyword
-  baseline on held-out cases (abstentions count as misses), no protected-label
-  recall degradation, cost per independently accepted result no higher
-  when comparable. For free or unmeasured baseline costs, require an explicit
+  baseline on held-out cases (abstentions count as misses) and no protected-label
+  recall degradation. For each experiment, require cost per independently
+  accepted result no higher than its comparable baseline. For free or
+  unmeasured baseline costs, require an explicit
   spending ceiling and approved tradeoff before scoring, no cost-saving
   claim. Zero known accepted critical errors, independent adjudication,
   authorization and explicit adoption decision remain mandatory for all arms.
@@ -413,13 +416,13 @@ technical evidence and historical remediation.
 | ONT-02 | P1 | Semantic concepts and relationships | To-create | Ontology lead + reviewer | Gated by ONT-01, NLP-01 and the Phase 15 schema decision. Verify versioned migration and evidence-backed relations (full G4). |
 | SAFE-01 | P1 | Atomic DOCX publication | [#18][i18] | DOCX implementer | Ready after SEC-01 in slot 3. Prove failure preservation and cleanup through installed paths on Windows and Linux (DOCX readiness). |
 | EXEC-01 | P1 | Bounded execution and cancellation | To-create | Runtime implementer | Queued. Define stage process contracts and verify deadlines, bounded diagnostics and cleanup on supported platforms (G5). |
-| SEC-01 | P1 | Public repository and dependency audit | [#17][i17] | Release/security maintainer | Ready in slot 3. Record current ref, dependency, workflow and release-artifact coverage and disposition (G5). |
+| SEC-01 | P1 | Public repository and dependency audit | [#17][i17] | Release/security maintainer | Admitted in slot 3. Record current ref, dependency, workflow and release-artifact coverage and disposition (G5). |
 | DOCX-01 | P2 | Flattener and capability contracts | To-create | DOCX implementer | Queued. Characterize supported COM/XML dependencies and experimental flags. Verify installation and capability reporting (DOCX readiness). |
 | INT-01 | P2 | TraceLedger consumer validation | To-create | Integration lead + external consumer | Queued. Require a real available consumer and verify library, EventSink and capability contracts (external consumer acceptance). |
 | CLAIM-01 | P2 | Claim lifecycle and contradictions | To-create | Knowledge lead + reviewer | Gated by grounded references and the semantic schema decision. Verify evidence, temporal scope and historical preservation (G6). |
 | CITE-01 | P2 | Research citation model | To-create | Knowledge implementer | Queued. Build on CORE-01 source locators. Verify per-claim citations resolve and survive replay (G6). |
 | PERF-01 | P2 | Chronicle scaling benchmark | To-create | Benchmark implementer | Queued. Measure wall time and peak memory at 100, 1,000, 10,000 and 100,000 events on pinned fixtures (G6). |
-| STORE-01 | P2 | Rebuildable SQLite projection | To-create | Storage implementer | Gated by PERF-01 or documented query friction. Require reproducible rebuilds from canonical artifacts and measured benefit (G6). |
+| STORE-01 | P2 | Rebuildable SQLite projection | To-create | Storage implementer | Gated by demonstrated query friction. Use PERF-01 characterization where relevant. Require reproducible rebuilds from canonical artifacts and measured benefit (G6). |
 | CLI-01 | P1 | Installed Chronicle CLI | To-create | Release implementer | Queued. Exercise a clean wheel install and documented complete Chronicle flow on Windows and Linux, retaining wrapper compatibility (G5). |
 | CI-01 | P1/P2 | CI profiles and duplicate scanner | To-create | CI/release implementer | Queued. P1 platform qualification subset blocks v0.2/G5; P2 profile split and duplicate scanner optional with scope decision. Preserve governance checks. |
 | REF-01 | P3 | Conditional refactoring and retirement | To-create | Subsystem maintainer | Deferred. Characterize consumer use before wrapper retirement. Require a third-adapter coupling or unsafe schema evolution before decomposing the runner. |
