@@ -328,3 +328,159 @@ integration passed both CI cases. CLI checks verified the paraphrased
 delivery and unsupported-field refusal with no evidence on stdout. The
 [exact-candidate CI run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/44709174672)
 covers the revised candidate independently of this documentation update.
+
+
+## Replacement freeze audit and scoring prerequisites · 2026-11-20
+
+**Maintainer disposition: approve `920c8e044ad7553d11d010bdba6ae580626db961` as the locked
+code/configuration/source identity for independent holdout authoring.
+G1 remains REVISE; scoring is blocked until the conditions below are
+resolved.** This review supplements the conditional-freeze execution record;
+historical evidence, numerical G1 thresholds, and prior verdicts are unchanged.
+No further retrieval change is authorized by this audit.
+
+### Measurement reconciliation and efficiency scope
+
+The initial 44.42% median complete-packet **byte** reduction was recorded
+for the initial B2 measurement at local commit
+`ec64f4f1646b4d97da9ae6360e877d3cda2c9ce0`, not the replacement
+candidate. It is historical and superseded for current-candidate efficiency
+claims, not erased. The replacement tuning replay already reports
+35.53% median **estimated GPT-2 token** reduction across all 12 historical
+tuning cases, including refusal zero-credit cases, at recorded artifact
+SHA-256 `7ed89c131a290db4fa1cdb0ff07406a7afbfd80d2658eb99e5da5b206afa38d8`.
+This is not the independent G1 valid-population median. Byte and token
+percentages are not directly comparable. Current-candidate byte reduction
+is not published. Before fresh scoring, retrieve and hash-verify the recorded
+row-level replay artifact (or reproduce at the pinned candidate in a new
+evidence directory); publish/verify complete-packet byte and token reductions
+with both historical 12-case and applicable valid-population denominators,
+routes, zero-credit policy, and per-case misses. Treat any reconstructed
+historical valid-population classification as a separately labeled,
+predeclared developmental analysis, not independent G1 evidence.
+Do not invent a byte result or require paired byte/token percentages to
+match. If comparable replay measurements reveal material deterioration,
+record its cause and maintainer disposition before scoring; if a candidate
+change is needed, remeasure and re-freeze before independent evaluation.
+
+The tuning fixture blob `4874f02d9b65c3e93075390d27adb023aade6958`
+and gold blob `e2b8c21df664fbd937f15a2de8b2bf9848dd84a5` are unchanged.
+The gold contains 22 critical plus 10 additional literals (32 total);
+the two provenance-refusal records have empty gold. The changed outcome
+is the historical `empty-match` query (`unseen olive ricochet`):
+the initial B2 raw fallback retained its one critical literal
+(`empty heading above has no event body`) and one additional literal
+(`Public agenda`); the final original B2 and replacement B2 each refuse
+that query. Thus 21/21 delivered and 21/22 full-population critical facts
+are reconciled: one real critical miss is retained, not removed from gold.
+The replacement did not introduce a new aggregate critical-fact miss
+relative to the final original B2 replay. The earlier 32/32 counts all
+critical and additional literals; it is not the same metric as 21/22.
+Do not assert total revised fact retention without validating per-case
+additional misses in the replay artifact. Record the complete 32-literal
+denominator and case-level critical/additional misses, verify the expected
+empty-match refusal and the two provenance refusals, and investigate any
+other loss before scoring. Artifact bytes are local and were not
+independently rehashed during this repository audit.
+
+### Exact identity verification
+
+GitHub metadata confirms candidate `920c8e044ad7553d11d010bdba6ae580626db961`, tree
+`9bfa8c3a33054984518bd0cfebf1275c9ecaddeb`. The report-only successor
+`adaf1134f94c8ffc0520cb7f741c969b9822438b`, tree `6cb7e424495b980cdaf31300abaea5ec1f6a18ef`,
+is its direct child and changes only
+`docs/engineering/WHS_CONTEXT_PACK_B2.md` (+103 lines, no deletions).
+The full Git tree differs because of documentation, not experiment code.
+[Candidate CI](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/44709174672)
+is tied to the candidate SHA; [documentation CI](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/44709670198)
+is tied to the report-only SHA. All five jobs on each were independently
+read as completed successfully through the GitHub connector.
+The prior local-validation record reports the candidate tree;
+the actual local tested tree and raw evidence files have not been
+independently reconstructed or rerun in this audit. Verify local checkout
+tree and import origins again at execution. This audit's additional
+documentation commit is not a new experiment candidate; retain separate
+candidate and documentation identities and their respective CI evidence.
+
+### Part C disclosure: exposed development replay, not an independent estimate
+
+The initial diagnostic was separate from G1 and its inputs/gold were pinned
+before the original prediction. The corrective revision was evaluated on
+the same exposed 20 valid paraphrases, paired controls and five unanswerable
+controls. This is development-set fitting followed by regression replay,
+not an independent post-fix false-refusal or false-delivery estimate.
+It did not introduce fresh probe cases or an independent second adjudicator.
+Record this limitation/deviation from an independent post-fix estimation
+interpretation of Part C. Retire all diagnostic inputs, gold, controls and
+derivatives from fresh G1 scoring; keep them as historical regressions.
+The 0/20 and 0/5 revised results do not establish generalization.
+The proposed bounded disposition is to let the independently authored
+holdout provide the first independent estimate, without another
+implementation/probe loop. Maintainer must explicitly record acceptance
+of this disposition before scoring (or require a genuinely new separate
+pre-authoring probe, with any resulting revision re-frozen). No previously
+exposed cases count toward G1.
+
+### GPT-2 proxy: explicit scope decision
+
+The pinned GPT-2 estimator and packet-only protocol are instrument-qualified
+as reported, not a measurement of actual downstream consumer token use.
+Proposed G1 efficiency decision: apply the unchanged >=20% median floor to
+the pinned GPT-2 complete-packet estimates across the valid population,
+with zero consumer rereads in both arms and zero savings credit for raw
+fallback/refusal. Obtain explicit maintainer sign-off on accepting this
+proxy for the declared G1 experimental scope before fresh scoring.
+Until that approval is recorded, proxy gate acceptance is pending;
+do not equate the proxy with actual consumer token consumption.
+If actual consumer tokenizer qualification is required instead, halt the
+replacement protocol, obtain and pin that instrument and approve the
+new preregistration before authorship under it; replace any already-authored
+independent set if the protocol is invalidated. Never select an instrument
+after observing holdout predictions or change the numerical floor silently.
+
+### Independence and dedicated challenge stratum
+
+Independent author: **UNASSIGNED (name/identity and authorization pending)**.
+Independent scoring operator: **UNASSIGNED (name/identity and authorization
+pending)**. Independent semantic reviewer/adjudicator: **UNASSIGNED**.
+Neither author nor scoring operator may be the B2 developer for this
+evaluation contract. Record each actual identity, role, independence
+declaration and scope; do not infer independence from a new AI session.
+The author must be blinded to exposed diagnostic cases, implementation-
+specific alias vocabulary and candidate predictions. Freeze the separate
+inputs, gold, classifications, case roster, applicable anchors and IDs
+before any fresh prediction; an independent reviewer records semantic
+decisions and disagreements without editing original gold post hoc.
+The deterministic benchmark may be used by the independent scoring
+operator; its automated metrics do not substitute for independent review.
+If independent roles cannot be secured, report BLOCKED for scoring,
+identify the owner and next check/slot decision under G0.
+
+Include a dedicated, independently authored stratum of **at least 10
+entity-present/requested-field-absent cases**, additional to the ordinary
+>=10 expected-refusal cases (stale/ambiguous/invalid/other unanswerable).
+These are a separately reported unanswerable subset of the
+`expected_refusal` class, not valid answerable cases and not a third
+classification unsupported by the scorer. Require zero false deliveries
+under the existing 100% correct-refusal gate, report this stratum's own
+numerator/denominator, and retain all cases in the aggregate refusal
+denominator. Include valid paraphrases and corresponding answerable
+requests in the valid population, without recycling development prompts.
+Recommended expanded evaluation: 30 valid + 10 ordinary refusals + 10
+dedicated absent-field refusals = 50 cases; minimum under this additional
+sampling requirement is 20 valid + 10 ordinary refusals + 10 dedicated
+absent-field refusals = 40. The approved G1 numerical gate is unchanged;
+the added diagnostic stratum is a stronger preregistered sampling contract.
+Avoid communicating the exposed probe cases to the independent author.
+
+### Handoff
+
+Authoring may proceed at the unchanged code/config/source freeze once
+independent authorship is arranged and the intended instrument protocol
+is accepted for that authorship; no fresh scoring is authorized until
+row-level replay/measurement reconciliation, explicit proxy and Part C
+dispositions, independent named roles, pinned independent inputs/gold,
+and exact-candidate runtime checks are complete. If a new instrument or
+implementation is required, apply the earlier re-freeze and fresh
+authorship rules. No new G1 threshold, candidate, issue, or research
+workstream is authorized. Keep #8 open and #13 draft with G1 REVISE.
