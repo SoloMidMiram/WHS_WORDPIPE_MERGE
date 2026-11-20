@@ -1,6 +1,12 @@
 # WHS repository retrieval map
 
-Checked: 2026-11-19 for WHS-AI-01, experiment/whs-08-context-pack-fidelity (PR #13), reviewed parent b25c02c on main e2f1c17.
+Checked 2026-11-20 for B2 in draft PR #13 against integrated main `e85ddc1b0422`.
+
+Previous checks:
+
+- Checked 2026-11-20 for delivery and backlog planning against main `e2f1c17643b0`.
+- Checked: 2026-11-19 for WHS-AI-01, experiment/whs-08-context-pack-fidelity (PR #13), reviewed parent b25c02c on main e2f1c17.
+
 This is a routing map, not live PR status or an acceptance certificate.
 Canonical dependency rules remain in [architecture](../../ARCHITECTURE_AND_MODULES.md).
 The broad file inventory remains [INDEX.md](../../INDEX.md).
@@ -25,9 +31,10 @@ semantic index; verify the caller and contract before editing.
 | topic, adapter, lineage, correlation | `tools/run_topic_report.py`, `tools/prepare_generic_markdown_chronicle.py`, `tools/prepare_insurancechatbot_chronicle.py` | `tests/test_run_topic_report.py`, `tests/test_prepare_generic_markdown_chronicle.py`, `tests/test_phase16_event_lineage_runner.py` |
 | catalog, hashes, preservation | `inputs/README.md`, `inputs/catalog.json`, `tools/verify_integrity.py` | `tests/test_input_catalog.py`; inspect specific evidence only on demand |
 | boundaries, root, imports | `ROOT_ORGANIZATION.md`, `tools/check_root_layout.py`, `tools/check_architecture_boundaries.py` | `tests/test_root_layout.py`, `tests/test_architecture_boundaries.py` |
-| context pack, WHS #8, B0/B1, provenance | `scripts/experiments/chronicle_context_pack.py`, `scripts/experiments/benchmark_context_pack.py` | `tests/test_chronicle_context_pack.py`, `tests/fixtures/whs_context_*.json`; [report and metrics](WHS_CONTEXT_PACK_FIDELITY.md). Optional synthetic research. |
 | NCM Flowers pilot, B0, worker fallback | `scripts/experiments/ncm_flowers_pilot.py` (offline synthetic harness) | `tests/test_ncm_flowers_pilot.py`, `tests/fixtures/ncm_flowers_synthetic.json`, `tests/fixtures/ncm_flowers_synthetic_gold.json`; [report and metrics](NCM_FLOWERS_PILOT.md). Genuine inference remains blocked. |
-| priorities, architecture, ontology | `ROADMAP.md`, `ARCHITECTURE_AND_MODULES.md`, `ONTOLOGY_MODEL.md` | `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`, `docs/engineering/OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md` |
+| Context-pack fidelity, B0/B1/B2, WHS #8 | [Draft PR #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13), [issue #8](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/8), `scripts/experiments/chronicle_context_pack.py`, `scripts/experiments/benchmark_context_pack.py` | `tests/test_chronicle_context_pack.py`, `tests/fixtures/whs_context_*.json`, [B1 report and metrics](WHS_CONTEXT_PACK_FIDELITY.md), [Delivery Phase 1](DELIVERY_PHASES_AND_GATES.md#phase-1--context-fidelity) |
+| gateways, issue ownership, release milestones | [Delivery plan](DELIVERY_PHASES_AND_GATES.md) | [G0–G7](DELIVERY_PHASES_AND_GATES.md#acceptance-gateway-matrix), [work packages](DELIVERY_PHASES_AND_GATES.md#backlog-activation-and-synchronization), [release gates](DELIVERY_PHASES_AND_GATES.md#proposed-release-boundaries) |
+| priorities, architecture, ontology | `ROADMAP.md`, `ARCHITECTURE_AND_MODULES.md`, `ONTOLOGY_MODEL.md` | [Delivery phases and gates](DELIVERY_PHASES_AND_GATES.md), `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`, `docs/engineering/OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md` |
 
 ## Reuse tools and interpret their limits
 
