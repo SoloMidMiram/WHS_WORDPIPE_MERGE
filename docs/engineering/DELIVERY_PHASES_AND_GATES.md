@@ -9,7 +9,7 @@ roadmap retains the original Project Phase 9c, Phases 13–17 and goal IDs.
 
 ## Authority and freshness
 
-GOV-01 = issue [#14][i14], implemented by existing draft [PR #19][pr19].
+GOV-01 = issue [#14][i14], implemented by merged [PR #19][pr19].
 Do not open another governance issue or PR. This file is the sole authority
 for phase execution, gateways, work-package mapping, release readiness and
 risks. PHASE_EXECUTION_PLAN.md, ACCEPTANCE_GATE_MATRIX.md, ISSUE_ROADMAP_MAP.md
@@ -20,8 +20,13 @@ evidence, and REPO_MAP.md owns navigation. The maintainer owns all four.
 Check these documents and search GitHub before adding a tracking surface;
 record a supersession and redirect if authority ever changes.
 
-Planning statuses and thresholds are provisional until GOV-01 acceptance.
-A fresh read on 2026-11-20 confirms the nine existing issues are open;
+G0 ACCEPT: the maintainer approved the planning contracts on 2026-11-20.
+PR #19 was already merged by the time the final conditions were recorded;
+its history-preserving merge is `d26e6e998123806e53aa352ea4f40a5a6363e1b5`.
+Issue #14 is closed; MD-01 is admitted to slot 1. The numerical values remain
+provisional planning baselines, not qualification results.
+
+At the earlier pre-merge snapshot on 2026-11-20 the nine existing issues were open;
 PRs #2–#7 and #12 are merged, #1 is closed unmerged, and #13 and #19 are
 open drafts. The existing CI definition has three Windows and two Ubuntu jobs.
 Historical CI results remain tied to their original SHA. No fresh test
@@ -38,7 +43,7 @@ execution is asserted by this correction.
 | Release boundary | The package metadata says `0.1.0`. Proposed v0.2 is the deterministic Chronicle release. | Certify v0.2 against the checklist below. Track WordPipe DOCX readiness independently. |
 
 At the baseline, seven PRs had merged, PR #1 had closed without merging, and
-PR #13 was the sole open PR at that earlier baseline; #19 is now also open. B0's original eight-case NCM-pilot metrics and
+PR #13 was the sole open PR at that earlier baseline; #19 subsequently opened and merged. B0's original eight-case NCM-pilot metrics and
 its replay on #13's 24-case benchmark describe different datasets.
 
 ## Parallel work and dependencies
@@ -92,13 +97,13 @@ exit and successor; no fourth active package.
 
 | Slot | Current package | Next decision |
 |---|---|---|
-| Governance | GOV-01 [#14][i14] | Review and integrate [#19][pr19]; then admit READY MD-01 [#15][i15] in this slot. |
+| Slot 1 — document understanding | MD-01 [#15][i15] (admitted) | Characterize Markdown structure and lineage; decide a bounded correction. GOV-01 exited with G0 ACCEPT. |
 | Research fidelity | [#8][i8] / [draft PR #13][pr13] | Preserve B1, freeze B2 and evaluate a fresh independently adjudicated holdout. After disposition and recorded slot release, admit the next eligible package by dependency and priority. |
 | Independent hardening | SEC-01 [#17][i17] | Complete the public release audit, then admit SAFE-01 [#18][i18] to this slot. |
 
-MD-01 [#15][i15] remains READY, reserved as the successor to GOV-01 in slot 1.
-If GOV-01 becomes BLOCKED and releases its slot, record that decision before
-admitting MD-01. No silent deferral.
+GOV-01 [#14][i14] exited on 2026-11-20 after PR #19 integration and maintainer
+acceptance; MD-01 [#15][i15] is formally admitted in slot 1. This is admission
+only, not a claim of implementation or G2 acceptance.
 CORP-01 [#16][i16] can prepare its rubric offline once admitted. Technical
 independence allows work to start with an available slot. Gated, queued and
 deferred entries in the [issue map](#backlog-activation-and-synchronization)
@@ -261,10 +266,17 @@ contracts. Deterministic release readiness proceeds independently.
 
 ## Quantified gateway contracts
 
-The following numerical floors are proposals requiring maintainer approval
-and preregistration before tuning/scoring. A changed threshold after holdout
-exposure requires new independent holdout evidence. Record fixture digests,
-versions, machine, denominators, failures and raw measurements.
+The maintainer approved the numerical floors below on 2026-11-20 as
+provisional planning baselines only. Preregister before tuning/scoring.
+The first executed measurement for each quantified work package triggers a
+mandatory documented re-baseline review: retain the original numbers, measured
+baseline, environment, corpus/tokenizer identity, proposed changes (or explicit
+retention), rationale, and maintainer disposition. Hardware-sensitive PERF-01
+and corpus/tokenizer-sensitive G7 values must be reviewed explicitly. Do not
+silently drift or retroactively turn a failed evaluation into ACCEPT. A changed
+threshold after holdout exposure requires new independent holdout evidence;
+retain all original verdicts and evidence. Record fixture digests, versions,
+machine, denominators, failures and raw measurements.
 
 - G1 / #8: fresh holdout >= 30 cases, >= 20 valid answerable in-budget
   cases and >= 10 expected-refusal cases (stale, ambiguous, invalid or
@@ -307,8 +319,17 @@ versions, machine, denominators, failures and raw measurements.
 - G5 / CI-01 and CLI-01: existing Ubuntu jobs are baseline, not final
   qualification. Require fresh exact-candidate Windows and Linux
   wheel-installed complete Chronicle runs and governance checks.
-  CI-01 platform coverage is P1 and a v0.2 blocker; its optional profile
-  split and duplicate scanner remain P2 and may be explicitly deferred.
+  CI-01 platform coverage and source-test import isolation are P1 and v0.2
+  blockers; its optional profile split and duplicate scanner remain P2 and
+  may be explicitly deferred. The 2026-11-20 local review initially imported
+  Chronicle from another checkout and failed four tests; the corrected import
+  path passed all four. Require source-test session startup to resolve
+  `wordpipe.__file__` and all other imported repository packages under test
+  (including package/module origins where applicable) inside the intended
+  checkout, using resolved paths, and fail loudly on mismatch with expected
+  and actual origins. Add a deliberate foreign-checkout regression; do not
+  silently repair imports. Separately, installed-wheel tests must assert
+  their origins are in the intended clean installation, not a source checkout.
   DOCX-01 must document actual COM/XML capabilities; COM is not a Linux
   Chronicle requirement. DOCX readiness is independently qualified.
 - G6 / PERF-01: deterministic pinned 100, 1k, 10k and 100k-event corpora
@@ -345,12 +366,12 @@ subject to the independent gateway review.
 
 | Gateway | Required evidence for ACCEPT | Owner and current decision |
 |---|---|---|
-| G0 — Governance | Reconcile the root roadmap, the 24 unique work packages and open GitHub issues. Assign each tracked scope one owner issue, retain the historical evidence and pass repository governance on the integrated candidate. | Maintainer, GOV-01 [#14][i14]. Review pending in [#19][pr19]. |
+| G0 — Governance | Reconcile the root roadmap, the 24 unique work packages and open GitHub issues. Assign each tracked scope one owner issue, retain the historical evidence and pass repository governance on the integrated candidate. | Maintainer, GOV-01 [#14][i14]. ACCEPT; [#19][pr19] merged; #14 closed. |
 | G1 — Fidelity | Freeze B2 before preparing a fresh independent holdout. All delivered packets retain 100% of protected facts and required IDs, have verified anchors and contain zero unsupported facts. Record delivery, raw fallback, refusals and full-population coverage separately. Pass the predeclared coverage and efficiency criteria and reproduce results with canonical artifacts preserved. | Context-export maintainer and independent evaluator, [#8][i8]. **REVISE** after B1. |
 | G2 — Parsing | Account for included and excluded content without unexplained loss. Verify fences, preambles, identity, replay and stable line mappings. Record temporal roles and provenance, including assigned and unknown dates. | Chronicle maintainer, MD-01 [#15][i15] and TIME-01. Evaluation pending. |
 | G3 — Corpus | Apply G3-core deterministic fixture criteria for v0.2 and G3-full independent IAA and quality criteria for v0.3. Record restricted Flowers corpus and publication decisions separately. | Corpus reviewer, CORP-01 [#16][i16] and NLP-01. Flowers semantic evidence remains REVIEW. |
 | G4 — Ontology | For v0.2, verify unique source/survivor references, stable identities and provenance, schema compatibility and mapped project instances. Record the manual comparison disposition. For full G4, review the versioned schema, evaluated concepts and relations, and migration and compatibility evidence. | Chronicle and ontology maintainers, CORE-01, ONT-01 and ONT-02. Evidence pending. |
-| G5 — Release | Verify wheel-installed Chronicle, EXEC-01 liveness and failure recovery, current security review, CI-01/CLI-01 exact-candidate Windows and Linux acceptance. Track DOCX capability and external TraceLedger acceptance independently. | Release maintainer, EXEC-01, SEC-01 [#17][i17], CLI-01 and CI-01; DOCX-01 separately. Qualification pending. |
+| G5 — Release | Verify wheel-installed Chronicle, EXEC-01 liveness and failure recovery, current security review, CI-01 import-origin isolation and CLI-01 exact-candidate Windows and Linux acceptance. Track DOCX capability and external TraceLedger acceptance independently. | Release maintainer, EXEC-01, SEC-01 [#17][i17], CLI-01 and CI-01; DOCX-01 separately. Qualification pending. |
 | G6 — Knowledge | Independently evaluate evidence resolution, temporal scope, claim and relation quality against predeclared targets. Preserve earlier claims and record qualifications, contradictions, retractions and supersession explicitly. Apply the quantified PERF-01 budget before performance acceptance. | Knowledge maintainer and independent evaluator, CLAIM-01, CITE-01, PERF-01 and conditional STORE-01. Entry gated. |
 | G7 — AI | Qualify the runtime or adapter for the intended use. Obtain applicable data and execution authorization. Independently evaluate all cases, including rejected and fallback cases. Record quality, latency, memory and cost against the deterministic baseline and apply the explicit issue-specific G7 floors above. | Experiment maintainers and independent evaluator, [#9][i9]–[#11][i11]. NCM inference and the combined benchmark are **BLOCKED**. Jev has offline preparation available. |
 
@@ -382,7 +403,7 @@ independent WordPipe DOCX readiness decision sit outside v0.2.
 - [ ] Core G4 references, compatible project instances and the manual comparison disposition are evidenced. If the authorized comparison is blocked, record its release impact and obtain a maintainer scope decision.
 - [ ] EXEC-01 deadline, cancellation, diagnostic bound, child cleanup and failure recovery pass on supported platforms.
 - [ ] Public release scope and dependency/publication review pass [#17][i17].
-- [ ] CI-01 platform qualification subset and CLI-01 clean installed Chronicle workflow pass on Windows and Linux at the release candidate.
+- [ ] CI-01 source-test origin assertions and foreign-checkout regression pass; CLI-01 clean installed Chronicle workflow passes with verified installation origins on Windows and Linux at the release candidate.
 
 ## Backlog activation and synchronization
 
@@ -397,7 +418,7 @@ Counts (not GitHub issue numbers):
 
 The GitHub issue column is the WP-to-issue mapping. To-create means
 search and reuse before opening an issue; no number is reserved.
-All planning statuses are provisional until G0 approval. The repository
+Planning statuses reflect the recorded G0 acceptance and queue admission; research and release qualification remain open. The repository
 maintainer (SoloMidMiram) is accountable for every work package; the
 responsible roles below are proposed, not confirmed assignees. Independent
 reviewers and external owners must be identified and accept their roles
@@ -406,8 +427,8 @@ technical evidence and historical remediation.
 
 | ID | Priority | Work package | GitHub issue | Responsible role | State and activation or acceptance contract |
 |---|---|---|---|---|---|
-| GOV-01 | P0 | Roadmap and evidence reconciliation | [#14][i14] | Maintainer | In progress. Integrate [#19][pr19] after the issue map and governance checks agree (G0). |
-| MD-01 | P1 | Structure-aware Markdown ingestion | [#15][i15] | Chronicle implementer | Ready, next available slot. Verify fenced headings, source coverage, stable locators and replay (G2). |
+| GOV-01 | P0 | Roadmap and evidence reconciliation | [#14][i14] | Maintainer | ACCEPT / closed. [#19][pr19] merged with history preserved; slot 1 released. |
+| MD-01 | P1 | Structure-aware Markdown ingestion | [#15][i15] | Chronicle implementer | Admitted in slot 1. Verify fenced headings, source coverage, stable locators and replay (G2). |
 | TIME-01 | P1 | Temporal evidence and date semantics | To-create | Chronicle implementer | Queued. Start after MD-01 establishes spans. Verify all date roles, locators and explicit unknowns (G2). |
 | CORP-01 | P1 | Flowers semantic corpus acceptance | [#16][i16] | Corpus lead + independent reviewers | Queued. Prepare rubric offline. Score after G2 decisions, frozen taxonomy and authorization of the local inventory (G3). |
 | NLP-01 | P1 | Multilingual normalization and taxonomy | To-create | NLP lead + reviewer | Queued. Define annotation, then measure normalized Persian/English keyword and phrase behavior, offsets and per-label results (G2, G3). |
@@ -424,7 +445,7 @@ technical evidence and historical remediation.
 | PERF-01 | P2 | Chronicle scaling benchmark | To-create | Benchmark implementer | Queued. Measure wall time and peak memory at 100, 1,000, 10,000 and 100,000 events on pinned fixtures (G6). |
 | STORE-01 | P2 | Rebuildable SQLite projection | To-create | Storage implementer | Gated by demonstrated query friction. Use PERF-01 characterization where relevant. Require reproducible rebuilds from canonical artifacts and measured benefit (G6). |
 | CLI-01 | P1 | Installed Chronicle CLI | To-create | Release implementer | Queued. Exercise a clean wheel install and documented complete Chronicle flow on Windows and Linux, retaining wrapper compatibility (G5). |
-| CI-01 | P1/P2 | CI profiles and duplicate scanner | To-create | CI/release implementer | Queued. P1 platform qualification subset blocks v0.2/G5; P2 profile split and duplicate scanner optional with scope decision. Preserve governance checks. |
+| CI-01 | P1/P2 | CI profiles and duplicate scanner | To-create | CI/release implementer | Queued. P1 platform qualification and test-import hermeticity block v0.2/G5: assert intended source/install origins and fail on foreign checkout; verify deliberate mismatch regression. P2 profile split and duplicate scanner optional with scope decision. Preserve governance checks. |
 | REF-01 | P3 | Conditional refactoring and retirement | To-create | Subsystem maintainer | Deferred. Characterize consumer use before wrapper retirement. Require a third-adapter coupling or unsafe schema evolution before decomposing the runner. |
 | #8 | P1 | Deterministic context fidelity | [#8][i8] | Context lead + independent evaluator | REVISE. B2 and fresh independent holdout (G1). |
 | #9 | P1 | NCM fidelity | [#9][i9] | Research lead + upstream runtime owner | BLOCKED for genuine inference. Require G1 and upstream runtime/fidelity qualification (G7). |
@@ -443,6 +464,7 @@ no automatic waiver or ACCEPT.
 | Risk / trigger | Mitigation | Owner |
 |---|---|---|
 | No independent annotators or low IAA (G3) | Block G3-full, revise rubric or recruit authorized reviewers; G3-core may proceed. | Corpus lead / maintainer |
+| Source tests import another checkout (G5/CI-01) | Fail at session startup on incorrect resolved import origins; test the deliberate mismatch, and independently verify clean wheel installation origins. | CI/release lead |
 | Linux fails or Windows-specific code (G5/DOCX-01) | Separate product scopes; fix mandatory CI-01 coverage; qualify actual DOCX capabilities independently. | Release and DOCX leads |
 | Holdout contamination (#8) | Retain failure as regression; freeze candidate, independent fresh holdout, hashes and roles. | Context lead / evaluator |
 | NCM runtime unavailable (#9) | Escalate to upstream owner; preserve harness, no live inference; defer AI without blocking v0.2. | Research lead / maintainer |
