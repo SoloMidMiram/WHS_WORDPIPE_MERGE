@@ -8,10 +8,14 @@ import re
 import sys
 import unicodedata
 
-from tools.prepare_generic_markdown_chronicle import SECTION_HEADING_RE, first_date
+from tools.prepare_generic_markdown_chronicle import (
+    ChronicleEvent, SECTION_HEADING_RE, escape_nested_event_bullets, first_date,
+    render_staged_markdown, sanitize_title, source_label,
+)
 from tools.run_topic_report import compute_individual_report_event_id, compute_source_event_id
 from wordpipe.chronicle.index import extract_events_from_tagged, rendered_navigation
-from wordpipe.chronicle.merge import compute_body_hash
+from wordpipe.chronicle.ingest import clean_mojibake, format_event, split_into_events
+from wordpipe.chronicle.merge import compute_body_hash, extract_events
 
 MANIFEST = "topic_run_manifest.json"
 LINEAGE = "event_lineage.json"
@@ -25,6 +29,19 @@ ANCHORED = re.compile(r"pipeline/appendix/chronicle_tagged_anchored(?:-\d+)?\.md
 TERM = re.compile(r"[^\W_]+(?:[-_/][^\W_]+)*")
 STOP = {"a", "an", "and", "are", "for", "in", "is", "of", "the", "to", "what", "which"}
 QUALIFIERS = {"conditions", "qualification", "exception", "limits", "correction", "counterclaim", "شرط", "استثنا"}
+REFERENCE = {"earlier", "above", "previous", "same", "described", "refers", "see", "aforementioned", "پیشین", "قبلی", "همان"}
+CONSTRAINT = QUALIFIERS | {
+    "qualification", "condition", "restriction", "correction", "disputed", "contradicts",
+    "only", "must", "never", "unless", "prohibited", "required", "نه", "فقط", "نباید", "ممنوع",
+}
+COMMON_SUBJECTS = STOP | REFERENCE | CONSTRAINT | {
+    "it", "this", "that", "with", "from", "at", "on", "before", "after", "was", "as",
+    "trial", "run", "test", "notes", "record", "status", "review", "use", "approved",
+    "decision", "protocol", "report", "all", "no", "not", "section",
+}
+IDENTIFIER = re.compile(r"[a-z][a-z0-9]*-[0-9][a-z0-9-]*", re.ASCII)
+IMPLICIT_HEADINGS = QUALIFIERS | {"addendum", "appendix", "notice", "clarification"}
+NUMBER = re.compile(r"\d+(?:[.,]\d+)?")
 MAX_INPUT_BYTES = 32 * 1024 * 1024
 
 
@@ -73,6 +90,32 @@ def _sections(text):
     ]
 
 
+def _canonical_section_keys(name, source, sections):
+    """Replay the existing adapter and ingest body transformations in memory."""
+    fallback = first_date(source)
+    label = source_label(name) or Path(name).stem
+    prefix = source_label(name)
+    staged = []
+    for index, (title, _, body) in enumerate(sections, 1):
+        if body:
+            date = first_date(f"{title}\n{body}", fallback)
+            staged_title = f"{prefix} - {sanitize_title(title)}" if prefix else sanitize_title(title)
+            staged.append((index, ChronicleEvent(date, staged_title[:180], body)))
+    markdown = render_staged_markdown(label, [event for _, event in staged])
+    ingested, rejected = split_into_events(clean_mojibake(markdown))
+    canonical = extract_events("\n".join(format_event(event) for event in ingested))
+    require(not rejected and len(canonical) == len(ingested) == len(staged),
+            "source replay does not map one-to-one to normalized events")
+    keys = {}
+    for (index, original), event in zip(staged, canonical, strict=True):
+        body_hash = compute_body_hash(event["body"])
+        expected = clean_mojibake(escape_nested_event_bullets(original.body))
+        require(event["date"] == original.date and body_hash == compute_body_hash(expected),
+                "canonical replay dropped or changed source section content")
+        keys[index] = (event["date"], body_hash)
+    return keys
+
+
 def _navigation(artifacts, events):
     target = next((name for name in artifacts if ANCHORED.fullmatch(name)), TAGGED)
     anchors, _ = rendered_navigation(artifacts[target])
@@ -88,7 +131,11 @@ def _navigation(artifacts, events):
 
 
 def load_run(run_dir, source_root, receipt):
-    """Verify one trusted receipt and bind every survivor to its exact source locators."""
+    """Verify the receipt and bind every delivered source section to its canonical body."""
+    return _load_run(run_dir, source_root, receipt, verify_body=True)
+
+
+def _load_run(run_dir, source_root, receipt, *, verify_body):
     require(receipt.get("schema") == "whs-context-receipt-v1", "unsupported receipt")
     artifact_pins, source_pins = receipt["artifacts"], receipt["sources"]
     extra = set(artifact_pins) - REQUIRED
@@ -123,6 +170,9 @@ def load_run(run_dir, source_root, receipt):
     seen_locations = set()
     sections = {name: _sections(value) for name, value in sources.items()}
     fallbacks = {name: first_date(value) for name, value in sources.items()}
+    canonical_keys = {
+        name: _canonical_section_keys(name, text, sections[name]) for name, text in sources.items()
+    } if verify_body else {}
     for record in lineage["events"]:
         name, ordinal = record["source_file"], record["candidate_ordinal"]
         require(record["locator_kind"] == "markdown_section" and record["heading_level"] == 2
@@ -136,6 +186,9 @@ def load_run(run_dir, source_root, receipt):
                 and record["source_event_id"] == source_id and record["report_event_id"] == report_id
                 and source_id not in seen_ids and (name, ordinal) not in seen_locations,
                 "stale or ambiguous source identity")
+        if verify_body:
+            require(canonical_keys[name].get(ordinal) == (record["date"], record["body_sha256"]),
+                    "source-to-survivor body mismatch")
         seen_ids.add(source_id)
         seen_locations.add((name, ordinal))
         sources_by_event[report_id].append({
@@ -173,6 +226,13 @@ def load_run(run_dir, source_root, receipt):
         "identity": {"topic": topic, "run_id": run_id,
                      "receipt_sha256": digest(serialize(receipt).encode("utf-8"))},
         "target": target, "units": units,
+        "outside": [
+            text[:next((m.start() for m in SECTION_HEADING_RE.finditer(text) if m["marks"] == "##"), len(text))]
+            for text in sources.values()
+        ] + [
+            f"{title}\n{body}" for name, items in sections.items()
+            for ordinal, (title, _, body) in enumerate(items, 1) if (name, ordinal) not in seen_locations
+        ],
         "source_reread_bytes": source_allowance - remaining,
         "sources": [{"file": name, "sha256": source_pins[name], "text": value} for name, value in sources.items()],
         "rejected": sum(row.get("rejected") or 0 for row in chain["ingest_files"]),
@@ -194,8 +254,72 @@ def raw_packet(run, query, reason="complete_source"):
     return packet(run, query, "raw", reason, sources=run["sources"])
 
 
+def _subjects(words):
+    return {word for word in words - COMMON_SUBJECTS
+            if len(word) >= 3 and all(c.isalpha() for c in word)}
+
+
+def _qualifications(run, reasons, wanted):
+    """Scan each other unit once. Keep distinct entities separate and abstain on weak links."""
+    seeds = [run["units"][index] for index, reason in reasons.items() if reason == "exact_term_match"]
+    seed_files = {loc["file"] for unit in seeds for loc in unit["sources"]}
+    seed_text = "\n".join(unit["text"] for unit in seeds)
+    seed_words = terms(seed_text)
+    seed_ids = {word for word in seed_words | wanted if IDENTIFIER.fullmatch(word)}
+    title_words = _subjects(wanted | set().union(*(terms(u["text"].splitlines()[0]) for u in seeds)))
+    seed_subjects = _subjects(seed_words)
+    seed_numbers = set(NUMBER.findall(seed_text))
+    for text in run["outside"]:
+        words = terms(text)
+        shared = _subjects(words) & title_words
+        if words & wanted or (shared and words & (REFERENCE | CONSTRAINT)):
+            return "relevant_material_outside_units"
+
+    owners = {
+        (loc["file"], loc["section"]): {word for word in terms(unit["text"]) if IDENTIFIER.fullmatch(word)}
+        for unit in run["units"] for loc in unit["sources"]
+    }
+    additions = {}
+    for index, unit in enumerate(run["units"]):
+        if index in reasons:
+            continue
+        words = terms(unit["text"])
+        other_ids = {word for word in words if IDENTIFIER.fullmatch(word)}
+        if other_ids and not other_ids & seed_ids:
+            continue
+        shared_titles = _subjects(words) & title_words
+        shared_body = _subjects(words) & seed_subjects
+        refers = bool(words & REFERENCE)
+        qualifies = bool(words & CONSTRAINT)
+        numbers = set(NUMBER.findall(unit["text"])) & seed_numbers
+        if other_ids & seed_ids or (
+            (shared_titles or len(shared_body) >= 2)
+            and ((refers and qualifies) or (numbers and qualifies))
+        ):
+            additions[index] = "related_qualification"
+        elif (shared_titles and (qualifies or refers)) or (
+            refers and qualifies and terms(unit["text"].splitlines()[0]) & IMPLICIT_HEADINGS
+            and any(loc["file"] in seed_files and not (
+                owners.get((loc["file"], loc["section"] - 1), set()) - seed_ids
+            ) for loc in unit["sources"])
+        ):
+            # Preserve an implicit or ambiguous reference without declaring it linked.
+            return "ambiguous_qualification"
+    reasons.update(additions)
+    return None
+
+
+def export_b1(run, query, max_bytes):
+    """Replay the historical B1 selection rules for comparison only."""
+    return _export(run, query, max_bytes, close_qualifications=False)
+
+
 def export(run, query, max_bytes):
-    """Select complete matching events and adjoining named qualifications, or abstain."""
+    """B2 selects complete units with bounded qualification closure or returns verified raw."""
+    return _export(run, query, max_bytes, close_qualifications=True)
+
+
+def _export(run, query, max_bytes, *, close_qualifications):
     if type(max_bytes) is not int or not 1 <= max_bytes <= MAX_INPUT_BYTES:
         raise ValueError("max_bytes must be between 1 and 32 MiB")
     if not query.strip() or len(query.encode("utf-8")) > 2048:
@@ -213,14 +337,19 @@ def export(run, query, max_bytes):
                 for locator in run["units"][index]["sources"]:
                     adjoining.update((locator["file"], locator["section"] + delta) for delta in (-1, 1))
         for index, unit in enumerate(run["units"]):
-            if index not in reasons and terms(unit["text"].splitlines()[0]) & QUALIFIERS and any(
+            other_ids = {word for word in terms(unit["text"]) if IDENTIFIER.fullmatch(word)}
+            compatible = not close_qualifications or not wanted_ids or not other_ids or bool(other_ids & wanted_ids)
+            if compatible and index not in reasons and terms(unit["text"].splitlines()[0]) & QUALIFIERS and any(
                 (s["file"], s["section"]) in adjoining for s in unit["sources"]
             ):
                 reasons[index] = "adjacent_qualification"
     def size(value):
         return len(serialize(value).encode("utf-8"))
     reason = "rejected_ingest" if run["rejected"] else "insufficient_exact_evidence"
-    if reasons and wanted <= set().union(*(matches[i] for i in reasons)):
+    closure_reason = _qualifications(run, reasons, wanted) if close_qualifications and reasons else None
+    if closure_reason:
+        reason = closure_reason
+    if not closure_reason and reasons and wanted <= set().union(*(matches[i] for i in reasons)):
         result = packet(run, query, "structural", "matching_structural_units", units=[
             {**run["units"][index], "selection": reasons[index]} for index in sorted(reasons)
         ])

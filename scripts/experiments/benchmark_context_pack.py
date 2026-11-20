@@ -63,7 +63,7 @@ def synthetic_run(fixture, work):
 
 
 def fault_run(fault, run, receipt, destination):
-    if not fault or fault == "small_budget":
+    if not fault or fault in {"small_budget", "wrong_body"}:
         return run, receipt
     # Copy the synthetic artifacts. The original run and its receipt remain immutable.
     pins = dict(receipt["artifacts"])
@@ -151,9 +151,9 @@ def measure(make_packet, reference, count, run):
 
 def summarize(rows, count):
     summary = {}
-    for arm in ("A", "B0", "B1"):
-        evaluated = [r[arm] for r in rows if arm in r]
+    for arm in ("A", "B0", "B1", "B2"):
         eligible = [r for r in rows if arm in r]
+        evaluated = [r[arm] for r in eligible]
         scores = [m for m in evaluated if m["delivered"]]
         critical = sum(len(r["reference"]["critical"]) for r in eligible)
         overall = critical + sum(len(r["reference"]["additional"]) for r in eligible)
@@ -168,11 +168,22 @@ def summarize(rows, count):
                       if r.get(arm, {}).get("tokens") and r.get("A", {}).get("tokens")
                       else 0 for r in rows]
             totals["median_token_reduction_pct"] = round(100 * statistics.median(ratios), 2)
+        feasible = [r[arm] for r in eligible if not r["budget_case"]]
+        delivered_critical = sum(len(r["reference"]["critical"]) for r in eligible if r[arm]["delivered"])
+        missed_delivered = sum(len(m["misses"]["critical"]) for m in scores)
+        routes = Counter(m["route"] for m in evaluated)
         summary[arm] = {
             "critical": [critical - missed, critical], "overall": [overall - missed_all, overall],
             "provenance_ok": [sum(m["identity_ok"] for m in scores), len(scores)],
             "unsupported_units": sum(m["unsupported_units"] for m in scores),
-            "routes": dict(Counter(m["route"] for m in evaluated)),
+            "routes": dict(routes),
+            "delivered_critical": [delivered_critical - missed_delivered, delivered_critical],
+            "request_counts": {
+                "total": len(rows), "delivered": len(scores), "structural": routes["structural"],
+                "raw": routes["raw"], "budget_refusals": routes["refused"],
+                "provenance_refusals": len(rows) - len(evaluated),
+                "feasible": len(feasible), "feasible_delivered": sum(m["delivered"] for m in feasible),
+            },
             "provenance_refusals": len(rows) - len(evaluated),
             "median_wall_ms": statistics.median(m["elapsed_ms"] for m in evaluated),
             "max_peak_python_bytes": max(m["peak_python_bytes"] for m in evaluated),
@@ -184,7 +195,7 @@ def summarize(rows, count):
 def benchmark(fixture, gold, work, encode=None, tokenizer=None):
     case_ids = [case["id"] for case in fixture["cases"]]
     if fixture["schema"] != "whs-context-benchmark-v1" or fixture["partition"] != gold["partition"] \
-            or len(case_ids) != 12 or len(set(case_ids)) != 12 or set(case_ids) != gold["references"].keys():
+            or not 8 <= len(case_ids) <= 12 or len(set(case_ids)) != 12 or set(case_ids) != gold["references"].keys():
         raise ValueError("fixture partition or gold roster mismatch")
     run, source, receipt = synthetic_run(fixture, work)
     count = (lambda text: len(encode(text))) if encode else None
@@ -192,18 +203,38 @@ def benchmark(fixture, gold, work, encode=None, tokenizer=None):
     rows = []
     for case in fixture["cases"]:
         query, reference = case["query"], gold["references"][case["id"]]
-        row = {"case": case["id"], "reference": reference}
+        row = {"case": case["id"], "reference": reference, "budget_case": case.get("fault") == "small_budget"}
         fixture_run, pins = fault_run(case.get("fault"), run, receipt, work / "faults" / case["id"])
+        current_source = source
+        if case.get("fault") == "wrong_body":
+            current_source = work / "faults" / case["id"] / "source"
+            current_source.mkdir(parents=True)
+            edit = case["source_edit"]
+            pins = {**pins, "sources": dict(pins["sources"])}
+            for name in pins["sources"]:
+                raw = (source / name).read_bytes()
+                if name == edit["file"]:
+                    before = edit["before"].encode("utf-8")
+                    if raw.count(before) != 1:
+                        raise ValueError("wrong_body fault expected one matching source span")
+                    raw = raw.replace(before, edit["after"].encode("utf-8"))
+                (current_source / name).write_bytes(raw)
+                pins["sources"][name] = b1.digest(raw)
         try:
-            current = checked if fixture_run == run else b1.load_run(fixture_run, source, pins)
+            current = (checked if fixture_run == run and current_source == source
+                       else b1.load_run(fixture_run, current_source, pins))
         except b1.ProvenanceError as exc:
             row["refusal"] = str(exc)
+            if case.get("fault") == "wrong_body":
+                historical = b1._load_run(fixture_run, current_source, pins, verify_body=False)
+                row["b1_legacy_route_under_invalid_binding"] = b1.export_b1(historical, query, 65_536)["route"]
         else:
             budget = 128 if case.get("fault") == "small_budget" else 65_536
             methods = {
                 "A": lambda: b1.raw_packet(current, query),
                 "B0": lambda: baseline_packet(current, query),
-                "B1": lambda: b1.export(current, query, budget),
+                "B1": lambda: b1.export_b1(current, query, budget),
+                "B2": lambda: b1.export(current, query, budget),
             }
             if not row.get("refusal") and not all(
                 fact in "\n".join(item["text"] for item in current["sources"])
@@ -215,7 +246,7 @@ def benchmark(fixture, gold, work, encode=None, tokenizer=None):
                 if b1.digest(b1.serialize(method()).encode("utf-8")) != row[arm]["packet_sha256"]:
                     raise ValueError("non-deterministic packet replay")
         expected = reference.get("expected")
-        if expected and expected != row.get("B1", {}).get("route", "refused"):
+        if expected and expected != row.get("B2", {}).get("route", "refused"):
             row["unexpected_route"] = expected
         rows.append(row)
     assert all(b1.digest((source / n).read_bytes()) == value for n, value in receipt["sources"].items())
@@ -228,7 +259,7 @@ def benchmark(fixture, gold, work, encode=None, tokenizer=None):
 
 def main():
     cli = argparse.ArgumentParser(description=__doc__)
-    cli.add_argument("--partition", choices=("tuning", "holdout"), required=True)
+    cli.add_argument("--partition", choices=("tuning", "holdout", "fresh"), required=True)
     cli.add_argument("--work", type=Path, required=True)
     cli.add_argument("--gpt2-tokenizer", type=Path)
     args = cli.parse_args()

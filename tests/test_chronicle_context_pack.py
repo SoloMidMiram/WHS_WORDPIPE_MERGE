@@ -13,7 +13,7 @@ def example(tmp_path):
     source.mkdir()
     run = tmp_path / "run"
     entries = [
-        ("Pump AA-1", "12 bar maximum.\n\nDo not open the bypass."),
+        ("Pump AA-1", "12 bar maximum.\n\nDo not open the bypass.\n\n- **Nested instruction:** 24 Â°C."),
         ("Conditions", "Use only at 19 °C."),
         ("Pump AA-10", "This different component is retired."),
         ("Routine register", "Unrelated observations about packaging and inventory. " * 90),
@@ -27,7 +27,8 @@ def example(tmp_path):
     identity = {"topic": topic, "run_id": run_id}
     tagged, index, tags, records, correlations = [], [], [], [], []
     for index_no, (title, line, body) in enumerate(pack._sections(original), 1):
-        body_hash = compute_body_hash(body)
+        normalized = body.replace("- **Nested instruction:**", "* **Nested instruction:**").replace("Â°", "°")
+        body_hash = compute_body_hash(normalized)
         report_id, _ = compute_individual_report_event_id(topic, date, body_hash)
         record = {
             "locator_kind": "markdown_section", "source_file": "notes.md", "heading_level": 2,
@@ -40,7 +41,7 @@ def example(tmp_path):
         correlations.append({"report_event_id": report_id, "date": date, "body_sha256": body_hash,
                              "source_event_ids": [source_id]})
         anchor = f"event-{date}-{body_hash}"
-        tagged.append(f'## Event: {date} - {title}\n\n<a id="{anchor}"></a>\n\n{body}\n\n')
+        tagged.append(f'## Event: {date} - {title}\n\n<a id="{anchor}"></a>\n\n{normalized}\n\n')
         index.append(f"[{title}](../chronicle_tagged.md#{anchor})\n")
         tags.append({"title": title, "date": date, "themes": []})
     docs = {
@@ -123,3 +124,60 @@ def test_rejected_ingest_uses_raw_fallback(example):
     result = pack.export(pack.load_run(run, source, receipt), "AA-1", 10_000)
     assert result["route"] == "raw"
     assert result["reason"] == "rejected_ingest"
+
+
+def test_repinned_source_with_wrong_body_is_rejected(example):
+    run, source, receipt, original = example
+    file = source / "notes.md"
+    file.write_bytes(original.replace("12 bar", "13 bar").encode("utf-8"))
+    receipt["sources"][file.name] = pack.digest(file.read_bytes())
+    # B1 checks the unchanged locator and accepts the re-pinned file under its old anchor.
+    old = pack._load_run(run, source, receipt, verify_body=False)
+    assert "13 bar" in old["units"][0]["text"]
+    with pytest.raises(pack.ProvenanceError, match="source-to-survivor body mismatch"):
+        pack.load_run(run, source, receipt)
+
+
+def test_canonical_body_replay_preserves_original_display(example):
+    run, source, receipt, _ = example
+    unit = pack.load_run(run, source, receipt)["units"][0]
+    assert "- **Nested instruction:** 24 Â°C." in unit["text"]
+    assert "* **Nested instruction:** 24 °C." in (run / pack.TAGGED).read_text(encoding="utf-8")
+
+
+def _unit(ordinal, text):
+    return {"anchor": f"unit-{ordinal}", "date": "2025-01-01",
+            "sources": [{"file": "notes.md", "section": ordinal}], "text": text}
+
+
+def _retrieval_run():
+    return {"identity": {"topic": "synthetic"}, "target": "index", "rejected": 0, "outside": [],
+            "sources": [{"file": "notes.md", "text": "Raw source elsewhere. " * 500}],
+            "units": [
+                _unit(1, "## BC-81 suction chamber\n\nAn 18 bar chamber trial is cleared."),
+                _unit(3, "## Chamber records\n\nThe earlier chamber procedure must use a gasket."),
+                _unit(4, "## KS-62 chamber correction\n\nThe same chamber pressure of 18 bar requires a different valve."),
+                _unit(6, "## Hose shipment\n\nThe shipment must include 18 coils."),
+            ]}
+
+
+def test_nonadjacent_closure_uses_subject_and_reference_not_quantity_alone():
+    run = _retrieval_run()
+    assert [u["anchor"] for u in pack.export_b1(run, "BC-81", 20_000)["units"]] == ["unit-1"]
+    packet = pack.export(run, "BC-81", 20_000)
+    assert [u["anchor"] for u in packet["units"]] == ["unit-1", "unit-3"]
+    assert packet["units"][1]["selection"] == "related_qualification"
+
+
+@pytest.mark.parametrize(("extra", "reason"), [
+    ({"outside": ["BC-81 cannot be tested offsite."]}, "relevant_material_outside_units"),
+    ({"units": [_unit(9, "## Handwritten addendum\n\nThe earlier one must remain dry.")]},
+     "ambiguous_qualification"),
+])
+def test_outside_or_unresolved_reference_uses_raw(extra, reason):
+    run = _retrieval_run()
+    for key, value in extra.items():
+        run[key].extend(value)
+    packet = pack.export(run, "BC-81", 20_000)
+    assert packet["route"] == "raw"
+    assert packet["reason"] == reason
