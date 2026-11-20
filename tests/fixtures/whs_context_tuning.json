@@ -1,0 +1,59 @@
+{
+  "schema": "whs-context-benchmark-v1",
+  "partition": "tuning",
+  "sources": {
+    "context-tuning.md": "# Tuning notebook\n\nFictional context pack material. Workshop date marker 2025-04-01.\n\n## MX-120 calibration\n\n16 bar is the absolute upper limit.\n\nNever calibrate while the bypass valve is open.\n\n## Qualification\n\nOnly at 20 °C; stop if pressure is unstable.\n\n## فشار KX-20\n\nفشار مجاز ۵ بار است.\n\nدر حالت گرم روشن نکنید.\n\n## RT-800 release\n\nOn 2025-05-21 the release remains REVIEW; do not deploy.\n\n## NX-30 thresholds\n\n| Setting | Limit |\n|---|---|\n| Hold time | 18 s |\n| Temperature | 3 °C |\n\n## VT-94 steps\n\n- Secure the latch.\n- Wait 12 minutes.\n- Do not open the gate.\n\n## TX-56 checks\n\nKeep the original example:\n\n```ini\nretries=2\nmode=offline\n```\n\nDo not perform a live call.\n\n## AF-25 disputed results\n\nOn 2025-04-04 the first review permits 8 units.\n\n## Counterclaim\n\nA second review limits the same run to 6 units.\n\n## Status\n\nJS-66 is archived, not active.\n\n## QZ-15 status\n\nThis item is provisional and no publication date was supplied.\n\n## Status\n\nAB-24 is under a different review and must stay separate.\n\n## Placeholder\n\n## General record\n\nOverview of a fictional workshop. The narrator walks through a yard and catalogues routine inventory observations. None of these form a requirement for the other sections. The empty heading above has no event body.\n\n## Public agenda\n\nThe public planning agenda includes an unrelated overview of instrument labels and a discussion of archiving conventions. The notes are informational and do not change operational decisions.\n"
+  },
+  "cases": [
+    {
+      "id": "pumps",
+      "query": "MX-120"
+    },
+    {
+      "id": "persian",
+      "query": "فشار KX-20"
+    },
+    {
+      "id": "date",
+      "query": "RT-800"
+    },
+    {
+      "id": "table",
+      "query": "NX-30"
+    },
+    {
+      "id": "lists",
+      "query": "VT-94"
+    },
+    {
+      "id": "fence",
+      "query": "TX-56"
+    },
+    {
+      "id": "conflict",
+      "query": "AF-25"
+    },
+    {
+      "id": "duplicate",
+      "query": "JS-66"
+    },
+    {
+      "id": "fallback-date",
+      "query": "QZ-15"
+    },
+    {
+      "id": "empty-match",
+      "query": "unseen olive ricochet"
+    },
+    {
+      "id": "stale-anchor",
+      "query": "MX-120",
+      "fault": "stale_anchor"
+    },
+    {
+      "id": "missing-anchor",
+      "query": "MX-120",
+      "fault": "missing_anchor"
+    }
+  ]
+}

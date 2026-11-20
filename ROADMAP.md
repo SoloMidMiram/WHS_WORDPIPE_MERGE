@@ -31,6 +31,30 @@ covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, B2 (#8 / 
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-20 — WHS #8 B2 candidate and first-measurement review
+
+Branch `experiment/whs-08-context-pack-fidelity`, [draft PR #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13).
+Reviewed parent `83730a52029373f11ee47cc48c5ffa48ed098249` incorporates
+integrated main `e85ddc1b04227d9d28c2861733016570612239cc` and retains the
+previously published B1 head `bd31c0470080043a326317c59574b5d041d09879`.
+Both document conflicts retain their dated evidence. The retrieval map
+links the two benchmark reports. B1 fixtures, gold, metrics and verdict were
+verified unchanged against the B1 head.
+
+The [B2 review](docs/engineering/WHS_CONTEXT_PACK_B2.md) records the first
+measurement, the recommendation to retain the approved G1 baselines, and
+the revised refusal and scoring contracts. The exposed distant coolant miss
+now passes as a regression. Historical no-match refusals still count as
+misses in those replays. Local validation asserted Python package origins in
+this worktree before testing. Observed 15 focused passes, 398 full-suite
+passes with six platform skips, all five governance checks, and successful
+Windows PowerShell integration through both CI cases.
+
+B2 remains **REVISE** pending acceptance of the first-measurement review,
+candidate and configuration freeze, fresh independent inputs and gold, and
+token accounting. Verify hosted checks at the published candidate SHA.
+Keep PR #13 draft and issue #8 open.
+
 ### 2026-11-20 — G0 ACCEPT and execution handoff
 
 The maintainer approved the existing numerical planning baselines, without
@@ -126,6 +150,30 @@ audit is distinct from the recorded 2026-08-21 ref scan. Use the updated
 [retrieval map](docs/engineering/REPO_MAP.md) for workstream evidence. Next
 decision is acceptance of the documentation update, with checks recorded at
 its published head, followed by the B2 revision and independent bounded work.
+
+### 2026-11-19 — WHS-AI-01 structural context-pack fidelity
+
+Branch `experiment/whs-08-context-pack-fidelity`, [draft PR #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13).
+Reviewed parent `b25c02c8055e532b87bd88e747acb87ad102377c` on
+main `e2f1c17643b05016f5617a43c07f850033c6acbd`. The optional exporter
+validates pinned generic Markdown run evidence and reuses survivor anchors.
+The [repository map](docs/engineering/REPO_MAP.md) now locates the exporter,
+benchmark, fixtures and tests.
+
+The 24-case synthetic benchmark froze B1 at `d685e56` before scoring the
+holdout. B1 retained 43/45 critical and 63/65 total facts across all cases.
+All 21 delivered packets passed provenance checks. Median complete-packet
+GPT-2 reduction was 46.07% versus raw, including fallback and refusals.
+The real synthetic topic-runner and read-only CLI replay passed. Local pytest
+observed 390 passed and six platform skips. The frozen B0 artifacts and
+historical paraphrase evidence matched their original hashes.
+
+The [pilot report](docs/engineering/WHS_CONTEXT_PACK_FIDELITY.md) recommends
+**REVISE** because one delivered holdout packet omitted a distant critical
+qualification. One budget refusal withheld evidence. Independent annotation
+review and target-consumer accounting remain open. NCM and related #9 and #11
+remain deferred. Review the published documentation head and CI before any
+acceptance decision.
 
 ### 2026-11-19 — WHS-INTEGRATION-09 PR #12 research reconciliation
 

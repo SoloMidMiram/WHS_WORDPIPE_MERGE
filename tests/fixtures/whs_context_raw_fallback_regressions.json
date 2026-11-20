@@ -1,0 +1,127 @@
+{
+  "purpose": "Post-exposure synthetic development regressions only. Never use for independent G1 qualification.",
+  "source": "# Synthetic equipment desk\n\n2025-01-11\n\n## Cover loan\n\nRecord RNT-213. Return the canopy by noon on the next business day.\nA cleaning fee applies when the canopy comes back muddy.\nCloths are kept in drawer G.\n\n## Strap supply\n\nRecord SUP-419. Replacement straps are stocked in bin H.\n\n## Locker log\n\nRecord LOG-517. Never write an apartment number.\nPut unclaimed gloves in tray D.\n\n## Unrelated stock\n\nRecord ENV-904. Spare cardboard cartons are in the loading bay.\nLight shelves are labeled in alphabetical order.\n",
+  "date": "2025-01-11",
+  "cases": [
+    {
+      "label": "valid-partial-overlap",
+      "query": "Where are the cloths stored for RNT-213?",
+      "observed_route": "raw",
+      "observed_reason": "insufficient_exact_evidence",
+      "mechanism": "Partial verified overlap misses the generic all-term gate.",
+      "required_evidence": "Cloths are kept in drawer G.",
+      "entity": "RNT-213",
+      "raw_policy": "Only if verified evidence answers the storage question.",
+      "max_bytes": 65536,
+      "provenance": "Verify the pinned receipt, source and applicable unit anchors."
+    },
+    {
+      "label": "false-delivery-entity-only",
+      "query": "RNT-213 insurance surcharge",
+      "observed_route": "raw",
+      "observed_reason": "insufficient_exact_evidence",
+      "mechanism": "Entity overlap authorizes raw for an unsupported charge.",
+      "required_evidence": null,
+      "entity": "RNT-213",
+      "raw_policy": "No, the surcharge is absent.",
+      "max_bytes": 65536,
+      "provenance": "Verify the pinned receipt, source and applicable unit anchors."
+    },
+    {
+      "label": "false-delivery-cross-entity",
+      "query": "RNT-213 replacement fee",
+      "observed_route": "raw",
+      "observed_reason": "insufficient_exact_evidence",
+      "mechanism": "Corpus-wide term union hides missing terms in the selected entity unit.",
+      "required_evidence": null,
+      "entity": "RNT-213",
+      "raw_policy": "No, another entity supplies the replacement term.",
+      "max_bytes": 65536,
+      "provenance": "Verify the pinned receipt, source and applicable unit anchors."
+    },
+    {
+      "label": "valid-narrative-deadline",
+      "query": "When is the cover loan due for RNT-213?",
+      "observed_route": "refused",
+      "observed_reason": "unverified_entity_field",
+      "mechanism": "Canonical field token is absent even though the narrative answers.",
+      "required_evidence": "noon on the next business day",
+      "entity": "RNT-213",
+      "raw_policy": "Only if the narrative deadline is grounded.",
+      "max_bytes": 65536,
+      "provenance": "Verify the pinned receipt, source and applicable unit anchors."
+    },
+    {
+      "label": "preamble-overlap-control",
+      "query": "Which home locator is barred from the equipment ledger?",
+      "observed_route": "raw",
+      "observed_reason": "insufficient_exact_evidence",
+      "mechanism": "Preamble-only overlap authorizes raw without checking the requested relation.",
+      "required_evidence": "Never write an apartment number.",
+      "entity": "LOG-517",
+      "raw_policy": "Only when the entity and prohibition are grounded separately from the preamble.",
+      "max_bytes": 65536,
+      "provenance": "Verify the pinned receipt, source and applicable unit anchors."
+    },
+    {
+      "label": "valid-idless-paraphrase",
+      "query": "Which domestic locator is barred from the inventory ledger?",
+      "observed_route": "refused",
+      "observed_reason": "no_verified_query_evidence",
+      "mechanism": "No useful lexical overlap, despite answer evidence in a verified section.",
+      "required_evidence": "Never write an apartment number.",
+      "entity": "LOG-517",
+      "raw_policy": "Only when the entity and prohibition are grounded.",
+      "max_bytes": 65536,
+      "provenance": "Verify the pinned receipt, source and applicable unit anchors."
+    },
+    {
+      "label": "temporal-literal-control",
+      "query": "RNT-213 canopy noon",
+      "observed_route": "structural",
+      "observed_reason": "matching_structural_units",
+      "mechanism": "Literal entity and deadline terms select the verified answer.",
+      "required_evidence": "noon on the next business day",
+      "entity": "RNT-213",
+      "raw_policy": "Structural evidence is expected.",
+      "max_bytes": 65536,
+      "provenance": "Verify the pinned receipt, source and applicable unit anchors."
+    },
+    {
+      "label": "paraphrase-literal-control",
+      "query": "LOG-517 apartment number",
+      "observed_route": "structural",
+      "observed_reason": "matching_structural_units",
+      "mechanism": "Literal entity and answer terms select the prohibition.",
+      "required_evidence": "Never write an apartment number.",
+      "entity": "LOG-517",
+      "raw_policy": "Structural evidence is expected.",
+      "max_bytes": 65536,
+      "provenance": "Verify the pinned receipt, source and applicable unit anchors."
+    },
+    {
+      "label": "unknown-id-control",
+      "query": "RNT-214 canopy",
+      "observed_route": "refused",
+      "observed_reason": "no_verified_query_evidence",
+      "mechanism": "An unknown ID cannot borrow evidence from another entity.",
+      "required_evidence": null,
+      "entity": "RNT-214",
+      "raw_policy": "No, the requested ID is absent.",
+      "max_bytes": 65536,
+      "provenance": "Verify the pinned receipt, source and applicable unit anchors."
+    },
+    {
+      "label": "byte-budget-control",
+      "query": "RNT-213 insurance surcharge",
+      "observed_route": "refused",
+      "observed_reason": "verified_raw_exceeds_budget",
+      "mechanism": "Raw envelope exceeds the byte budget.",
+      "required_evidence": null,
+      "entity": "RNT-213",
+      "raw_policy": "No, the full envelope exceeds 128 bytes.",
+      "max_bytes": 128,
+      "provenance": "Verify the pinned receipt, source and applicable unit anchors."
+    }
+  ]
+}

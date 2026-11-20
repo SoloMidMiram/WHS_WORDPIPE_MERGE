@@ -1,0 +1,60 @@
+{
+  "schema": "whs-context-benchmark-v1",
+  "partition": "holdout",
+  "sources": {
+    "field-notes.md": "# Fictional field notes\n\nChronicle fallback marker 2025-06-01. This is a demonstration date only.\n\n## LK-312 meter check\n\nSet the calibration dial to 27 mV.\n\nDo not run with the probe disconnected.\n\n## دمای SV-81\n\nحداکثر دما ۴۲ درجه است.\n\nدرپوش را باز نکنید.\n\n## BR-608 supply\n\n| Circuit | Ceiling |\n|---|---|\n| Input | 2.7 A |\n| Output | 4.1 V |\n\n## GD-44 maintenance\n\n- Wait until gauge reads zero.\n- Lock both handles.\n- Record seal number 191.\n\n## RV-80 valve test\n\nFor the dry-run record:\n\n~~~text\ntest_mode=simulation\ncycles=3\n~~~\n\nLive mode is prohibited.\n\n## Decision record\n\nCT-771 may start at 06:00 on 2025-06-07.\n\n## DC-52 certification\n\nApproved only for a bench trial.\n\n## Exception\n\nThe shield must be installed before the first trial.\n\n## HP-37 coolant trial\n\nApproved for 9 litres on 2025-05-14.\n\n## WH-17 disposition\n\nStatus stays REVIEW. No publication date is known.\n\n## Coolant supplier notes\n\nUse distilled coolant only. This qualification concerns the 9-litre trial described earlier.\n\n## Blank section\n\n## Unrelated shift log\n\nA fictional clerk listed pens, paper rolls, and replacement labels. The shift log reports administrative changes. It supplies no instrument approvals.\n\n## Unassigned\n\nA draft label applies only to demonstration crates.\n",
+    "second-review.md": "# Maintenance review\n\nAnother fictional record dated 2025-06-01.\n\n## Decision record\n\nA second witness says CT-771 must hold until 09:30 on 2025-06-07; retain both decisions.\n\n## Tools ledger\n\nThe unspecialized workshop supplies remain in the cabinet. This ledger tracks spare pencil clips, note cards, office folders, and paper labels. It contains no technical approval for any component.\n"
+  },
+  "cases": [
+    {
+      "id": "meter",
+      "query": "LK-312"
+    },
+    {
+      "id": "mixed",
+      "query": "دمای SV-81"
+    },
+    {
+      "id": "limits",
+      "query": "BR-608"
+    },
+    {
+      "id": "checklist",
+      "query": "GD-44"
+    },
+    {
+      "id": "command",
+      "query": "RV-80"
+    },
+    {
+      "id": "cross-source",
+      "query": "CT-771"
+    },
+    {
+      "id": "near-condition",
+      "query": "DC-52"
+    },
+    {
+      "id": "far-condition",
+      "query": "HP-37"
+    },
+    {
+      "id": "fallback-date",
+      "query": "WH-17"
+    },
+    {
+      "id": "empty",
+      "query": "gemstone rain magnet"
+    },
+    {
+      "id": "ingest-refusal",
+      "query": "LK-312",
+      "fault": "rejected_ingest"
+    },
+    {
+      "id": "budget-refusal",
+      "query": "unseen olive oil",
+      "fault": "small_budget"
+    }
+  ]
+}

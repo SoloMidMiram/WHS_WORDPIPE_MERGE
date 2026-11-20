@@ -1,0 +1,348 @@
+"""Run the public WHS #8 fixture suite against actual synthetic Chronicle outputs."""
+import argparse
+from collections import Counter
+import json
+import os
+import re
+from pathlib import Path
+import statistics
+import subprocess
+import sys
+import time
+import tracemalloc
+
+from scripts.experiments import chronicle_context_pack as b1
+from scripts.experiments import ncm_flowers_pilot as b0
+
+ROOT = Path(__file__).resolve().parents[2]
+FIXTURES = ROOT / "tests" / "fixtures"
+
+
+def read_json(path):
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def write_json(path, payload):
+    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def synthetic_run(fixture, work):
+    work.mkdir()
+    source = work / "source"
+    source.mkdir()
+    for name, text in fixture["sources"].items():
+        if Path(name).name != name or not name.endswith(".md"):
+            raise ValueError("fixture must provide Markdown basenames")
+        (source / name).write_bytes(text.encode("utf-8"))
+    source_pins = {p.name: b1.digest(p.read_bytes()) for p in sorted(source.glob("*.md"))}
+    manifest = work / "manifest.json"
+    write_json(manifest, {
+        "schema_version": 1, "topic": "synthetic_context_pack",
+        "input_dir": str(source),
+        "adapter": {"id": "prepare_generic_markdown_chronicle"},
+        "themes_config": "pipeline/themes.json", "index_config": "pipeline/index_config.json",
+        "output": {"base_dir": str(work / "runs"), "run_id_format": "timestamp"},
+        "quality_gates": {
+            "min_extraction_coverage_percent": 0, "min_theme_tag_percent": 0, "max_error_count": 0,
+        },
+    })
+    proc = subprocess.run([sys.executable, "tools/run_topic_report.py", "--manifest", str(manifest),
+                           "--run-id", "20261119_000001", "--allow-review"],
+                          cwd=ROOT, env={**os.environ, "PYTHONPATH": str(ROOT)}, capture_output=True, timeout=120)
+    (work / "runner.log").write_bytes(proc.stdout + proc.stderr)
+    if proc.returncode != 0:
+        raise RuntimeError(f"synthetic Chronicle exited {proc.returncode}; see {work / 'runner.log'}")
+    run = work / "runs" / "20261119_000001"
+    files = b1.REQUIRED | {
+        file.relative_to(run).as_posix() for file in (run / "pipeline/appendix").glob("chronicle_tagged_anchored*.md")
+    }
+    pins = {name: b1.digest((run / name).read_bytes()) for name in sorted(files)}
+    receipt = {"schema": "whs-context-receipt-v1", "artifacts": pins, "sources": source_pins}
+    write_json(work / "receipt.json", receipt)
+    return run, source, receipt
+
+
+def fault_run(fault, run, receipt, destination):
+    if not fault or fault in {"small_budget", "wrong_body"}:
+        return run, receipt
+    # Copy the synthetic artifacts. The original run and its receipt remain immutable.
+    pins = dict(receipt["artifacts"])
+    for name in pins:
+        path = destination / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes((run / name).read_bytes())
+    if fault in {"stale_anchor", "missing_anchor"}:
+        path = destination / b1.INDEX
+        text = path.read_text(encoding="utf-8")
+        changed = re.sub(r"#event-[0-9-]+-[a-f0-9]{64}", "#missing", text, count=1)
+        if text == changed:
+            raise ValueError("missing synthetic index anchor for fault injection")
+        path.write_text(changed, encoding="utf-8")
+        if fault == "missing_anchor":
+            pins[b1.INDEX] = b1.digest(path.read_bytes())
+    elif fault == "ambiguous_correlation":
+        path = destination / b1.CORRELATION
+        correlation = read_json(path)
+        correlation["ambiguous_matches"] = [{}]
+        write_json(path, correlation)
+        pins[b1.CORRELATION] = b1.digest(path.read_bytes())
+    elif fault == "rejected_ingest":
+        path = destination / b1.CHAIN
+        chain = read_json(path)
+        chain["ingest_files"][0]["rejected"] = 1
+        write_json(path, chain)
+        pins[b1.CHAIN] = b1.digest(path.read_bytes())
+    else:
+        raise ValueError(f"unsupported fixture fault: {fault}")
+    return destination, {**receipt, "artifacts": pins}
+
+
+def baseline_packet(run, query):
+    sources = []
+    raw_count = 0
+    for source in run["sources"]:
+        case = {"title": source["file"], "lines": source["text"].splitlines(), "query": query,
+                "id": source["file"], "source_reference": source["file"]}
+        extracted, route = b0.extractive_packet(case)
+        raw = route == "no_keyword_match_raw"
+        raw_count += raw
+        sources.append({**source, "text": source["text"] if raw else extracted["text"]})
+    if raw_count == len(sources):
+        return b1.raw_packet(run, query, "baseline_no_keyword_match")
+    return b1.packet(run, query, "baseline", "frozen_top_two", sources=sources)
+
+
+def measure(make_packet, reference, count, run):
+    tracemalloc.start()
+    start = time.perf_counter_ns()
+    try:
+        packet = make_packet()
+        wire = b1.serialize(packet)
+        elapsed = (time.perf_counter_ns() - start) / 1e6
+        peak = tracemalloc.get_traced_memory()[1]
+    finally:
+        tracemalloc.stop()
+    evidence = [*packet["sources"], *packet["units"]]
+    texts = [item["text"] for item in evidence]
+    raw = {item["file"]: item for item in run["sources"]}
+    known = {unit["anchor"]: unit for unit in run["units"]}
+    identity_ok = packet["run"] == run["identity"] and all(
+        item["sha256"] == raw[item["file"]]["sha256"]
+        and (packet["route"] != "raw" or item["text"] == raw[item["file"]]["text"])
+        for item in packet["sources"]
+    ) and all(
+        {k: v for k, v in unit.items() if k != "selection"} == known.get(unit["anchor"])
+        for unit in packet["units"]
+    )
+    unsupported = sum(
+        any(line not in raw[item["file"]]["text"] for line in item["text"].splitlines())
+        for item in packet["sources"]
+    ) + sum(unit["text"] != known[unit["anchor"]]["text"] for unit in packet["units"])
+    misses = {
+        key: [fact for fact in reference[key] if not any(fact in text for text in texts)]
+        for key in ("critical", "additional")
+    }
+    evidence_terms = set().union(*(b1.terms(text) for text in texts))
+    missing_ids = [value for value in reference.get("required_ids", [])
+                   if value.casefold() not in evidence_terms]
+    metadata = {**packet, **{key: [{**item, "text": ""} for item in packet[key]]
+                             for key in ("sources", "units")}}
+    delivered = packet["route"] != "refused"
+    return {
+        "route": packet["route"], "reason": packet["reason"], "delivered": delivered,
+        "misses": misses, "missing_ids": missing_ids,
+        "identity_ok": identity_ok, "unsupported_units": unsupported,
+        "tokens": count(wire) if count and delivered else None,
+        "metadata_tokens": count(b1.serialize(metadata)) if count and delivered else None,
+        "raw_fallback_tokens": count(wire) if count and packet["route"] == "raw" and packet["reason"] != "complete_source" else None,
+        "bytes": len(wire.encode("utf-8")) if delivered else 0,
+        "packet_sha256": b1.digest(wire.encode("utf-8")),
+        "elapsed_ms": round(elapsed, 4), "peak_python_bytes": peak,
+    }
+
+
+def summarize(rows, count):
+    summary = {}
+    for arm in ("A", "B0", "B1", "B2"):
+        eligible = [r for r in rows if arm in r]
+        evaluated = [r[arm] for r in eligible]
+        if not evaluated:
+            continue
+        scores = [m for m in evaluated if m["delivered"]]
+        critical = sum(len(r["reference"]["critical"]) for r in eligible)
+        overall = critical + sum(len(r["reference"]["additional"]) for r in eligible)
+        missed = sum(len(m["misses"]["critical"]) for m in evaluated)
+        missed_all = missed + sum(len(m["misses"]["additional"]) for m in evaluated)
+        totals = {}
+        if count:
+            for key in ("tokens", "metadata_tokens", "raw_fallback_tokens"):
+                totals[key] = sum(m[key] or 0 for m in scores)
+            # Refusal earns zero savings; this preserves all cases in the median.
+            ratios = [1 - r[arm]["tokens"] / r["A"]["tokens"]
+                      if r.get(arm, {}).get("tokens") and r.get("A", {}).get("tokens")
+                      else 0 for r in rows]
+            totals["median_token_reduction_pct"] = round(100 * statistics.median(ratios), 2)
+        feasible = [r[arm] for r in eligible if not r["budget_case"]]
+        delivered_critical = sum(len(r["reference"]["critical"]) for r in eligible if r[arm]["delivered"])
+        missed_delivered = sum(len(m["misses"]["critical"]) for m in scores)
+        routes = Counter(m["route"] for m in evaluated)
+        summary[arm] = {
+            "critical": [critical - missed, critical], "overall": [overall - missed_all, overall],
+            "provenance_ok": [sum(m["identity_ok"] for m in scores), len(scores)],
+            "unsupported_units": sum(m["unsupported_units"] for m in scores),
+            "routes": dict(routes),
+            "delivered_critical": [delivered_critical - missed_delivered, delivered_critical],
+            "request_counts": {
+                "total": len(rows), "delivered": len(scores), "structural": routes["structural"],
+                "raw": routes["raw"],
+                "budget_refusals": sum(m["reason"] == "verified_raw_exceeds_budget" for m in evaluated),
+                "other_packet_refusals": sum(m["route"] == "refused" and
+                                             m["reason"] != "verified_raw_exceeds_budget" for m in evaluated),
+                "provenance_refusals": len(rows) - len(evaluated),
+                "feasible": len(feasible), "feasible_delivered": sum(m["delivered"] for m in feasible),
+            },
+            "provenance_refusals": len(rows) - len(evaluated),
+            "median_wall_ms": statistics.median(m["elapsed_ms"] for m in evaluated),
+            "max_peak_python_bytes": max(m["peak_python_bytes"] for m in evaluated),
+            **totals,
+        }
+    return summary
+
+
+def g1_summary(rows):
+    valid = [row for row in rows if row["reference"]["classification"] == "valid"]
+    refusals = [row for row in rows if row["reference"]["classification"] == "expected_refusal"]
+    delivered = [row for row in rows if row.get("B2", {}).get("delivered")]
+    delivered_ids = {row["case"] for row in delivered}
+    delivered_valid = [row for row in valid if row["case"] in delivered_ids]
+    unexpected_deliveries = [row["case"] for row in refusals if row["case"] in delivered_ids]
+    reductions = []
+    if all(row.get("A", {}).get("tokens") is not None for row in valid):
+        for row in valid:
+            result = row.get("B2", {})
+            reductions.append(1 - result["tokens"] / row["A"]["tokens"]
+                              if result.get("route") == "structural" else 0)
+    return {
+        "valid_verified_delivery": [sum(row["B2"]["identity_ok"] for row in delivered_valid), len(valid)],
+        "expected_refusal": [len(refusals) - len(unexpected_deliveries), len(refusals)],
+        "unexpected_deliveries": unexpected_deliveries,
+        "delivered_identity": [sum(row["B2"]["identity_ok"] for row in delivered), len(delivered)],
+        "delivered_protected_fact_misses": sum(len(row["B2"]["misses"]["critical"]) for row in delivered),
+        "delivered_required_id_misses": sum(len(row["B2"]["missing_ids"]) for row in delivered),
+        "valid_full_population_protected_fact_misses": sum(
+            len(row["B2"]["misses"]["critical"]) if row["case"] in delivered_ids
+            else len(row["reference"]["critical"]) for row in valid
+        ),
+        "unsupported_units": sum(row["B2"]["unsupported_units"] for row in delivered),
+        "median_valid_token_reduction_pct": round(100 * statistics.median(reductions), 2) if reductions else None,
+    }
+
+
+def benchmark(fixture, gold, work, encode=None, tokenizer=None):
+    case_ids = [case["id"] for case in fixture["cases"]]
+    fresh = fixture["partition"] == "fresh"
+    references = gold["references"]
+    if (fixture["schema"] != "whs-context-benchmark-v1" or fixture["partition"] != gold["partition"]
+            or len(set(case_ids)) != len(case_ids) or set(case_ids) != references.keys()
+            or any(not re.fullmatch(r"[a-z0-9][a-z0-9_-]*", name) for name in case_ids)):
+        raise ValueError("fixture partition or gold roster mismatch")
+    if fresh:
+        populations = Counter(reference.get("classification") for reference in references.values())
+        if (set(populations) != {"valid", "expected_refusal"}
+                or populations["valid"] < 20 or populations["expected_refusal"] < 10
+                or any(not isinstance(ref.get("required_ids"), list) for ref in references.values())):
+            raise ValueError("fresh evaluation requires >=20 valid cases, >=10 expected refusals and explicit ID gold")
+    elif len(case_ids) != 12:
+        raise ValueError("historical partitions require exactly 12 cases")
+    run, source, receipt = synthetic_run(fixture, work)
+    count = (lambda text: len(encode(text))) if encode else None
+    checked = b1.load_run(run, source, receipt)
+    rows = []
+    for case in fixture["cases"]:
+        query, reference = case["query"], gold["references"][case["id"]]
+        row = {"case": case["id"], "reference": reference, "budget_case": case.get("fault") == "small_budget"}
+        fixture_run, pins = fault_run(case.get("fault"), run, receipt, work / "faults" / case["id"])
+        current_source = source
+        if case.get("fault") == "wrong_body":
+            current_source = work / "faults" / case["id"] / "source"
+            current_source.mkdir(parents=True)
+            edit = case["source_edit"]
+            pins = {**pins, "sources": dict(pins["sources"])}
+            for name in pins["sources"]:
+                raw = (source / name).read_bytes()
+                if name == edit["file"]:
+                    before = edit["before"].encode("utf-8")
+                    if raw.count(before) != 1:
+                        raise ValueError("wrong_body fault expected one matching source span")
+                    raw = raw.replace(before, edit["after"].encode("utf-8"))
+                (current_source / name).write_bytes(raw)
+                pins["sources"][name] = b1.digest(raw)
+        try:
+            current = (checked if fixture_run == run and current_source == source
+                       else b1.load_run(fixture_run, current_source, pins))
+        except b1.ProvenanceError as exc:
+            row["refusal"] = str(exc)
+            if case.get("fault") == "wrong_body":
+                historical = b1._load_run(fixture_run, current_source, pins, verify_body=False)
+                row["b1_legacy_route_under_invalid_binding"] = b1.export_b1(historical, query, 65_536)["route"]
+        else:
+            budget = 128 if case.get("fault") == "small_budget" else 65_536
+            methods = {
+                "A": lambda: b1.raw_packet(current, query),
+                "B0": lambda: baseline_packet(current, query),
+                "B1": lambda: b1.export_b1(current, query, budget),
+                "B2": lambda: b1.export(current, query, budget),
+            }
+            if fresh:
+                methods = {arm: methods[arm] for arm in ("A", "B2")}
+            if reference.get("classification") != "expected_refusal" and not all(
+                fact in "\n".join(item["text"] for item in current["sources"])
+                for key in ("critical", "additional") for fact in reference[key]
+            ):
+                raise ValueError(f"gold literal missing for {case['id']}")
+            for arm, method in methods.items():
+                row[arm] = measure(method, reference, count, current)
+                if b1.digest(b1.serialize(method()).encode("utf-8")) != row[arm]["packet_sha256"]:
+                    raise ValueError("non-deterministic packet replay")
+        expected = reference.get("expected")
+        if expected and expected != row.get("B2", {}).get("route", "refused"):
+            row["unexpected_route"] = expected
+        rows.append(row)
+    assert all(b1.digest((source / n).read_bytes()) == value for n, value in receipt["sources"].items())
+    assert all(b1.digest((run / n).read_bytes()) == value for n, value in receipt["artifacts"].items())
+    return {"partition": fixture["partition"], "case_count": len(rows), "tokenizer": tokenizer,
+            **({"g1": g1_summary(rows)} if fresh else {}),
+            "source_reread_bytes_once": checked["source_reread_bytes"], "consumer_source_reread_tokens": 0,
+            "deterministic_replay": True, "input_hashes_unchanged": True,
+            "summary": summarize(rows, count), "cases": rows}
+
+
+def main():
+    cli = argparse.ArgumentParser(description=__doc__)
+    cli.add_argument("--partition", choices=("tuning", "holdout", "fresh"), required=True)
+    cli.add_argument("--work", type=Path, required=True)
+    cli.add_argument("--gpt2-tokenizer", type=Path)
+    cli.add_argument("--fixture", type=Path, help="Independent fresh inputs")
+    cli.add_argument("--gold", type=Path, help="Independent fresh gold")
+    args = cli.parse_args()
+    if args.partition == "fresh":
+        if args.fixture is None or args.gold is None:
+            cli.error("fresh evaluation requires --fixture and --gold")
+        suite = read_json(args.fixture)
+        gold = read_json(args.gold)
+        if suite.get("partition") != "fresh":
+            cli.error("fresh evaluation requires a fresh partition")
+    else:
+        if args.fixture is not None or args.gold is not None:
+            cli.error("--fixture and --gold are only for fresh evaluation")
+        name = f"whs_context_{args.partition}"
+        suite = read_json(FIXTURES / f"{name}.json")
+        gold = read_json(FIXTURES / f"{name}_gold.json")
+    encode, tokenizer = b0.load_tokenizer(args.gpt2_tokenizer) if args.gpt2_tokenizer else (None, None)
+    result = benchmark(suite, gold, args.work.resolve(), encode, tokenizer)
+    write_json(args.work / "case-results.json", result)
+    print(json.dumps(result["summary"], indent=2))
+
+
+if __name__ == "__main__":
+    main()
