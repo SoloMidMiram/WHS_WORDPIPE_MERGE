@@ -101,6 +101,20 @@ exit and successor; no fourth active package.
 | Slot 2 — research fidelity | **Vacant** | B2 finished with G1 REVISE and the maintainer deferred B3 under [#8][i8]. No successor is admitted by this decision. |
 | Independent hardening | SEC-01 [#17][i17] | Complete the public release audit, then admit SAFE-01 [#18][i18] to this slot. |
 
+**Effective-date condition for PR #20.** The vacancy in this proposed
+table is **not yet effective on main while PR #20 is open**; slot 2 remains
+occupied in the previously integrated queue for governance accounting.
+Integration of PR #20 records the B3 DEFER exit and releases slot 2.
+This is a deliberate **no-successor admission** decision, not reserved
+capacity for B3 and not a missing G0 approval (G0 already exited).
+Queued or READY P1 packages, including CLI-01 and the separately
+prioritized corpus/runtime work, do not enter a slot automatically.
+The next owner decision must independently establish priority, prerequisites,
+scope, accountability and explicit admission under the three-slot cap.
+This is not a waiver: **G1 REVISE remains a mandatory unresolved v0.2
+release blocker** even after slot 2 is freed. No v0.2 ACCEPT or release
+is implied by deferral or by available execution capacity.
+
 GOV-01 [#14][i14] exited on 2026-11-20 after PR #19 integration and maintainer
 acceptance; MD-01 [#15][i15] is formally admitted in slot 1. This is admission
 only, not a claim of implementation or G2 acceptance.
