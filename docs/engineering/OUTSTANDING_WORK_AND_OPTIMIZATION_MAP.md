@@ -4,6 +4,10 @@
 > **Purpose:** Keep remaining delivery work, review closure, and refactor choices
 > explicit without treating planned work as implemented.
 
+For current delivery ordering, active issue links and activation gates, see the
+[delivery plan](DELIVERY_PHASES_AND_GATES.md#backlog-activation-and-synchronization).
+This map retains historical remediation and technical context.
+
 ## Evidence Labels
 
 | Label | Meaning |
@@ -36,16 +40,17 @@ for validation tied to the published head.
 
 | Priority | State | Work | Source / dependency | Completion criteria |
 |---|---|---|---|---|
-| P0 | **VERIFIED** | Audit all remote branches and tags for leaked keys. | Roadmap Phase 4; local `security_scan.py` is worktree-only. | Scanned 3 remote branches 2026-08-21; third-party keys on stale `codex/evaluate-repo-review-for-workspace` branch deleted; evidence `_SECURITY/scan_reports/remote_refs_secret_audit.json`. |
+| P0 | **HISTORICAL** | Review remote refs within the August 2026 audit inventory. | Roadmap Phase 4. | The dated map records 3 scanned remote branches and remediation on a stale branch. Evidence locator `_SECURITY/scan_reports/remote_refs_secret_audit.json`. |
+| P1 | **OUTSTANDING** | Refresh public-repository and release dependency assurance. | [#17](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17). | Record current ref and publication coverage separately from the worktree scan and historical audit. |
 | P1 | **VERIFIED** | Canonicalize Chronicle index logic under `wordpipe.chronicle`. | Alignment audit and index extraction tests. | Characterized via `tests/test_index_extraction.py`; pure seam extracted to `wordpipe/chronicle/index.py`; `pipeline/index.py` retained as a thin wrapper preserving CLI/import/JSON contracts. |
 | P1 | **PARTIAL** | Add Phase 13–17 project-level ontology instances. | Alignment audit; per-run ontology is complete but root `ontology.json` only records older P9 activity. | Define the mapping and add project instances without changing the aggregate 10-entity/7-relation model unintentionally. |
 | P1 | **OUTSTANDING** | Emit semantic concepts, mentions, and `derived_from` relationships. | Phase 15 design / G7. | Approve an NLP/POS evaluation gate, then add characterized extraction and provenance tests. |
-| P1 | **OUTSTANDING** | Build the reference stage and validate the manual merge. | Roadmap Phase 9c. | Implement `pipeline/reference.py` and compare automated output against `ChatGPT_Incidents_Merged.md`. |
+| P1 | **OUTSTANDING** | Build the reference stage and validate the manual merge. | Roadmap Phase 9c. | Reuse existing survivor/navigation contracts and compare automated output against the manual merge where authorized and available. |
 | P1 | **VERIFIED** | Make integrity evidence portable. | Plan and alignment audit. | Relocation maps emit `src_rel`/`dst_rel`/`conflict_path_rel`; `verify_integrity.py --portable` resolves relative identities against the active workspace while retaining absolute diagnostics; `run_topic_report.py` writes repo-relative manifest identity fields. |
 | P2 | **OUTSTANDING** | Map labor notes, reports, and plans into the ontology; audit remaining absolute paths. | Plan backlog. | Produce traceable model instances and an audit with zero unapproved machine-specific paths. |
 | P2 | **OUTSTANDING** | Add `tools/duplicate_scan.py` and split runtime/evidence CI profiles. | Plan backlog and alignment audit. | Give each tool/profile a documented contract, focused tests, and no lost governance checks. |
 | P2 | **PARTIAL** | Validate an external TraceLedger integration. | Roadmap G8. | `tests/test_traceledger_consumer.py` validates the internal top-level API + EventSink boundary, and the unimplemented capability-report claim was removed; an actual external TraceLedger consumer has not been validated in this repository. |
-| P3 | **OUTSTANDING** | Evaluate NLP/POS tooling for project-text ontology extraction. | Roadmap G7; subject to external-access constraint C1. | Record candidate comparison, corpus, quality threshold, and go/no-go decision. |
+| P1 | **OUTSTANDING** | Establish a multilingual deterministic baseline and evaluate NLP/POS tooling for ontology extraction. | Roadmap G7; subject to external-access constraint C1. | Record candidate comparison, corpus, quality threshold, and go/no-go decision. |
 | P3 | **CONDITIONAL** | Decompose the topic-report runner. | Architecture stability gate. | Reconsider only after a third adapter exposes concrete coupling or ontology evolution makes the current serializer unsafe. |
 
 ## Refactoring and Optimization Lanes
@@ -53,7 +58,7 @@ for validation tied to the published head.
 | Lane | Candidates | Required gate |
 |---|---|---|
 | Low effort / high safety | Remove compatibility wrappers only after import-consumer inventory; prune an empty pipeline compatibility surface; retire obsolete AI copies/stubs only after consumer confirmation. | Record consumers and byte hashes before moving/removing files; preserve external imports or add a compatibility release path. |
-| Medium effort / controlled risk | Canonicalize index logic; organize tests by subsystem; assess the `process_docx_v3_simple` compatibility shim. | Characterization tests first; do not combine a package move with a feature or schema migration. |
+| Medium effort / controlled risk | Organize tests by subsystem; assess the `process_docx_v3_simple` compatibility shim. | Characterization tests first; do not combine a package move with a feature or schema migration. |
 | High value / measured | Split CI runtime/evidence profiles; profile Chronicle ingest→merge on large inputs; determine whether COM/XML flatteners are both live implementations. | Establish current timing/coverage baseline, make one measured change, and preserve current CLI behavior. |
 | Conditional architecture | Topic-runner decomposition. | Follow the explicit third-adapter/unsafe-schema trigger above; extract at most one pure seam and stop to reassess. |
 

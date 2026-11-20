@@ -1,6 +1,6 @@
 # WHS repository retrieval map
 
-Checked: 2026-11-19 for WHS-INTEGRATION-09, experiment/whs-ncm-flowers-pilot (PR #12), reviewed parent b7f1627 on main 87c69d3.
+Checked 2026-11-20 for delivery and backlog planning against main `e2f1c17643b0`.
 This is a routing map, not live PR status or an acceptance certificate.
 Canonical dependency rules remain in [architecture](../../ARCHITECTURE_AND_MODULES.md).
 The broad file inventory remains [INDEX.md](../../INDEX.md).
@@ -26,7 +26,8 @@ semantic index; verify the caller and contract before editing.
 | catalog, hashes, preservation | `inputs/README.md`, `inputs/catalog.json`, `tools/verify_integrity.py` | `tests/test_input_catalog.py`; inspect specific evidence only on demand |
 | boundaries, root, imports | `ROOT_ORGANIZATION.md`, `tools/check_root_layout.py`, `tools/check_architecture_boundaries.py` | `tests/test_root_layout.py`, `tests/test_architecture_boundaries.py` |
 | NCM Flowers pilot, B0, worker fallback | `scripts/experiments/ncm_flowers_pilot.py` (offline synthetic harness) | `tests/test_ncm_flowers_pilot.py`, `tests/fixtures/ncm_flowers_synthetic.json`, `tests/fixtures/ncm_flowers_synthetic_gold.json`; [report and metrics](NCM_FLOWERS_PILOT.md). Genuine inference remains blocked. |
-| priorities, architecture, ontology | `ROADMAP.md`, `ARCHITECTURE_AND_MODULES.md`, `ONTOLOGY_MODEL.md` | `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`, `docs/engineering/OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md` |
+| context-pack fidelity, B1/B2 | [Draft PR #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13) and [issue #8](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/8) | [Delivery Phase 1](DELIVERY_PHASES_AND_GATES.md#phase-1--context-fidelity) routes the benchmark and revision gate. |
+| priorities, architecture, ontology | `ROADMAP.md`, `ARCHITECTURE_AND_MODULES.md`, `ONTOLOGY_MODEL.md` | [Delivery phases and gates](DELIVERY_PHASES_AND_GATES.md), `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`, `docs/engineering/OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md` |
 
 ## Reuse tools and interpret their limits
 

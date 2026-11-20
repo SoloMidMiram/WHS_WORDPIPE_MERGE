@@ -2,10 +2,48 @@
 
 > **Date (Gregorian):** 2026-07-09
 > **Date (Shamsi/Jalali):** 1405-04-18
-> **Last Updated:** 2026-11-19
-> **Iteration checkout:** `codex/chronicle-run-evidence`; entries below identify their own branch/PR.
+> **Last Updated:** 2026-11-20
+> Dated entries identify their reviewed branch and PR.
+
+## Current delivery roadmap
+
+The [delivery phases and acceptance gates](docs/engineering/DELIVERY_PHASES_AND_GATES.md)
+define dependencies, release criteria and the queued backlog. The proposed
+v0.2 target is a deterministic Chronicle and context export release.
+WordPipe DOCX has an independent product-readiness decision.
+
+| Order | Phase | Current execution |
+|---|---|---|
+| 1 | Context fidelity | **REVISE** [#8](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/8) / [draft #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13). Freeze B2 and independently evaluate a fresh holdout. |
+| 2 | Document understanding | [Markdown structure #15](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/15) is ready. Temporal evidence and multilingual normalization follow characterization. |
+| 3 | Corpus acceptance | [Flowers #16](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/16) is queued for real-corpus evaluation. Rubric preparation can start offline. |
+| 4 | References and ontology | Complete Phase 9c using existing survivor contracts and populate the project ontology before schema expansion. |
+| 5 | Product stabilization | [Public audit #17](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17) and [atomic DOCX #18](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/18) can start now. Bound execution and verify the installed Chronicle workflow for v0.2. |
+| 6 | Knowledge intelligence | Ground citations, claims and relations in provenance. Measure search needs before indexing. |
+| 7 | Optional AI research | [NCM #9](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/9) is blocked for real inference. [Jev #10](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/10) has offline preparation available. [Combined benchmark #11](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/11) is gated. |
 
 ## Active narrative roadmap — newest first
+
+### 2026-11-20 — Delivery phase and issue reconciliation
+
+Branch `docs/whs-delivery-roadmap`, based on reviewed main
+`e2f1c17643b05016f5617a43c07f850033c6acbd`. The synchronization
+work is tracked in [#14](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/14).
+The PR number was pending at preparation. The plan, root roadmap, optimization
+map and retrieval map are the documentation scope.
+
+GitHub verified seven merged PRs at the starting baseline and five successful
+[main CI jobs](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/44562536617).
+PR #7 delivered Flowers engineering work. Semantic acceptance remains REVIEW.
+PR #12 delivered the NCM research harness and pilot record. Genuine inference
+remains BLOCKED. PR #13's passing hosted engineering checks coexist with its
+REVISE research verdict. Its B1 benchmark evidence belongs to its draft head.
+
+Keep the dated narrative below for historical decisions. The current public
+audit is distinct from the recorded 2026-08-21 ref scan. Use the updated
+[retrieval map](docs/engineering/REPO_MAP.md) for workstream evidence. Next
+decision is acceptance of the documentation update, with checks recorded at
+its published head, followed by the B2 revision and independent bounded work.
 
 ### 2026-11-19 — WHS-INTEGRATION-09 PR #12 research reconciliation
 
@@ -170,7 +208,7 @@ Current stabilization status:
 - Chronicle ingest/merge/categorize/verify logic is canonical under `wordpipe/chronicle/`.
 - `pipeline/` and `tools/pipeline-chronicle/` are compatibility/operator CLI surfaces, not runtime import surfaces.
 - WordPipe orchestration is step-based; read/style failures are fatal.
-- `index` remains in `pipeline/` and is deferred from canonical extraction.
+- `wordpipe/chronicle/index.py` is canonical. `pipeline/index.py` is the compatibility wrapper.
 - Historical P0–P2 remediation baseline: **105 tests passed** on 2026-07-09;
   see [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_P2_VALIDATION_REPORT.md).
 - Current validation results are recorded by dated activity in `JOURNAL.md` and
@@ -456,9 +494,9 @@ Validation: [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_
 **Sub-phase 9c: Reference Builder & Ontology Wiring (🟡 PARTIAL / OUTSTANDING)**
 | Task | Description | Status |
 |------|-------------|--------|
-| 9c.1 | Build `pipeline/reference.py` — secondary TOC, topic model, stable anchor IDs | 🔴 OUTSTANDING |
+| 9c.1 | Build secondary TOC and topic references on existing survivor anchors | 🔴 OUTSTANDING · delivery Phase 4 |
 | 9c.2 | Wire chronicle pipeline into ontology | 🟡 PARTIAL — P9 ActivityPeriod exists; topic-run instances remain outstanding |
-| 9c.3 | Validate against existing manual merge (`ChatGPT_Incidents_Merged.md`) | 🔴 OUTSTANDING |
+| 9c.3 | Compare automated output with `ChatGPT_Incidents_Merged.md` where authorized and available | 🔴 OUTSTANDING · delivery Phase 4 |
 | 9c.4 | Generalize topic adapter pattern beyond InsuranceChatbot with a config-driven adapter registry | ✅ Superseded by Phase 13 |
 | 9c.5 | Add a command wrapper that runs prep, pipeline, summary, and metrics in one audited invocation | ✅ Superseded by Phase 13 |
 
@@ -503,7 +541,7 @@ Validation: [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_
 
 ### Phase 4 — Security Hardening & Pipeline Contracts (P1)
 > Goal: Redact leaked keys, add secrets scanner, standardize stage interfaces  
-> **Date:** 1404/11/22 | **Status:** 🟡 PARTIAL — local hardening/contracts verified; remote-history audit outstanding
+> **Date:** 1404/11/22 | **Status:** 🟡 PARTIAL — local hardening verified, dated remote-ref audit recorded, public-scope refresh queued
 
 | Task | Description | Status |
 |------|-------------|--------|
@@ -513,7 +551,7 @@ Validation: [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_
 | 4.4 | Create `tools/pipeline_contracts.py` with StagePaths/StageResult/StageError | ✅ Done |
 | 4.5 | Create `tools/orchestrate.py` for one-command pipeline | ✅ Done |
 | 4.6 | Create pipeline docs (RUNBOOK, CONTRACTS, SECURITY, TOOLS_MODULES, INTEGRATION_MAP, LABOR_REPORT) | ✅ Done |
-| 4.7 | Audit remote refs/history for previously leaked keys | 🔴 OUTSTANDING — local scanner does not prove remote-history cleanup |
+| 4.7 | Audit remote refs/history for previously leaked keys | August 2026 audit recorded in the [optimization map](docs/engineering/OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md). Current public-scope assurance is tracked in [#17](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17). |
 
 ### Phase 3 — Initial Snapshot & Evidence Pipeline (P0)
 > Goal: Extract snapshot, create initial workspace, establish evidence pipeline  
@@ -532,21 +570,15 @@ Validation: [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_
 
 ## 🧭 Outstanding Works
 
-These are the active items after the Project Phase 17 survivor-integrity gate.
-Completed Phase 13–17 foundation work is intentionally excluded.
+The [delivery plan and backlog](docs/engineering/DELIVERY_PHASES_AND_GATES.md#backlog-activation-and-synchronization)
+carry the current work inventory, GitHub issues and activation conditions.
+Historical phase numbers above retain their original scope. Phase 9c references
+and manual comparison map to delivery Phase 4. Project Phase 15's candidate
+semantic schema remains subject to its design and evaluation gate.
 
-| Priority | Work | Why It Matters | Current Evidence |
-|----------|------|----------------|------------------|
-| P1 | Map Phase 13/14/15/16/17 topic runs into the project-level ontology/activity model | Per-run ontologies exist, but `ontology.json` lacks TopicRun instances | Phase 14–17 prove stable 10-entity/7-relation coverage |
-| P2 | Build `pipeline/reference.py` / stable secondary TOC | Long reports need stronger navigational references | Existing Phase 9c item |
-| P2 | Validate reference output against the existing manual merge | Phase 9c acceptance evidence is missing | `ChatGPT_Incidents_Merged.md` comparison remains unperformed |
-| P2 | Add governed duplicate scanning and separate runtime/evidence CI profiles | Original organization Phase 6 deliverables remain incomplete | Minimal combined CI exists; `tools/duplicate_scan.py` does not |
-| P2 | Emit individual ReportEvent entities after Phase 16.4 / Phase 17 gate | Section→event evidence + two-run stability exist; ontology individuals deferred | Phase 16/17 design docs |
-| P3 | Emit SemanticConcept / derived_from / mentions after schema decision | Candidate future additions only; not approved schema yet | Project Phase 15/16 design docs |
-| P3 | Evaluate offline NLP/POS ontology population | Must not hardcode one topic | Two-topic evidence + section lineage now exist |
-| Conditional | Broad topic-runner decomposition | Reconsider only when a third adapter exposes concrete coupling or ontology schema evolution makes the current serializer unsafe | Not an active Project Phase 15 deliverable |
-
-Broad topic-runner decomposition is conditional, not an active Project Phase 15 deliverable. Reconsider it only when a third adapter exposes concrete coupling or ontology schema evolution makes the current serializer unsafe.
+Broad topic-runner decomposition is conditional. Reconsider when a third
+adapter exposes concrete coupling or ontology schema evolution makes the
+current serializer unsafe.
 
 ---
 
