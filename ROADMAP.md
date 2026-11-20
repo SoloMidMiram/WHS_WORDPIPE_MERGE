@@ -2,7 +2,7 @@
 
 > **Date (Gregorian):** 2026-07-09
 > **Date (Shamsi/Jalali):** 1405-04-18
-> **Last Updated:** 2026-11-20
+> **Last Updated:** 2026-11-21
 > Dated entries identify their reviewed branch and PR.
 
 ## Current delivery roadmap
@@ -17,11 +17,11 @@ AI qualification belongs to the v0.5 target. Delivery gateway IDs are scoped
 to the matrix. The historical goals and phases below retain their identifiers.
 
 The [three-slot queue](docs/engineering/DELIVERY_PHASES_AND_GATES.md#active-execution-queue)
-covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, B2 (#8 / draft #13) in slot 2, and SEC-01 (#17) in slot 3. SAFE-01 follows SEC-01 only after documented slot release. READY does not mean admitted. At most three packages can execute.
+covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, a vacant slot 2 after B3 deferral (#8 / draft #13), and SEC-01 (#17) in slot 3. SAFE-01 follows SEC-01 only after documented slot release. READY does not mean admitted. At most three packages can execute.
 
 | Order | Phase | Current execution |
 |---|---|---|
-| 1 | Context fidelity | **REVISE** [#8](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/8) / [draft #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13). Freeze B2 and independently evaluate a fresh holdout. |
+| 1 | Context fidelity | **REVISE** [#8](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/8) / [draft #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13). Frozen B2 failed qualification. B3 is **DEFERRED** pending the [re-entry evidence](docs/engineering/DELIVERY_PHASES_AND_GATES.md#b3-re-entry). |
 | 2 | Document understanding | [Markdown structure #15](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/15) is admitted in slot 1. Temporal evidence and multilingual normalization follow characterization. |
 | 3 | Corpus acceptance | [Flowers #16](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/16) is queued for real-corpus evaluation. Offline rubric preparation requires an available slot and admission. |
 | 4 | References and ontology | Complete Phase 9c using existing survivor contracts and populate the project ontology before schema expansion. |
@@ -30,6 +30,31 @@ covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, B2 (#8 / 
 | 7 | Optional AI research | [NCM #9](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/9) is blocked for real inference. [Jev #10](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/10) has offline preparation available. [Combined benchmark #11](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/11) is blocked on upstream evidence. |
 
 ## Active narrative roadmap — newest first
+
+### 2026-11-21 — B2 REVISE accepted and B3 deferred
+
+Branch `codex/whs-g1-defer-governance`, documentation PR number pending
+at preparation, based on
+`e85ddc1b04227d9d28c2861733016570612239cc`. The reviewed evidence parent
+is `d80560e4846a42545378d66a26a537e3370af80e` on draft PR #13. The
+[frozen B2 investigation](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/blob/3cc86ef2e6eee7d55bbc7eac361045d4db418a1f/docs/engineering/WHS_CONTEXT_PACK_B2.md#b2-root-cause-disposition--2026-11-21) and ten synthetic characterization
+probes are published at evidence head `3cc86ef2e6eee7d55bbc7eac361045d4db418a1f`.
+The first run remains G1 REVISE at 28/30 valid deliveries, 9/20 correct
+refusals, 1/10 absent-field refusals and 0% median GPT-2 savings. The evidence
+update preserves all 50 reconciled decisions, 88 verified envelopes and
+176 private files with unchanged hashes. Local evidence validation passed
+413 tests, with six skipped and four expected failures, and passed the
+PowerShell chain integration. Both worktrees passed the five governance
+checks listed in the retrieval map.
+
+The maintainer deliberately deferred B3. Governance integration releases
+slot 2 without admitting a successor. MD-01 and SEC-01 retain slots 1
+and 3. Issue #8 stays open and PR #13 stays draft. The retrieval map now
+links the published evidence. Re-entry requires a bounded proposal with
+responsiveness, narrative and ID-less grounding, and compact-delivery
+evidence. G1 thresholds remain in force. The next acceptance decision is
+maintainer review of this documentation PR.
+
 
 ### 2026-11-20 — G0 ACCEPT and execution handoff
 
