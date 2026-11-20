@@ -290,12 +290,42 @@ def test_frozen_b2_routing_characterization(routing_regression_run, label):
         )
 
 
-@pytest.mark.xfail(strict=True, raises=AssertionError, reason="Known B2 responsiveness defect; B3 deferred")
+# The four strict expected failures express desired behavior, not the frozen B2
+# characterization. Retire each mark only after its mapped B3 capability passes;
+# an XPASS must be reviewed, not silently promoted to G1 qualification.
 @pytest.mark.parametrize("label", [
-    "false-delivery-entity-only",
-    "false-delivery-cross-entity",
-    "valid-narrative-deadline",
-    "valid-idless-paraphrase",
+    pytest.param(
+        "false-delivery-entity-only",
+        marks=pytest.mark.xfail(
+            strict=True,
+            raises=AssertionError,
+            reason="WHS08-R1-ENTITY / B3 authorization: retire when absent-field raw delivery is refused",
+        ),
+    ),
+    pytest.param(
+        "false-delivery-cross-entity",
+        marks=pytest.mark.xfail(
+            strict=True,
+            raises=AssertionError,
+            reason="WHS08-R1-CROSS / B3 authorization: retire when cross-entity evidence cannot authorize raw",
+        ),
+    ),
+    pytest.param(
+        "valid-narrative-deadline",
+        marks=pytest.mark.xfail(
+            strict=True,
+            raises=AssertionError,
+            reason="WHS08-R2-DEADLINE / B3 narrative grounding: retire when verified prose deadline is delivered",
+        ),
+    ),
+    pytest.param(
+        "valid-idless-paraphrase",
+        marks=pytest.mark.xfail(
+            strict=True,
+            raises=AssertionError,
+            reason="WHS08-R3-IDLESS / B3 ID-less grounding: retire when verified paraphrase evidence is delivered",
+        ),
+    ),
 ])
 def test_intended_responsiveness_for_known_b2_failures(routing_regression_run, label):
     case = _ROUTING_CASES[label]
