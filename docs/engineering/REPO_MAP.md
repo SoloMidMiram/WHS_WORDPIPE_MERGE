@@ -27,6 +27,7 @@ semantic index; verify the caller and contract before editing.
 | boundaries, root, imports | `ROOT_ORGANIZATION.md`, `tools/check_root_layout.py`, `tools/check_architecture_boundaries.py` | `tests/test_root_layout.py`, `tests/test_architecture_boundaries.py` |
 | NCM Flowers pilot, B0, worker fallback | `scripts/experiments/ncm_flowers_pilot.py` (offline synthetic harness) | `tests/test_ncm_flowers_pilot.py`, `tests/fixtures/ncm_flowers_synthetic.json`, `tests/fixtures/ncm_flowers_synthetic_gold.json`; [report and metrics](NCM_FLOWERS_PILOT.md). Genuine inference remains blocked. |
 | context-pack fidelity, B1/B2 | [Draft PR #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13) and [issue #8](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/8) | [Delivery Phase 1](DELIVERY_PHASES_AND_GATES.md#phase-1--context-fidelity) routes the benchmark and revision gate. |
+| gateways, issue ownership, release milestones | [Delivery plan](DELIVERY_PHASES_AND_GATES.md) | [G0–G7](DELIVERY_PHASES_AND_GATES.md#acceptance-gateway-matrix), [work packages](DELIVERY_PHASES_AND_GATES.md#backlog-activation-and-synchronization), [release gates](DELIVERY_PHASES_AND_GATES.md#proposed-release-boundaries) |
 | priorities, architecture, ontology | `ROADMAP.md`, `ARCHITECTURE_AND_MODULES.md`, `ONTOLOGY_MODEL.md` | [Delivery phases and gates](DELIVERY_PHASES_AND_GATES.md), `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`, `docs/engineering/OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md` |
 
 ## Reuse tools and interpret their limits

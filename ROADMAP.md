@@ -8,9 +8,16 @@
 ## Current delivery roadmap
 
 The [delivery phases and acceptance gates](docs/engineering/DELIVERY_PHASES_AND_GATES.md)
-define dependencies, release criteria and the queued backlog. The proposed
-v0.2 target is a deterministic Chronicle and context export release.
-WordPipe DOCX has an independent product-readiness decision.
+own the [gateway matrix](docs/engineering/DELIVERY_PHASES_AND_GATES.md#acceptance-gateway-matrix),
+[24-package issue map](docs/engineering/DELIVERY_PHASES_AND_GATES.md#backlog-activation-and-synchronization)
+and [proposed release milestones](docs/engineering/DELIVERY_PHASES_AND_GATES.md#proposed-release-boundaries).
+The deterministic Chronicle and context-export target, v0.2, requires
+G0–G5 with core G4. WordPipe DOCX has its own readiness decision. Optional
+AI qualification belongs to the v0.5 target. Delivery gateway IDs are scoped
+to the matrix. The historical goals and phases below retain their identifiers.
+
+The [three-slot queue](docs/engineering/DELIVERY_PHASES_AND_GATES.md#active-execution-queue)
+covers GOV-01, B2 and SEC-01. SAFE-01 follows SEC-01 in the hardening slot.
 
 | Order | Phase | Current execution |
 |---|---|---|
@@ -18,11 +25,30 @@ WordPipe DOCX has an independent product-readiness decision.
 | 2 | Document understanding | [Markdown structure #15](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/15) is ready. Temporal evidence and multilingual normalization follow characterization. |
 | 3 | Corpus acceptance | [Flowers #16](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/16) is queued for real-corpus evaluation. Rubric preparation can start offline. |
 | 4 | References and ontology | Complete Phase 9c using existing survivor contracts and populate the project ontology before schema expansion. |
-| 5 | Product stabilization | [Public audit #17](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17) and [atomic DOCX #18](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/18) can start now. Bound execution and verify the installed Chronicle workflow for v0.2. |
+| 5 | Product stabilization | [Public audit #17](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17) is ready now. [Atomic DOCX #18](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/18) follows in the same slot. Bound execution and verify the installed Chronicle workflow for v0.2. |
 | 6 | Knowledge intelligence | Ground citations, claims and relations in provenance. Measure search needs before indexing. |
-| 7 | Optional AI research | [NCM #9](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/9) is blocked for real inference. [Jev #10](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/10) has offline preparation available. [Combined benchmark #11](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/11) is gated. |
+| 7 | Optional AI research | [NCM #9](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/9) is blocked for real inference. [Jev #10](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/10) has offline preparation available. [Combined benchmark #11](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/11) is blocked on upstream evidence. |
 
 ## Active narrative roadmap — newest first
+
+### 2026-11-20 — Work packages, gateways and release milestones
+
+Branch `docs/whs-delivery-roadmap`, [draft PR #19](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/19).
+Reviewed parent `e0db93ea0cdefa6d5762b6abffcc63621ca0ee0d`, base
+`e2f1c17643b05016f5617a43c07f850033c6acbd`. The four Markdown paths now
+define 24 unique work packages, nine existing issue mappings, seven delivery
+phases, eight gateways and five proposed release milestones. The issue map
+assigns activation criteria to the 15 packages awaiting an issue. The
+three-slot queue carries governance, B2 and the release audit, with atomic
+DOCX publication next in the hardening slot. The retrieval map routes each
+new section. The historical phase and evidence entries are preserved.
+
+Local validation found 368 passing tests and 21 platform skips. All five
+governance checks passed. The issue inventory was verified against GitHub.
+The next decision is G0 acceptance after the issue links and hosted checks
+are verified against the published candidate. B2 and Flowers semantic
+evaluation still require their own evidence. The deterministic v0.2
+release uses G0–G5 with core G4.
 
 ### 2026-11-20 — Delivery phase and issue reconciliation
 
