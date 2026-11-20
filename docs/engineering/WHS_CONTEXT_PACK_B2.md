@@ -225,3 +225,106 @@ The probe cannot qualify G1 or count toward its fresh ≥30-case population.
 fresh gold pending. No fresh holdout predictions or token measurements.
 G1 remains REVISE, issue #8 open, PR #13 draft. No threshold change or new
 work package is authorized.
+
+
+## Conditional-freeze execution · 2026-11-20
+
+**Disposition: the original candidate requires REVISE. Part B is qualified.
+The revised candidate `920c8e044ad7553d11d010bdba6ae580626db961` is
+pinned for independent authoring. Its replay resolved the Part C failures.
+Fresh inputs and independent gold remain pending. G1 remains REVISE.**
+
+### Instrument qualification
+
+The [pinned GPT-2 tokenizer JSON](https://huggingface.co/openai-community/gpt2/blob/607a30d783dfa663caf39e06633721c8d4cfcd7e/tokenizer.json)
+matched SHA-256
+`8414cab924d8b9b33013f0d221c5862f365ee9be39c5c2bfae8a5a9e970478a6`.
+The candidate loader used `tokenizers 0.23.3` on CPython `3.11.4`, with
+truncation, padding and special-token insertion disabled. Two independent
+tokenizer loads reproduced identical token ID sequences for each of 90
+complete serialized envelopes per diagnostic run, across the raw and B2
+arms. Delivered-packet counts include metadata, query and instructions.
+For example, the locked candidate's first direct control measured 767
+raw tokens and 301 B2 tokens.
+
+Both arms used zero consumer rereads. The runner's local verification reads
+are separate. Refused envelopes receive no delivered token count and earn
+zero savings. Raw fallback likewise earns zero savings. These measurements
+are GPT-2 estimates and do not represent actual target-consumer usage.
+
+### Refusal diagnostic and evidence
+
+A separate synthetic source and answer key were pinned before prediction
+from literal source facts. No second adjudicator participated in the
+development probe. Its 20 valid paraphrases had 20 paired direct controls
+and five distinct unanswerable lexical-overlap controls. The paraphrases
+covered low lexical overlap, separator variants, mixed-script wording,
+and nonadjacent qualifications. Each used a 65,536-byte budget. The
+diagnostic and replay are separate from independent G1 inputs and gold.
+
+| Probe outcome | Locked candidate `373840a5e869` | Revised candidate |
+| --- | --- | --- |
+| False refusals, valid paraphrases | 9/20 | 0/20 |
+| False refusals, direct controls | 0/20 | 0/20 |
+| False deliveries, unanswerable overlap | 5/5 | 0/5 |
+| Verified provenance on all deliveries | 36/36 | 40/40 |
+| Paraphrase protected facts, delivered / all | 12/12 / 12/25 | 25/25 / 25/25 |
+| Paraphrase required IDs, delivered / all | 11/11 / 11/20 | 20/20 / 20/20 |
+| Direct protected facts and IDs | 25/25 facts, 20/20 IDs | 25/25 facts, 20/20 IDs |
+
+The original false refusals reported `no_verified_query_evidence`. The
+original 11 paraphrase and five unanswerable deliveries used raw fallback
+with `insufficient_exact_evidence`. Both candidates delivered all direct
+controls structurally. The revised candidate delivered all 20 paraphrases
+structurally with `matching_structural_units` and refused all five overlap
+controls with `unverified_entity_field`. Both runs recorded zero unsupported
+units and unchanged source and canonical artifact hashes. Verified provenance
+alone did not make the original five false deliveries relevant to the query.
+
+The narrow change normalizes spaced identifiers and a limited English/Persian
+vocabulary for explicit single-entity field requests. It requires grounding
+of the entity, canonical field and significant query terms in the same
+verified section before using existing delivery and qualification closure.
+Requests outside this vocabulary and paraphrases without explicit entity
+references still need fresh independent evaluation. Replaying the exposed
+diagnostic establishes a regression result only.
+
+Local evidence under `_WORK/whs-b2-freeze-20261120/`:
+
+| Artifact | SHA-256 |
+| --- | --- |
+| `diagnostic-inputs.json` | `f2f78129ae4215c79014115e489f9d73bb7d7c07e6f339679d041f9d1830dfd5` |
+| `diagnostic-gold.json` | `4a4a65413045dfd0c75f83e097af773f456790d4bbe12f73f386de8b8afd09cc` |
+| `run_diagnostic.py` | `9b0d5f617482035643f9cea377f3e49752bca1fa22f409b6a5be89620926d9e6` |
+| `locked-candidate/diagnostic-results.json` | `f0c41e5f2df218d15c32ad11c029bcca16956ba44895c2a99b7d1afce56731aa` |
+| `revised-candidate/diagnostic-results.json` | `e298462f853e06621ae45f3215cae689028ab6b92b402fd275fe270306e5c10d` |
+| `historical-tuning-revised/case-results.json` | `7ed89c131a290db4fa1cdb0ff07406a7afbfd80d2658eb99e5da5b206afa38d8` |
+
+The 12-case historical tuning replay delivered nine structural packets and
+refused three requests, including two provenance refusals. It preserved
+21/21 delivered critical facts, 21/22 across all cases, and 9/9 verified
+deliveries. The historical harness reported 35.53% median estimated
+complete-packet token reduction across its 12-case denominator. That is a
+new replay result, separate from the historical 44.42% byte measurement and
+from the independent G1 valid-population metric. B1 evidence is unchanged.
+
+### Revised freeze identity
+
+Candidate commit `920c8e044ad7553d11d010bdba6ae580626db961`
+has tree `9bfa8c3a33054984518bd0cfebf1275c9ecaddeb`. Exporter blob
+`463056defa60488c09c7345564437f9bf589d4d9` and focused test blob
+`b7341f167980058b678f112f61ae88bf8ef72fa7` are the only changes against
+the documentation amendment. The scorer, source scope, runner settings,
+historical fixtures, approved G1 thresholds and packet-only protocol
+retain their existing pins. Integrated base is
+`e85ddc1b04227d9d28c2861733016570612239cc`. Keep the independent evaluator
+blinded to the probe. Fresh scoring requires separately authored and pinned
+inputs and independent gold. Keep PR #13 draft and issue #8 open.
+
+Local validation first asserted package import origins inside the #8
+checkout. Observed 20 focused tests passed, 403 full-suite tests passed
+with six skips, all five governance checks passed, and Windows PowerShell
+integration passed both CI cases. CLI checks verified the paraphrased
+delivery and unsupported-field refusal with no evidence on stdout. The
+[exact-candidate CI run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/44709174672)
+covers the revised candidate independently of this documentation update.
