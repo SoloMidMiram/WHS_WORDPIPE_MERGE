@@ -323,6 +323,8 @@ def _export(run, query, max_bytes, *, close_qualifications):
     if type(max_bytes) is not int or not 1 <= max_bytes <= MAX_INPUT_BYTES:
         raise ValueError("max_bytes must be between 1 and 32 MiB")
     if not query.strip() or len(query.encode("utf-8")) > 2048:
+        if close_qualifications:
+            return packet(run, query, "refused", "invalid_query")
         raise ValueError("query must contain 1–2048 UTF-8 bytes")
     wanted = terms(query)
     matches = [terms(u["text"]) & wanted for u in run["units"]]
@@ -357,9 +359,14 @@ def _export(run, query, max_bytes, *, close_qualifications):
             return result
         reason = "structural_packet_not_compact"
     result = raw_packet(run, query, reason)
-    if size(result) <= max_bytes:
-        return result
-    return packet(run, query, "refused", "verified_raw_exceeds_budget")
+    if size(result) > max_bytes:
+        return packet(run, query, "refused", "verified_raw_exceeds_budget")
+    if close_qualifications:
+        source_terms = set().union(*(terms(source["text"]) for source in run["sources"]))
+        query_evidence = wanted - COMMON_SUBJECTS or wanted
+        if not query_evidence & source_terms or not wanted_ids <= source_terms:
+            return packet(run, query, "refused", "no_verified_query_evidence")
+    return result
 
 
 def main():

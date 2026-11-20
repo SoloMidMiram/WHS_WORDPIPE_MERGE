@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from scripts.experiments import chronicle_context_pack as pack
+from scripts.experiments import benchmark_context_pack, chronicle_context_pack as pack
 from tools.run_topic_report import compute_individual_report_event_id, compute_source_event_id
 from wordpipe.chronicle.merge import compute_body_hash
 
@@ -84,11 +84,23 @@ def test_complete_event_and_adjacent_conditions_keep_exact_ids(example):
 def test_raw_fallback_preserves_crlf_and_enforces_budget(example):
     run, source, receipt, original = example
     checked = pack.load_run(run, source, receipt)
-    fallback = pack.export(checked, "not found anywhere", 10_000)
+    fallback = pack.export(checked, "Notes", 10_000)
     assert fallback["route"] == "raw"
     assert fallback["sources"][0]["text"] == original
     assert checked["source_reread_bytes"] == len(original.encode("utf-8"))
-    assert pack.export(checked, "not found anywhere", 128)["route"] == "refused"
+    budget_refusal = pack.export(checked, "Notes", 128)
+    assert budget_refusal["reason"] == "verified_raw_exceeds_budget"
+
+
+@pytest.mark.parametrize("query", ["not found anywhere", "pump AA-99"])
+def test_unanswerable_query_does_not_dump_verified_raw(example, query):
+    run, source, receipt, _ = example
+    checked = pack.load_run(run, source, receipt)
+    refused = pack.export(checked, query, 10_000)
+    assert refused["route"] == "refused"
+    assert refused["reason"] == "no_verified_query_evidence"
+    assert not refused["units"] and not refused["sources"]
+    assert pack.export_b1(checked, query, 10_000)["route"] == "raw"
 
 
 def test_source_hash_change_rejects_even_with_unchanged_locator(example):
@@ -152,7 +164,7 @@ def _unit(ordinal, text):
 
 def _retrieval_run():
     return {"identity": {"topic": "synthetic"}, "target": "index", "rejected": 0, "outside": [],
-            "sources": [{"file": "notes.md", "text": "Raw source elsewhere. " * 500}],
+            "sources": [{"file": "notes.md", "text": "BC-81 suction chamber. " + "Raw source elsewhere. " * 500}],
             "units": [
                 _unit(1, "## BC-81 suction chamber\n\nAn 18 bar chamber trial is cleared."),
                 _unit(3, "## Chamber records\n\nThe earlier chamber procedure must use a gasket."),
@@ -181,3 +193,27 @@ def test_outside_or_unresolved_reference_uses_raw(extra, reason):
     packet = pack.export(run, "BC-81", 20_000)
     assert packet["route"] == "raw"
     assert packet["reason"] == reason
+
+
+def test_g1_scores_valid_population_and_expected_refusals_separately():
+    def row(case, label, route=None, tokens=None, critical=None):
+        result = {"case": case, "reference": {"classification": label, "critical": critical or []},
+                  "A": {"tokens": 100}}
+        if route:
+            result["B2"] = {"route": route, "tokens": tokens, "delivered": route != "refused",
+                            "identity_ok": True, "misses": {"critical": []},
+                            "missing_ids": [], "unsupported_units": 0}
+        return result
+
+    summary = benchmark_context_pack.g1_summary([
+        row("selected", "valid", "structural", 50),
+        row("fallback", "valid", "raw", 99),
+        row("budget", "valid", "refused", critical=["required"]),
+        row("stale", "expected_refusal"),
+        row("unanswerable", "expected_refusal", "raw", 1),
+    ])
+    assert summary["valid_verified_delivery"] == [2, 3]
+    assert summary["expected_refusal"] == [1, 2]
+    assert summary["unexpected_deliveries"] == ["unanswerable"]
+    assert summary["valid_full_population_protected_fact_misses"] == 1
+    assert summary["median_valid_token_reduction_pct"] == 0

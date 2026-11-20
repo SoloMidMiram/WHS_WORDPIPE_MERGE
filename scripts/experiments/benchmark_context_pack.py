@@ -80,6 +80,12 @@ def fault_run(fault, run, receipt, destination):
         path.write_text(changed, encoding="utf-8")
         if fault == "missing_anchor":
             pins[b1.INDEX] = b1.digest(path.read_bytes())
+    elif fault == "ambiguous_correlation":
+        path = destination / b1.CORRELATION
+        correlation = read_json(path)
+        correlation["ambiguous_matches"] = [{}]
+        write_json(path, correlation)
+        pins[b1.CORRELATION] = b1.digest(path.read_bytes())
     elif fault == "rejected_ingest":
         path = destination / b1.CHAIN
         chain = read_json(path)
@@ -121,7 +127,9 @@ def measure(make_packet, reference, count, run):
     raw = {item["file"]: item for item in run["sources"]}
     known = {unit["anchor"]: unit for unit in run["units"]}
     identity_ok = packet["run"] == run["identity"] and all(
-        item["sha256"] == raw[item["file"]]["sha256"] for item in packet["sources"]
+        item["sha256"] == raw[item["file"]]["sha256"]
+        and (packet["route"] != "raw" or item["text"] == raw[item["file"]]["text"])
+        for item in packet["sources"]
     ) and all(
         {k: v for k, v in unit.items() if k != "selection"} == known.get(unit["anchor"])
         for unit in packet["units"]
@@ -134,12 +142,16 @@ def measure(make_packet, reference, count, run):
         key: [fact for fact in reference[key] if not any(fact in text for text in texts)]
         for key in ("critical", "additional")
     }
+    evidence_terms = set().union(*(b1.terms(text) for text in texts))
+    missing_ids = [value for value in reference.get("required_ids", [])
+                   if value.casefold() not in evidence_terms]
     metadata = {**packet, **{key: [{**item, "text": ""} for item in packet[key]]
                              for key in ("sources", "units")}}
     delivered = packet["route"] != "refused"
     return {
         "route": packet["route"], "reason": packet["reason"], "delivered": delivered,
-        "misses": misses, "identity_ok": identity_ok, "unsupported_units": unsupported,
+        "misses": misses, "missing_ids": missing_ids,
+        "identity_ok": identity_ok, "unsupported_units": unsupported,
         "tokens": count(wire) if count and delivered else None,
         "metadata_tokens": count(b1.serialize(metadata)) if count and delivered else None,
         "raw_fallback_tokens": count(wire) if count and packet["route"] == "raw" and packet["reason"] != "complete_source" else None,
@@ -154,6 +166,8 @@ def summarize(rows, count):
     for arm in ("A", "B0", "B1", "B2"):
         eligible = [r for r in rows if arm in r]
         evaluated = [r[arm] for r in eligible]
+        if not evaluated:
+            continue
         scores = [m for m in evaluated if m["delivered"]]
         critical = sum(len(r["reference"]["critical"]) for r in eligible)
         overall = critical + sum(len(r["reference"]["additional"]) for r in eligible)
@@ -180,7 +194,10 @@ def summarize(rows, count):
             "delivered_critical": [delivered_critical - missed_delivered, delivered_critical],
             "request_counts": {
                 "total": len(rows), "delivered": len(scores), "structural": routes["structural"],
-                "raw": routes["raw"], "budget_refusals": routes["refused"],
+                "raw": routes["raw"],
+                "budget_refusals": sum(m["reason"] == "verified_raw_exceeds_budget" for m in evaluated),
+                "other_packet_refusals": sum(m["route"] == "refused" and
+                                             m["reason"] != "verified_raw_exceeds_budget" for m in evaluated),
                 "provenance_refusals": len(rows) - len(evaluated),
                 "feasible": len(feasible), "feasible_delivered": sum(m["delivered"] for m in feasible),
             },
@@ -192,11 +209,51 @@ def summarize(rows, count):
     return summary
 
 
+def g1_summary(rows):
+    valid = [row for row in rows if row["reference"]["classification"] == "valid"]
+    refusals = [row for row in rows if row["reference"]["classification"] == "expected_refusal"]
+    delivered = [row for row in rows if row.get("B2", {}).get("delivered")]
+    delivered_ids = {row["case"] for row in delivered}
+    delivered_valid = [row for row in valid if row["case"] in delivered_ids]
+    unexpected_deliveries = [row["case"] for row in refusals if row["case"] in delivered_ids]
+    reductions = []
+    if all(row.get("A", {}).get("tokens") is not None for row in valid):
+        for row in valid:
+            result = row.get("B2", {})
+            reductions.append(1 - result["tokens"] / row["A"]["tokens"]
+                              if result.get("route") == "structural" else 0)
+    return {
+        "valid_verified_delivery": [sum(row["B2"]["identity_ok"] for row in delivered_valid), len(valid)],
+        "expected_refusal": [len(refusals) - len(unexpected_deliveries), len(refusals)],
+        "unexpected_deliveries": unexpected_deliveries,
+        "delivered_identity": [sum(row["B2"]["identity_ok"] for row in delivered), len(delivered)],
+        "delivered_protected_fact_misses": sum(len(row["B2"]["misses"]["critical"]) for row in delivered),
+        "delivered_required_id_misses": sum(len(row["B2"]["missing_ids"]) for row in delivered),
+        "valid_full_population_protected_fact_misses": sum(
+            len(row["B2"]["misses"]["critical"]) if row["case"] in delivered_ids
+            else len(row["reference"]["critical"]) for row in valid
+        ),
+        "unsupported_units": sum(row["B2"]["unsupported_units"] for row in delivered),
+        "median_valid_token_reduction_pct": round(100 * statistics.median(reductions), 2) if reductions else None,
+    }
+
+
 def benchmark(fixture, gold, work, encode=None, tokenizer=None):
     case_ids = [case["id"] for case in fixture["cases"]]
-    if fixture["schema"] != "whs-context-benchmark-v1" or fixture["partition"] != gold["partition"] \
-            or not 8 <= len(case_ids) <= 12 or len(set(case_ids)) != 12 or set(case_ids) != gold["references"].keys():
+    fresh = fixture["partition"] == "fresh"
+    references = gold["references"]
+    if (fixture["schema"] != "whs-context-benchmark-v1" or fixture["partition"] != gold["partition"]
+            or len(set(case_ids)) != len(case_ids) or set(case_ids) != references.keys()
+            or any(not re.fullmatch(r"[a-z0-9][a-z0-9_-]*", name) for name in case_ids)):
         raise ValueError("fixture partition or gold roster mismatch")
+    if fresh:
+        populations = Counter(reference.get("classification") for reference in references.values())
+        if (set(populations) != {"valid", "expected_refusal"}
+                or populations["valid"] < 20 or populations["expected_refusal"] < 10
+                or any(not isinstance(ref.get("required_ids"), list) for ref in references.values())):
+            raise ValueError("fresh evaluation requires >=20 valid cases, >=10 expected refusals and explicit ID gold")
+    elif len(case_ids) != 12:
+        raise ValueError("historical partitions require exactly 12 cases")
     run, source, receipt = synthetic_run(fixture, work)
     count = (lambda text: len(encode(text))) if encode else None
     checked = b1.load_run(run, source, receipt)
@@ -236,7 +293,9 @@ def benchmark(fixture, gold, work, encode=None, tokenizer=None):
                 "B1": lambda: b1.export_b1(current, query, budget),
                 "B2": lambda: b1.export(current, query, budget),
             }
-            if not row.get("refusal") and not all(
+            if fresh:
+                methods = {arm: methods[arm] for arm in ("A", "B2")}
+            if reference.get("classification") != "expected_refusal" and not all(
                 fact in "\n".join(item["text"] for item in current["sources"])
                 for key in ("critical", "additional") for fact in reference[key]
             ):
@@ -252,6 +311,7 @@ def benchmark(fixture, gold, work, encode=None, tokenizer=None):
     assert all(b1.digest((source / n).read_bytes()) == value for n, value in receipt["sources"].items())
     assert all(b1.digest((run / n).read_bytes()) == value for n, value in receipt["artifacts"].items())
     return {"partition": fixture["partition"], "case_count": len(rows), "tokenizer": tokenizer,
+            **({"g1": g1_summary(rows)} if fresh else {}),
             "source_reread_bytes_once": checked["source_reread_bytes"], "consumer_source_reread_tokens": 0,
             "deterministic_replay": True, "input_hashes_unchanged": True,
             "summary": summarize(rows, count), "cases": rows}
@@ -262,10 +322,22 @@ def main():
     cli.add_argument("--partition", choices=("tuning", "holdout", "fresh"), required=True)
     cli.add_argument("--work", type=Path, required=True)
     cli.add_argument("--gpt2-tokenizer", type=Path)
+    cli.add_argument("--fixture", type=Path, help="Independent fresh inputs")
+    cli.add_argument("--gold", type=Path, help="Independent fresh gold")
     args = cli.parse_args()
-    name = f"whs_context_{args.partition}"
-    suite = read_json(FIXTURES / f"{name}.json")
-    gold = read_json(FIXTURES / f"{name}_gold.json")
+    if args.partition == "fresh":
+        if args.fixture is None or args.gold is None:
+            cli.error("fresh evaluation requires --fixture and --gold")
+        suite = read_json(args.fixture)
+        gold = read_json(args.gold)
+        if suite.get("partition") != "fresh":
+            cli.error("fresh evaluation requires a fresh partition")
+    else:
+        if args.fixture is not None or args.gold is not None:
+            cli.error("--fixture and --gold are only for fresh evaluation")
+        name = f"whs_context_{args.partition}"
+        suite = read_json(FIXTURES / f"{name}.json")
+        gold = read_json(FIXTURES / f"{name}_gold.json")
     encode, tokenizer = b0.load_tokenizer(args.gpt2_tokenizer) if args.gpt2_tokenizer else (None, None)
     result = benchmark(suite, gold, args.work.resolve(), encode, tokenizer)
     write_json(args.work / "case-results.json", result)

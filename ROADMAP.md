@@ -31,6 +31,30 @@ covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, B2 (#8 / 
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-20 — WHS #8 B2 candidate and first-measurement review
+
+Branch `experiment/whs-08-context-pack-fidelity`, [draft PR #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13).
+Reviewed parent `83730a52029373f11ee47cc48c5ffa48ed098249` incorporates
+integrated main `e85ddc1b04227d9d28c2861733016570612239cc` and retains the
+previously published B1 head `bd31c0470080043a326317c59574b5d041d09879`.
+Both document conflicts retain their dated evidence. The retrieval map
+links the two benchmark reports. B1 fixtures, gold, metrics and verdict were
+verified unchanged against the B1 head.
+
+The [B2 review](docs/engineering/WHS_CONTEXT_PACK_B2.md) records the first
+measurement, the recommendation to retain the approved G1 baselines, and
+the revised refusal and scoring contracts. The exposed distant coolant miss
+now passes as a regression. Historical no-match refusals still count as
+misses in those replays. Local validation asserted Python package origins in
+this worktree before testing. Observed 15 focused passes, 398 full-suite
+passes with six platform skips, all five governance checks, and successful
+Windows PowerShell integration through both CI cases.
+
+B2 remains **REVISE** pending acceptance of the first-measurement review,
+candidate and configuration freeze, fresh independent inputs and gold, and
+token accounting. Verify hosted checks at the published candidate SHA.
+Keep PR #13 draft and issue #8 open.
+
 ### 2026-11-20 — G0 ACCEPT and execution handoff
 
 The maintainer approved the existing numerical planning baselines, without
