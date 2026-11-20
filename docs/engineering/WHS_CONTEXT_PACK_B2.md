@@ -896,3 +896,46 @@ intended responsiveness for the four confirmed failure probes. The
 requires a newly frozen candidate, new independent evaluation data, and
 the existing G1 contract. This update authorizes no candidate revision.
 PR #13 stays draft and issue #8 stays open.
+
+## B2 regression-fixture hygiene · 2026-11-21
+
+The ten committed cases in
+`tests/fixtures/whs_context_raw_fallback_regressions.json` are a
+**new synthetic equipment-desk scenario** with fabricated entities and
+sentences. The published fixture contains no user-specific Windows
+worktree paths, private gold, or raw case-level extracts from the
+original 176 local evidence files as inspected in this review.
+This is a content inspection of the published fixture, **not** an
+independent byte-level derivation audit against inaccessible private
+originals. The original private evidence and machine-local inventories
+remain local; do not promote them into this repository.
+
+The ten ordinary `test_frozen_b2_routing_characterization` parameters
+assert the **historical, known B2 routes**. They are intentionally
+passing characterization tests and **do not assert future desired routing**.
+A later authorized candidate that changes the route must consciously
+update or replace the historical-characterization assertion, preserving
+the old outcome in dated evidence.
+
+Four separately parameterized assertions in
+`test_intended_responsiveness_for_known_b2_failures` instead assert
+the **desired** routing. Every case has its own
+`pytest.mark.xfail(strict=True, raises=AssertionError)` and defect ID.
+An XPASS intentionally fails CI and requires deliberate retirement;
+a failure other than the expected assertion type is not accepted.
+None of these marks is an approval or waiver for G1.
+
+| Defect ID | Existing synthetic case | B3 re-entry | Retirement / test conversion condition |
+| --- | --- | --- | --- |
+| `WHS08-R1-ENTITY` | `false-delivery-entity-only` | R1 authorization | The verified absent-field request refuses without any raw evidence; remove xfail and assert corrected routing. |
+| `WHS08-R1-CROSS` | `false-delivery-cross-entity` | R1 authorization | Another entity's evidence cannot authorize raw fallback; remove xfail and assert corrected routing. |
+| `WHS08-R2-DEADLINE` | `valid-narrative-deadline` | R2 narrative grounding | Verified deadline prose is delivered responsively, preserving its provenance and facts; remove xfail and assert intended delivery. |
+| `WHS08-R3-IDLESS` | `valid-idless-paraphrase` | R3 ID-less matching | Verified paraphrase evidence is delivered without relying on an ID in the request; remove xfail and assert intended delivery. |
+
+R4 compact delivery is deliberately **not** represented by these four
+xfails; it requires separately reported packet-token measurements.
+Retiring one xfail does not establish that its full B3 re-entry
+dimension, the other dimensions, or G1 has passed. Review changed routes
+and byte/ID/provenance protections before deleting a historical assertion.
+B3 remains DEFERRED and the frozen code/gold/scorer/G1 thresholds remain
+unchanged.
