@@ -7,6 +7,26 @@ checklists. Dated experiment and corpus reports own their measurements.
 Delivery phase numbers and gateway IDs are scoped to this plan. The root
 roadmap retains the original Project Phase 9c, Phases 13–17 and goal IDs.
 
+## Authority and freshness
+
+GOV-01 = issue [#14][i14], implemented by existing draft [PR #19][pr19].
+Do not open another governance issue or PR. This file is the sole authority
+for phase execution, gateways, work-package mapping, release readiness and
+risks. PHASE_EXECUTION_PLAN.md, ACCEPTANCE_GATE_MATRIX.md, ISSUE_ROADMAP_MAP.md
+and RELEASE_READINESS.md are unnecessary: their proposed roles are already
+covered here. ROADMAP.md owns strategic direction and dated history,
+OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md owns technical debt and historical
+evidence, and REPO_MAP.md owns navigation. The maintainer owns all four.
+Check these documents and search GitHub before adding a tracking surface;
+record a supersession and redirect if authority ever changes.
+
+Planning statuses and thresholds are provisional until GOV-01 acceptance.
+A fresh read on 2026-11-20 confirms the nine existing issues are open;
+PRs #2–#7 and #12 are merged, #1 is closed unmerged, and #13 and #19 are
+open drafts. The existing CI definition has three Windows and two Ubuntu jobs.
+Historical CI results remain tied to their original SHA. No fresh test
+execution is asserted by this correction.
+
 ## Starting decisions
 
 | Work | Verified state on 2026-11-20 | Next decision |
@@ -18,7 +38,7 @@ roadmap retains the original Project Phase 9c, Phases 13–17 and goal IDs.
 | Release boundary | The package metadata says `0.1.0`. Proposed v0.2 is the deterministic Chronicle release. | Certify v0.2 against the checklist below. Track WordPipe DOCX readiness independently. |
 
 At the baseline, seven PRs had merged, PR #1 had closed without merging, and
-PR #13 was the sole open PR. B0's original eight-case NCM-pilot metrics and
+PR #13 was the sole open PR at that earlier baseline; #19 is now also open. B0's original eight-case NCM-pilot metrics and
 its replay on #13's 24-case benchmark describe different datasets.
 
 ## Parallel work and dependencies
@@ -36,18 +56,48 @@ when Flowers remains under local review. Offline Jev fixture preparation can
 begin alongside taxonomy characterization. The combined benchmark waits for
 its upstream evidence.
 
+### Phase-to-gate mapping and dependencies
+
+Delivery phases 1–7 map one-to-one to G1–G7 respectively. G0 is governance
+across all seven, not another phase. Historical Project Phase 9c, Phases
+13–17 and historical goal IDs retain their existing meanings.
+
+```text
+G0 governance (#14 / PR #19)
+  +--> G1 fidelity (#8; pinned experimental inputs)
+  +--> G2 parsing (MD-01 -> TIME-01 / NLP-01)
+  |      +--> G3-core deterministic fixtures
+  |      +--> G3-full semantic gold (#16)
+  +--> G5 security / execution / installed CLI / platform checks
+G2 + verified survivors --> G4-core references and compatible instances
+G0 + G1 + G2 + G3-core + G4-core + G5 --> v0.2
+G3-full + G4-core + NLP evaluation --> G4-full / v0.3
+G4-full --> G6 knowledge (PERF-01 -> optional STORE-01)
+G1 + qualified upstream runtimes --> G7 (#9 and #10 -> #11)
+SAFE-01 / DOCX-01 and INT-01 --> independent product/consumer decisions
+```
+
+Arrows denote dependencies, not slot admissions. Offline G7 preparation
+may be admitted earlier; G7 never blocks v0.2.
+
 ### Active execution queue
 
-Allow at most three concurrent work packages. The maintainer admits the next
-package when a slot clears and its entry criteria are met.
+Allow at most three admitted work packages, including documentation, research,
+hardening and offline preparation. READY means eligible, not admitted;
+parallel means technically independent and still consumes a slot if admitted.
+QUEUED means capacity or prerequisites are pending. BLOCKED/DEFER releases
+its slot after the maintainer records the decision. Record every admission,
+exit and successor; no fourth active package.
 
 | Slot | Current package | Next decision |
 |---|---|---|
-| Governance | GOV-01 [#14][i14] | Review and integrate the documentation update in [#19][pr19]. |
+| Governance | GOV-01 [#14][i14] | Review and integrate [#19][pr19]; then admit READY MD-01 [#15][i15] in this slot. |
 | Research fidelity | [#8][i8] / [draft PR #13][pr13] | Preserve B1, freeze B2 and evaluate a fresh independently adjudicated holdout. |
 | Independent hardening | SEC-01 [#17][i17] | Complete the public release audit, then admit SAFE-01 [#18][i18] to this slot. |
 
-MD-01 [#15][i15] is next for document understanding when capacity is available.
+MD-01 [#15][i15] remains READY, reserved as the successor to GOV-01 in slot 1.
+If GOV-01 becomes BLOCKED and releases its slot, record that decision before
+admitting MD-01. No silent deferral.
 CORP-01 [#16][i16] can prepare its rubric offline once admitted. Technical
 independence allows work to start with an available slot. Gated, queued and
 deferred entries in the [issue map](#backlog-activation-and-synchronization)
@@ -117,8 +167,8 @@ semantics. Complete multilabel gold and review duplicate, qualification and
 contradiction candidates within the declared scope. Record precision, recall,
 F1, per-label support, coverage and disagreements.
 
-**Exit gate.** Publish a PASS, REVIEW or BLOCKED decision against the frozen
-rubric. Record unknowns, denominators and reproducibility evidence. Keep
+**Exit gate.** Record separate G3-core deterministic and G3-full semantic
+verdicts against their frozen contracts below. Record unknowns, denominators and reproducibility evidence. Keep
 restricted sources and row-level derivatives local. Record semantic acceptance
 and publication clearance as separate decisions.
 
@@ -207,6 +257,77 @@ memory and total cost. Record GO, REVISE or NO-GO for each experiment.
 Any adoption requires separate maintainer approval and qualified delivery
 contracts. Deterministic release readiness proceeds independently.
 
+## Quantified gateway contracts
+
+The following numerical floors are proposals requiring maintainer approval
+and preregistration before tuning/scoring. A changed threshold after holdout
+exposure requires new independent holdout evidence. Record fixture digests,
+versions, machine, denominators, failures and raw measurements.
+
+- G1 / #8: fresh holdout >= 30 cases, >= 20 valid answerable in-budget
+  cases and >= 10 expected-refusal cases (stale, ambiguous, invalid or
+  unanswerable inputs). Independently label each input class before
+  scoring. >= 95% verified delivery among valid cases (selected or raw),
+  100% correct refusal among expected-refusal cases, 100% protected facts
+  and IDs in delivered packets, 100% valid anchors, zero unsupported facts.
+  Count valid budget refusals as coverage failures and their applicable
+  required facts as missing in full-population metrics. Proposed efficiency
+  floor: >= 20% median complete-packet and reread token reduction versus raw
+  over valid cases, including raw fallbacks; refusals receive zero savings
+  credit. Use target tokenizer or label estimates.
+- G3-core / v0.2: frozen public/synthetic deterministic fixtures; 100%
+  meaningful source-content accounting, verified locators, reproducible output
+  and explicit assigned/unknown dates. Characterize rule behavior, not semantic
+  correctness; no real Flowers gold or IAA prerequisite.
+- G3-full / v0.3: CORP-01 and NLP-01 require two authorized blinded annotators
+  independently labeling the same frozen multilabel items; at least one
+  independent of the classifier implementation. Independent adjudicator
+  resolves all disagreements. Report pre-adjudication per-binary-label
+  Cohen's kappa >= 0.70 and macro kappa >= 0.75, raw agreement and support.
+  Labels with undefined kappa or < 10 positives and < 10 negatives are
+  unqualified; report them explicitly. On adequately supported predeclared
+  scope require macro F1 >= 0.80, micro F1 >= 0.85 and recall >= 0.90 for
+  predeclared protected labels. No qualified reviewers or authorization =
+  BLOCKED for G3-full only. Keep restricted material local.
+- G4-core / v0.2: unique resolvable references, stable identities, verified
+  provenance and compatible existing project-instance mappings. Manual
+  comparison is a comparison, not truth. If unavailable, record BLOCKED
+  for that comparison, provide synthetic parity and obtain explicit
+  maintainer scope approval. G4-full / v0.3 requires G3-full, evaluated
+  concepts/relations, versioned schema and migration compatibility.
+- G5 / EXEC-01: test normal, hung, noisy and child-spawning stages on
+  Windows and Linux. Configurable deadline (test at 2 seconds); terminal
+  timeout/cancel verdict and owned child tree terminated within 5 seconds
+  after deadline or cancel request. Cap captured stdout/stderr at 1 MiB
+  each with explicit truncation. Preserve previous valid outputs and
+  non-success run verdict; no orphan fixture processes.
+- G5 / CI-01 and CLI-01: existing Ubuntu jobs are baseline, not final
+  qualification. Require fresh exact-candidate Windows and Linux
+  wheel-installed complete Chronicle runs and governance checks.
+  CI-01 platform coverage is P1 and a v0.2 blocker; its optional profile
+  split and duplicate scanner remain P2 and may be explicitly deferred.
+  DOCX-01 must document actual COM/XML capabilities; COM is not a Linux
+  Chronicle requirement. DOCX readiness is independently qualified.
+- G6 / PERF-01: deterministic pinned 100, 1k, 10k and 100k-event corpora
+  (1 KiB mean body, fixed seed, documented duplication/theme mix);
+  three cold runs per size on documented Linux runner (>= 2 vCPU, 8 GiB).
+  Measure ingest-to-merge latency and peak process-tree RSS, full-stage
+  metrics and failures. Proposed 10k-event floor: median <= 60 seconds,
+  max RSS <= 512 MiB. Record 100k completion or resource-limit failure.
+  PERF-01 ACCEPT requires complete characterization and 10k budget pass;
+  otherwise REVISE/DEFER. STORE-01 requires measured query friction.
+- G7: preserve #9 >= 30% median consumer-token saving vs selected
+  extraction on compressible accepted cases with full-population results;
+  #11 >= 20% median end-to-end consumer-token saving vs B across all
+  cases including fallback and no critical-task degradation. For #10 propose
+  >= 5 percentage-point macro F1 improvement vs frozen normalized keyword
+  baseline on held-out cases (abstentions count as misses), no protected-label
+  recall degradation, cost per independently accepted result no higher
+  when comparable. For free or unmeasured baseline costs, require an explicit
+  spending ceiling and approved tradeoff before scoring, no cost-saving
+  claim. Zero known accepted critical errors, independent adjudication,
+  authorization and explicit adoption decision remain mandatory for all arms.
+
 ## Acceptance gateway matrix
 
 A decision records the gateway, candidate revision and scope, evidence links,
@@ -223,24 +344,24 @@ subject to the independent gateway review.
 | G0 — Governance | Reconcile the root roadmap, the 24 unique work packages and open GitHub issues. Assign each tracked scope one owner issue, retain the historical evidence and pass repository governance on the integrated candidate. | Maintainer, GOV-01 [#14][i14]. Review pending in [#19][pr19]. |
 | G1 — Fidelity | Freeze B2 before preparing a fresh independent holdout. All delivered packets retain 100% of protected facts and required IDs, have verified anchors and contain zero unsupported facts. Record delivery, raw fallback, refusals and full-population coverage separately. Pass the predeclared coverage and efficiency criteria and reproduce results with canonical artifacts preserved. | Context-export maintainer and independent evaluator, [#8][i8]. **REVISE** after B1. |
 | G2 — Parsing | Account for included and excluded content without unexplained loss. Verify fences, preambles, identity, replay and stable line mappings. Record temporal roles and provenance, including assigned and unknown dates. | Chronicle maintainer, MD-01 [#15][i15] and TIME-01. Evaluation pending. |
-| G3 — Corpus | Freeze taxonomy, rubric, scope and thresholds first. Independently adjudicate labels, then report precision, recall, F1, support and coverage against the declared release population. Record restricted Flowers corpus and publication decisions separately. | Corpus reviewer, CORP-01 [#16][i16] and NLP-01. Flowers semantic evidence remains REVIEW. |
+| G3 — Corpus | Apply G3-core deterministic fixture criteria for v0.2 and G3-full independent IAA and quality criteria for v0.3. Record restricted Flowers corpus and publication decisions separately. | Corpus reviewer, CORP-01 [#16][i16] and NLP-01. Flowers semantic evidence remains REVIEW. |
 | G4 — Ontology | For v0.2, verify unique source/survivor references, stable identities and provenance, schema compatibility and mapped project instances. Record the manual comparison disposition. For full G4, review the versioned schema, evaluated concepts and relations, and migration and compatibility evidence. | Chronicle and ontology maintainers, CORE-01, ONT-01 and ONT-02. Evidence pending. |
-| G5 — Release | Verify the wheel-installed Chronicle workflow, failure recovery, cancellation, current release security review and passing acceptance on supported Windows and Linux candidates. Track DOCX capability and external TraceLedger acceptance independently. | Release maintainer, EXEC-01, SEC-01 [#17][i17] and CLI-01. Qualification pending. |
-| G6 — Knowledge | Independently evaluate evidence resolution, temporal scope, claim and relation quality against predeclared targets. Preserve earlier claims and record qualifications, contradictions, retractions and supersession explicitly. | Knowledge maintainer and independent evaluator, CLAIM-01 and CITE-01. Entry gated. |
-| G7 — AI | Qualify the runtime or adapter for the intended use. Obtain applicable data and execution authorization. Independently evaluate all cases, including rejected and fallback cases. Record quality, latency, memory and cost against the deterministic baseline and apply each issue's benefit criteria. | Experiment maintainers and independent evaluator, [#9][i9]–[#11][i11]. NCM inference and the combined benchmark are **BLOCKED**. Jev has offline preparation available. |
+| G5 — Release | Verify wheel-installed Chronicle, EXEC-01 liveness and failure recovery, current security review, CI-01/CLI-01 exact-candidate Windows and Linux acceptance. Track DOCX capability and external TraceLedger acceptance independently. | Release maintainer, EXEC-01, SEC-01 [#17][i17], CLI-01 and CI-01; DOCX-01 separately. Qualification pending. |
+| G6 — Knowledge | Independently evaluate evidence resolution, temporal scope, claim and relation quality against predeclared targets. Preserve earlier claims and record qualifications, contradictions, retractions and supersession explicitly. Apply the quantified PERF-01 budget before performance acceptance. | Knowledge maintainer and independent evaluator, CLAIM-01, CITE-01, PERF-01 and conditional STORE-01. Entry gated. |
+| G7 — AI | Qualify the runtime or adapter for the intended use. Obtain applicable data and execution authorization. Independently evaluate all cases, including rejected and fallback cases. Record quality, latency, memory and cost against the deterministic baseline and apply the explicit issue-specific G7 floors above. | Experiment maintainers and independent evaluator, [#9][i9]–[#11][i11]. NCM inference and the combined benchmark are **BLOCKED**. Jev has offline preparation available. |
 
 ## Proposed release boundaries
 
 | Target | Scope | Gate evidence |
 |---|---|---|
 | v0.1.x | Foundation and reliability fixes. | G0 and applicable regression checks. |
-| v0.2 | Stable deterministic Chronicle and provenance-bound context export. | G0–G5, with core G4 limited to references, provenance and project-instance compatibility. |
-| v0.3 | Versioned semantic ontology and independently evaluated claim extraction. | Full G4 and applicable G6 evidence. |
+| v0.2 | Stable deterministic Chronicle and provenance-bound context export. | G0, G1, G2, G3-core, G4-core and G5. Full semantic corpus/ontology qualification excluded. |
+| v0.3 | Versioned semantic ontology and independently evaluated claim extraction. | G3-full, G4-full and applicable G6 evidence. |
 | v0.4 | Search, knowledge lifecycle and qualified integrations. | G6, measured query need and applicable external consumer acceptance. |
 | v0.5 | Optional qualified AI assistance. | G7 with an explicit adoption decision. |
 
 These are planning targets. Record evidence at the candidate SHA before any
-tag or release decision. G6 and G7, semantic expansion under full G4, and the
+tag or release decision. G3-full, G4-full, G6, G7, restricted Flowers semantic acceptance and the
 independent WordPipe DOCX readiness decision sit outside v0.2.
 
 ### Proposed deterministic v0.2 checklist
@@ -253,45 +374,76 @@ independent WordPipe DOCX readiness decision sit outside v0.2.
 - [ ] Context-pack fidelity and coverage pass Phase 1.
 - [ ] Complete-document extraction passes Phase 2.
 - [ ] Temporal semantics are characterized and distinguish inferred and assigned dates.
-- [ ] Independent taxonomy/corpus evaluation supports the published product scope. Any restricted local corpus verdict and its scope are explicit.
+- [ ] G3-core deterministic synthetic fixture acceptance supports the declared release scope. Real Flowers semantic evaluation and IAA are G3-full/v0.3.
 - [ ] Core G4 references, compatible project instances and the manual comparison disposition are evidenced. If the authorized comparison is blocked, record its release impact and obtain a maintainer scope decision.
-- [ ] Bounded execution, cancellation and failure recovery pass on supported platforms.
+- [ ] EXEC-01 deadline, cancellation, diagnostic bound, child cleanup and failure recovery pass on supported platforms.
 - [ ] Public release scope and dependency/publication review pass [#17][i17].
-- [ ] Fresh Windows and Linux checks and a clean-environment installed Chronicle workflow pass at the release candidate.
+- [ ] CI-01 platform qualification subset and CLI-01 clean installed Chronicle workflow pass on Windows and Linux at the release candidate.
 
 ## Backlog activation and synchronization
 
-The 24 work packages have 20 planning IDs and four existing research issue
-references. An issue reference identifies the owner issue. The remaining 15 packages are owned by this plan until their activation
-criteria are met. The [optimization map](OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md) holds
+Counts (not GitHub issue numbers):
+
+| Bucket | Count |
+|---|---:|
+| Research issues #8–#11 | 4 |
+| Engineering issues mapped to WPs (#14–#18) | 5 |
+| WPs requiring future GitHub issues on admission | 15 |
+| **Total tracked items** | **24** |
+
+The GitHub issue column is the WP-to-issue mapping. To-create means
+search and reuse before opening an issue; no number is reserved.
+All planning statuses are provisional until G0 approval. The repository
+maintainer (SoloMidMiram) is accountable for every work package; the
+responsible roles below are proposed, not confirmed assignees. Independent
+reviewers and external owners must be identified and accept their roles
+before qualification. The [optimization map](OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md) holds
 technical evidence and historical remediation.
 
-| ID | Priority | Work package | Issue | State and activation or acceptance contract |
-|---|---|---|---|---|
-| GOV-01 | P0 | Roadmap and evidence reconciliation | [#14][i14] | In progress. Integrate [#19][pr19] after the issue map and governance checks agree (G0). |
-| MD-01 | P1 | Structure-aware Markdown ingestion | [#15][i15] | Ready, next available slot. Verify fenced headings, source coverage, stable locators and replay (G2). |
-| TIME-01 | P1 | Temporal evidence and date semantics | | Queued. Start after MD-01 establishes spans. Verify all date roles, locators and explicit unknowns (G2). |
-| CORP-01 | P1 | Flowers semantic corpus acceptance | [#16][i16] | Queued. Prepare rubric offline. Score after G2 decisions, frozen taxonomy and authorization of the local inventory (G3). |
-| NLP-01 | P1 | Multilingual normalization and taxonomy | | Queued. Define annotation, then measure normalized Persian/English keyword and phrase behavior, offsets and per-label results (G2, G3). |
-| CORE-01 | P1 | Reference builder and manual comparison | | Queued. Reuse verified survivor keys for Phase 9c. Require resolvable links, repeatability and an evidenced or explicitly blocked comparison (G4). |
-| ONT-01 | P1 | Project ontology population | | Queued. Map verified Phase 13–17 runs to existing project entities. Verify stable IDs, schema compatibility and evidence references (core G4). |
-| ONT-02 | P1 | Semantic concepts and relationships | | Gated by ONT-01, NLP-01 and the Phase 15 schema decision. Verify versioned migration and evidence-backed relations (full G4). |
-| SAFE-01 | P1 | Atomic DOCX publication | [#18][i18] | Ready after SEC-01 in slot 3. Prove failure preservation and cleanup through installed paths on Windows and Linux (DOCX readiness). |
-| EXEC-01 | P1 | Bounded execution and cancellation | | Queued. Define stage process contracts and verify deadlines, bounded diagnostics and cleanup on supported platforms (G5). |
-| SEC-01 | P1 | Public repository and dependency audit | [#17][i17] | Ready in slot 3. Record current ref, dependency, workflow and release-artifact coverage and disposition (G5). |
-| DOCX-01 | P2 | Flattener and capability contracts | | Queued. Characterize supported COM/XML dependencies and experimental flags. Verify installation and capability reporting (DOCX readiness). |
-| INT-01 | P2 | TraceLedger consumer validation | | Queued. Require a real available consumer and verify library, EventSink and capability contracts (external consumer acceptance). |
-| CLAIM-01 | P2 | Claim lifecycle and contradictions | | Gated by grounded references and the semantic schema decision. Verify evidence, temporal scope and historical preservation (G6). |
-| CITE-01 | P2 | Research citation model | | Queued. Build on CORE-01 source locators. Verify per-claim citations resolve and survive replay (G6). |
-| PERF-01 | P2 | Chronicle scaling benchmark | | Queued. Measure wall time and peak memory at 100, 1,000, 10,000 and 100,000 events on pinned fixtures (G6). |
-| STORE-01 | P2 | Rebuildable SQLite projection | | Gated by PERF-01 or documented query friction. Require reproducible rebuilds from canonical artifacts and measured benefit (G6). |
-| CLI-01 | P1 | Installed Chronicle CLI | | Queued. Exercise a clean wheel install and documented complete Chronicle flow on Windows and Linux, retaining wrapper compatibility (G5). |
-| CI-01 | P2 | CI profiles and duplicate scanner | | Queued. Establish coverage and timing baselines and preserve equivalent governance checks when splitting profiles. |
-| REF-01 | P3 | Conditional refactoring and retirement | | Deferred. Characterize consumer use before wrapper retirement. Require a third-adapter coupling or unsafe schema evolution before decomposing the runner. |
-| #8 | P1 | Deterministic context fidelity | [#8][i8] | REVISE. B2 and fresh independent holdout (G1). |
-| #9 | P1 | NCM fidelity | [#9][i9] | BLOCKED for genuine inference. Require G1 and upstream runtime/fidelity qualification (G7). |
-| #10 | P1 | Jev shadow classification | [#10][i10] | Live work gated. Prepare independent classification fixtures offline. Require upstream adapter qualification and authorization for live work (G7). |
-| #11 | P1 | Combined benchmark | [#11][i11] | BLOCKED on #8–#10 and applicable upstream evidence. Reuse identical tasks and candidate pools (G7). |
+| ID | Priority | Work package | GitHub issue | Responsible role | State and activation or acceptance contract |
+|---|---|---|---|---|---|
+| GOV-01 | P0 | Roadmap and evidence reconciliation | [#14][i14] | Maintainer | In progress. Integrate [#19][pr19] after the issue map and governance checks agree (G0). |
+| MD-01 | P1 | Structure-aware Markdown ingestion | [#15][i15] | Chronicle implementer | Ready, next available slot. Verify fenced headings, source coverage, stable locators and replay (G2). |
+| TIME-01 | P1 | Temporal evidence and date semantics | To-create | Chronicle implementer | Queued. Start after MD-01 establishes spans. Verify all date roles, locators and explicit unknowns (G2). |
+| CORP-01 | P1 | Flowers semantic corpus acceptance | [#16][i16] | Corpus lead + independent reviewers | Queued. Prepare rubric offline. Score after G2 decisions, frozen taxonomy and authorization of the local inventory (G3). |
+| NLP-01 | P1 | Multilingual normalization and taxonomy | To-create | NLP lead + reviewer | Queued. Define annotation, then measure normalized Persian/English keyword and phrase behavior, offsets and per-label results (G2, G3). |
+| CORE-01 | P1 | Reference builder and manual comparison | To-create | Chronicle implementer | Queued. Reuse verified survivor keys for Phase 9c. Require resolvable links, repeatability and an evidenced or explicitly blocked comparison (G4). |
+| ONT-01 | P1 | Project ontology population | To-create | Ontology implementer | Queued. Map verified Phase 13–17 runs to existing project entities. Verify stable IDs, schema compatibility and evidence references (core G4). |
+| ONT-02 | P1 | Semantic concepts and relationships | To-create | Ontology lead + reviewer | Gated by ONT-01, NLP-01 and the Phase 15 schema decision. Verify versioned migration and evidence-backed relations (full G4). |
+| SAFE-01 | P1 | Atomic DOCX publication | [#18][i18] | DOCX implementer | Ready after SEC-01 in slot 3. Prove failure preservation and cleanup through installed paths on Windows and Linux (DOCX readiness). |
+| EXEC-01 | P1 | Bounded execution and cancellation | To-create | Runtime implementer | Queued. Define stage process contracts and verify deadlines, bounded diagnostics and cleanup on supported platforms (G5). |
+| SEC-01 | P1 | Public repository and dependency audit | [#17][i17] | Release/security maintainer | Ready in slot 3. Record current ref, dependency, workflow and release-artifact coverage and disposition (G5). |
+| DOCX-01 | P2 | Flattener and capability contracts | To-create | DOCX implementer | Queued. Characterize supported COM/XML dependencies and experimental flags. Verify installation and capability reporting (DOCX readiness). |
+| INT-01 | P2 | TraceLedger consumer validation | To-create | Integration lead + external consumer | Queued. Require a real available consumer and verify library, EventSink and capability contracts (external consumer acceptance). |
+| CLAIM-01 | P2 | Claim lifecycle and contradictions | To-create | Knowledge lead + reviewer | Gated by grounded references and the semantic schema decision. Verify evidence, temporal scope and historical preservation (G6). |
+| CITE-01 | P2 | Research citation model | To-create | Knowledge implementer | Queued. Build on CORE-01 source locators. Verify per-claim citations resolve and survive replay (G6). |
+| PERF-01 | P2 | Chronicle scaling benchmark | To-create | Benchmark implementer | Queued. Measure wall time and peak memory at 100, 1,000, 10,000 and 100,000 events on pinned fixtures (G6). |
+| STORE-01 | P2 | Rebuildable SQLite projection | To-create | Storage implementer | Gated by PERF-01 or documented query friction. Require reproducible rebuilds from canonical artifacts and measured benefit (G6). |
+| CLI-01 | P1 | Installed Chronicle CLI | To-create | Release implementer | Queued. Exercise a clean wheel install and documented complete Chronicle flow on Windows and Linux, retaining wrapper compatibility (G5). |
+| CI-01 | P1/P2 | CI profiles and duplicate scanner | To-create | CI/release implementer | Queued. P1 platform qualification subset blocks v0.2/G5; P2 profile split and duplicate scanner optional with scope decision. Preserve governance checks. |
+| REF-01 | P3 | Conditional refactoring and retirement | To-create | Subsystem maintainer | Deferred. Characterize consumer use before wrapper retirement. Require a third-adapter coupling or unsafe schema evolution before decomposing the runner. |
+| #8 | P1 | Deterministic context fidelity | [#8][i8] | Context lead + independent evaluator | REVISE. B2 and fresh independent holdout (G1). |
+| #9 | P1 | NCM fidelity | [#9][i9] | Research lead + upstream runtime owner | BLOCKED for genuine inference. Require G1 and upstream runtime/fidelity qualification (G7). |
+| #10 | P1 | Jev shadow classification | [#10][i10] | Research lead + independent evaluator | Live work gated. Prepare independent classification fixtures offline. Require upstream adapter qualification and authorization for live work (G7). |
+| #11 | P1 | Combined benchmark | [#11][i11] | Research lead + independent evaluator | BLOCKED on #8–#10 and applicable upstream evidence. Reuse identical tasks and candidate pools (G7). |
+
+## Review cadence and risk register
+
+Review active gates on every evidence/head change, at PR acceptance, at release
+candidacy and at least weekly. BLOCKED requires missing prerequisite, owner,
+next check and slot decision within two business days. Within five business
+days the maintainer records an unblock plan, explicit non-release deferral,
+or continued mandatory-release blocker. Review unresolved blockers weekly;
+no automatic waiver or ACCEPT.
+
+| Risk / trigger | Mitigation | Owner |
+|---|---|---|
+| No independent annotators or low IAA (G3) | Block G3-full, revise rubric or recruit authorized reviewers; G3-core may proceed. | Corpus lead / maintainer |
+| Linux fails or Windows-specific code (G5/DOCX-01) | Separate product scopes; fix mandatory CI-01 coverage; qualify actual DOCX capabilities independently. | Release and DOCX leads |
+| Holdout contamination (#8) | Retain failure as regression; freeze candidate, independent fresh holdout, hashes and roles. | Context lead / evaluator |
+| NCM runtime unavailable (#9) | Escalate to upstream owner; preserve harness, no live inference; defer AI without blocking v0.2. | Research lead / maintainer |
+| Duplicate tracking (G0) | Stop duplicate creation, reuse owner issue, update canonical plan and references together. | Maintainer |
+| Liveness/performance ceiling exceeded (G5/G6) | Preserve outputs, record failure and measured bounded remediation; no silent acceptance. | Runtime/benchmark lead |
 
 Lower-priority work includes organizing tests as affected subsystems change,
 auditing absolute paths, and modeling labor notes, reports and plans when
