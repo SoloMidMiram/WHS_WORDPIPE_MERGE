@@ -47,7 +47,8 @@ The primary sequence is context fidelity, document understanding, corpus
 acceptance, references and ontology, product stabilization, knowledge
 intelligence, then optional model research. B2 can use the existing verified
 generic Markdown run while the production adapter is characterized. Public
-release assurance [#17][i17] and atomic DOCX [#18][i18] can start independently.
+release assurance [#17][i17] and atomic DOCX [#18][i18] are technically independent,
+but SEC-01 precedes SAFE-01 in slot 3.
 Integrate the documentation PR independently. PR #13 also touches the root
 roadmap and retrieval map, so reconcile those two files against the eventual
 merge base during the #8 revision and retain both workstreams' evidence.
@@ -122,7 +123,7 @@ packets and any consumer rereads using the target tokenizer where available.
 **Exit gate.** All delivered fresh-holdout packets retain 100% of annotated
 critical facts and exact required IDs, have verified anchors and contain zero
 unsupported facts. Report results across all cases and delivered cases. Freeze
-coverage and efficiency criteria before scoring. Classify and count structural
+coverage and efficiency criteria from the quantified G1 contract before scoring. Classify and count structural
 delivery, raw fallback and refusals separately, including expected refusals.
 Keep budget refusals in the coverage and applicable fact denominators. Report
 estimates and measured usage distinctly. Replay deterministically and verify
@@ -251,7 +252,7 @@ fixtures, then evaluate the combined task replay with identical inputs and
 candidate pools. WHS owns corpora, fixtures, evidence and evaluation.
 The agents project owns reusable runtimes, provider adapters and transport.
 
-**Exit gate.** Apply each issue's quality and cost gate across its declared
+**Exit gate.** Apply the quantified G7 quality and cost gates across each issue's declared
 population. Record accepted outputs, failures, abstentions, fallback, latency,
 memory and total cost. Record GO, REVISE or NO-GO for each experiment.
 Any adoption requires separate maintainer approval and qualified delivery
@@ -284,7 +285,7 @@ versions, machine, denominators, failures and raw measurements.
   independent of the classifier implementation. Independent adjudicator
   resolves all disagreements. Report pre-adjudication per-binary-label
   Cohen's kappa >= 0.70 and macro kappa >= 0.75, raw agreement and support.
-  Labels with undefined kappa or < 10 positives and < 10 negatives are
+  Labels with undefined kappa or fewer than 10 positives or 10 negatives are
   unqualified; report them explicitly. On adequately supported predeclared
   scope require macro F1 >= 0.80, micro F1 >= 0.85 and recall >= 0.90 for
   predeclared protected labels. No qualified reviewers or authorization =
