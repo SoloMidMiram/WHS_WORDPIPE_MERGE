@@ -484,3 +484,135 @@ and exact-candidate runtime checks are complete. If a new instrument or
 implementation is required, apply the earlier re-freeze and fresh
 authorship rules. No new G1 threshold, candidate, issue, or research
 workstream is authorized. Keep #8 open and #13 draft with G1 REVISE.
+
+
+## Maintainer decisions and holdout pin · 2026-11-20
+
+The maintainer retained the candidate `920c8e044ad7553d11d010bdba6ae580626db961`
+and every numerical G1 threshold. The qualified GPT-2 estimator is approved
+for the >=20% median efficiency floor on the declared valid population.
+The protocol is packet-only with zero consumer rereads in both arms. Raw
+fallback and valid refusals earn zero savings. These estimates do not
+measure actual consumer-token use. Part C is accepted as exposed development
+regression evidence. Its inputs, gold, controls and derivatives are retired
+from independent scoring. The fresh holdout will supply the first independent
+false-refusal estimate.
+
+### Historical tuning reconciliation
+
+The earlier tuning artifact SHA-256 was verified as
+`7ed89c131a290db4fa1cdb0ff07406a7afbfd80d2658eb99e5da5b206afa38d8`.
+The reproduction at `_WORK/whs-b2-approved-tuning-replay-20261120/case-results.json`
+has SHA-256 `78244ccae43e34265ca2787879a1e1fdb6285fd26c24fb8e0dc8ffc30329cdc5`. The runtime check confirmed the pinned
+candidate tree and that the executing checkout differed only in this
+report. CPython 3.11.4 loaded WHS packages and both experiment modules from
+the intended checkout, and tokenizers 0.23.3 used the approved asset.
+The reproduction used the historical tuning partition and a new evidence
+directory. All source hashes, case routes, provenance results, literal
+misses and per-packet bytes matched the earlier tuning run. The reproduction
+confirmed deterministic replay within its run and unchanged input pins.
+Fresh run metadata changed the receipt digest shown in complete packets.
+Only the pinned run record and topic manifest differed across these two
+receipts, accounting for the observed differences in GPT-2 estimates.
+The two artifacts retain their actual counts.
+
+All rows below show delivery route, UTF-8 packet bytes, previous GPT-2
+token estimate, and reproduced GPT-2 token estimate. Complete packets
+include query, instruction, and provenance metadata. Refusals have no
+delivered token count. The two provenance refusals produce no delivered
+packet or scored facts.
+
+| Case | Gold critical / additional | A raw | B0 | B1 | B2 |
+| --- | --- | --- | --- | --- | --- |
+| `pumps` | 3 / 1 | raw 2160 / 729 / 734 | baseline 590 / 212 / 217 | structural 1250 / 484 / 489 | structural 1250 / 484 / 489 |
+| `persian` | 2 / 1 | raw 2168 / 736 / 741 | baseline 641 / 239 / 244 | structural 1249 / 532 / 537 | structural 1249 / 532 / 537 |
+| `date` | 3 / 1 | raw 2160 / 729 / 734 | baseline 586 / 212 / 217 | structural 845 / 316 / 321 | structural 845 / 316 / 321 |
+| `table` | 2 / 1 | raw 2159 / 730 / 735 | baseline 587 / 213 / 218 | structural 867 / 334 / 339 | structural 867 / 334 / 339 |
+| `lists` | 2 / 1 | raw 2159 / 729 / 734 | baseline 582 / 212 / 217 | structural 849 / 327 / 332 | structural 849 / 327 / 332 |
+| `fence` | 3 / 1 | raw 2159 / 729 / 734 | baseline 583 / 212 / 217 | structural 883 / 341 / 346 | structural 883 / 341 / 346 |
+| `conflict` | 2 / 1 | raw 2159 / 729 / 734 | baseline 593 / 213 / 218 | structural 1216 / 474 / 479 | structural 1216 / 474 / 479 |
+| `duplicate` | 2 / 1 | raw 2159 / 729 / 734 | baseline 598 / 217 / 222 | structural 1184 / 466 / 471 | structural 1184 / 466 / 471 |
+| `fallback-date` | 2 / 1 | raw 2159 / 730 / 735 | baseline 583 / 214 / 219 | structural 849 / 317 / 322 | structural 849 / 317 / 322 |
+| `empty-match` | 1 / 1 | raw 2175 / 731 / 736 | raw 2185 / 737 / 742 | raw 2187 / 735 / 740 | refused 0 / — / — |
+| `stale-anchor` | 0 / 0 | provenance refusal — | provenance refusal — | provenance refusal — | provenance refusal — |
+| `missing-anchor` | 0 / 0 | provenance refusal — | provenance refusal — | provenance refusal — | provenance refusal — |
+
+| Arm | Delivered | Delivered bytes | GPT-2 tokens, previous / reproduced | Critical, all | Additional, all | Critical, delivered | Additional, delivered |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| A | 10/12 | 21617 | 7301 / 7351 | 22/22 | 10/10 | 22/22 | 10/10 |
+| B0 | 10/12 | 7528 | 2681 / 2731 | 3/22 | 9/10 | 3/22 | 9/10 |
+| B1 | 10/12 | 11379 | 4326 / 4376 | 22/22 | 10/10 | 22/22 | 10/10 |
+| B2 | 9/12 | 9192 | 3591 / 3636 | 21/22 | 9/10 | 21/21 | 9/9 |
+
+The historical gold contains 22 critical and 10 additional literals. The
+two provenance faults, `stale-anchor` and `missing-anchor`, fail the
+pinned index digest and event navigation checks respectively and have
+empty gold. B2's `empty-match` refuses with
+`no_verified_query_evidence`. It contributes one critical and one
+additional miss in the full-population denominator. B2 retains 30/32
+overall and 30/30 in its nine delivered packets. Every B2 delivery passes
+provenance and the replay records zero unsupported units. The historical
+harness reported a 35.29% reproduced B2 median GPT-2 reduction across all
+12 tuning rows. This is historical tuning evidence.
+
+All observed literal misses are listed below. A and B1 have none, and
+unlisted case/arm pairs have none.
+
+| Case | Arm | Critical misses | Additional misses |
+| --- | --- | --- | --- |
+| `pumps` | B0 | `16 bar`; `Never calibrate while the bypass valve is open`; `Only at 20 °C` | — |
+| `persian` | B0 | `۵ بار`; `در حالت گرم روشن نکنید` | — |
+| `date` | B0 | `2025-05-21`; `remains REVIEW`; `do not deploy` | — |
+| `table` | B0 | `18 s`; `3 °C` | — |
+| `lists` | B0 | `12 minutes`; `Do not open the gate` | — |
+| `fence` | B0 | `retries=2`; `mode=offline`; `Do not perform a live call` | — |
+| `conflict` | B0 | `permits 8 units`; `limits the same run to 6 units` | — |
+| `duplicate` | B0 | — | `Status` |
+| `fallback-date` | B0 | `provisional`; `no publication date was supplied` | — |
+| `empty-match` | B2 | `empty heading above has no event body` | `Public agenda` |
+
+### Sealed holdout and independent roles
+
+| Responsibility | Assigned identity | Separation and scope |
+| --- | --- | --- |
+| Author | `/root/holdout_author` | Separate agent with no B2 development role and no access to candidate code, exposed cases, or predictions. Authored synthetic inputs and gold before prediction. |
+| Scoring operator | `/root/scoring_operator` | Separate agent with no B2 development or authoring role. Acknowledged the assignment without data or execution. On dispatch, reverify the pins and run only the frozen scorer. |
+| Semantic reviewer | `/root/semantic_reviewer` | Separate agent with no B2 development, authorship, or scoring role. Reviewed only the sealed synthetic inputs and gold. Review future results and record disagreements without changing pinned gold. |
+
+These are named agent assignments with separated context and
+responsibilities. No human adjudication is asserted. The reviewer requested
+two wording fixes before exposure. The author saved a new revision with
+the same source corpus, case roster and byte-identical gold. The reviewer
+then confirmed both fixes and passed the semantic preflight. The original
+files and review remain preserved. Preflight covered answerability and
+literal grounding. It did not run the candidate or test injected faults.
+
+Pinned roster is 50 requests, with 15 exact and 15 paraphrased valid
+requests, plus 20 expected refusals. The latter comprise 10 absent-field,
+two stale-anchor, two missing-anchor, two ambiguous-correlation, one
+blank-query and three other unanswerable requests. The cases share three
+synthetic sources, so case outcomes need not be statistically independent.
+Report paraphrase false refusals over 15 and absent-field false deliveries
+over 10, with all 20 refusal cases retained in the unchanged 100%
+correct-refusal gate.
+
+The sealed revision is local at `_WORK/whs-b2-independent-20261120-r1/`.
+Only hashes and aggregate roster metadata are published here.
+
+| File | SHA-256 |
+| --- | --- |
+| `holdout-inputs.json` | `8b436227cf0802db7337d03f85ff5be798fc6042d21cdaf5c7b7199d08da6343` |
+| `holdout-gold.json` | `d8adabd839aa65b0746fc911ded774ca6046938d8cb1bd3204c77e3eaa7fcee0` |
+| `authoring.md` | `a55b1a9abea5925ee9a29b0d2105b1d707b4471c9abeb285ce4202a49ddfefbc` |
+| `semantic-preflight.md` | `8e7994f8d293b6cdfb2d5b4f3ee3abb72bcf04059a0142bcef38ed54064aad46` |
+| `freeze-manifest.json` | `483ad9789726609621fb145f275ae5689495690f51bcfd4501749bfff61271c2` |
+
+The attached detached scoring checkout was separately verified clean at the
+exact candidate commit and tree. Its package origins, CPython 3.11.4,
+tokenizers 0.23.3 and digest-checking tokenizer loader passed preflight.
+
+No fresh predictions or scoring were performed. Dispatch the named scorer
+only after verifying this freeze manifest, pinned checkout and import
+origins, instrument, and holdout file hashes. Keep PR #13 draft and #8
+open. G1 remains REVISE until the independent evaluation and semantic
+adjudication are recorded.
