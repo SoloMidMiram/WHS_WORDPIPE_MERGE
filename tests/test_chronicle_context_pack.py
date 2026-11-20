@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import pytest
 
@@ -9,9 +10,6 @@ from wordpipe.chronicle.merge import compute_body_hash
 
 @pytest.fixture
 def example(tmp_path):
-    source = tmp_path / "source"
-    source.mkdir()
-    run = tmp_path / "run"
     entries = [
         ("Pump AA-1", "12 bar maximum.\n\nDo not open the bypass.\n\n- **Nested instruction:** 24 Â°C."),
         ("Conditions", "Use only at 19 °C."),
@@ -21,9 +19,16 @@ def example(tmp_path):
     original = ("# Notes\n\n2025-04-01\n\n" + "".join(
         f"## {title}\n\n{body}\n\n" for title, body in entries
     )).replace("\n", "\r\n")
+    return _verified_example(tmp_path, original, "2025-04-01")
+
+
+def _verified_example(tmp_path, original, date):
+    source = tmp_path / "source"
+    source.mkdir()
+    run = tmp_path / "run"
     source_file = source / "notes.md"
     source_file.write_bytes(original.encode("utf-8"))
-    topic, run_id, date = "test", "run", "2025-04-01"
+    topic, run_id = "test", "run"
     identity = {"topic": topic, "run_id": run_id}
     tagged, index, tags, records, correlations = [], [], [], [], []
     for index_no, (title, line, body) in enumerate(pack._sections(original), 1):
@@ -50,8 +55,9 @@ def example(tmp_path):
         pack.LINEAGE: {**identity, "$schema": "event-lineage-v1", "events": records},
         pack.CORRELATION: {**identity, "$schema": "event-correlation-v1", "report_events": correlations,
                            "ambiguous_matches": [], "unmerged_source_event_count": 0,
-                           "report_event_count": 4, "source_event_count": 4,
-                           "survivor_verification": {"expected_key_count": 4, "actual_key_count": 4,
+                           "report_event_count": len(correlations), "source_event_count": len(records),
+                           "survivor_verification": {"expected_key_count": len(correlations),
+                                                     "actual_key_count": len(correlations),
                                                      "missing_key_count": 0, "unexpected_key_count": 0}},
         pack.TAGS: tags, pack.CHAIN: {"status": "ok", "ingest_files": [{"rejected": 0}]},
     }
@@ -243,3 +249,62 @@ def test_field_request_does_not_use_partial_or_cross_entity_overlap(query):
     assert packet["route"] == "refused"
     assert packet["reason"] == "unverified_entity_field"
     assert not packet["units"] and not packet["sources"]
+
+
+_ROUTING_REGRESSIONS = json.loads(
+    (Path(__file__).parent / "fixtures" / "whs_context_raw_fallback_regressions.json").read_text(encoding="utf-8")
+)
+_ROUTING_CASES = {case["label"]: case for case in _ROUTING_REGRESSIONS["cases"]}
+
+
+@pytest.fixture
+def routing_regression_run(tmp_path):
+    run, source, receipt, _ = _verified_example(
+        tmp_path, _ROUTING_REGRESSIONS["source"], _ROUTING_REGRESSIONS["date"]
+    )
+    return pack.load_run(run, source, receipt)
+
+
+@pytest.mark.parametrize("label", list(_ROUTING_CASES))
+def test_frozen_b2_routing_characterization(routing_regression_run, label):
+    case = _ROUTING_CASES[label]
+    result = pack.export(routing_regression_run, case["query"], case["max_bytes"])
+    assert (result["route"], result["reason"]) == (case["observed_route"], case["observed_reason"])
+    assert result["run"] == routing_regression_run["identity"]
+    if case["required_evidence"]:
+        assert any(
+            case["required_evidence"] in unit["text"] and case["entity"] in unit["text"]
+            for unit in routing_regression_run["units"]
+        )
+    if result["route"] == "refused":
+        assert not result["sources"] and not result["units"]
+    else:
+        assert len(pack.serialize(result).encode("utf-8")) <= case["max_bytes"]
+    if result["route"] == "raw":
+        assert result["sources"] == routing_regression_run["sources"]
+    if result["route"] == "structural":
+        assert any(
+            case["required_evidence"] in unit["text"] and case["entity"] in unit["text"]
+            and unit["anchor"] in {item["anchor"] for item in routing_regression_run["units"]}
+            for unit in result["units"]
+        )
+
+
+@pytest.mark.xfail(strict=True, raises=AssertionError, reason="Known B2 responsiveness defect; B3 deferred")
+@pytest.mark.parametrize("label", [
+    "false-delivery-entity-only",
+    "false-delivery-cross-entity",
+    "valid-narrative-deadline",
+    "valid-idless-paraphrase",
+])
+def test_intended_responsiveness_for_known_b2_failures(routing_regression_run, label):
+    case = _ROUTING_CASES[label]
+    result = pack.export(routing_regression_run, case["query"], case["max_bytes"])
+    if case["required_evidence"] is None:
+        assert result["route"] == "refused" and not result["sources"] and not result["units"]
+    else:
+        assert result["route"] in {"raw", "structural"}
+        assert any(
+            case["required_evidence"] in item["text"] and case["entity"] in item["text"]
+            for item in [*result["sources"], *result["units"]]
+        )

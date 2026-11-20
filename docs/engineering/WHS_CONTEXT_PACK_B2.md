@@ -856,3 +856,43 @@ the approved packet-token proxy. Actual consumer usage remains unmeasured.
 G3 retains its existing authorization, annotation, adjudication and
 statistical requirements. Keep PR #13 draft and issue #8 open for
 maintainer review. The first run is preserved and implementation is paused.
+
+
+## B2 root-cause disposition · 2026-11-21
+
+The maintainer accepted **G1 REVISE** for frozen candidate
+`920c8e044ad7553d11d010bdba6ae580626db961` and **deferred B3**. The
+[first scoring record](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/blob/d80560e4846a42545378d66a26a537e3370af80e/docs/engineering/WHS_CONTEXT_PACK_B2.md#frozen-g1-first-run-evidence--2026-11-20)
+failed verified delivery (28/30), correct refusal (9/20), absent-field
+refusal (1/10), and median GPT-2 efficiency (0%). The investigation
+reconciled all 50 decisions, matched 88 captured envelopes byte for byte,
+and verified 176 original evidence files unchanged. Private sources,
+case-level evidence, sealed gold and machine-local inventories stay local.
+
+| Demonstrated cause | Observed consequence |
+| --- | --- |
+| Generic selection demanded every effective query term across verified units before seeding. | 36 of 38 raw cases failed this first predicate. In the other two, the selected entity units lacked terms present elsewhere in the corpus. |
+| Raw fallback checked lexical overlap, requested-ID presence and byte budget without checking answer support. | All 38 raw packets reported `insufficient_exact_evidence`. Eleven delivered authentic evidence that did not answer the request. |
+| Specialized deadline matching required a canonical source word. | A valid request recognized the intended entity and mapped “due” to “deadline,” but refused even though the verified unit described the deadline in prose. |
+| ID-less paraphrase lacked useful lexical overlap. | A second valid request refused even though the verified unit contained its answer. |
+
+The three shared Markdown sources yielded all 15 verified H2 units.
+Each valid request's pinned facts and IDs were present together in a
+verified unit. The evidence establishes no MD-01 dependency. A stricter
+raw guard addresses false delivery, but withholding all raw would also
+remove 27 valid deliveries. The one structural delivery gives limited
+evidence about structural quality and efficiency. Zero unsupported facts
+establishes textual fidelity only, and hash preservation establishes
+integrity. The exposed five-case developmental probe refused all five
+unanswerable controls, while the fresh absent-field stratum refused 1/10.
+Neither result establishes a generalization rate. Adjudication was
+agent-only and cases shared sources.
+
+The [ten synthetic probes](../../tests/fixtures/whs_context_raw_fallback_regressions.json)
+are permanent post-exposure regression assets. Characterization records
+frozen B2 behavior. Separate strict expected-failure assertions express
+intended responsiveness for the four confirmed failure probes. The
+50-case population remains historical regression evidence. Qualification
+requires a newly frozen candidate, new independent evaluation data, and
+the existing G1 contract. This update authorizes no candidate revision.
+PR #13 stays draft and issue #8 stays open.
