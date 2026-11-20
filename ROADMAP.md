@@ -17,12 +17,12 @@ AI qualification belongs to the v0.5 target. Delivery gateway IDs are scoped
 to the matrix. The historical goals and phases below retain their identifiers.
 
 The [three-slot queue](docs/engineering/DELIVERY_PHASES_AND_GATES.md#active-execution-queue)
-covers GOV-01 (#14 / draft #19), B2 and SEC-01. Ready MD-01 (#15) follows GOV-01 in slot 1; SAFE-01 follows SEC-01 in slot 3. READY does not mean admitted. At most three packages can execute.
+covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, B2 (#8 / draft #13) in slot 2, and SEC-01 (#17) in slot 3. SAFE-01 follows SEC-01 only after documented slot release. READY does not mean admitted. At most three packages can execute.
 
 | Order | Phase | Current execution |
 |---|---|---|
 | 1 | Context fidelity | **REVISE** [#8](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/8) / [draft #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13). Freeze B2 and independently evaluate a fresh holdout. |
-| 2 | Document understanding | [Markdown structure #15](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/15) is ready. Temporal evidence and multilingual normalization follow characterization. |
+| 2 | Document understanding | [Markdown structure #15](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/15) is admitted in slot 1. Temporal evidence and multilingual normalization follow characterization. |
 | 3 | Corpus acceptance | [Flowers #16](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/16) is queued for real-corpus evaluation. Offline rubric preparation requires an available slot and admission. |
 | 4 | References and ontology | Complete Phase 9c using existing survivor contracts and populate the project ontology before schema expansion. |
 | 5 | Product stabilization | [Public audit #17](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17) occupies slot 3. [Atomic DOCX #18](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/18) follows in the same slot. Bound execution and verify the installed Chronicle workflow for v0.2. |
@@ -30,6 +30,24 @@ covers GOV-01 (#14 / draft #19), B2 and SEC-01. Ready MD-01 (#15) follows GOV-01
 | 7 | Optional AI research | [NCM #9](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/9) is blocked for real inference. [Jev #10](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/10) has offline preparation available. [Combined benchmark #11](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/11) is blocked on upstream evidence. |
 
 ## Active narrative roadmap — newest first
+
+### 2026-11-20 — G0 ACCEPT and execution handoff
+
+The maintainer approved the existing numerical planning baselines, without
+claiming research or release qualification. GitHub already merged [PR #19](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/19)
+with history preserved at `d26e6e998123806e53aa352ea4f40a5a6363e1b5` from
+reviewed head `18f24fa51d4517a793fab2568de2123e8ef55d98`; all five
+[exact-head CI jobs](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/44688406407)
+passed. [GOV-01 #14](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/14)
+is closed. MD-01 is admitted in slot 1; B2 and SEC-01 retain slots 2 and 3.
+The post-merge [delivery contract](docs/engineering/DELIVERY_PHASES_AND_GATES.md)
+records CI-01's mandatory source-test import-origin assertion and foreign-checkout
+regression, distinct installed-wheel origin checks, and a mandatory first-measurement
+re-baseline review retaining historical thresholds and verdicts. The original
+values are unchanged, and no post-holdout threshold change can certify old evidence.
+CI-01 remains queued; no implementation or new issue was opened. Reconcile PR #13
+with the integrated main during B2, preserving both roadmap and retrieval-map
+histories. No other work package is admitted by this handoff.
 
 ### 2026-11-20 — G0 acceptance review and contract alignment
 
