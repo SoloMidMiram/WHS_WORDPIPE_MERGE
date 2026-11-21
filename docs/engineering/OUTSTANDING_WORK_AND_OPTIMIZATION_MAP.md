@@ -37,6 +37,18 @@ for validation tied to the published head.
 | P2 | **VERIFIED** | Reject non-object input catalogs with the normal diagnostic rather than a traceback. | `test_catalog_rejects_non_object_catalog` added; `_catalog_entries` raises ValueError for non-dict. |
 | P2 | **VERIFIED** | Hash DOCX catalog inputs as raw binary while retaining text normalization only for text formats. | `test_catalog_docx_hashes_raw_binary` added; DOCX hashed as raw bytes, text LF-normalized. |
 
+## Frozen B2 routing evidence
+
+**HISTORICAL / DEFERRED.** The [B2 investigation](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/blob/3cc86ef2e6eee7d55bbc7eac361045d4db418a1f/docs/engineering/WHS_CONTEXT_PACK_B2.md#b2-root-cause-disposition--2026-11-21)
+reproduced an authorization defect in raw fallback. A verified source
+and lexical overlap can return authentic but non-responsive evidence.
+Suppressing raw wholesale would also remove 27 valid deliveries. Narrative
+field grounding and ID-less match failures were reproduced with intact H2
+units. The completed G1 result is REVISE, and recovery is deliberately
+deferred under [#8](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/8).
+The [delivery plan](DELIVERY_PHASES_AND_GATES.md#b3-re-entry) owns the
+re-entry criteria and work-package dependencies.
+
 ## Product and Evidence Backlog
 
 | Priority | State | Work | Source / dependency | Completion criteria |

@@ -39,7 +39,7 @@ execution is asserted by this correction.
 | Chronicle baseline | PRs [#2][pr2]–[#6][pr6] are merged, including structured run evidence, strict configuration and survivor navigation. Main at `e2f1c17643b0` has five successful [hosted CI jobs][main-ci]. | Verify release behavior through the installed entry points. |
 | Flowers | PR [#7][pr7] is merged with engineering and navigation evidence. Real-corpus semantic acceptance remains **REVIEW**. | Apply the independent rubric in [#16][i16] after the Phase 2 decisions. |
 | NCM pilot | PR [#12][pr12] is merged as research evidence. Genuine inference is **BLOCKED**. Real Flowers quality and incremental NCM benefit are **UNMEASURED**. | Reuse upstream runtime qualification for [#9][i9]. |
-| Context export | PR [#13][pr13] is open and draft at `bd31c0470080`. Both [PR][pr13-ci] and [push][pr13-push] runs passed. B1 retained 43/45 critical facts overall, and 21/22 in delivered holdout packets. Median estimated GPT-2 token reduction versus raw was 46.07%. | **REVISE** under [#8][i8]. Preserve B1 and the exposed holdout failure as evidence. |
+| Context export | [Frozen B2](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/commit/920c8e044ad7553d11d010bdba6ae580626db961) failed G1. First-run results were 28/30 verified valid deliveries, 9/20 correct refusals, 1/10 absent-field refusals, and 0% median estimated complete-packet GPT-2 savings. | G1 **REVISE** under [#8][i8]. B3 **DEFERRED**. Preserve the [first-run and investigation evidence](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/blob/3cc86ef2e6eee7d55bbc7eac361045d4db418a1f/docs/engineering/WHS_CONTEXT_PACK_B2.md#b2-root-cause-disposition--2026-11-21) in [draft PR #13][pr13]. |
 | Release boundary | The package metadata says `0.1.0`. Proposed v0.2 is the deterministic Chronicle release. | Certify v0.2 against the checklist below. Track WordPipe DOCX readiness independently. |
 
 At the baseline, seven PRs had merged, PR #1 had closed without merging, and
@@ -50,8 +50,8 @@ its replay on #13's 24-case benchmark describe different datasets.
 
 The primary sequence is context fidelity, document understanding, corpus
 acceptance, references and ontology, product stabilization, knowledge
-intelligence, then optional model research. B2 can use the existing verified
-generic Markdown run while the production adapter is characterized. Public
+intelligence, then optional model research. The completed B2 run used the
+verified generic Markdown path. Its failures establish no MD-01 dependency. Public
 release assurance [#17][i17] and atomic DOCX [#18][i18] are technically independent,
 but SEC-01 precedes SAFE-01 in slot 3.
 Integrate the documentation PR independently. PR #13 also touches the root
@@ -98,8 +98,22 @@ exit and successor; no fourth active package.
 | Slot | Current package | Next decision |
 |---|---|---|
 | Slot 1 — document understanding | MD-01 [#15][i15] (admitted) | Characterize Markdown structure and lineage; decide a bounded correction. GOV-01 exited with G0 ACCEPT. |
-| Research fidelity | [#8][i8] / [draft PR #13][pr13] | Preserve B1, freeze B2 and evaluate a fresh independently adjudicated holdout. After disposition and recorded slot release, admit the next eligible package by dependency and priority. |
+| Slot 2 — research fidelity | **Vacant** | B2 finished with G1 REVISE and the maintainer deferred B3 under [#8][i8]. No successor is admitted by this decision. |
 | Independent hardening | SEC-01 [#17][i17] | Complete the public release audit, then admit SAFE-01 [#18][i18] to this slot. |
+
+**Effective-date condition for PR #20.** The vacancy in this proposed
+table is **not yet effective on main while PR #20 is open**; slot 2 remains
+occupied in the previously integrated queue for governance accounting.
+Integration of PR #20 records the B3 DEFER exit and releases slot 2.
+This is a deliberate **no-successor admission** decision, not reserved
+capacity for B3 and not a missing G0 approval (G0 already exited).
+Queued or READY P1 packages, including CLI-01 and the separately
+prioritized corpus/runtime work, do not enter a slot automatically.
+The next owner decision must independently establish priority, prerequisites,
+scope, accountability and explicit admission under the three-slot cap.
+This is not a waiver: **G1 REVISE remains a mandatory unresolved v0.2
+release blocker** even after slot 2 is freed. No v0.2 ACCEPT or release
+is implied by deferral or by available execution capacity.
 
 GOV-01 [#14][i14] exited on 2026-11-20 after PR #19 integration and maintainer
 acceptance; MD-01 [#15][i15] is formally admitted in slot 1. This is admission
@@ -113,17 +127,51 @@ are outside the current execution queue.
 
 **Gateway.** [G1 Fidelity](#acceptance-gateway-matrix).
 
-**Entry.** Pin PR #13's B1 candidate, fixtures, metrics and source contracts.
-Retain the existing trusted receipt, digest, identity, survivor and anchor
-checks.
+**Disposition.** The maintainer accepted the completed B2 **REVISE**
+result and deferred B3 on 2026-11-21. Preserve B1, frozen B2, the first-run
+50-case population and the scorer and gold as dated evidence. Use the
+exposed population only for historical and regression work. The failure
+was coupled: permissive raw fallback allowed 11 non-responsive deliveries,
+while suppressing all raw packets would remove 27 valid deliveries. No
+validated correction yet preserves coverage and supplies sufficient compact
+verified evidence. The completed experiment consumed slot 2. Integration of
+this decision releases it, and any successor requires separate admission.
 
-**Work.** Under [#8][i8], convert the nonadjacent qualification miss into a
-regression. Compare a bounded B2 change that follows explicit references or
-expands relevant structural sections, with cases for negation, exceptions
-and conflicting statements. Preserve verified raw fallback and refusal.
-Tune separately. Freeze the algorithm and configuration before preparing
-and independently adjudicating a fresh holdout. Measure complete
-packets and any consumer rereads using the target tokenizer where available.
+### B3 re-entry
+
+The maintainer requires a bounded proposal with evidence in four dimensions
+before authorizing implementation.
+
+1. **Authorization.** Require verified evidence for the requested relation
+   and entity before raw fallback. Demonstrate 100% correct refusal on at
+   least 20 previously unexposed absent-field development cases across
+   independently authored source templates.
+2. **Narrative grounding.** Show that verified prose can answer a field
+   request without a canonical label. Include a narrative deadline and an
+   absent-field or cross-entity counterexample. Evaluate deterministic
+   evidence first.
+3. **ID-less matching.** Retrieve the correct verified evidence and
+   qualifications for representative paraphrases without IDs. Report
+   exact and paraphrase outcomes separately. Apply the existing aggregate
+   G1 coverage criterion.
+4. **Compact delivery.** Demonstrate at least 20% median complete-packet
+   GPT-2 savings across valid cases on a separate development corpus.
+   Compare against raw in the same run with receipt metadata, zero
+   consumer rereads, and zero credit for fallback and refusal.
+
+These demonstrations establish readiness for review. After separate
+authorization, freeze the new candidate and measurement contract before
+independent authorship. Use a fresh independently adjudicated 50-case
+holdout with 30 valid requests and 20 expected refusals, including 10
+absent-field requests. The registered gates still require at least 29/30 verified
+valid deliveries, 20/20 expected refusals and 10/10 absent-field refusals.
+Retain the existing retention, provenance, replay and efficiency
+requirements below.
+
+MD-01, CORP-01, CORE-01, TIME-01 and NLP-01 are possible contributors.
+Add a dependency only when a reproduced gap requires a concrete
+capability or interface from that package. Flowers authorization, corpus
+review and G3 qualification remain separate.
 
 **Exit gate.** All delivered fresh-holdout packets retain 100% of annotated
 critical facts and exact required IDs, have verified anchors and contain zero
@@ -367,7 +415,7 @@ subject to the independent gateway review.
 | Gateway | Required evidence for ACCEPT | Owner and current decision |
 |---|---|---|
 | G0 — Governance | Reconcile the root roadmap, the 24 unique work packages and open GitHub issues. Assign each tracked scope one owner issue, retain the historical evidence and pass repository governance on the integrated candidate. | Maintainer, GOV-01 [#14][i14]. ACCEPT; [#19][pr19] merged; #14 closed. |
-| G1 — Fidelity | Freeze B2 before preparing a fresh independent holdout. All delivered packets retain 100% of protected facts and required IDs, have verified anchors and contain zero unsupported facts. Record delivery, raw fallback, refusals and full-population coverage separately. Pass the predeclared coverage and efficiency criteria and reproduce results with canonical artifacts preserved. | Context-export maintainer and independent evaluator, [#8][i8]. **REVISE** after B1. |
+| G1 — Fidelity | Freeze the authorized candidate and contract before preparing a new independent holdout. All delivered packets retain 100% of protected facts and required IDs, have verified anchors and contain zero unsupported facts. Record delivery, raw fallback, refusals and full-population coverage separately. Pass the predeclared coverage and efficiency criteria and reproduce results with canonical artifacts preserved. | Context-export maintainer and independent evaluator, [#8][i8]. **REVISE** after frozen B2. B3 **DEFERRED**. |
 | G2 — Parsing | Account for included and excluded content without unexplained loss. Verify fences, preambles, identity, replay and stable line mappings. Record temporal roles and provenance, including assigned and unknown dates. | Chronicle maintainer, MD-01 [#15][i15] and TIME-01. Evaluation pending. |
 | G3 — Corpus | Apply G3-core deterministic fixture criteria for v0.2 and G3-full independent IAA and quality criteria for v0.3. Record restricted Flowers corpus and publication decisions separately. | Corpus reviewer, CORP-01 [#16][i16] and NLP-01. Flowers semantic evidence remains REVIEW. |
 | G4 — Ontology | For v0.2, verify unique source/survivor references, stable identities and provenance, schema compatibility and mapped project instances. Record the manual comparison disposition. For full G4, review the versioned schema, evaluated concepts and relations, and migration and compatibility evidence. | Chronicle and ontology maintainers, CORE-01, ONT-01 and ONT-02. Evidence pending. |
@@ -447,7 +495,7 @@ technical evidence and historical remediation.
 | CLI-01 | P1 | Installed Chronicle CLI | To-create | Release implementer | Queued. Exercise a clean wheel install and documented complete Chronicle flow on Windows and Linux, retaining wrapper compatibility (G5). |
 | CI-01 | P1/P2 | CI profiles and duplicate scanner | To-create | CI/release implementer | Queued. P1 platform qualification and test-import hermeticity block v0.2/G5: assert intended source/install origins and fail on foreign checkout; verify deliberate mismatch regression. P2 profile split and duplicate scanner optional with scope decision. Preserve governance checks. |
 | REF-01 | P3 | Conditional refactoring and retirement | To-create | Subsystem maintainer | Deferred. Characterize consumer use before wrapper retirement. Require a third-adapter coupling or unsafe schema evolution before decomposing the runner. |
-| #8 | P1 | Deterministic context fidelity | [#8][i8] | Context lead + independent evaluator | REVISE. B2 and fresh independent holdout (G1). |
+| #8 | P1 | Deterministic context fidelity | [#8][i8] | Context lead + independent evaluator | G1 REVISE after frozen B2. B3 DEFERRED pending [re-entry evidence](#b3-re-entry). |
 | #9 | P1 | NCM fidelity | [#9][i9] | Research lead + upstream runtime owner | BLOCKED for genuine inference. Require G1 and upstream runtime/fidelity qualification (G7). |
 | #10 | P1 | Jev shadow classification | [#10][i10] | Research lead + independent evaluator | Live work gated. Prepare independent classification fixtures offline. Require upstream adapter qualification and authorization for live work (G7). |
 | #11 | P1 | Combined benchmark | [#11][i11] | Research lead + independent evaluator | BLOCKED on #8–#10 and applicable upstream evidence. Reuse identical tasks and candidate pools (G7). |
