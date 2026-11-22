@@ -137,6 +137,12 @@ python tools/security_scan.py --root . --fail-on-findings
 | Canonical Chronicle package | `ingest`, `verify_ingest`, `merge`, `categorize`, and `index` have canonical modules under `wordpipe.chronicle`. `pipeline/index.py` preserves the operator entry point and compatibility exports. |
 | Topic report runner | Manifest-driven generic runner with adapter registry, trend reports, source attribution, and ontology spine |
 | Legacy Chronicle scripts | Compatibility wrappers; not runtime import surfaces |
+
+Package metadata is `0.1.0`. Release readiness is tracked in the
+[delivery gates](docs/engineering/DELIVERY_PHASES_AND_GATES.md#proposed-release-boundaries).
+DOCX save and optional TOC update are implemented steps. Experimental
+`ai_headings` and `ai_rewrite` flags have no wired steps; see the
+[configuration contract](docs/TRACELEDGER_INTEGRATION_CONTRACT.md).
 | WordPipe orchestration | Step-based; read/style failures are fatal |
 | Third-wave acceptance | Five P0/P1 findings are covered by `tests/test_acceptance_remediation.py`; the dated full-suite result is 270 passed |
 | Test command | `python -m pytest tests -q` — use the latest command/CI result for the current count |

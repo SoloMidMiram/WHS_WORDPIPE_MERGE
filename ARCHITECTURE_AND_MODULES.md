@@ -70,8 +70,7 @@ trend comparison against `phase13_baseline_validation`.
 
 Current alignment debt is tracked in
 `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`. The principal modular
-follow-ups are conditional decomposition of the topic runner, separately
-deferred canonical extraction of the index stage, and project-level mapping of
+follow-ups are conditional decomposition of the topic runner and project-level mapping of
 topic-run ontology instances.
 
 ### 1.1 Domain-to-subsystem crosswalk
@@ -200,9 +199,9 @@ Current gate decisions are intentionally conservative: broad runner decompositio
 ## 2. Subsystem A: Chronicle Pipeline (`pipeline/` → `wordpipe.chronicle/`)
 
 **Canonical source decision:** See `docs/engineering/CHRONICLE_CANONICAL_DECISION.md`.
-Reusable Chronicle logic for ingest, verify, merge, and categorize now lives in
-`wordpipe.chronicle.*`; `pipeline/` retains operator wrappers, configuration,
-templates, `chain.ps1`, and the deferred `index.py` stage. `tools/pipeline-chronicle/`
+Reusable Chronicle logic for ingest, verify, merge, categorize and index lives
+in `wordpipe.chronicle`. The operator surface in `pipeline/` retains wrappers,
+configuration, templates and `chain.ps1`. `tools/pipeline-chronicle/`
 is a legacy/reference CLI location with wrappers where canonical modules exist.
 
 ### 2.1 Architecture
@@ -222,8 +221,8 @@ around `pipeline/chain.ps1`.
 
 **NOTE - File locations:** `wordpipe.chronicle` is the canonical import surface.
 `pipeline/` and `tools/pipeline-chronicle/` are CLI/operator compatibility
-surfaces, not runtime import surfaces. `index.py` is the remaining Chronicle
-stage deferred from canonical extraction.
+surfaces. `wordpipe.chronicle.index` owns index logic and `pipeline/index.py`
+provides the operator CLI and compatibility exports.
 
 ```
 ┌─────────┐    ┌──────────┐    ┌───────┐    ┌────────────┐    ┌───────┐
