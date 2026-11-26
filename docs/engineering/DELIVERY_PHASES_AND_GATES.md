@@ -361,6 +361,14 @@ correction and its final checks. Structural mode remains opt-in.
 The historical characterization used markdown-it-py 4.2.0. The original
 hosted implementation qualification used 4.3.0.
 
+The maintainer subsequently accepted the three review corrections at
+`8f7e87af0d4295ee01008415460f061be2ad10c7`. The bounded implementation
+integrated via normal merge commit `df072540cea6ae458ecd0592c6cf2b1fe69cee0d`
+with the accepted tree `c5249a2086038c6b9174f855c1718fee24088464`.
+All five [main CI jobs](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45833490849)
+passed. The [integration record](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/15#issuecomment-7194046442)
+keeps issue #15 open in slot 1 and retains the CI-01 evidence separately.
+
 Structural preparation metrics and raw lineage, finalized lineage and
 correlation record `parser_provenance`. Comparison exposes the same producer
 record as `structural_parser_provenance`. It has `engine` (`markdown-it-py`),
@@ -727,7 +735,7 @@ subject to the independent gateway review.
 |---|---|---|
 | G0 — Governance | Reconcile the root roadmap, the 24 unique work packages and open GitHub issues. Assign each tracked scope one owner issue, retain the historical evidence and pass repository governance on the integrated candidate. | Maintainer, GOV-01 [#14][i14]. ACCEPT; [#19][pr19] merged; #14 closed. |
 | G1 — Fidelity | Freeze the authorized candidate and contract before preparing a new independent holdout. All delivered packets retain 100% of protected facts and required IDs, have verified anchors and contain zero unsupported facts. Record delivery, raw fallback, refusals and full-population coverage separately. Pass the predeclared coverage and efficiency criteria and reproduce results with canonical artifacts preserved. | Context-export maintainer and independent evaluator, [#8][i8]. **REVISE** after frozen B2. B3 **DEFERRED**. |
-| G2 — Parsing | Account for included and excluded content without unexplained loss. Verify fences, preambles, identity, replay and stable line mappings. Record temporal roles and provenance, including assigned and unknown dates. | Chronicle maintainer, MD-01 [#15][i15] and TIME-01. **REVISE.** Bounded opt-in implementation accepted subject to final verification. |
+| G2 — Parsing | Account for included and excluded content without unexplained loss. Verify fences, preambles, identity, replay and stable line mappings. Record temporal roles and provenance, including assigned and unknown dates. | Chronicle maintainer, MD-01 [#15][i15] and TIME-01. **REVISE.** Bounded opt-in implementation accepted and integrated. Intended-input and temporal-role qualification remain. |
 | G3 — Corpus | Apply G3-core deterministic fixture criteria for v0.2 and G3-full independent IAA and quality criteria for v0.3. Record restricted Flowers corpus and publication decisions separately. | Corpus reviewer, CORP-01 [#16][i16] and NLP-01. Flowers semantic evidence remains REVIEW. |
 | G4 — Ontology | For v0.2, verify unique source/survivor references, stable identities and provenance, schema compatibility and mapped project instances. Record the manual comparison disposition. For full G4, review the versioned schema, evaluated concepts and relations, and migration and compatibility evidence. | Chronicle and ontology maintainers, CORE-01, ONT-01 and ONT-02. Evidence pending. |
 | G5 — Release | Verify wheel-installed Chronicle, EXEC-01 liveness and failure recovery, current security review, CI-01 import-origin isolation and CLI-01 exact-candidate Windows and Linux acceptance. Track DOCX capability and external TraceLedger acceptance independently. | Release maintainer, EXEC-01, SEC-01 [#17][i17], CLI-01 and CI-01; DOCX-01 separately. Qualification pending. |
