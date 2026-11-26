@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -14,6 +16,33 @@ adapter = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
 sys.modules[SPEC.name] = adapter
 SPEC.loader.exec_module(adapter)
+
+
+def test_standalone_legacy_cli_without_site_packages(tmp_path):
+    script = tmp_path / MODULE_PATH.name
+    shutil.copyfile(MODULE_PATH, script)
+    command = [sys.executable, "-I", "-S", str(script)]
+    subprocess.run([*command, "--help"], check=True, capture_output=True, text=True)
+
+    source = tmp_path / "input"
+    source.mkdir()
+    (source / "sample.md").write_text("## Alpha\n\nLegacy content.\n", encoding="utf-8")
+    run = tmp_path / "run"
+    staged = run / "staged_input"
+    metrics = run / "prepare_metrics.json"
+    prepare = [
+        *command, "prepare", "--input-dir", str(source),
+        "--output-dir", str(staged), "--metrics", str(metrics),
+    ]
+    subprocess.run(prepare, check=True, capture_output=True, text=True)
+    assert json.loads(metrics.read_text(encoding="utf-8"))["staged_event_count"] == 1
+    assert "Legacy content." in next(staged.glob("*.md")).read_text(encoding="utf-8")
+    subprocess.run([*prepare, "--markdown-mode", "legacy-v1"], check=True, capture_output=True, text=True)
+    subprocess.run([
+        *command, "summarize", "--run-dir", str(run), "--prepare-metrics", str(metrics),
+        "--performance", str(run / "performance.txt"), "--run-log", str(run / "run.log"),
+    ], check=True, capture_output=True, text=True)
+    assert json.loads((run / "run_metrics.json").read_text(encoding="utf-8"))["staged_event_count"] == 1
 
 
 # ---------------------------------------------------------------------------

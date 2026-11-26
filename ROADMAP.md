@@ -31,6 +31,22 @@ covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, a vacant 
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-26 — MD-01 standalone legacy adapter review fix
+
+Branch `codex/md-01-structural-markdown`,
+[PR #23](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23).
+Reviewed head `8522e14ea1538ac5cc9965f5b352164710001e44` and base
+`0a6385cbc50ef394a06c3b38129682acd795cf76`. The
+[standalone adapter finding](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23#discussion_r4707855582)
+reproduced under `python -S`. Keep Chronicle imports behind structural
+preparation. The new standalone test covers help, implicit and explicit
+legacy preparation, and summarize with site packages disabled.
+Local focused tests reported 30 passes and one deselection for the paired
+replay, which hosted CI exercises. All five governance checks passed.
+The repository map was checked. The next decision is merge authorization
+after exact-head CI and review-thread verification. G2 remains REVISE and
+issue #15 stays open in slot 1.
+
 ### 2026-11-26 — MD-01 parser provenance correction and acceptance
 
 Branch `codex/md-01-structural-markdown`,

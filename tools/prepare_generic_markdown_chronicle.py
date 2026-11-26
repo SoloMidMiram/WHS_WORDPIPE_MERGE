@@ -24,20 +24,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import Iterable, Sequence
 
-if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-
-from wordpipe.chronicle.markdown_sections import (
-    LEGACY_MODE,
-    MARKDOWN_MODES,
-    STRUCTURAL_MODE,
-    STRUCTURAL_RAW_SCHEMA,
-    SourceLines,
-    parser_provenance,
-    section_boundaries,
-)
-
-
+# The standalone CLI recognizes these names without importing WordPipe.
+LEGACY_MODE = "legacy-v1"
+STRUCTURAL_MODE = "structural-v1"
+MARKDOWN_MODES = (LEGACY_MODE, STRUCTURAL_MODE)
 DEFAULT_FALLBACK_DATE = "2026-07-16"
 EVENT_LINEAGE_FILENAME = "event_lineage.json"
 DATE_RE = re.compile(r"\b(20\d{2}-\d{2}-\d{2})\b")
@@ -151,6 +141,8 @@ def parse_file(
 
 
 def parse_structural_file(path: Path, heading_levels: tuple[int, ...] = (2,)):
+    from wordpipe.chronicle.markdown_sections import SourceLines, section_boundaries
+
     source = SourceLines.from_bytes(path.read_bytes())
     frontmatter_end, diagnostic, headings, fences = section_boundaries(source, heading_levels)
     spans = []
@@ -264,9 +256,11 @@ def prepare(
         raise ValueError("heading levels must be in 2–6")
     if not structural and heading_levels != (2,):
         raise ValueError("the legacy prepare CLI uses level 2")
-    provenance = parser_provenance(heading_levels) if structural else None
     lineage_path = metrics_path.parent / EVENT_LINEAGE_FILENAME
     if structural:
+        from wordpipe.chronicle.markdown_sections import STRUCTURAL_RAW_SCHEMA, parser_provenance
+
+        provenance = parser_provenance(heading_levels)
         output_dir = output_dir.resolve()
         run_dir = output_dir.parent
         if (
@@ -495,6 +489,8 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.command == "prepare":
+        if args.markdown_mode == STRUCTURAL_MODE and __package__ in (None, ""):
+            sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
         prepare(
             args.input_dir, args.output_dir, args.metrics,
             markdown_mode=args.markdown_mode, heading_levels=tuple(args.heading_levels),
