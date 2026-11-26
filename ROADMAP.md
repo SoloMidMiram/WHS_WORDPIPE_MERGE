@@ -31,6 +31,23 @@ covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, a vacant 
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-26 — Engineering reliability handoff
+
+Branch `codex/whs-reliability-handoff`, no PR. Reviewed main and production
+baseline `fd2d60f72a47fbccc60e64f72c811d106c01a30e` with five successful
+[hosted CI jobs](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45786355631).
+The [delivery plan](docs/engineering/DELIVERY_PHASES_AND_GATES.md) records
+MD-01 synthetic characterization and an opt-in correction proposal, an
+EXEC-01 admission proposal and the SAFE-01 transaction plan. The repository
+map includes the fixture and evidence route. The draft B2 PR #13 remains open.
+On Windows, source-pinned checks passed 115 focused tests and 383 full-suite
+tests with 6 skips. The unpinned full suite had 4 index/chain failures,
+379 passes and 6 skips. Keep that import-origin failure in CI-01's scope.
+Next decision is maintainer review of the MD-01 correction and identity
+compatibility policy in slot 1. EXEC-01 requires explicit admission to the
+vacant slot 2. SEC-01 retains slot 3 pending its documented exit and a
+separate SAFE-01 admission decision.
+
 ### 2026-11-22 — Delivery and topic documentation synchronization
 
 Branch `codex/whs-roadmap-topic-sync`, [draft PR #21](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/21).
