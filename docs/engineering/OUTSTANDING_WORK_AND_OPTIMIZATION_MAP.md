@@ -54,7 +54,8 @@ re-entry criteria and work-package dependencies.
 | Priority | State | Work | Source / dependency | Completion criteria |
 |---|---|---|---|---|
 | P0 | **HISTORICAL** | Review remote refs within the August 2026 audit inventory. | Roadmap Phase 4. | The dated map records 3 scanned remote branches and remediation on a stale branch. Evidence locator `_SECURITY/scan_reports/remote_refs_secret_audit.json`. |
-| P1 | **ACTIVE** | MD-01 · Markdown structure. | [#15](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/15), slot 1. | Characterize regex extraction and compare `markdown-it-py` spans, identity and replay. |
+| P1 | **ACTIVE** | MD-01 · Markdown structure. | [#15](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/15), slot 1. | Characterization ACCEPT. G2 REVISE. Review the opt-in parser and identity contract in [draft PR #22](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/22) before production work. |
+| P1 | **QUEUED** | EXEC-01 · Bounded subprocess execution. | [Admission proposal](DELIVERY_PHASES_AND_GATES.md#exec-01-admission-proposal-2026-11-26), slot 2 vacant. | Review the process ownership and results contract against G5. Explicit admission and owner issue authorization are pending. |
 | P1 | **QUEUED** | TIME-01 · Date provenance. | Applicable MD-01 spans. | Separate assigned dates from evidenced roles and retain source locators. |
 | P1 | **READY** | SAFE-01 · DOCX final publication. | [#18](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/18), READY; admission requires SEC-01 exit and a separate decision. | Test staging, save/reopen, TOC mutation and replace. Preserve destination bytes on pre-commit failures. |
 | P1 | **QUEUED** | CLI-01 / CI-01 · Installed flow and import origins. | Mandatory G5/v0.2 work. | Verify clean wheel origins and complete installed flow on Windows/Linux. Fail source tests at startup for a foreign checkout and prove deliberate mismatch detection. |

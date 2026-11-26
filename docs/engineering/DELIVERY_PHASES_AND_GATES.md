@@ -192,6 +192,142 @@ CRLF/LF and mixed script. Compare the current regex with `markdown-it-py`
 tokens and source maps before selecting another parser. Reconcile candidate
 and staged ordinals, date role, source/report IDs, survivor and navigation,
 and verify source bytes, replay and clean source/installed test origins.
+
+### MD-01 characterization handoff (2026-11-26)
+
+**Maintainer decision.** [Issue #15][i15] records characterization **ACCEPT**
+and G2 **REVISE**. [Draft PR #22](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/22)
+publishes the original handoff `19fb36863dc9ae184347c385243d552997b15428`.
+The opt-in implementation and its identity contract require separate approval.
+
+**Verified at `fd2d60f72a47fbccc60e64f72c811d106c01a30e`.** The frozen
+UTF-8 fixture is [md01_structure.md](../../tests/fixtures/md01_structure.md)
+(LF SHA-256 `c7fdcfe34300f7bf55f4950455e24b08db41eb1ee8237a3e665c7295c75ccda5`).
+The ledger below uses one-based inclusive source lines. The parser emits
+zero-based, end-exclusive token maps, so a map of `[9,13]` spans lines 10–13.
+
+| Fixture lines | Regex baseline | markdown-it-py 4.2.0 |
+|---|---|---|
+| 1–5 | No section. The preamble date still supplies the file fallback. | CommonMark reads the first line as a rule, lines 2–3 as a Setext h2, and line 5 as a paragraph. No YAML frontmatter rule was enabled. |
+| 7–8, 10–13, 15–18 | Alpha starts at 7. The backtick/tilde examples become spurious events at 11 and 16. Their boundaries split both fenced blocks. | Alpha is a top-level ATX h2. Each fence is one block with no internal heading token. |
+| 20–25 | Quote and list remain body text of the preceding false section. | Quote h2 at 20 is level 1. List h2 at 24 is level 2. Neither is a top-level section. |
+| 27–32 | Child h3 stays in the current body with production levels `(2,)`. With `(2,3)` it becomes a candidate. Table rows stay in the body. | Child is a top-level h3. The explicit table rule maps lines 30–32 as one table. CommonMark alone has no table token. |
+| 34–40 | Empty at 34 advances the candidate ordinal. Mixed-script h2 at 35 emits. Setext at 38–39 stays in its body. | Empty and mixed-script headings are h2. The later Setext h2 is structurally visible. |
+
+Production extraction has five candidates and four staged events. The
+emitted (line, candidate, staged) tuples are (7,1,1), (11,2,2), (16,3,3),
+(35,5,4). With `(2,3)` the tuples are (7,1,1), (11,2,2), (16,3,3),
+(27,4,4), (35,6,5). LF and CRLF produced equal parsed events, locators and
+source IDs at each setting, with source bytes preserved. Alpha uses the first
+ISO date in its section. Other emitted events use the first ISO date in the
+file for ordering. The current lineage has a start line and date, with no
+end line or date-role field.
+
+Two Windows source topic-runner replays with the checkout pinned in
+`PYTHONPATH` succeeded with the synthetic manifest. Correlation had four
+source events, four report events, four verified survivor keys, zero ambiguous
+matches and zero unmerged source events. Lineage and correlation differed
+only in the run ID. Merged output and appendix navigation were byte-stable.
+All four event-index fragments resolved exactly once. The original unpinned
+replay failed index generation with exit 5 after importing the foreign
+checkout. The synthetic manifest uses zero extraction and theme minima to
+isolate mechanical compatibility. This is Windows source evidence.
+Local evidence is under `_WORK/WHS-RELIABILITY-20261126`, including the
+manifest, failed and successful runs, and `probe-b/comparison.json`.
+
+**Proposed first correction.** Add a versioned opt-in to the generic adapter.
+Select only configured top-level ATX headings using token maps. Use original
+source slices for titles and bodies and keep staging/rendering behavior.
+Preserve nested headings, fences, tables and Setext text within the enclosing
+span. Account separately for preamble, declared leading frontmatter, heading
+lines, empty candidates and separator lines. Agree on the supported
+frontmatter delimiter rule and treatment of malformed or unterminated blocks.
+Derive any byte offsets from the original bytes and newline boundaries. Token
+maps are line ranges. They provide neither byte offsets nor a lossless
+serialization of the source.
+
+Keep the legacy mode and IDs during the opt-in review. Current source IDs
+hash filename, locator kind, candidate ordinal, heading level and original
+heading text, under the topic namespace. Removing false candidates can
+renumber later headings. Current report IDs hash date and normalized ingest
+body, so repaired bodies can also move report IDs and survivor fragments.
+Require a per-candidate old/new reconciliation, including excluded candidates,
+assigned ordering dates and any affected external references. Publish a
+versioned identity or compatibility mapping decision before changing defaults.
+
+#### Contract proposed for maintainer approval
+
+Only the generic Markdown adapter gains an explicit manifest mode,
+`adapter.markdown_mode: structural-v1`, passed through to its prepare CLI.
+Missing mode or explicit `legacy-v1` selects the existing extraction and
+output contract. Reject unknown modes and the option on other adapters.
+An opt-in manifest uses a separate output root and fresh run directory.
+Refuse reuse or overlap with a legacy output directory, including resolved
+aliases. Record mode and version in structural run metadata and sidecars.
+Use distinct schema identifiers for structural lineage and correlation.
+Readers that only support legacy v1 must reject those structural sidecars
+explicitly. Scope previous-run metric comparisons to the same mode.
+Legacy artifacts, IDs and schemas remain byte-compatible for a replay
+after accounting for existing run metadata. A structural parsing error
+fails the run explicitly.
+
+Use configured top-level ATX headings (default h2) and original source
+slices. Nested headings, fences, tables and Setext headings inside a section
+are body content. Outside sections record exclusions by span. Recognize
+frontmatter only on the opening line, with exact `---` delimiter lines
+and a YAML mapping payload. Record an invalid or unterminated opener as
+a diagnostic and apply ordinary Markdown rules to its text. Preserve the
+existing first-section-date and first-file-date fallback rules. Record
+whether the date came from the section, file fallback or default constant.
+These are ordering dates. Full date semantics stay with TIME-01.
+
+| Identity layer | Legacy v1 | Structural v1 proposal |
+|---|---|---|
+| Candidate and staged ordinals | Existing one-based regex order. Empty candidates reserve ordinals. Staged ordinals count emissions. | One-based selected heading order per file. Empty candidates reserve ordinals. Non-boundaries receive no ordinal. Staged ordinals are dense among emissions. Ordinals are scoped to the parser mode. |
+| Source event ID | Existing `source-event-v1` hash of source filename, locator kind, candidate ordinal, level and original heading text, with topic in the ID. | Use those fields in the same order with domain tag `source-event-structural-v1`. Retain the ID prefix and topic. Report one-based source spans and input digest in the sidecar. Keep line endings out of the identity hash. |
+| Report event ID | Existing `report-event-v1` hash of date and normalized ingest body hash, with topic in the ID. | Keep normalized ingest equivalence and use domain tag `report-event-structural-v1`. Equal normalized bodies on the same date still coalesce within the mode. Record all contributing source IDs. |
+| Survivor and navigation | Existing key `(date, normalized-body SHA-256)` and fragment `event-<date>-<hash>` in the published run. | Keep the same key and fragment algorithm within each run. Equal keys may recur across modes. Navigation identity includes the output run and artifact path, so a coincident fragment never substitutes for a legacy target. |
+
+The following ledger is an expected comparison at default levels. Legacy
+values were observed. Structural values are proposed and have no execution
+result yet. C and S denote candidate and staged ordinals.
+
+| Fixture heading | Legacy C/S | Structural C/S | Reconciliation |
+|---|---:|---:|---|
+| Alpha, line 7 | 1/1 | 1/1 | Same source heading. Body regains both fenced blocks, so recompute the report and survivor key. |
+| Backtick example, line 11 | 2/2 | — | Removed false event. Its text stays inside Alpha's fenced body. No redirect or replacement event. |
+| Tilde example, line 16 | 3/3 | — | Removed false event. Its text stays inside Alpha's fenced body. No redirect or replacement event. |
+| Empty, line 34 | 4/— | 2/— | Empty candidate. Neither mode emits an event or ID. |
+| Persian/English, line 35 | 5/4 | 3/2 | Same source heading. The structural IDs are distinct by construction. Evaluate whether its report payload and run-local survivor key are equal. |
+
+The comparison sidecar joins candidate rows by frozen source snapshot,
+relative source path and heading span. Record both modes' ordinals, IDs,
+date roles, body hashes, survivor keys and complete run-relative link targets.
+Mark removed false events, new events, changed content and ambiguous matches
+explicitly. A unique heading correspondence is evidence for review. It gives
+no automatic alias, redirect or transfer of historical identity. Removed
+legacy links keep resolving in the original output. Test duplicate headings,
+many-to-one report correlation, and paired replay with both output roots
+present. Reject any legacy file mutation and require every structural index
+link to resolve within its own run. Cross-version comparison uses the
+sidecar, while published artifacts and reports retain their original IDs.
+
+**Recommendation.** Accept this bounded contract for implementation review.
+Keep production work gated on the maintainer decision. G2 qualification
+still requires the original acceptance tests below.
+
+**Acceptance.** Attribute every source line to a recorded span or exclusion.
+Preserve source hashes. At default levels the candidate should emit only Alpha
+and the mixed-script section, with Empty counted and explicit diagnostics for
+the preamble/frontmatter and the excluded boundary types. Recheck configured
+h3, LF/CRLF, duplicate headings, malformed and nested fences, and source-
+to-report-to-survivor navigation. Replay the candidate twice through the
+existing runner with verified source and installed origins. Require stable IDs
+and links per selected mode, a reviewed identity delta across modes, full
+suite and governance results, and exact-candidate CI. **ACCEPT** the
+characterization for review of the bounded slice. **REVISE** G2 pending that
+implementation and its qualification.
+
 TIME-01 and NLP-01 remain queued. The temporal follow-up uses a
 sidecar distinguishing occurred, published, observed, recorded, retrieved and
 assigned dates, each with a locator or explicit unknown. Characterize
@@ -280,6 +416,89 @@ subsequent TOC updates. Stage destination-mutating TOC work before the
 commit point or scope the atomicity claim explicitly. Verify pre-commit
 byte preservation, post-commit errors, cleanup ownership and overwrite,
 symlink, locking and concurrency behavior through installed API and CLI.
+
+### EXEC-01 admission proposal (2026-11-26)
+
+**Verified baseline.** `tools/run_topic_report.py::run_stage` synchronously
+captures both streams in memory via `subprocess.run`, concatenates decoded
+output and appends it to the requested log. Stages return `exit_code` and
+`output`. The runner reports stage codes and verdicts in its run artifacts.
+`pipeline/chain.ps1::Invoke-ChronicleStage` buffers merged native diagnostics
+and records stage exits. Neither path supplies a deadline or a coordinated
+cancellation result. The Windows synthetic probe at the MD-01 baseline let a
+2.25 s sleeper complete successfully after 2.41 s, captured 1,100,000 ASCII
+bytes from each stream, waited for an inheriting child to finish, and observed
+the finite worker complete after the supervisor was terminated. Abrupt
+supervisor termination is one failure case. Cooperative cancellation, Ctrl-C
+and Linux tree teardown remain qualification cases. GitHub's all-state issue
+inventory and EXEC-01 search returned no owner issue. Slot 2 remains vacant.
+
+**Proposed contract.** Scope to a shared local stage boundary for the topic
+runner and its PowerShell child stages. Use a typed policy with deadline,
+termination grace, per-stream byte limits and cancellation input. Give each
+stage a terminal status (success, nonzero exit, timeout, cancelled,
+launch failure or cleanup failure), optional native exit code, elapsed time,
+bounded stdout/stderr with byte counts and truncation, and cleanup outcome.
+Record the triggering timeout or cancellation even if cleanup fails. Define
+precise precedence for a completion/cancel race using a monotonic clock and
+one terminal transition. Keep existing exit-code consumers and CLI
+nonzero failure behavior through an explicit compatibility mapping. Persist
+the failed run and stage reason, skip dependent stages, and give each attempt
+its own output directory so prior successful artifacts survive.
+
+Drain both streams during execution at bounded memory cost, continuing to
+drain discarded bytes so the process cannot deadlock on a full pipe. Include
+PowerShell's internal diagnostic buffer and disk logs in the bound. On Linux,
+launch an owned session/process group, signal group termination, escalate to
+kill after grace, close streams and reap the direct child. Qualify ordinary
+descendants and define the support limit for detached descendants that escape
+the group. On Windows, use an owned Job Object with kill-on-close and establish
+assignment before child code can spawn descendants. Qualify nested-job launch
+and surface ownership/launch failure explicitly. Avoid PID-only tree cleanup.
+
+**Acceptance.** Keep the G5 thresholds below verbatim. Exercise normal,
+nonzero, hung, noisy, descendant-held pipes, cancellation, failed process
+launch and lost ownership through the public run entry point. Verify terminal
+artifacts, absence of live owned fixture processes, and byte-identical prior
+outputs. **BLOCKED** for execution until explicit slot-2 admission and issue
+authorization.
+
+### SAFE-01 preparation (2026-11-26)
+
+**Verified by inspection.** `wordpipe/orchestration/pipeline.py` calls
+`finalize_step`, which passes the destination to `DocxDocumentWriter.write`
+and then cleans its working path. The later optional `toc_step` receives the
+final output path. A configured updater can mutate that path and report a
+warning after the direct save. This leaves a write and a path-mutating TOC
+operation before the pipeline has reached its final state.
+
+**Proposed transaction.** Create an exclusively owned, unique sibling .docx
+in the destination directory. Close any creation handle before opening it for
+save or TOC on Windows. Save, check ZIP integrity and reopen the DOCX with
+required content assertions, perform every required TOC mutation on that
+sibling, then reopen and validate the actual publication bytes again. With
+all handles closed, publish once using same-filesystem atomic replacement.
+Represent missing optional TOC capability explicitly. A configured required
+TOC failure aborts before replacement. Review the warning-to-failure change
+in the existing reports and CLI. Emit final-path success only after replace.
+
+Preserve normal overwrite semantics with atomic last successful replace for
+independent writers. Propose rejecting input/output aliases and destination
+symlinks, subject to compatibility review. Verify permissions and destination
+locks on each platform and scope the contract to supported filesystem
+semantics. Before replace, errors leave an existing destination byte-identical.
+After replace, cleanup or telemetry errors report committed output and a
+secondary diagnostic without rollback. Delete only artifacts owned by the
+attempt and retain the primary error if cleanup fails.
+
+**Acceptance.** After documented SEC-01 exit and separate admission, qualify
+the installed `wordpipe` CLI and public DOCX API in clean exact-wheel Windows
+and Linux environments. Verify new output, overwrite, concurrent writers,
+alias/symlink policy, permission and Windows lock behavior, and inject
+save, reopen, TOC, replace and cleanup/event failures with hash checks and
+observable commit state. Verify the actual configured TOC capability where
+supported and document platform-specific unsupported cases. **BLOCKED** for
+execution pending SEC-01 exit and admission under issue #18.
 
 **Exit gate.** Complete the v0.2 checklist below. WordPipe DOCX earns its own
 readiness decision through installed API and CLI tests on Windows and Linux,
