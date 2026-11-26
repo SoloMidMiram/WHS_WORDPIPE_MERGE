@@ -31,6 +31,39 @@ covers MD-01 (#15) in slot 1 for qualification, EXEC-01 (#25) in slot 2 for cont
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-27 — EXEC-01 inherited deadline fixture correction
+
+Branch `codex/exec-01-bounded-execution`, [PR #27](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/27).
+The [maintainer's production acceptance](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/25#issuecomment-7202211892)
+pins head `d23d1c52c628938be287386b6945fca516309729` and base
+`8dac70e60a827e608f3eb46ab046473f56f57a52`. The
+[passing PR run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45885071366)
+and Windows push failures in [attempt one](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45885064062/job/140133605555)
+and [attempt two](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45885064062/job/140143245482)
+remain separate evidence. Deadline cleanup can leave the worker's repeatedly
+truncated artifact empty, so the fixture records write-once readiness after
+the initial write, leader exit while the worker is active, and completion
+after the final write. Verification requires the completion marker and
+finished payload. The four- and eight-second cases and the separate
+two-second G5 checks retain their original deadlines. The tracked diff
+contains only the fixture and this evidence entry. The repository map was checked.
+
+Windows Python 3.10 with Windows PowerShell ran both cases ten times on the
+final fixture. Both passed on attempts 4, 5, 9 and 10. Attempts 1, 2, 3, 6
+and 8 each had one deadline-related case failure. Both cases failed on
+attempt 7 before readiness or confirmed leader exit. Seven of ten paired
+attempts passed on the preliminary fixture. None of the failures came from
+interrupted intermediate bytes. The final Windows Python 3.11 pair passed.
+With the final fixture on defective production head `d4ded46522f63e4a288fde692eb32def408b3453`,
+Windows detected both premature ingest completion and premature verification.
+Local WSL expired during shell or process startup in both focused cases.
+Its full preliminary suite reported 431 passed, four skipped and three
+deadline or readiness failures. The preliminary Windows 3.11 full suite
+reported 429 passed, eight skipped and one readiness failure. The Linux
+installed-wheel MD-01 paired replay and five governance checks passed.
+Use fresh push and PR CI on the replacement SHA for the next acceptance
+decision. Issue #25 stays open in slot 2 with G5 pending.
+
 ### 2026-11-26 — EXEC-01 final acceptance corrections
 
 Branch `codex/exec-01-bounded-execution`, [draft PR #27](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/27).

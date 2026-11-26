@@ -296,33 +296,83 @@ def test_inherited_chain_waits_for_redirected_descendant(isolated_chain, monkeyp
     chain, raw_dir, out_dir = isolated_chain
     monkeypatch.chdir(raw_dir.parent)
     artifact = raw_dir.parent / "stage-artifact"
+    ready = raw_dir.parent / "worker-ready"
+    leader_exited = raw_dir.parent / "leader-exited"
+    completed = raw_dir.parent / "worker-completed"
     dependent = raw_dir.parent / "dependent-started"
+    early_receipt = raw_dir.parent / "ingest-reported-before-completion"
     worker = chain.parent / "worker.py"
     worker.write_text(
-        "import time\nfrom pathlib import Path\n"
-        f"artifact = Path({str(artifact)!r})\n"
-        "artifact.write_text('working')\n"
-        f"until = time.monotonic() + {7 if expires else 0.6}\n"
-        "while time.monotonic() < until:\n"
-        f"    if Path({str(dependent)!r}).exists():\n"
-        "        artifact.write_text('dependent entered early')\n"
-        "        raise SystemExit(0)\n"
-        "    time.sleep(0.01)\n"
-        "    artifact.write_text('working')\n"
-        "artifact.write_text('finished')\n",
+        textwrap.dedent(f"""\
+            import sys
+            import time
+            from pathlib import Path
+
+            leader = int(sys.argv[1])
+            if sys.platform == 'win32':
+                import _winapi
+                handle = _winapi.OpenProcess(0x00100000, False, leader)  # SYNCHRONIZE
+
+                def leader_alive():
+                    return _winapi.WaitForSingleObject(handle, 0) != _winapi.WAIT_OBJECT_0
+            else:
+                stat = Path(f'/proc/{{leader}}/stat')
+
+                def leader_alive():
+                    try:
+                        return stat.read_text().rsplit(')', 1)[1].split()[0] not in ('Z', 'X')
+                    except (FileNotFoundError, ProcessLookupError):
+                        return False
+
+            artifact = Path({str(artifact)!r})
+            artifact.write_text('working')
+            Path({str(ready)!r}).touch()
+            limit = time.monotonic() + 2
+            while leader_alive():
+                assert time.monotonic() < limit, 'fixture leader did not exit'
+                time.sleep(0.01)
+            if sys.platform == 'win32':
+                _winapi.CloseHandle(handle)
+            Path({str(leader_exited)!r}).touch()
+            evidence_dir = Path({str(out_dir / "exec-01")!r})
+            until = time.monotonic() + {7 if expires else 0.6}
+            while time.monotonic() < until:
+                if Path({str(dependent)!r}).exists():
+                    artifact.write_text('dependent entered early')
+                    raise SystemExit(0)
+                time.sleep(0.01)
+                artifact.write_text('working')
+            if any(evidence_dir.glob('*/1.json')):
+                Path({str(early_receipt)!r}).touch()
+            artifact.write_text('finished')
+            Path({str(completed)!r}).touch()
+            """),
         encoding="utf-8",
     )
+    # Keep the leader alive until the worker can observe its exit reliably.
     (chain.parent / "ingest.py").write_text(
-        "import subprocess, sys\nfrom pathlib import Path\n"
-        "output = Path(sys.argv[sys.argv.index('--output') + 1])\n"
-        "output.write_text('synthetic normalised input')\n"
-        f"subprocess.Popen([sys.executable, '-S', {str(worker)!r}], "
-        "stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)\n",
+        textwrap.dedent(f"""\
+            import os, subprocess, sys, time
+            from pathlib import Path
+
+            output = Path(sys.argv[sys.argv.index('--output') + 1])
+            output.write_text('synthetic normalised input')
+            child = subprocess.Popen(
+                [sys.executable, '-S', {str(worker)!r}, str(os.getpid())],
+                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            )
+            ready = Path({str(ready)!r})
+            limit = time.monotonic() + 2
+            while not ready.exists():
+                assert child.poll() is None and time.monotonic() < limit, 'worker was not ready'
+                time.sleep(0.01)
+            """),
         encoding="utf-8",
     )
     (chain.parent / "verify_ingest.py").write_text(
         "from pathlib import Path\n"
         f"Path({str(dependent)!r}).touch()\n"
+        f"assert Path({str(completed)!r}).exists(), 'premature verification'\n"
         f"assert Path({str(artifact)!r}).read_text() == 'finished', 'premature verification'\n",
         encoding="utf-8",
     )
@@ -338,15 +388,17 @@ def test_inherited_chain_waits_for_redirected_descendant(isolated_chain, monkeyp
     )
     terminal = json.loads(receipt.read_text(encoding="utf-8"))
     assert terminal["cleanup"] == Cleanup.VERIFIED
+    assert ready.exists() and leader_exited.exists(), result["output"]
     if expires:
         assert terminal["outcome"] == terminal["trigger"] == Outcome.TIMEOUT, result["output"]
         assert timeout <= terminal["elapsed_seconds"] <= timeout + 5
         assert not dependent.exists()
         assert not (raw_dir.parent / "merge").exists()
-        assert artifact.read_text() == "working"
+        assert not completed.exists()
     else:
         assert result["exit_code"] == 0, result["output"]
-        assert dependent.exists() and artifact.read_text() == "finished"
+        assert completed.exists() and dependent.exists() and artifact.read_text() == "finished"
+        assert not early_receipt.exists(), "ingest reported completion before the descendant finished"
         invocation = _read_evidence(out_dir)["ingest_files"][0]
         evidence = json.loads((out_dir / invocation["execution_evidence"]).read_text(encoding="utf-8"))
         assert evidence["outcome"] == Outcome.SUCCESS
