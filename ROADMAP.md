@@ -22,7 +22,7 @@ covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, a vacant 
 | Order | Phase | Current execution |
 |---|---|---|
 | 1 | Context fidelity | **REVISE** [#8](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/8) / [draft #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13). Frozen B2 failed qualification and G1 remains a mandatory v0.2 blocker. B3 is **DEFERRED** pending the [re-entry evidence](docs/engineering/DELIVERY_PHASES_AND_GATES.md#b3-re-entry). |
-| 2 | Document understanding | [Markdown structure #15](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/15) is admitted in slot 1. Characterize structure, source spans and replay. TIME-01 and NLP-01 remain queued. |
+| 2 | Document understanding | The bounded opt-in [Markdown implementation #23](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23) is integrated. [#15](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/15) stays open in slot 1 and G2 remains **REVISE**. TIME-01 and NLP-01 remain queued. |
 | 3 | Corpus acceptance | [Flowers #16](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/16) is queued for G3-full. G3-core synthetic evidence remains a distinct v0.2 gate. |
 | 4 | References and ontology | Complete Phase 9c using existing survivor contracts and populate the project ontology before schema expansion. |
 | 5 | Product stabilization | [Public audit #17](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17) occupies slot 3 for release assurance. [Atomic DOCX #18](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/18) is READY for separate DOCX qualification. CLI-01 and CI-01 remain queued v0.2 work. |
@@ -30,6 +30,22 @@ covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, a vacant 
 | 7 | Optional AI research | [NCM #9](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/9) is blocked for real inference. [Jev #10](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/10) has offline preparation available. [Combined benchmark #11](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/11) is blocked on upstream evidence. |
 
 ## Active narrative roadmap — newest first
+
+### 2026-11-26 — MD-01 integration verified
+
+Post-merge documentation on `codex/md-01-post-merge-docs`.
+[PR #23](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23) merged
+from accepted head `8f7e87af0d4295ee01008415460f061be2ad10c7` into
+`0a6385cbc50ef394a06c3b38129682acd795cf76` via normal merge commit
+`df072540cea6ae458ecd0592c6cf2b1fe69cee0d`. The two parents, seven reachable
+commits and tree `c5249a2086038c6b9174f855c1718fee24088464` were verified.
+All three review threads were resolved. The
+[exact-head PR run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45831340119)
+and [fresh main run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45833490849)
+passed all five jobs, including both wheel paired replays. The repository
+map was checked. [Issue #15](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/15#issuecomment-7194046442)
+retains slot 1 and the remaining G2 acceptance decision. Legacy remains
+the default. G0 remains ACCEPT, G1 blocks v0.2 and G2 remains REVISE.
 
 ### 2026-11-26 — MD-01 malformed timestamp review fix
 
