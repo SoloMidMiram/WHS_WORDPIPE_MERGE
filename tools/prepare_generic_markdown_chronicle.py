@@ -20,7 +20,7 @@ import json
 import re
 import sys
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 from typing import Iterable, Sequence
 
@@ -54,6 +54,18 @@ def sanitize_title(title: str) -> str:
 def first_date(text: str, fallback: str = DEFAULT_FALLBACK_DATE) -> str:
     match = DATE_RE.search(text)
     return match.group(1) if match else fallback
+
+
+def first_valid_ordering_date(text: str) -> str | None:
+    """Find the first date that structural staging can render."""
+    for match in DATE_RE.finditer(text):
+        value = match.group(1)
+        try:
+            date.fromisoformat(value)
+        except ValueError:
+            continue
+        return value
+    return None
 
 
 def split_sections(text: str, heading_levels: Iterable[int]) -> list[tuple[str, str]]:
@@ -158,7 +170,7 @@ def parse_structural_file(path: Path, heading_levels: tuple[int, ...] = (2,)):
     record_span("frontmatter", 0, frontmatter_end)
     first_heading = headings[0][0] if headings else len(source.lines)
     record_span("preamble", frontmatter_end, first_heading)
-    file_date = DATE_RE.search(source.text)
+    file_date = first_valid_ordering_date(source.text)
     for ordinal, (start, heading_end, level, title) in enumerate(headings, 1):
         end = headings[ordinal][0] if ordinal < len(headings) else len(source.lines)
         body = "".join(source.lines[heading_end:end]).strip()
@@ -175,10 +187,9 @@ def parse_structural_file(path: Path, heading_levels: tuple[int, ...] = (2,)):
         candidates.append(candidate)
         if not body:
             continue
-        section_date = DATE_RE.search(f"{title}\n{body}")
-        date = (section_date or file_date)
+        section_date = first_valid_ordering_date(f"{title}\n{body}")
         date_role = "section" if section_date else "file_fallback" if file_date else "default"
-        ordering_date = date.group(1) if date else DEFAULT_FALLBACK_DATE
+        ordering_date = section_date or file_date or DEFAULT_FALLBACK_DATE
         event_title = (f"{prefix} - {sanitize_title(title)}" if prefix else sanitize_title(title))[:180]
         events.append(ChronicleEvent(ordering_date, event_title, body))
         candidate.update(staged_event_ordinal=len(events), date=ordering_date, date_role=date_role)

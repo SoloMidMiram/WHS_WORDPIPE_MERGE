@@ -31,6 +31,22 @@ covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, a vacant 
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-26 — MD-01 malformed timestamp review fix
+
+Branch `codex/md-01-structural-markdown`,
+[PR #23](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23).
+Reviewed head `d55641dbc6783f463bcd1dd416304cb07aa29d3c` and base
+`0a6385cbc50ef394a06c3b38129682acd795cf76`.
+The [invalid timestamp finding](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23#discussion_r4709095230)
+reproduced with PyYAML 6.0.3. Handling its constructor error exposed a
+second failure when the same invalid date reached the staging renderer.
+Structural preparation now records malformed frontmatter and uses the
+first valid section or file date before the existing default. The
+repository map was checked. Local checks passed 32 focused tests, the
+separate source-pinned paired replay, and all five governance checks.
+Next is exact-head CI and review-thread verification before the
+maintainer's merge decision. G2 remains REVISE and #15 stays open in slot 1.
+
 ### 2026-11-26 — MD-01 topic runner preflight review fix
 
 Branch `codex/md-01-structural-markdown`,

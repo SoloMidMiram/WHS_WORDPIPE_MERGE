@@ -93,7 +93,7 @@ def leading_frontmatter(lines: tuple[str, ...]) -> tuple[int, str | None]:
         if line.rstrip("\n") == "---":
             try:
                 metadata = yaml.safe_load("".join(lines[1:index]))
-            except yaml.YAMLError:
+            except (yaml.YAMLError, ValueError):
                 return 0, "invalid_frontmatter"
             if not isinstance(metadata, dict):
                 return 0, "invalid_frontmatter"

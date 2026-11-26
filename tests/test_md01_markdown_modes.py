@@ -62,6 +62,32 @@ def test_unterminated_frontmatter_and_configured_h3(tmp_path):
     assert [row["heading_level"] for row in report["candidates"]] == [2, 3]
 
 
+@pytest.mark.parametrize(
+    ("preamble", "ordering_date", "date_role"),
+    [("", adapter.DEFAULT_FALLBACK_DATE, "default"), ("Published 2025-03-01\n\n", "2025-03-01", "file_fallback")],
+)
+def test_invalid_yaml_timestamp_is_malformed_frontmatter(tmp_path, preamble, ordering_date, date_role):
+    sources = tmp_path / "sources"
+    sources.mkdir()
+    source = sources / "example.md"
+    raw = f"---\ndate: 2025-02-30\n---\n\n{preamble}## Heading\n\nBody.\n".encode()
+    source.write_bytes(raw)
+    run = tmp_path / "run"
+    run.mkdir()
+    staged = run / "staged_input"
+    metrics = adapter.prepare(sources, staged, run / "prepare_metrics.json", markdown_mode=STRUCTURAL_MODE)
+    lineage = json.loads((run / "event_lineage.json").read_text(encoding="utf-8"))
+
+    accounting, = lineage["source_accounting"]
+    assert accounting["diagnostics"][0]["code"] == "invalid_frontmatter"
+    assert accounting["spans"][0]["kind"] == "preamble"
+    event, = lineage["events"]
+    assert event["date"] == ordering_date and event["date_role"] == date_role
+    assert metrics["staged_event_count"] == 1
+    assert ordering_date in next(staged.glob("*.md")).read_text(encoding="utf-8")
+    assert source.read_bytes() == raw
+
+
 def test_prepare_preserves_actual_parser_configuration(tmp_path):
     sources = tmp_path / "sources"
     sources.mkdir()

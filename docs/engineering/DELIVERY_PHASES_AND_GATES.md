@@ -277,7 +277,8 @@ are body content. Outside sections record exclusions by span. Recognize
 frontmatter only on the opening line, with exact `---` delimiter lines
 and a YAML mapping payload. Record an invalid or unterminated opener as
 a diagnostic and apply ordinary Markdown rules to its text. Preserve the
-existing first-section-date and first-file-date fallback rules. Record
+existing first-section-date and first-file-date fallback order, considering
+only valid calendar dates in structural mode. Record
 whether the date came from the section, file fallback or default constant.
 These are ordering dates. Full date semantics stay with TIME-01.
 
