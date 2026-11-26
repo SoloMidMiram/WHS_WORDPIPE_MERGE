@@ -45,7 +45,7 @@ from wordpipe.markdown_contract import (
     STRUCTURAL_MODE,
     STRUCTURAL_RAW_SCHEMA,
 )
-from wordpipe.execution import Cancellation, ExecutionPolicy, execute, write_terminal_evidence
+from wordpipe.execution import Cancellation, ExecutionPolicy, Outcome, execute, write_terminal_evidence
 
 STRUCTURAL_ROOT_MARKER = ".md01-structural-v1"
 GENERIC_MARKDOWN = "prepare_generic_markdown_chronicle"
@@ -300,6 +300,7 @@ def _require_existing_file(path_str: str, label: str) -> None:
 CMD_PREPARE = "prepare"
 CMD_PIPELINE = "pipeline"
 CMD_SUMMARIZE = "summarize"
+_SUMMARY_REPORTABLE_OUTCOMES = (Outcome.SUCCESS, Outcome.NATIVE_FAILURE)
 CMD_PROVENANCE = "provenance"
 
 
@@ -372,13 +373,13 @@ def run_stage(
     evidence_path: Path | None = None,
     publish_owner: bool = False,
 ) -> dict[str, Any]:
-    """Run one stage command and return ``{"exit_code": int, "output": str}``.
+    """Run a stage and return its exit code, bounded output and typed outcome.
 
     If *capture_output_to* is given, stdout+stderr is appended to that file.
     """
     if dry_run:
         print(f"  [DRY-RUN] {label}: {' '.join(cmd)}")
-        return {"exit_code": 0, "output": ""}
+        return {"exit_code": 0, "output": "", "outcome": Outcome.SUCCESS}
 
     print(f"  [{label}] Starting...")
 
@@ -400,7 +401,7 @@ def run_stage(
     else:
         print(f"  [{label}] OK (exit code {result.exit_code})")
 
-    return {"exit_code": result.exit_code, "output": combined}
+    return {"exit_code": result.exit_code, "output": combined, "outcome": result.outcome}
 
 
 def enrich_run_metrics(run_metrics: dict[str, Any], timing_seconds: float) -> dict[str, Any]:
@@ -1277,8 +1278,20 @@ def find_previous_run(
                     continue
             except (OSError, ValueError, KeyError, AttributeError):
                 continue
-        if (child / "run_metrics.json").is_file():
-            candidates.append(child)
+        if not (child / "run_metrics.json").is_file():
+            continue
+        execution_dir = child / "exec-01"
+        try:
+            terminal = json.loads((execution_dir / "summarize.json").read_text(encoding="utf-8"))
+            if terminal.get("schema") != "exec-01-v1" or terminal.get("outcome") not in _SUMMARY_REPORTABLE_OUTCOMES:
+                continue
+        except FileNotFoundError:
+            if (execution_dir / "prepare.json").is_file():
+                continue  # This run has not recorded a summarization result.
+            # Historical runs may predate the execution sidecar.
+        except (OSError, ValueError, AttributeError):
+            continue
+        candidates.append(child)
 
     if not candidates:
         return None
@@ -1638,7 +1651,17 @@ def run_report(
         policy=policy, evidence_path=execution_dir / "summarize.json",
     )
     exit_codes[CMD_SUMMARIZE] = summary_result["exit_code"]
+    if summary_result["outcome"] not in _SUMMARY_REPORTABLE_OUTCOMES:
+        print("\n[FAIL] Summarization did not complete. Aborting.")
+        _write_failure_ontology(manifest, run_dir, exit_codes, timing_seconds)
+        return {
+            "run_dir": str(run_dir),
+            "exit_codes": exit_codes,
+            "run_metrics": {},
+            "timing_seconds": timing_seconds,
+        }
 
+    # A completed summarizer may report metrics and still return a native nonzero.
     if correlation_doc is not None and summary_result["exit_code"] == 0:
         append_event_provenance_summary(run_dir, correlation_doc)
 

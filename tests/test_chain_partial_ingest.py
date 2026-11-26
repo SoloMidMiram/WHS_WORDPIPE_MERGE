@@ -327,17 +327,20 @@ def test_inherited_chain_waits_for_redirected_descendant(isolated_chain, monkeyp
         encoding="utf-8",
     )
     receipt = raw_dir.parent / "pipeline.json"
+    # The inherited deadline includes shell and bridge startup. The executor's
+    # separate G5 fixtures pin the two-second requirement without that startup.
+    timeout = 4 if expires else 8
     result = run_stage(
-        [_POWERSHELL, "-NoProfile", "-File", str(chain), "-InputDir", str(raw_dir),
+        [_POWERSHELL, "-NoProfile", "-NonInteractive", "-File", str(chain), "-InputDir", str(raw_dir),
          "-OutputDir", str(out_dir), "-Verify", "-SkipCategorize", "-SkipIndex"],
-        "pipeline: chain.ps1", policy=ExecutionPolicy(timeout=2 if expires else 8),
+        "pipeline: chain.ps1", policy=ExecutionPolicy(timeout=timeout),
         evidence_path=receipt, publish_owner=True,
     )
     terminal = json.loads(receipt.read_text(encoding="utf-8"))
     assert terminal["cleanup"] == Cleanup.VERIFIED
     if expires:
         assert terminal["outcome"] == terminal["trigger"] == Outcome.TIMEOUT, result["output"]
-        assert 2 <= terminal["elapsed_seconds"] <= 7
+        assert timeout <= terminal["elapsed_seconds"] <= timeout + 5
         assert not dependent.exists()
         assert not (raw_dir.parent / "merge").exists()
         assert artifact.read_text() == "working"
@@ -347,7 +350,8 @@ def test_inherited_chain_waits_for_redirected_descendant(isolated_chain, monkeyp
         invocation = _read_evidence(out_dir)["ingest_files"][0]
         evidence = json.loads((out_dir / invocation["execution_evidence"]).read_text(encoding="utf-8"))
         assert evidence["outcome"] == Outcome.SUCCESS
-        assert evidence["ownership"] == "inherited"
+        assert evidence["policy"]["ownership"] == "inherited"
+        assert evidence["policy"]["has_deadline"]
         assert evidence["cleanup"] == Cleanup.INHERITED
 
 

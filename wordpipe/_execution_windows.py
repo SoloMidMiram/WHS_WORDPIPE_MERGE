@@ -95,6 +95,7 @@ class Process:
         self.inherited = inherited
         with ExitStack() as stack, ExitStack() as write_ends:
             self.job = None
+            self.stage_job = None
             if not inherited:
                 self.job = _checked(create_job(None, token))
                 stack.callback(_winapi.CloseHandle, self.job)
@@ -133,6 +134,16 @@ class Process:
                         _verify_member(process, containing_job)
                     finally:
                         _winapi.CloseHandle(containing_job)
+                    # The nested job accounts for this stage. Keep only query
+                    # access, with no kill-on-close or breakaway flags.
+                    stage_job = _checked(create_job(None, None))
+                    try:
+                        _checked(assign_job(stage_job, process))
+                        _verify_member(process, stage_job)
+                        self.stage_job = _winapi.DuplicateHandle(current, stage_job, current, 0x0004, False, 0)
+                        stack.callback(_winapi.CloseHandle, self.stage_job)
+                    finally:
+                        _winapi.CloseHandle(stage_job)
                 if resume(thread) == 0xFFFFFFFF:
                     raise ct.WinError(ct.get_last_error())
             except (OSError, ValueError):
@@ -163,10 +174,9 @@ class Process:
         return _winapi.GetExitCodeProcess(self.process)
 
     def remaining(self):
-        if self.job is None:
-            return (0, 0) if self.code() is not None else (1, 0)
         accounting = _Accounting()
-        _checked(query_job(self.job, 1, ct.byref(accounting), ct.sizeof(accounting), None))
+        _checked(query_job(self.stage_job if self.inherited else self.job,
+                           1, ct.byref(accounting), ct.sizeof(accounting), None))
         return accounting.active, 0
 
     def stop(self, force):

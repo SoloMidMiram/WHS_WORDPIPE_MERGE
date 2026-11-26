@@ -1,5 +1,6 @@
 """Linux process ownership with a pinned, unreaped session leader."""
 
+import ctypes
 import os
 import signal
 import subprocess
@@ -20,9 +21,28 @@ def verify_inherited(owner_pid, token):
     return group
 
 
+def _set_subreaper(enabled):
+    # Linux reparents an exiting process's children to its nearest subreaper.
+    prctl = ctypes.CDLL(None, use_errno=True).prctl
+    prctl.argtypes = (ctypes.c_int,) + (ctypes.c_ulong,) * 4
+    if prctl(36, enabled, 0, 0, 0) != 0:  # PR_SET_CHILD_SUBREAPER
+        error = ctypes.get_errno()
+        raise OSError(error, os.strerror(error))
+
+
 class Process:
     def __init__(self, argv, env, inherited, token):
         self.inherited = inherited
+        self.exited_descendants = 0
+        if inherited:
+            # The bridge is a dedicated process with a single stage. Reaping
+            # adopted descendants does not give it authority to signal them.
+            try:
+                os.waitid(os.P_ALL, 0, os.WEXITED | os.WNOHANG | os.WNOWAIT)
+            except ChildProcessError:
+                _set_subreaper(True)
+            else:
+                raise ValueError("inherited Linux stage requires a dedicated bridge without other children")
         self.child = subprocess.Popen(
             argv, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             start_new_session=not inherited,
@@ -48,7 +68,15 @@ class Process:
 
     def remaining(self):
         if self.inherited:
-            return (0, 0) if self.code() is not None else (1, 0)
+            # After the leader is reaped, any live branch still has a child
+            # at its root. The kernel completes reparenting before wait returns.
+            try:
+                pid, _ = os.waitpid(-1, os.WNOHANG)
+            except ChildProcessError:
+                return 0, self.exited_descendants
+            if pid:
+                self.exited_descendants += 1
+            return 1, self.exited_descendants
         if self.code() is None:
             return 1, 0
         live = exited = 0
