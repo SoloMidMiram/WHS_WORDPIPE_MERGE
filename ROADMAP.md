@@ -31,6 +31,36 @@ covers MD-01 (#15) in slot 1 for qualification, EXEC-01 (#25) in slot 2 for cont
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-26 — EXEC-01 final acceptance corrections
+
+Branch `codex/exec-01-bounded-execution`, [draft PR #27](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/27).
+Base `8dac70e60a827e608f3eb46ab046473f56f57a52`, reviewed head
+`d4ded46522f63e4a288fde692eb32def408b3453`. Regression-only head
+`00444e98de60d74c10ffc82ce6f098cf0097ef1a` reproduced the findings
+against the original production code. On Windows, the runner attempted
+to decode malformed metrics after summarizer timeout and cancellation.
+PowerShell entered verification while an ordinary ingest descendant
+was still writing after its leader exited. The
+[regression-only hosted run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45884165557)
+retains the failing baseline.
+
+Reviewed correction `8c1f1a886f847ea477d96df278e4b044e470f606` routes
+summarization execution failures through failed-run reporting and excludes
+their raw metrics from future trend comparisons. A completed native
+nonzero summarizer keeps its historical reporting path and nonzero CLI
+verdict. A dedicated Linux bridge subreaps stage descendants, and the
+Windows bridge queries a nested accounting job after assignment before
+resume. The enclosing owner alone cancels and cleans up the tree.
+Inherited evidence continues to show `outer_owner`, while the outer
+terminal record reports verified cleanup. With an enclosing deadline of
+four seconds, the real PowerShell fixture exercises expiry after launch
+without making shell startup part of the separate G5 two-second fixture.
+Ten focused Windows tests passed, including the new sequenced and
+expired descendant cases. The repository map was checked. Recheck
+exact-head Windows and Linux suites and both MD-01 installed-wheel
+replays before the maintainer decides the revised implementation.
+Issue #25 remains open in slot 2 and G5 remains pending.
+
 ### 2026-11-26 — EXEC-01 bounded runtime implementation review
 
 Branch `codex/exec-01-bounded-execution`,
