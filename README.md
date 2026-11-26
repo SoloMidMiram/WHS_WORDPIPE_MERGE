@@ -133,24 +133,24 @@ python tools/security_scan.py --root . --fail-on-findings
 
 | Area | Status |
 |------|--------|
-| Chronicle dependency contract | Declared through the `chronicle` extra: `pyyaml` and `python-dateutil` |
+| Chronicle dependency contract | The `chronicle` extra declares `pyyaml`, `python-dateutil`, and `markdown-it-py`. |
 | Canonical Chronicle package | `ingest`, `verify_ingest`, `merge`, `categorize`, and `index` have canonical modules under `wordpipe.chronicle`. `pipeline/index.py` preserves the operator entry point and compatibility exports. |
 | Topic report runner | Manifest-driven generic runner with adapter registry, trend reports, source attribution, and ontology spine |
 | Legacy Chronicle scripts | Compatibility wrappers; not runtime import surfaces |
+| WordPipe orchestration | Step-based; read/style failures are fatal |
+| Third-wave acceptance | Five P0/P1 findings are covered by `tests/test_acceptance_remediation.py`; the dated full-suite result is 270 passed |
+| Test command | `python -m pytest tests -q` — use the latest command/CI result for the current count |
+| CI | [GitHub Actions](.github/workflows/ci.yml) runs Windows tests on Python 3.10 and 3.11, a Windows Python 3.11 job for the DOCX CLI and PowerShell chain integration, and separate Linux build and test jobs on Python 3.11. |
+| Validation report | [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_P2_VALIDATION_REPORT.md) |
+| Root organization | Enforced by `python tools/check_root_layout.py --root .` |
+| Corpus inputs | Hash-catalogued under `inputs/`; enforce with `python tools/check_input_catalog.py --root .` |
+| Architecture boundaries | Narrow production import directions enforced by `python tools/check_architecture_boundaries.py --root .` |
 
 Package metadata is `0.1.0`. Release readiness is tracked in the
 [delivery gates](docs/engineering/DELIVERY_PHASES_AND_GATES.md#proposed-release-boundaries).
 DOCX save and optional TOC update are implemented steps. Experimental
 `ai_headings` and `ai_rewrite` flags have no wired steps; see the
 [configuration contract](docs/TRACELEDGER_INTEGRATION_CONTRACT.md).
-| WordPipe orchestration | Step-based; read/style failures are fatal |
-| Third-wave acceptance | Five P0/P1 findings are covered by `tests/test_acceptance_remediation.py`; the dated full-suite result is 270 passed |
-| Test command | `python -m pytest tests -q` — use the latest command/CI result for the current count |
-| CI | Windows GitHub Actions workflow in `.github/workflows/ci.yml`: Python 3.10/3.11 base jobs plus a Python 3.11 DOCX-extra integration job |
-| Validation report | [`docs/engineering/P0_P2_VALIDATION_REPORT.md`](docs/engineering/P0_P2_VALIDATION_REPORT.md) |
-| Root organization | Enforced by `python tools/check_root_layout.py --root .` |
-| Corpus inputs | Hash-catalogued under `inputs/`; enforce with `python tools/check_input_catalog.py --root .` |
-| Architecture boundaries | Narrow production import directions enforced by `python tools/check_architecture_boundaries.py --root .` |
 
 ## Security
 

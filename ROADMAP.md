@@ -33,7 +33,7 @@ covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, a vacant 
 
 ### 2026-11-22 — Delivery and topic documentation synchronization
 
-Branch `codex/whs-roadmap-topic-sync`, draft PR number pending at preparation.
+Branch `codex/whs-roadmap-topic-sync`, [draft PR #21](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/21).
 Reviewed main `c78c6e90d96ee8e9f07e08b14e74de1bd657de93` integrates PR #20.
 [Main CI](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/44922552991) passed at that SHA.
 PR #19 is merged and #14 closed. [Draft PR #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13) at
