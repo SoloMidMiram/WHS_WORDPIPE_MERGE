@@ -31,6 +31,22 @@ covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, a vacant 
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-26 — MD-01 topic runner preflight review fix
+
+Branch `codex/md-01-structural-markdown`,
+[PR #23](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23).
+Reviewed head `722f3c175b01ae7d5940b2257ba27ea1931be86d` and base
+`0a6385cbc50ef394a06c3b38129682acd795cf76`.
+The [runner finding](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23#discussion_r4708010182)
+reproduced under `python -S`. The runner now imports Markdown contract names
+from a dependency-free module and defers parser provenance validation until
+execution. The new subprocess test covers help and dry-run planning for
+both modes with site packages disabled. Local checks passed 97 focused
+tests with the source-pinned paired replay passing separately. All five
+governance checks passed. The repository map includes the contract module.
+Recheck exact-head CI before resolving the finding. The next decision is
+merge authorization. G2 remains REVISE and #15 stays open in slot 1.
+
 ### 2026-11-26 — MD-01 standalone legacy adapter review fix
 
 Branch `codex/md-01-structural-markdown`,

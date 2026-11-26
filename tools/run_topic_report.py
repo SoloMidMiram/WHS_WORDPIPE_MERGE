@@ -38,14 +38,13 @@ if str(_REPO_ROOT_FOR_IMPORT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT_FOR_IMPORT))
 
 
-from wordpipe.chronicle.markdown_sections import (
+from wordpipe.markdown_contract import (
     LEGACY_MODE,
     MARKDOWN_MODES,
     STRUCTURAL_CORRELATION_SCHEMA,
     STRUCTURAL_LINEAGE_SCHEMA,
     STRUCTURAL_MODE,
     STRUCTURAL_RAW_SCHEMA,
-    validate_parser_provenance,
 )
 
 STRUCTURAL_ROOT_MARKER = ".md01-structural-v1"
@@ -743,6 +742,8 @@ def validate_and_finalize_event_lineage(
         )
     structural = markdown_mode == STRUCTURAL_MODE
     if structural:
+        from wordpipe.chronicle.markdown_sections import validate_parser_provenance
+
         if raw.get("$schema") != STRUCTURAL_RAW_SCHEMA or raw.get("markdown_mode") != STRUCTURAL_MODE:
             raise AdapterMetricsError("unsupported structural prepare lineage schema or mode")
         if not isinstance(raw.get("source_accounting"), list):
@@ -1001,6 +1002,8 @@ def correlate_event_provenance(
     if lineage_doc.get("$schema") != expected_schema or lineage_doc.get("markdown_mode", LEGACY_MODE) != markdown_mode:
         raise ProvenanceError("unsupported event lineage schema or mode")
     if structural:
+        from wordpipe.chronicle.markdown_sections import validate_parser_provenance
+
         try:
             provenance = validate_parser_provenance(lineage_doc.get("parser_provenance"), heading_levels)
         except ValueError as exc:
