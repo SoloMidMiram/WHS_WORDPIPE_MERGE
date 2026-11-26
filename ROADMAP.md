@@ -2,7 +2,7 @@
 
 > **Date (Gregorian):** 2026-07-09
 > **Date (Shamsi/Jalali):** 1405-04-18
-> **Last Updated:** 2026-11-22
+> **Last Updated:** 2026-11-26
 > Dated entries identify their reviewed branch and PR.
 
 ## Current delivery roadmap
@@ -30,6 +30,32 @@ covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, a vacant 
 | 7 | Optional AI research | [NCM #9](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/9) is blocked for real inference. [Jev #10](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/10) has offline preparation available. [Combined benchmark #11](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/11) is blocked on upstream evidence. |
 
 ## Active narrative roadmap — newest first
+
+### 2026-11-26 — MD-01 parser provenance correction and acceptance
+
+Branch `codex/md-01-structural-markdown`,
+[PR #23](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23).
+Base `0a6385cbc50ef394a06c3b38129682acd795cf76`. The maintainer accepted the
+bounded opt-in implementation at `1b700d7a82d9b5e0ee350185421fbb10e2950a82`
+subject to parser provenance and final verification. At that original head,
+103 focused cases passed, the paired case ran separately, and all five
+[hosted jobs](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45803359319)
+passed. The original unpinned Windows run reported 385 passed, 5 failed and
+6 skipped. The four pre-existing foreign imports and the paired test's
+legacy-leg import failure remain CI-01 evidence.
+
+Reviewed correction `fbcc39603991b4db1ee1d8803843b6da5cccd56c` adds the
+actual Markdown parser provenance to the versioned structural sidecars.
+Windows Python 3.11 focused checks passed 104 tests with the paired case
+run separately. The Windows source suite with the repository explicitly
+pinned in `PYTHONPATH` passed 391 tests with 6 skipped, including repeated
+paired source replay. Fresh Windows wheel environments passed paired replay
+on markdown-it-py 3.0.0, 4.2.0 and 4.3.0. All 22 compared evidence groups
+matched after removing the producer provenance fields. The frozen fixture
+and legacy identity ledger were verified by hash. The repository map was
+checked. Recheck exact-head hosted evidence after this documentation commit.
+The maintainer's merge decision is the next boundary. G2 remains REVISE,
+#15 stays open in slot 1, and legacy remains the default.
 
 ### 2026-11-26 — MD-01 bounded implementation review
 
