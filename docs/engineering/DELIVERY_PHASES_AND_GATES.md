@@ -97,14 +97,14 @@ exit and successor; no fourth active package.
 
 | Slot | Current package | Next decision |
 |---|---|---|
-| Slot 1 — document understanding | MD-01 [#15][i15] (admitted) | Characterize Markdown structure and lineage; decide a bounded correction. GOV-01 exited with G0 ACCEPT. |
-| Slot 2 — research fidelity | **Vacant** | B2 finished with G1 REVISE and the maintainer deferred B3 under [#8][i8]. No successor is admitted by this decision. |
+| Slot 1 — document understanding | MD-01 [#15][i15] (admitted) | Qualify intended inputs and disposition reserved framing. G2 remains REVISE. |
+| Slot 2 — runtime reliability | EXEC-01 [#25][i25] (admitted for preparation) | Review the bounded execution contract before authorizing production implementation. |
 | Independent hardening | SEC-01 [#17][i17] | Complete the public release audit. SAFE-01 [#18][i18] remains READY until recorded exit and explicit admission. |
 
 **Slot 2 release.** [PR #20](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/20) integrated at
 `c78c6e90d96ee8e9f07e08b14e74de1bd657de93`, recording the B3 DEFER exit.
-Slot 2 is vacant and unreserved. Any successor requires a separate
-priority, prerequisite, scope, ownership and admission decision.
+That decision left slot 2 vacant and unreserved. The separate
+2026-11-26 admission for EXEC-01 is recorded below.
 **G1 REVISE remains an unresolved mandatory v0.2 release blocker.**
 
 GOV-01 [#14][i14] exited on 2026-11-20 after PR #19 integration and maintainer
@@ -517,7 +517,7 @@ bytes from each stream, waited for an inheriting child to finish, and observed
 the finite worker complete after the supervisor was terminated. Abrupt
 supervisor termination is one failure case. Cooperative cancellation, Ctrl-C
 and Linux tree teardown remain qualification cases. GitHub's all-state issue
-inventory and EXEC-01 search returned no owner issue. Slot 2 remains vacant.
+inventory and EXEC-01 search returned no owner issue at characterization.
 
 **Proposed contract.** Scope to a shared local stage boundary for the topic
 runner and its PowerShell child stages. Use a typed policy with deadline,
@@ -546,8 +546,94 @@ and surface ownership/launch failure explicitly. Avoid PID-only tree cleanup.
 nonzero, hung, noisy, descendant-held pipes, cancellation, failed process
 launch and lost ownership through the public run entry point. Verify terminal
 artifacts, absence of live owned fixture processes, and byte-identical prior
-outputs. **BLOCKED** for execution until explicit slot-2 admission and issue
-authorization.
+outputs. Production changes require explicit acceptance of the implementation
+contract.
+
+#### Slot-2 admission and implementation contract (2026-11-26)
+
+The maintainer admits EXEC-01 under [#25][i25] for preparation and contract
+review. Checked main `df072540cea6ae458ecd0592c6cf2b1fe69cee0d`,
+the execution queue, open [#15][i15], [#17][i17] and [#18][i18], and
+all-state issue and PR inventories before creating #25. SoloMidMiram is
+accountable for contract acceptance. The runtime implementer owns delivery.
+Reuse the current stage interfaces and synthetic fixtures at the accepted
+main revision. Release qualification must still satisfy separate CI-01
+and CLI-01 requirements.
+
+**Additional observations.** On Linux under Ubuntu WSL2 with Python 3.14.4,
+the unchanged Python runner returned normal and nonzero exit codes 0 and 7.
+A 2.25-second stage returned success after 2.28 seconds. It captured
+1,100,000 ASCII bytes from each stream. A descendant holding an inherited
+pipe delayed completion to 1.15 seconds. A cooperative signal handler
+recorded a stop request, and the synchronous runner returned success 0.73
+seconds later. The request tested the absence of a cancellation path in the
+current runner.
+
+Separate finite Linux ownership probes created fresh sessions. Group TERM
+stopped an ordinary descendant and let its parent reap it in 0.015 seconds.
+A separate TERM-ignoring leader required KILL after a short grace and was
+reaped in 0.314 seconds. Both samples left zero fixture PIDs. The force
+probe covered a single leader. Forced teardown with descendants and a
+full Linux PowerShell stage run remain unverified. PowerShell was absent
+in the local WSL environment. Windows evidence above remains baseline
+characterization. Windows Job Objects, nested jobs and console interruption
+remain qualification work. Local observations are retained at
+`_WORK/EXEC01-CONTRACT-20261126/linux-probe.json`.
+
+**Proposed execution boundary.** A shared stage executor accepts argv and
+a typed policy with an optional positive deadline, cleanup grace and byte
+caps, plus a one-shot cancellation input. An absolute monotonic deadline
+starts before launch. A stage returns a single typed result with outcome,
+native exit code where available, elapsed time, capped stream bytes and
+observed byte counts, truncation flags, and cleanup disposition. Preserve
+the timeout or cancellation cause when cleanup itself fails. The legacy
+exit-code projection stays zero for success, keeps native nonzero codes,
+and uses a documented nonzero compatibility code for new failure reasons.
+
+The supervisor serializes verified completion, cancellation and deadline.
+Completion is the observed leader exit, stream EOF and verified absence
+of remaining owned processes. It wins only when observed strictly before
+both stop events. An earlier stop event wins and cancellation wins a
+same-time tie. A descendant holding a pipe can keep drainage pending after
+leader exit. Continue draining both streams concurrently after their retention
+caps, discarding excess bytes and recording truncation. Bound persisted
+diagnostics and the PowerShell internal buffer. Store completed stage
+evidence before a dependent stage starts and publish terminal failure
+evidence from the unique current attempt. Preserve earlier outputs. Budget
+grace, escalation, drain and reap together against the five-second
+cleanup limit measured from the triggering event.
+
+Own a fresh Linux session and process group before the child runs. Signal
+only the owned group, escalate after grace, reap the leader and verify
+ordinary descendants have stopped. Explicitly characterize the limit for
+processes that leave the group. An unverified tree yields cleanup failure.
+On Windows, create the process suspended, establish Job Object ownership
+with kill-on-close before resuming, and fail launch if assignment cannot
+be established. Test nested-job restrictions and completion races. Give
+each launch exactly one process-tree owner. A direct PowerShell invocation
+owns each native stage via the shared executor. A topic-runner launch owns
+the PowerShell subtree. Nested native stages use the enclosing deadline
+and bounded capture without creating a detached ownership scope.
+
+**Implementation sequence after approval.** First freeze the policy,
+results and compatibility mapping with injected timing. Next implement
+owned launch, bounded capture and cleanup per platform. Integrate the
+Python and direct PowerShell entry points, then run both entry paths on
+clean Windows and Linux environments with the registered G5 limits.
+
+| Regression cases | Required evidence |
+|---|---|
+| Normal, nonzero and launch failure | Native code and compatibility projection, exactly one terminal result, dependent stages skipped after failure. |
+| 2-second timeout, cooperative cancel, Ctrl-C and completion races | Monotonic cause, deterministic precedence, non-success verdict, tree stopped within 5 seconds of the triggering event. |
+| Concurrent noisy streams and inherited pipes | At most 1 MiB retained per stream, explicit truncation, bounded diagnostic storage and finite drainage. |
+| Normal descendants, forced escalation, Windows nested jobs, lost ownership | Zero surviving owned fixture processes on Windows and Linux. Ownership or cleanup uncertainty is terminal failure with its cause retained. |
+| Prior valid run and a failed fresh attempt | Old bytes and hashes preserved. Terminal evidence and failed outputs belong to the new attempt. |
+
+**Recommendation.** ACCEPT the bounded contract for maintainer approval.
+Implementation remains gated on that decision. Stop candidate qualification
+for missing ownership, survivors, exceeded timing or capture limits,
+ambiguous terminal evidence, incompatible exit handling or prior-output
+mutation. G5 remains unqualified.
 
 ### SAFE-01 preparation (2026-11-26)
 
@@ -803,7 +889,7 @@ technical evidence and historical remediation.
 | ONT-01 | P1 | Project ontology population | To-create | Ontology implementer | Queued. Map verified Phase 13–17 runs to existing project entities. Verify stable IDs, schema compatibility and evidence references (core G4). |
 | ONT-02 | P1 | Semantic concepts and relationships | To-create | Ontology lead + reviewer | Gated by ONT-01, NLP-01 and the Phase 15 schema decision. Verify versioned migration and evidence-backed relations (full G4). |
 | SAFE-01 | P1 | Atomic DOCX publication | [#18][i18] | DOCX implementer | Ready after SEC-01 in slot 3. Prove failure preservation and cleanup through installed paths on Windows and Linux (DOCX readiness). |
-| EXEC-01 | P1 | Bounded execution and cancellation | To-create | Runtime implementer | Queued. Define stage process contracts and verify deadlines, bounded diagnostics and cleanup on supported platforms (G5). |
+| EXEC-01 | P1 | Bounded execution and cancellation | [#25][i25] | Runtime implementer | Slot 2 admitted for preparation. Contract acceptance precedes implementation and G5 qualification. |
 | SEC-01 | P1 | Public repository and dependency audit | [#17][i17] | Release/security maintainer | Admitted in slot 3. Record current ref, dependency, workflow and release-artifact coverage and disposition (G5). |
 | DOCX-01 | P2 | Flattener and capability contracts | To-create | DOCX implementer | Queued. Characterize supported COM/XML dependencies and experimental flags. Verify installation and capability reporting (DOCX readiness). |
 | INT-01 | P2 | TraceLedger consumer validation | To-create | Integration lead + external consumer | Queued. Require a real available consumer and verify library, EventSink and capability contracts (external consumer acceptance). |
@@ -870,6 +956,7 @@ links for research PRs that deliver evidence while a quality gate stays open.
 [i16]: https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/16
 [i17]: https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17
 [i18]: https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/18
+[i25]: https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/25
 [a40]: https://github.com/SoloMidMiram/md-mdc-Agents-Skills-MCPs-Kagent-A2A-SubAgents/issues/40
 [a41]: https://github.com/SoloMidMiram/md-mdc-Agents-Skills-MCPs-Kagent-A2A-SubAgents/issues/41
 [a44]: https://github.com/SoloMidMiram/md-mdc-Agents-Skills-MCPs-Kagent-A2A-SubAgents/issues/44
