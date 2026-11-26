@@ -1,10 +1,11 @@
 # Flowers seven-document pilot
 
-Current status (2026-11-19): engineering navigation PASS after integrating merged
-PRs #6/#5 and repeating the full seven-source topic run. Semantic corpus
-acceptance remains REVIEW; PR #7 stays draft. See the newest matrix in
-[ACCEPTANCE_02.md](ACCEPTANCE_02.md). Earlier observations below are preserved
-as historical results and are superseded where the current matrix says so.
+Current status (2026-11-22): [PR #7](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/7) merged the engineering
+changes. The dated seven-source navigation PASS remains recorded in
+[ACCEPTANCE_02.md](ACCEPTANCE_02.md). G3-full semantic acceptance remains
+REVIEW under queued [#16](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/16). G3-core is a separate synthetic v0.2
+gate. Restricted sources and row-level evidence remain local.
+Earlier observations below are historical.
 
 Verdict: REVIEW. This is partial evaluation, not publication acceptance.
 

@@ -1,5 +1,15 @@
 # WHS-FLOWERS-PILOT-02 acceptance hardening
 
+## 2026-11-22 — Integrated status
+
+[PR #7](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/7) merged engineering work at
+`87c69d3e89a189ce7a2be89562f748b1e0637540`. The matrix below records its
+dated pilot evidence and then-current dispositions. [#16](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/16) remains queued
+for G3-full independent annotation, adjudication and quality assessment.
+Semantic acceptance remains REVIEW. G3-core synthetic qualification is
+separate, and restricted sources and row-level annotations stay local.
+See the [delivery contract](../../docs/engineering/DELIVERY_PHASES_AND_GATES.md#phase-3--corpus-acceptance).
+
 ## 2026-11-19 — WHS-INTEGRATION-06 current engineering acceptance
 
 Verified now on reconciliation commit `0a97fe643245666daa1013ed7a4cf2fea532ebbb`:

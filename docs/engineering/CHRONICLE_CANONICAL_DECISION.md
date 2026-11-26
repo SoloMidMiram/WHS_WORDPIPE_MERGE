@@ -42,7 +42,7 @@ It accumulated across three generations:
 
 - Stable imports: `from wordpipe.chronicle import ingest, merge, categorize, verify_ingest`
 - Stable direct modules: `wordpipe.chronicle.ingest`, `wordpipe.chronicle.merge`, `wordpipe.chronicle.categorize`, `wordpipe.chronicle.verify_ingest`
-- Deprecated CLI wrappers: `pipeline/*.py` and `tools/pipeline-chronicle/*.py`
+- Operator compatibility wrappers: `pipeline/*.py` and `tools/pipeline-chronicle/*.py`. Consumer characterization and a separate compatibility decision precede any retirement.
 - Wrappers are CLI surfaces only; runtime code must not import from `pipeline/` or `tools/`.
 
 ## Dependency Contract
@@ -57,6 +57,7 @@ That extra owns:
 
 - `pyyaml`
 - `python-dateutil`
+- `markdown-it-py`
 
 `jinja2` is not part of the `chronicle` extra because the index renderer has fallback formatting.
 

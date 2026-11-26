@@ -2,7 +2,7 @@
 
 > **Date (Gregorian):** 2026-07-09
 > **Date (Shamsi/Jalali):** 1405-04-18
-> **Last Updated:** 2026-11-21
+> **Last Updated:** 2026-11-22
 > Dated entries identify their reviewed branch and PR.
 
 ## Current delivery roadmap
@@ -17,19 +17,35 @@ AI qualification belongs to the v0.5 target. Delivery gateway IDs are scoped
 to the matrix. The historical goals and phases below retain their identifiers.
 
 The [three-slot queue](docs/engineering/DELIVERY_PHASES_AND_GATES.md#active-execution-queue)
-covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, a vacant slot 2 after B3 deferral (#8 / draft #13), and SEC-01 (#17) in slot 3. SAFE-01 follows SEC-01 only after documented slot release. READY does not mean admitted. At most three packages can execute.
+covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, a vacant slot 2 after [PR #20](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/20) integrated the B3 deferral, and SEC-01 (#17) in slot 3. SAFE-01 is READY; admission requires documented SEC-01 exit and a separate maintainer decision. No successor was admitted to slot 2. READY does not mean admitted. At most three packages can execute.
 
 | Order | Phase | Current execution |
 |---|---|---|
-| 1 | Context fidelity | **REVISE** [#8](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/8) / [draft #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13). Frozen B2 failed qualification. B3 is **DEFERRED** pending the [re-entry evidence](docs/engineering/DELIVERY_PHASES_AND_GATES.md#b3-re-entry). |
-| 2 | Document understanding | [Markdown structure #15](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/15) is admitted in slot 1. Temporal evidence and multilingual normalization follow characterization. |
-| 3 | Corpus acceptance | [Flowers #16](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/16) is queued for real-corpus evaluation. Offline rubric preparation requires an available slot and admission. |
+| 1 | Context fidelity | **REVISE** [#8](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/8) / [draft #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13). Frozen B2 failed qualification and G1 remains a mandatory v0.2 blocker. B3 is **DEFERRED** pending the [re-entry evidence](docs/engineering/DELIVERY_PHASES_AND_GATES.md#b3-re-entry). |
+| 2 | Document understanding | [Markdown structure #15](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/15) is admitted in slot 1. Characterize structure, source spans and replay. TIME-01 and NLP-01 remain queued. |
+| 3 | Corpus acceptance | [Flowers #16](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/16) is queued for G3-full. G3-core synthetic evidence remains a distinct v0.2 gate. |
 | 4 | References and ontology | Complete Phase 9c using existing survivor contracts and populate the project ontology before schema expansion. |
-| 5 | Product stabilization | [Public audit #17](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17) occupies slot 3. [Atomic DOCX #18](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/18) follows in the same slot. Bound execution and verify the installed Chronicle workflow for v0.2. |
+| 5 | Product stabilization | [Public audit #17](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17) occupies slot 3 for release assurance. [Atomic DOCX #18](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/18) is READY for separate DOCX qualification. CLI-01 and CI-01 remain queued v0.2 work. |
 | 6 | Knowledge intelligence | Ground citations, claims and relations in provenance. Measure search needs before indexing. |
 | 7 | Optional AI research | [NCM #9](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/9) is blocked for real inference. [Jev #10](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/10) has offline preparation available. [Combined benchmark #11](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/11) is blocked on upstream evidence. |
 
 ## Active narrative roadmap — newest first
+
+### 2026-11-22 — Delivery and topic documentation synchronization
+
+Branch `codex/whs-roadmap-topic-sync`, [draft PR #21](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/21).
+Reviewed main `c78c6e90d96ee8e9f07e08b14e74de1bd657de93` integrates PR #20.
+[Main CI](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/44922552991) passed at that SHA.
+PR #19 is merged and #14 closed. [Draft PR #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13) at
+`32387d67b76aad99baa462cf1cc7c3172901681d` retains the frozen B2 negative
+experiment. Slot 2 is vacant. MD-01 and SEC-01 retain slots 1 and 3.
+The November 21 requirements in [#8](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/8), [#15](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/15), [#16](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/16), [#17](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17), [#18](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/18)
+inform the delivery and backlog updates. The repository map points to the
+pinned research and topic evidence. The documentation sync revises active
+summaries and leaves historical results in place. Package metadata remains
+0.1.0 and the v0.2 and v0.3 gate contracts are unchanged. Next decision:
+maintainer review of the documentation-only draft and its exact-head checks.
+
 
 ### 2026-11-21 — B2 REVISE accepted and B3 deferred
 

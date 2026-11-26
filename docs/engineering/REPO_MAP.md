@@ -1,5 +1,7 @@
 # WHS repository retrieval map
 
+Checked 2026-11-22 against main `c78c6e90d96e` and the November 21 issue reconciliation.
+
 Checked 2026-11-21 against main `e85ddc1b0422` for the WHS #8 deferral.
 
 Checked 2026-11-20 for delivery and backlog planning against main `e2f1c17643b0`.
@@ -28,7 +30,8 @@ semantic index; verify the caller and contract before editing.
 | catalog, hashes, preservation | `inputs/README.md`, `inputs/catalog.json`, `tools/verify_integrity.py` | `tests/test_input_catalog.py`; inspect specific evidence only on demand |
 | boundaries, root, imports | `ROOT_ORGANIZATION.md`, `tools/check_root_layout.py`, `tools/check_architecture_boundaries.py` | `tests/test_root_layout.py`, `tests/test_architecture_boundaries.py` |
 | NCM Flowers pilot, B0, worker fallback | `scripts/experiments/ncm_flowers_pilot.py` (offline synthetic harness) | `tests/test_ncm_flowers_pilot.py`, `tests/fixtures/ncm_flowers_synthetic.json`, `tests/fixtures/ncm_flowers_synthetic_gold.json`; [report and metrics](NCM_FLOWERS_PILOT.md). Genuine inference remains blocked. |
-| Context-pack fidelity, B1/B2 | [Draft PR #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13) and [issue #8](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/8) | [Frozen B2 findings](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/blob/3cc86ef2e6eee7d55bbc7eac361045d4db418a1f/docs/engineering/WHS_CONTEXT_PACK_B2.md#b2-root-cause-disposition--2026-11-21), [ten synthetic probes](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/blob/3cc86ef2e6eee7d55bbc7eac361045d4db418a1f/tests/fixtures/whs_context_raw_fallback_regressions.json), and [B3 re-entry](DELIVERY_PHASES_AND_GATES.md#b3-re-entry) |
+| Context-pack fidelity, B1/B2 | [Draft PR #13](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/13) and [issue #8](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/8) | [Frozen B2 findings](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/blob/32387d67b76aad99baa462cf1cc7c3172901681d/docs/engineering/WHS_CONTEXT_PACK_B2.md#b2-root-cause-disposition--2026-11-21), [ten synthetic probes](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/blob/32387d67b76aad99baa462cf1cc7c3172901681d/tests/fixtures/whs_context_raw_fallback_regressions.json), [strict expected-failure tests](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/blob/32387d67b76aad99baa462cf1cc7c3172901681d/tests/test_chronicle_context_pack.py), and [B3 re-entry](DELIVERY_PHASES_AND_GATES.md#b3-re-entry) |
+| Flowers topic acceptance | [Flowers pilot](../../WordHorrorStories/flowers/README.md) and [#16](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/16) | [Historical engineering evidence and open semantic review](../../WordHorrorStories/flowers/ACCEPTANCE_02.md) |
 | gateways, issue ownership, release milestones | [Delivery plan](DELIVERY_PHASES_AND_GATES.md) | [G0–G7](DELIVERY_PHASES_AND_GATES.md#acceptance-gateway-matrix), [work packages](DELIVERY_PHASES_AND_GATES.md#backlog-activation-and-synchronization), [release gates](DELIVERY_PHASES_AND_GATES.md#proposed-release-boundaries) |
 | priorities, architecture, ontology | `ROADMAP.md`, `ARCHITECTURE_AND_MODULES.md`, `ONTOLOGY_MODEL.md` | [Delivery phases and gates](DELIVERY_PHASES_AND_GATES.md), `docs/engineering/IMPLEMENTATION_ALIGNMENT_AUDIT.md`, `docs/engineering/OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md` |
 

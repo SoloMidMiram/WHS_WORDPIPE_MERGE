@@ -39,7 +39,7 @@ execution is asserted by this correction.
 | Chronicle baseline | PRs [#2][pr2]–[#6][pr6] are merged, including structured run evidence, strict configuration and survivor navigation. Main at `e2f1c17643b0` has five successful [hosted CI jobs][main-ci]. | Verify release behavior through the installed entry points. |
 | Flowers | PR [#7][pr7] is merged with engineering and navigation evidence. Real-corpus semantic acceptance remains **REVIEW**. | Apply the independent rubric in [#16][i16] after the Phase 2 decisions. |
 | NCM pilot | PR [#12][pr12] is merged as research evidence. Genuine inference is **BLOCKED**. Real Flowers quality and incremental NCM benefit are **UNMEASURED**. | Reuse upstream runtime qualification for [#9][i9]. |
-| Context export | [Frozen B2](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/commit/920c8e044ad7553d11d010bdba6ae580626db961) failed G1. First-run results were 28/30 verified valid deliveries, 9/20 correct refusals, 1/10 absent-field refusals, and 0% median estimated complete-packet GPT-2 savings. | G1 **REVISE** under [#8][i8]. B3 **DEFERRED**. Preserve the [first-run and investigation evidence](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/blob/3cc86ef2e6eee7d55bbc7eac361045d4db418a1f/docs/engineering/WHS_CONTEXT_PACK_B2.md#b2-root-cause-disposition--2026-11-21) in [draft PR #13][pr13]. |
+| Context export | [Frozen B2](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/commit/920c8e044ad7553d11d010bdba6ae580626db961) failed G1. First-run results were 28/30 verified valid deliveries, 9/20 correct refusals, 1/10 absent-field refusals, and 0% median estimated complete-packet GPT-2 savings. | G1 **REVISE** under [#8][i8]. B3 **DEFERRED**. Preserve the [first-run and investigation evidence](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/blob/32387d67b76aad99baa462cf1cc7c3172901681d/docs/engineering/WHS_CONTEXT_PACK_B2.md#b2-root-cause-disposition--2026-11-21) in [draft PR #13][pr13]. |
 | Release boundary | The package metadata says `0.1.0`. Proposed v0.2 is the deterministic Chronicle release. | Certify v0.2 against the checklist below. Track WordPipe DOCX readiness independently. |
 
 At the baseline, seven PRs had merged, PR #1 had closed without merging, and
@@ -99,21 +99,13 @@ exit and successor; no fourth active package.
 |---|---|---|
 | Slot 1 — document understanding | MD-01 [#15][i15] (admitted) | Characterize Markdown structure and lineage; decide a bounded correction. GOV-01 exited with G0 ACCEPT. |
 | Slot 2 — research fidelity | **Vacant** | B2 finished with G1 REVISE and the maintainer deferred B3 under [#8][i8]. No successor is admitted by this decision. |
-| Independent hardening | SEC-01 [#17][i17] | Complete the public release audit, then admit SAFE-01 [#18][i18] to this slot. |
+| Independent hardening | SEC-01 [#17][i17] | Complete the public release audit. SAFE-01 [#18][i18] remains READY until recorded exit and explicit admission. |
 
-**Effective-date condition for PR #20.** The vacancy in this proposed
-table is **not yet effective on main while PR #20 is open**; slot 2 remains
-occupied in the previously integrated queue for governance accounting.
-Integration of PR #20 records the B3 DEFER exit and releases slot 2.
-This is a deliberate **no-successor admission** decision, not reserved
-capacity for B3 and not a missing G0 approval (G0 already exited).
-Queued or READY P1 packages, including CLI-01 and the separately
-prioritized corpus/runtime work, do not enter a slot automatically.
-The next owner decision must independently establish priority, prerequisites,
-scope, accountability and explicit admission under the three-slot cap.
-This is not a waiver: **G1 REVISE remains a mandatory unresolved v0.2
-release blocker** even after slot 2 is freed. No v0.2 ACCEPT or release
-is implied by deferral or by available execution capacity.
+**Slot 2 release.** [PR #20](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/20) integrated at
+`c78c6e90d96ee8e9f07e08b14e74de1bd657de93`, recording the B3 DEFER exit.
+Slot 2 is vacant and unreserved. Any successor requires a separate
+priority, prerequisite, scope, ownership and admission decision.
+**G1 REVISE remains an unresolved mandatory v0.2 release blocker.**
 
 GOV-01 [#14][i14] exited on 2026-11-20 after PR #19 integration and maintainer
 acceptance; MD-01 [#15][i15] is formally admitted in slot 1. This is admission
@@ -134,8 +126,8 @@ exposed population only for historical and regression work. The failure
 was coupled: permissive raw fallback allowed 11 non-responsive deliveries,
 while suppressing all raw packets would remove 27 valid deliveries. No
 validated correction yet preserves coverage and supplies sufficient compact
-verified evidence. The completed experiment consumed slot 2. Integration of
-this decision releases it, and any successor requires separate admission.
+verified evidence. The completed experiment consumed slot 2. PR #20 released it upon integration.
+Any successor requires separate admission.
 
 ### B3 re-entry
 
@@ -181,18 +173,26 @@ delivery, raw fallback and refusals separately, including expected refusals.
 Keep budget refusals in the coverage and applicable fact denominators. Report
 estimates and measured usage distinctly. Replay deterministically and verify
 canonical artifact hashes. Record ACCEPT or REVISE with report and exact head.
-An evidence-only merge can preserve a negative result while #8 stays open.
+Any separately authorized evidence-only integration of draft PR #13 must
+reconcile its roadmap and retrieval-map history with current main, then
+verify exact-head CI and the diff boundary. The experiment remains research
+evidence and issue #8 stays open.
 
 ## Phase 2 — Document understanding
 
 **Gateway.** [G2 Parsing](#acceptance-gateway-matrix).
 
 **Entry.** Use synthetic fixtures and characterize the current generic adapter
-and lineage contract. [#15][i15] is ready independently of B2.
+and lineage contract. MD-01 [#15][i15] is admitted in slot 1 independently of B2.
 
 **Work.** Compare the current extraction with block-aware Markdown using the
 existing parser dependency. Cover fenced headings, blockquotes, nested blocks,
-tables, frontmatter, preambles and empty sections. Follow with a temporal
+tables, frontmatter, preambles, empty sections, heading-level settings,
+CRLF/LF and mixed script. Compare the current regex with `markdown-it-py`
+tokens and source maps before selecting another parser. Reconcile candidate
+and staged ordinals, date role, source/report IDs, survivor and navigation,
+and verify source bytes, replay and clean source/installed test origins.
+TIME-01 and NLP-01 remain queued. The temporal follow-up uses a
 sidecar distinguishing occurred, published, observed, recorded, retrieved and
 assigned dates, each with a locator or explicit unknown. Characterize
 normalization and phrase matching for Persian and English, including yeh,
@@ -211,10 +211,10 @@ follow-ups to issues when their interfaces are characterized.
 
 **Gateway.** [G3 Corpus](#acceptance-gateway-matrix).
 
-**Entry.** [#16][i16] may prepare an offline rubric once admitted to an
-available slot. Real-corpus
-scoring requires the applicable Phase 2 decisions, an authorized local
-inventory and independent adjudication.
+**Entry.** CORP-01 [#16][i16] is queued. Preparation is limited to public or
+synthetic rubric and blinded annotation design. Real-corpus work requires
+explicit slot admission, the applicable #15, TIME-01 and NLP-01 decisions,
+and authorization of the local inventory.
 
 **Work.** Use the [Flowers acceptance report](../../WordHorrorStories/flowers/ACCEPTANCE_02.md)
 as the starting evidence. Review preambles, contextual titles and source/date
@@ -256,7 +256,8 @@ relations and carries its own migration and compatibility evidence.
 **Gateway.** [G5 Release](#acceptance-gateway-matrix).
 
 **Entry.** The deterministic release candidate has a declared supported
-workflow and synthetic fixtures. [#17][i17] and [#18][i18] can proceed earlier.
+workflow and synthetic fixtures. SEC-01 [#17][i17] owns slot 3. SAFE-01
+[#18][i18] is READY pending documented SEC-01 exit and separate admission.
 
 **Work.** Bound topic-runner execution with configurable deadlines, capped
 diagnostics, explicit results and platform-tested cancellation/cleanup. Verify
@@ -266,6 +267,19 @@ for existing wrappers. For DOCX, implement atomic output, resolve flattener
 dependencies and experimental flags, and test capability reporting and the
 [TraceLedger boundary](../TRACELEDGER_INTEGRATION_CONTRACT.md) with a real
 external consumer before claiming that integration.
+
+SEC-01 records a coverage matrix separating the extension-filtered worktree
+credential scanner from reachable refs/history, SAST and dependency
+advisories. Record exact refs and release assets, tool/version/scope,
+justified suppressions, Actions and dependency provenance, wheel/sdist
+contents and SBOM/checksum feasibility. Publish redacted findings and
+coverage limits. CLI-01 and CI-01 remain separate queued v0.2 work.
+
+SAFE-01 must locate the final commit point across save, validation and
+subsequent TOC updates. Stage destination-mutating TOC work before the
+commit point or scope the atomicity claim explicitly. Verify pre-commit
+byte preservation, post-commit errors, cleanup ownership and overwrite,
+symlink, locking and concurrency behavior through installed API and CLI.
 
 **Exit gate.** Complete the v0.2 checklist below. WordPipe DOCX earns its own
 readiness decision through installed API and CLI tests on Windows and Linux,
@@ -421,7 +435,7 @@ subject to the independent gateway review.
 | G4 — Ontology | For v0.2, verify unique source/survivor references, stable identities and provenance, schema compatibility and mapped project instances. Record the manual comparison disposition. For full G4, review the versioned schema, evaluated concepts and relations, and migration and compatibility evidence. | Chronicle and ontology maintainers, CORE-01, ONT-01 and ONT-02. Evidence pending. |
 | G5 — Release | Verify wheel-installed Chronicle, EXEC-01 liveness and failure recovery, current security review, CI-01 import-origin isolation and CLI-01 exact-candidate Windows and Linux acceptance. Track DOCX capability and external TraceLedger acceptance independently. | Release maintainer, EXEC-01, SEC-01 [#17][i17], CLI-01 and CI-01; DOCX-01 separately. Qualification pending. |
 | G6 — Knowledge | Independently evaluate evidence resolution, temporal scope, claim and relation quality against predeclared targets. Preserve earlier claims and record qualifications, contradictions, retractions and supersession explicitly. Apply the quantified PERF-01 budget before performance acceptance. | Knowledge maintainer and independent evaluator, CLAIM-01, CITE-01, PERF-01 and conditional STORE-01. Entry gated. |
-| G7 — AI | Qualify the runtime or adapter for the intended use. Obtain applicable data and execution authorization. Independently evaluate all cases, including rejected and fallback cases. Record quality, latency, memory and cost against the deterministic baseline and apply the explicit issue-specific G7 floors above. | Experiment maintainers and independent evaluator, [#9][i9]–[#11][i11]. NCM inference and the combined benchmark are **BLOCKED**. Jev has offline preparation available. |
+| G7 — AI | Qualify the runtime or adapter for the intended use. Obtain applicable data and execution authorization. Independently evaluate all cases, including rejected and fallback cases. Record quality, latency, memory and cost against the deterministic baseline and apply the explicit issue-specific G7 floors above. | Experiment maintainers and independent evaluator, [#9][i9]–[#11][i11]. NCM inference and the combined benchmark are **BLOCKED**. Jev has offline preparation available; live execution requires separate authorization. |
 
 ## Proposed release boundaries
 
