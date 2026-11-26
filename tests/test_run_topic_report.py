@@ -7,7 +7,11 @@ import json
 import math
 import subprocess
 import sys
+import threading
+import time
 from pathlib import Path
+
+import pytest
 
 MODULE_PATH = Path(__file__).resolve().parents[1] / "tools" / "run_topic_report.py"
 SPEC = importlib.util.spec_from_file_location("run_topic_report", MODULE_PATH)
@@ -1197,6 +1201,97 @@ def test_main_returns_nonzero_when_run_report_has_prepare_failure(monkeypatch, t
     monkeypatch.setattr(runner, "load_manifest", lambda path: {"topic": "t"})
     code = runner.main(["--manifest", str(manifest_path)])
     assert code == 1
+
+
+@pytest.mark.parametrize("outcome", ["timeout", "cancelled", "cleanup_failure", "launch_failure", "native_failure"])
+def test_summary_failure_boundary(tmp_path, monkeypatch, outcome):
+    from wordpipe.execution import Cleanup, ExecutionResult, Outcome
+
+    manifest_path, _ = _valid_manifest_file(tmp_path)
+    manifest = runner.load_manifest(manifest_path)
+    manifest["adapter"]["id"] = "custom_unregistered_adapter"
+    base = Path(manifest["output"]["base_dir"])
+    prior = base / "prior"
+    prior.mkdir(parents=True)
+    previous_metrics = prior / "run_metrics.json"
+    previous_metrics.write_bytes(b'{"merged_event_count": 10}')
+    run = base / "current"
+    metrics = run / "run_metrics.json"
+    raw = b'{"merged_event_count":' if outcome != "native_failure" else b'{"merged_event_count": 2}'
+    code = (
+        "from pathlib import Path;import time;"
+        f"Path({str(metrics)!r}).write_bytes({raw!r});"
+        + ("raise SystemExit(124)" if outcome == "native_failure" else "time.sleep(7)")
+    )
+    commands = {
+        runner.CMD_PREPARE: [
+            sys.executable, "-S", "-c",
+            f"from pathlib import Path;Path({str(run / 'prepare_metrics.json')!r})"
+            f".write_text({json.dumps(_valid_common_metrics())!r}, encoding='utf-8')",
+        ],
+        runner.CMD_PIPELINE: [sys.executable, "-S", "-c", "pass"],
+        runner.CMD_SUMMARIZE: [sys.executable, "-S", "-c", code],
+    }
+    monkeypatch.setattr(runner, "load_manifest", lambda _: manifest)
+    monkeypatch.setattr(runner, "build_commands", lambda *_: commands)
+    execute = runner.execute
+
+    def execute_fixture(argv, policy, **kwargs):
+        if argv is not commands[runner.CMD_SUMMARIZE]:
+            return execute(argv, policy, **kwargs)
+        if outcome == "cleanup_failure":
+            metrics.write_bytes(raw)
+            return ExecutionResult(Outcome.CLEANUP_FAILURE, Outcome.TIMEOUT, 17, 2.5,
+                                   cleanup=Cleanup.UNVERIFIED, detail="injected query failure")
+        if outcome == "launch_failure":
+            return execute([str(tmp_path / "missing-summarizer")], policy, **kwargs)
+        if outcome == "cancelled":
+            def cancel_after_write():
+                end = time.monotonic() + 3
+                while time.monotonic() < end:
+                    if metrics.exists() and metrics.stat().st_size == len(raw):
+                        policy.cancellation.request()
+                        return
+                    time.sleep(.01)
+
+            canceller = threading.Thread(target=cancel_after_write)
+            canceller.start()
+            try:
+                return execute(argv, policy, **kwargs)
+            finally:
+                canceller.join()
+        return execute(argv, policy, **kwargs)
+
+    monkeypatch.setattr(runner, "execute", execute_fixture)
+    if outcome != "native_failure":
+        def forbid_success(*args, **kwargs):
+            pytest.fail("summarization failure entered dependent success processing")
+
+        monkeypatch.setattr(runner, "enrich_run_metrics", forbid_success)
+        monkeypatch.setattr(runner, "write_source_attribution", forbid_success)
+        monkeypatch.setattr(runner, "write_trend_reports", forbid_success)
+
+    args = ["--manifest", str(manifest_path), "--run-id", "current"]
+    if outcome == "timeout":
+        args += ["--stage-timeout-seconds", "2"]
+    assert runner.main(args) == 1
+    terminal = json.loads((run / "exec-01" / "summarize.json").read_text(encoding="utf-8"))
+    assert terminal["outcome"] == outcome
+    assert terminal["trigger"] == ("timeout" if outcome == "cleanup_failure" else outcome)
+    if outcome == "cleanup_failure":
+        assert terminal["native_exit_code"] == 17 and terminal["detail"] == "injected query failure"
+    elif outcome == "native_failure":
+        assert terminal["native_exit_code"] == 124
+        assert json.loads(metrics.read_bytes())["merged_event_count"] == 2
+    if outcome != "native_failure":
+        assert not (run / "trend_report.json").exists()
+        assert not (run / "source_attribution.json").exists()
+        if outcome != "launch_failure":
+            assert metrics.read_bytes() == raw
+        assert runner.find_previous_run(base, "future") == prior
+    ontology = json.loads((run / "topic_run_ontology.json").read_text(encoding="utf-8"))
+    assert any(e["type"] == "Verdict" and e["properties"]["verdict"] == "FAIL" for e in ontology["entities"])
+    assert previous_metrics.read_bytes() == b'{"merged_event_count": 10}'
 
 
 def test_write_source_attribution_prefers_lineage(tmp_path):

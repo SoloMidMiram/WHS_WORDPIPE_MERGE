@@ -288,6 +288,70 @@ def test_direct_chain_timeout_skips_dependents_even_in_partial_mode(isolated_cha
 
 
 @pytest.mark.skipif(_POWERSHELL is None or _PYTHON_EXE is None, reason="requires native PowerShell and Python")
+@pytest.mark.parametrize("expires", [False, True])
+def test_inherited_chain_waits_for_redirected_descendant(isolated_chain, monkeypatch, expires):
+    from wordpipe.execution import Cleanup, ExecutionPolicy, Outcome
+    from tools.run_topic_report import run_stage
+
+    chain, raw_dir, out_dir = isolated_chain
+    monkeypatch.chdir(raw_dir.parent)
+    artifact = raw_dir.parent / "stage-artifact"
+    dependent = raw_dir.parent / "dependent-started"
+    worker = chain.parent / "worker.py"
+    worker.write_text(
+        "import time\nfrom pathlib import Path\n"
+        f"artifact = Path({str(artifact)!r})\n"
+        "artifact.write_text('working')\n"
+        f"until = time.monotonic() + {7 if expires else 0.6}\n"
+        "while time.monotonic() < until:\n"
+        f"    if Path({str(dependent)!r}).exists():\n"
+        "        artifact.write_text('dependent entered early')\n"
+        "        raise SystemExit(0)\n"
+        "    time.sleep(0.01)\n"
+        "    artifact.write_text('working')\n"
+        "artifact.write_text('finished')\n",
+        encoding="utf-8",
+    )
+    (chain.parent / "ingest.py").write_text(
+        "import subprocess, sys\nfrom pathlib import Path\n"
+        "output = Path(sys.argv[sys.argv.index('--output') + 1])\n"
+        "output.write_text('synthetic normalised input')\n"
+        f"subprocess.Popen([sys.executable, '-S', {str(worker)!r}], "
+        "stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)\n",
+        encoding="utf-8",
+    )
+    (chain.parent / "verify_ingest.py").write_text(
+        "from pathlib import Path\n"
+        f"Path({str(dependent)!r}).touch()\n"
+        f"assert Path({str(artifact)!r}).read_text() == 'finished', 'premature verification'\n",
+        encoding="utf-8",
+    )
+    receipt = raw_dir.parent / "pipeline.json"
+    result = run_stage(
+        [_POWERSHELL, "-NoProfile", "-File", str(chain), "-InputDir", str(raw_dir),
+         "-OutputDir", str(out_dir), "-Verify", "-SkipCategorize", "-SkipIndex"],
+        "pipeline: chain.ps1", policy=ExecutionPolicy(timeout=2 if expires else 8),
+        evidence_path=receipt, publish_owner=True,
+    )
+    terminal = json.loads(receipt.read_text(encoding="utf-8"))
+    assert terminal["cleanup"] == Cleanup.VERIFIED
+    if expires:
+        assert terminal["outcome"] == terminal["trigger"] == Outcome.TIMEOUT, result["output"]
+        assert 2 <= terminal["elapsed_seconds"] <= 7
+        assert not dependent.exists()
+        assert not (raw_dir.parent / "merge").exists()
+        assert artifact.read_text() == "working"
+    else:
+        assert result["exit_code"] == 0, result["output"]
+        assert dependent.exists() and artifact.read_text() == "finished"
+        invocation = _read_evidence(out_dir)["ingest_files"][0]
+        evidence = json.loads((out_dir / invocation["execution_evidence"]).read_text(encoding="utf-8"))
+        assert evidence["outcome"] == Outcome.SUCCESS
+        assert evidence["ownership"] == "inherited"
+        assert evidence["cleanup"] == Cleanup.INHERITED
+
+
+@pytest.mark.skipif(_POWERSHELL is None or _PYTHON_EXE is None, reason="requires native PowerShell and Python")
 def test_direct_chain_ctrl_c_preserves_terminal_cancellation(isolated_chain):
     chain, raw_dir, out_dir = isolated_chain
     ready = raw_dir.parent / "worker-ready"
