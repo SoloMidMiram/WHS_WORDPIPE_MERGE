@@ -31,6 +31,22 @@ covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, a vacant 
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-26 — MD-01 parser and identity contract review
+
+Branch `codex/whs-reliability-handoff`, [draft PR #22](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/22).
+Reviewed parent `19fb36863dc9ae184347c385243d552997b15428` and base
+`fd2d60f72a47fbccc60e64f72c811d106c01a30e`. Issue #15 records maintainer
+ACCEPT for characterization and REVISE for G2. The delivery plan adds
+the opt-in compatibility contract for separate approval. The repository
+map was checked. The frozen fixture and local evidence inventory were
+verified by hash. Prior Windows source results and the unpinned
+foreign-checkout failures remain recorded as characterization and CI-01
+evidence, respectively. The parent's [hosted PR CI](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45794447798)
+passed. G0 remains ACCEPT and G1 blocks v0.2. MD-01
+retains slot 1, slot 2 is vacant pending separate EXEC-01 admission,
+and SEC-01 retains slot 3 with SAFE-01 READY. The next decision is
+maintainer approval of the proposed parser and identity contract.
+
 ### 2026-11-26 — Engineering reliability handoff
 
 Branch `codex/whs-reliability-handoff`, no PR. Reviewed main and production

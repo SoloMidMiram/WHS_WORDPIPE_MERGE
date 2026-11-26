@@ -195,6 +195,11 @@ and verify source bytes, replay and clean source/installed test origins.
 
 ### MD-01 characterization handoff (2026-11-26)
 
+**Maintainer decision.** [Issue #15][i15] records characterization **ACCEPT**
+and G2 **REVISE**. [Draft PR #22](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/22)
+publishes the original handoff `19fb36863dc9ae184347c385243d552997b15428`.
+The opt-in implementation and its identity contract require separate approval.
+
 **Verified at `fd2d60f72a47fbccc60e64f72c811d106c01a30e`.** The frozen
 UTF-8 fixture is [md01_structure.md](../../tests/fixtures/md01_structure.md)
 (LF SHA-256 `c7fdcfe34300f7bf55f4950455e24b08db41eb1ee8237a3e665c7295c75ccda5`).
@@ -249,6 +254,67 @@ body, so repaired bodies can also move report IDs and survivor fragments.
 Require a per-candidate old/new reconciliation, including excluded candidates,
 assigned ordering dates and any affected external references. Publish a
 versioned identity or compatibility mapping decision before changing defaults.
+
+#### Contract proposed for maintainer approval
+
+Only the generic Markdown adapter gains an explicit manifest mode,
+`adapter.markdown_mode: structural-v1`, passed through to its prepare CLI.
+Missing mode or explicit `legacy-v1` selects the existing extraction and
+output contract. Reject unknown modes and the option on other adapters.
+An opt-in manifest uses a separate output root and fresh run directory.
+Refuse reuse or overlap with a legacy output directory, including resolved
+aliases. Record mode and version in structural run metadata and sidecars.
+Use distinct schema identifiers for structural lineage and correlation.
+Readers that only support legacy v1 must reject those structural sidecars
+explicitly. Scope previous-run metric comparisons to the same mode.
+Legacy artifacts, IDs and schemas remain byte-compatible for a replay
+after accounting for existing run metadata. A structural parsing error
+fails the run explicitly.
+
+Use configured top-level ATX headings (default h2) and original source
+slices. Nested headings, fences, tables and Setext headings inside a section
+are body content. Outside sections record exclusions by span. Recognize
+frontmatter only on the opening line, with exact `---` delimiter lines
+and a YAML mapping payload. Record an invalid or unterminated opener as
+a diagnostic and apply ordinary Markdown rules to its text. Preserve the
+existing first-section-date and first-file-date fallback rules. Record
+whether the date came from the section, file fallback or default constant.
+These are ordering dates. Full date semantics stay with TIME-01.
+
+| Identity layer | Legacy v1 | Structural v1 proposal |
+|---|---|---|
+| Candidate and staged ordinals | Existing one-based regex order. Empty candidates reserve ordinals. Staged ordinals count emissions. | One-based selected heading order per file. Empty candidates reserve ordinals. Non-boundaries receive no ordinal. Staged ordinals are dense among emissions. Ordinals are scoped to the parser mode. |
+| Source event ID | Existing `source-event-v1` hash of source filename, locator kind, candidate ordinal, level and original heading text, with topic in the ID. | Use those fields in the same order with domain tag `source-event-structural-v1`. Retain the ID prefix and topic. Report one-based source spans and input digest in the sidecar. Keep line endings out of the identity hash. |
+| Report event ID | Existing `report-event-v1` hash of date and normalized ingest body hash, with topic in the ID. | Keep normalized ingest equivalence and use domain tag `report-event-structural-v1`. Equal normalized bodies on the same date still coalesce within the mode. Record all contributing source IDs. |
+| Survivor and navigation | Existing key `(date, normalized-body SHA-256)` and fragment `event-<date>-<hash>` in the published run. | Keep the same key and fragment algorithm within each run. Equal keys may recur across modes. Navigation identity includes the output run and artifact path, so a coincident fragment never substitutes for a legacy target. |
+
+The following ledger is an expected comparison at default levels. Legacy
+values were observed. Structural values are proposed and have no execution
+result yet. C and S denote candidate and staged ordinals.
+
+| Fixture heading | Legacy C/S | Structural C/S | Reconciliation |
+|---|---:|---:|---|
+| Alpha, line 7 | 1/1 | 1/1 | Same source heading. Body regains both fenced blocks, so recompute the report and survivor key. |
+| Backtick example, line 11 | 2/2 | — | Removed false event. Its text stays inside Alpha's fenced body. No redirect or replacement event. |
+| Tilde example, line 16 | 3/3 | — | Removed false event. Its text stays inside Alpha's fenced body. No redirect or replacement event. |
+| Empty, line 34 | 4/— | 2/— | Empty candidate. Neither mode emits an event or ID. |
+| Persian/English, line 35 | 5/4 | 3/2 | Same source heading. The structural IDs are distinct by construction. Evaluate whether its report payload and run-local survivor key are equal. |
+
+The comparison sidecar joins candidate rows by frozen source snapshot,
+relative source path and heading span. Record both modes' ordinals, IDs,
+date roles, body hashes, survivor keys and complete run-relative link targets.
+Mark removed false events, new events, changed content and ambiguous matches
+explicitly. A unique heading correspondence is evidence for review. It gives
+no automatic alias, redirect or transfer of historical identity. Removed
+legacy links keep resolving in the original output. Test duplicate headings,
+many-to-one report correlation, and paired replay with both output roots
+present. Reject any legacy file mutation and require every structural index
+link to resolve within its own run. Cross-version comparison uses the
+sidecar, while published artifacts and reports retain their original IDs.
+
+**Recommendation.** Accept this bounded contract for implementation review.
+Keep production work gated on the maintainer decision. G2 qualification
+still requires the original acceptance tests below.
 
 **Acceptance.** Attribute every source line to a recorded span or exclusion.
 Preserve source hashes. At default levels the candidate should emit only Alpha
