@@ -17,7 +17,7 @@ AI qualification belongs to the v0.5 target. Delivery gateway IDs are scoped
 to the matrix. The historical goals and phases below retain their identifiers.
 
 The [three-slot queue](docs/engineering/DELIVERY_PHASES_AND_GATES.md#active-execution-queue)
-covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, a vacant slot 2 after [PR #20](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/20) integrated the B3 deferral, and SEC-01 (#17) in slot 3. SAFE-01 is READY; admission requires documented SEC-01 exit and a separate maintainer decision. No successor was admitted to slot 2. READY does not mean admitted. At most three packages can execute.
+covers MD-01 (#15) in slot 1 for qualification, EXEC-01 (#25) in slot 2 for contract review, and SEC-01 (#17) in slot 3 for audit. SAFE-01 is READY pending documented SEC-01 exit and separate admission. All three slots are occupied.
 
 | Order | Phase | Current execution |
 |---|---|---|
@@ -30,6 +30,21 @@ covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, a vacant 
 | 7 | Optional AI research | [NCM #9](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/9) is blocked for real inference. [Jev #10](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/10) has offline preparation available. [Combined benchmark #11](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/11) is blocked on upstream evidence. |
 
 ## Active narrative roadmap — newest first
+
+### 2026-11-26 — EXEC-01 slot-2 admission and contract boundary
+
+Branch `codex/exec-01-admission-contract`, PR number unassigned at the
+documentation commit. Reviewed documentation parent
+`66e2f3a2e4d038a7e8bc07c11694c215d97055f7` ([PR #24](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/24))
+and main `df072540cea6ae458ecd0592c6cf2b1fe69cee0d`. Main and the all-state
+issue and PR inventories confirmed a vacant slot and no matching owner
+issue. The maintainer admitted EXEC-01 under
+[#25](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/25) for
+characterization and contract review. The delivery plan records the
+unchanged G5 thresholds, Windows evidence and new Linux probes. The
+repository map was checked. The next decision is acceptance of the
+implementation contract. The Linux PowerShell path and Windows Job Object
+qualification remain open. MD-01 and SEC-01 retain their slots.
 
 ### 2026-11-26 — MD-01 integration verified
 
