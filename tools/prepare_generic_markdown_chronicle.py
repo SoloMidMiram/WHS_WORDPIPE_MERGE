@@ -18,10 +18,23 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Iterable, Sequence
+
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from wordpipe.chronicle.markdown_sections import (
+    LEGACY_MODE,
+    MARKDOWN_MODES,
+    STRUCTURAL_MODE,
+    STRUCTURAL_RAW_SCHEMA,
+    SourceLines,
+    section_boundaries,
+)
 
 
 DEFAULT_FALLBACK_DATE = "2026-07-16"
@@ -136,6 +149,66 @@ def parse_file(
     return events, lineage, len(matches)
 
 
+def parse_structural_file(path: Path, heading_levels: tuple[int, ...] = (2,)):
+    source = SourceLines.from_bytes(path.read_bytes())
+    frontmatter_end, diagnostic, headings, fences = section_boundaries(source, heading_levels)
+    spans = []
+    candidates = []
+    events = []
+    lineage = []
+    prefix = source_label(path.name)
+
+    def record_span(kind, start, end):
+        if end > start:
+            spans.append({"kind": kind, **source.span(start, end)})
+
+    record_span("frontmatter", 0, frontmatter_end)
+    first_heading = headings[0][0] if headings else len(source.lines)
+    record_span("preamble", frontmatter_end, first_heading)
+    file_date = DATE_RE.search(source.text)
+    for ordinal, (start, heading_end, level, title) in enumerate(headings, 1):
+        end = headings[ordinal][0] if ordinal < len(headings) else len(source.lines)
+        body = "".join(source.lines[heading_end:end]).strip()
+        record_span("heading", start, heading_end)
+        record_span("body" if body else "empty_body", heading_end, end)
+        candidate = {
+            "candidate_ordinal": ordinal,
+            "heading_level": level,
+            "original_heading_text": title,
+            "heading_span": source.span(start, heading_end),
+            "section_span": source.span(start, end),
+            "staged_event_ordinal": None,
+        }
+        candidates.append(candidate)
+        if not body:
+            continue
+        section_date = DATE_RE.search(f"{title}\n{body}")
+        date = (section_date or file_date)
+        date_role = "section" if section_date else "file_fallback" if file_date else "default"
+        ordering_date = date.group(1) if date else DEFAULT_FALLBACK_DATE
+        event_title = (f"{prefix} - {sanitize_title(title)}" if prefix else sanitize_title(title))[:180]
+        events.append(ChronicleEvent(ordering_date, event_title, body))
+        candidate.update(staged_event_ordinal=len(events), date=ordering_date, date_role=date_role)
+        lineage.append({
+            **candidate,
+            "locator_kind": "markdown_section",
+            "source_file": path.name,
+            "title": event_title,
+            "start_line": start + 1,
+            "source_sha256": source.sha256,
+        })
+    return events, lineage, {
+        "source_file": path.name,
+        "source_sha256": source.sha256,
+        "byte_count": source.offsets[-1],
+        "line_count": len(source.lines),
+        "spans": spans,
+        "candidates": candidates,
+        "fences": [source.span(start, end) for start, end in fences],
+        "diagnostics": [{"code": diagnostic, **source.span(0, 1)}] if diagnostic else [],
+    }
+
+
 def render_staged_markdown(source_title: str, events: list[ChronicleEvent]) -> str:
     """Render events in the Chronicle-compatible staged format."""
     lines = [f"# {source_title}", ""]
@@ -178,21 +251,44 @@ def source_metrics(files: Sequence[Path]) -> dict[str, int]:
     }
 
 
-def prepare(input_dir: Path, output_dir: Path, metrics_path: Path) -> dict[str, object]:
+def prepare(
+    input_dir: Path, output_dir: Path, metrics_path: Path, *, markdown_mode: str = LEGACY_MODE,
+) -> dict[str, object]:
     input_dir = input_dir.resolve()
-    output_dir.mkdir(parents=True, exist_ok=True)
+    if markdown_mode not in MARKDOWN_MODES:
+        raise ValueError(f"unsupported Markdown mode: {markdown_mode!r}")
+    structural = markdown_mode == STRUCTURAL_MODE
+    lineage_path = metrics_path.parent / EVENT_LINEAGE_FILENAME
+    if structural:
+        output_dir = output_dir.resolve()
+        run_dir = output_dir.parent
+        if (
+            metrics_path.resolve() != run_dir / "prepare_metrics.json"
+            or input_dir.is_relative_to(run_dir)
+            or run_dir.is_relative_to(input_dir)
+            or not run_dir.is_dir()
+            or any(path.name != "run.log" for path in run_dir.iterdir())
+        ):
+            raise ValueError("structural prepare requires a fresh run directory separate from input")
+    output_dir.mkdir(parents=True, exist_ok=not structural)
     metrics_path.parent.mkdir(parents=True, exist_ok=True)
 
     staged_files: list[str] = []
     source_lineage: list[dict[str, object]] = []
     event_lineage: list[dict[str, object]] = []
+    source_accounting = []
     total_staged = 0
     total_candidates = 0
     file_metrics: dict[str, dict[str, object]] = {}
 
     md_files = sorted(input_dir.glob("*.md"))
     for idx, md_file in enumerate(md_files):
-        events, file_lineage, candidates = parse_file(md_file, heading_levels=(2,))
+        if structural:
+            events, file_lineage, accounting = parse_structural_file(md_file)
+            candidates = len(accounting["candidates"])
+            source_accounting.append(accounting)
+        else:
+            events, file_lineage, candidates = parse_file(md_file, heading_levels=(2,))
         total_candidates += candidates
         total_staged += len(events)
 
@@ -200,10 +296,19 @@ def prepare(input_dir: Path, output_dir: Path, metrics_path: Path) -> dict[str, 
         filename = f"{idx + 1:02d}_{stem}.md"
         source_title = source_label(md_file.name) or stem
 
-        (output_dir / filename).write_text(
-            render_staged_markdown(source_title, events),
-            encoding="utf-8",
-        )
+        rendered = render_staged_markdown(source_title, events)
+        if structural:
+            from wordpipe.chronicle.ingest import split_into_events
+            from wordpipe.chronicle.merge import EVENT_HEADING_LINE_RE
+
+            parsed, rejected = split_into_events(rendered)
+            expected = [
+                {"date": event.date, "title": event.title, "body": escape_nested_event_bullets(event.body)}
+                for event in events
+            ]
+            if rejected or parsed != expected or EVENT_HEADING_LINE_RE.search(rendered):
+                raise ValueError(f"{md_file.name}: structural section conflicts with reserved Chronicle framing")
+        (output_dir / filename).write_text(rendered, encoding="utf-8")
         staged_files.append(filename)
         file_metrics[str(md_file.name)] = {
             "candidates": candidates,
@@ -221,9 +326,15 @@ def prepare(input_dir: Path, output_dir: Path, metrics_path: Path) -> dict[str, 
             entry["staged_file"] = filename
             event_lineage.append(entry)
 
-    lineage_path = metrics_path.parent / EVENT_LINEAGE_FILENAME
+    lineage_doc = {"events": event_lineage}
+    if structural:
+        lineage_doc.update({
+            "$schema": STRUCTURAL_RAW_SCHEMA,
+            "markdown_mode": markdown_mode,
+            "source_accounting": source_accounting,
+        })
     lineage_path.write_text(
-        json.dumps({"events": event_lineage}, indent=2, ensure_ascii=False) + "\n",
+        json.dumps(lineage_doc, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
 
@@ -243,6 +354,8 @@ def prepare(input_dir: Path, output_dir: Path, metrics_path: Path) -> dict[str, 
         "source_lineage": source_lineage,
         "event_lineage_file": EVENT_LINEAGE_FILENAME,
     }
+    if structural:
+        metrics["markdown_mode"] = markdown_mode
     metrics_path.write_text(
         json.dumps(metrics, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
@@ -360,6 +473,7 @@ def main() -> None:
     prep.add_argument("--input-dir", required=True, type=Path)
     prep.add_argument("--output-dir", required=True, type=Path)
     prep.add_argument("--metrics", required=True, type=Path)
+    prep.add_argument("--markdown-mode", choices=MARKDOWN_MODES, default=LEGACY_MODE)
 
     summary = subparsers.add_parser("summarize", help="Summarize a completed pipeline run")
     summary.add_argument("--run-dir", required=True, type=Path)
@@ -370,7 +484,7 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.command == "prepare":
-        prepare(args.input_dir, args.output_dir, args.metrics)
+        prepare(args.input_dir, args.output_dir, args.metrics, markdown_mode=args.markdown_mode)
         return
 
     if args.command == "summarize":

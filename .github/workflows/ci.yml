@@ -28,6 +28,9 @@ jobs:
       - run: python tools/check_architecture_boundaries.py --root .
       - run: python tools/docs_link_check.py
       - run: python tools/security_scan.py --root . --fail-on-findings
+      - name: MD-01 installed-wheel paired replay
+        if: ${{ matrix.docx }}
+        run: python tools/qualify_md01_wheel.py
 
       # DOCX CLI integration test (only on docx extra job)
       - name: Real DOCX CLI test
@@ -141,3 +144,5 @@ jobs:
       - run: python tools/check_architecture_boundaries.py --root .
       - run: python tools/docs_link_check.py
       - run: python tools/security_scan.py --root . --fail-on-findings
+      - name: MD-01 installed-wheel paired replay
+        run: python tools/qualify_md01_wheel.py

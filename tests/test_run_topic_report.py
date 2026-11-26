@@ -306,7 +306,7 @@ def test_build_commands_returns_three_stages(tmp_path):
     assert "--metrics" in prepare_cmd
 
     pipeline_cmd = cmds[runner.CMD_PIPELINE]
-    assert "powershell" in pipeline_cmd[0].lower()
+    assert pipeline_cmd[0] in {"powershell", "pwsh"}
     assert "chain.ps1" in str(pipeline_cmd)
 
     summarize_cmd = cmds[runner.CMD_SUMMARIZE]

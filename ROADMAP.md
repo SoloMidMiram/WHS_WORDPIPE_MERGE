@@ -31,6 +31,23 @@ covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, a vacant 
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-26 — MD-01 bounded implementation review
+
+Branch `codex/md-01-structural-markdown`, implementation PR pending.
+The maintainer accepted the compatibility contract at
+`2e5c5e363fcdbe001ccdd58fe5d22690fb287d7c` and authorized implementation
+under #15 in slot 1. PR #22 integrated through main
+`0a6385cbc50ef394a06c3b38129682acd795cf76`, with all five
+[hosted jobs](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45796776892)
+passing. The [delivery plan](docs/engineering/DELIVERY_PHASES_AND_GATES.md)
+links mode selection, run isolation and paired comparison. The repository
+map includes the new verification commands. Original characterization and
+foreign import failures remain baseline and CI-01 evidence. Exact implementation
+checks and the implementation acceptance decision are separate from the
+accepted contract. G0 remains ACCEPT, G1 continues to block v0.2, and G2
+remains REVISE. Slot 2 remains vacant pending EXEC-01 admission. SEC-01 retains
+slot 3 and SAFE-01 remains READY.
+
 ### 2026-11-26 — MD-01 parser and identity contract review
 
 Branch `codex/whs-reliability-handoff`, [draft PR #22](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/22).

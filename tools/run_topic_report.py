@@ -24,6 +24,7 @@ import json
 import math
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -37,6 +38,17 @@ if str(_REPO_ROOT_FOR_IMPORT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT_FOR_IMPORT))
 
 
+from wordpipe.chronicle.markdown_sections import (
+    LEGACY_MODE,
+    MARKDOWN_MODES,
+    STRUCTURAL_CORRELATION_SCHEMA,
+    STRUCTURAL_LINEAGE_SCHEMA,
+    STRUCTURAL_MODE,
+    STRUCTURAL_RAW_SCHEMA,
+)
+
+STRUCTURAL_ROOT_MARKER = ".md01-structural-v1"
+GENERIC_MARKDOWN = "prepare_generic_markdown_chronicle"
 REPO_ANCHOR = Path("pipeline") / "chain.ps1"
 
 REQUIRED_MANIFEST_KEYS: list[str] = [
@@ -188,6 +200,11 @@ def load_manifest(
     raw["themes_config"] = str(resolve_manifest_path(raw["themes_config"], repo_root))
     raw["index_config"] = str(resolve_manifest_path(raw["index_config"], repo_root))
     raw["output"]["base_dir"] = str(resolve_manifest_path(raw["output"]["base_dir"], repo_root))
+    if raw["adapter"].get("markdown_mode") == STRUCTURAL_MODE:
+        legacy_dir = raw["output"].get("legacy_base_dir")
+        if not isinstance(legacy_dir, str) or not legacy_dir.strip():
+            raise ManifestError("structural-v1 requires output.legacy_base_dir for isolation")
+        raw["output"]["legacy_base_dir"] = str(resolve_manifest_path(legacy_dir, repo_root))
 
     # Validate paths exist.
     _require_existing_dir(raw["input_dir"], "input_dir")
@@ -215,6 +232,11 @@ def resolve_adapter(adapter: dict[str, Any], repo_root: str | Path) -> dict[str,
     if not isinstance(adapter_id, str) or not adapter_id.strip():
         raise ManifestError(f"adapter.id must be a non-empty string, got {adapter_id!r}")
 
+    if "markdown_mode" in adapter:
+        if adapter_id != GENERIC_MARKDOWN or adapter["markdown_mode"] not in MARKDOWN_MODES:
+            raise ManifestError("markdown_mode requires the generic Markdown adapter and legacy-v1 or structural-v1")
+        if adapter["markdown_mode"] == STRUCTURAL_MODE and "script" in adapter:
+            raise ManifestError("structural-v1 requires the registered generic Markdown adapter script")
     registry_entry = ADAPTER_REGISTRY.get(adapter_id)
     script = adapter.get("script")
     if script is None:
@@ -292,8 +314,12 @@ def build_commands(manifest: dict[str, Any], run_dir: Path) -> dict[str, list[st
         "--metrics", str(metrics_path),
     ]
 
+    if "markdown_mode" in manifest["adapter"]:
+        prepare_cmd.extend(["--markdown-mode", manifest["adapter"]["markdown_mode"]])
+
+    shell = "powershell" if os.name == "nt" or not shutil.which("pwsh") else "pwsh"
     pipeline_cmd = [
-        "powershell", "-NoProfile", "-ExecutionPolicy", "Bypass",
+        shell, "-NoProfile", "-ExecutionPolicy", "Bypass",
         "-File", str(Path(manifest["_repo_root"]) / "pipeline" / "chain.ps1"),
         "-InputDir", str(staged_dir),
         "-OutputDir", str(pipeline_dir),
@@ -602,14 +628,16 @@ def load_enrich_validate_prepare_metrics(
 # ---------------------------------------------------------------------------
 
 
-def compute_source_event_id(topic: str, record: dict[str, Any]) -> tuple[str, str]:
+def compute_source_event_id(
+    topic: str, record: dict[str, Any], *, markdown_mode: str = LEGACY_MODE,
+) -> tuple[str, str]:
     """Build ``source_event:<topic>:<sha256>`` from locator identity fields."""
     kind = record["locator_kind"]
     source_file = str(record["source_file"])
     ordinal = str(record["candidate_ordinal"])
     if kind == "markdown_section":
         parts = [
-            "source-event-v1",
+            "source-event-structural-v1" if markdown_mode == STRUCTURAL_MODE else "source-event-v1",
             source_file,
             "markdown_section",
             ordinal,
@@ -636,9 +664,12 @@ def compute_individual_report_event_id(
     topic: str,
     date: str,
     body_hash: str,
+    *,
+    markdown_mode: str = LEGACY_MODE,
 ) -> tuple[str, str]:
     """Build individual ReportEvent id from date + normalised body hash."""
-    canonical = "\0".join(["report-event-v1", date, body_hash])
+    tag = "report-event-structural-v1" if markdown_mode == STRUCTURAL_MODE else "report-event-v1"
+    canonical = "\0".join([tag, date, body_hash])
     digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
     return f"report_event:{topic}:{digest}", canonical
 
@@ -677,6 +708,7 @@ def validate_and_finalize_event_lineage(
     topic: str,
     run_id: str,
     require_event_lineage: bool,
+    markdown_mode: str = LEGACY_MODE,
 ) -> dict[str, Any] | None:
     """Pre-pipeline gate: validate raw lineage, write event-lineage-v1 envelope."""
     lineage_path = resolve_event_lineage_path(
@@ -695,6 +727,14 @@ def validate_and_finalize_event_lineage(
         raise AdapterMetricsError(
             f"event_lineage root must be a JSON object, got {type(raw).__name__}"
         )
+    structural = markdown_mode == STRUCTURAL_MODE
+    if structural:
+        if raw.get("$schema") != STRUCTURAL_RAW_SCHEMA or raw.get("markdown_mode") != STRUCTURAL_MODE:
+            raise AdapterMetricsError("unsupported structural prepare lineage schema or mode")
+        if not isinstance(raw.get("source_accounting"), list):
+            raise AdapterMetricsError("structural lineage missing source accounting")
+    elif "$schema" in raw or "markdown_mode" in raw:
+        raise AdapterMetricsError("unsupported raw legacy lineage schema or mode")
     events = raw.get("events")
     if not isinstance(events, list):
         raise AdapterMetricsError("event_lineage.events must be a list")
@@ -807,7 +847,9 @@ def validate_and_finalize_event_lineage(
                 )
             record["commit_timestamp"] = entry["commit_timestamp"]
 
-        source_event_id, canonical = compute_source_event_id(topic, record)
+        if structural and kind != "markdown_section":
+            raise AdapterMetricsError("structural lineage requires a Markdown section locator")
+        source_event_id, canonical = compute_source_event_id(topic, record, markdown_mode=markdown_mode)
         if source_event_id in id_to_canonical and id_to_canonical[source_event_id] != canonical:
             raise AdapterMetricsError(
                 "SHA-256 SourceEvent ID collision; refusing disambiguator. "
@@ -880,11 +922,13 @@ def validate_and_finalize_event_lineage(
             )
 
     envelope: dict[str, Any] = {
-        "$schema": "event-lineage-v1",
+        "$schema": STRUCTURAL_LINEAGE_SCHEMA if structural else "event-lineage-v1",
         "topic": topic,
         "run_id": run_id,
         "events": finalized,
     }
+    if structural:
+        envelope.update(markdown_mode=markdown_mode, source_accounting=raw["source_accounting"])
     lineage_path.write_text(
         json.dumps(envelope, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
@@ -919,6 +963,7 @@ def correlate_event_provenance(
     *,
     topic: str,
     run_id: str,
+    markdown_mode: str = LEGACY_MODE,
 ) -> dict[str, Any]:
     """Post-pipeline gate: fingerprint normalised events and verify merged survivors."""
     from wordpipe.chronicle.merge import (
@@ -927,6 +972,10 @@ def correlate_event_provenance(
         parse_yaml_frontmatter,
     )
 
+    structural = markdown_mode == STRUCTURAL_MODE
+    expected_schema = STRUCTURAL_LINEAGE_SCHEMA if structural else "event-lineage-v1"
+    if lineage_doc.get("$schema") != expected_schema or lineage_doc.get("markdown_mode", LEGACY_MODE) != markdown_mode:
+        raise ProvenanceError("unsupported event lineage schema or mode")
     events = lineage_doc.get("events")
     if not isinstance(events, list):
         raise ProvenanceError("finalized event_lineage.events must be a list")
@@ -963,7 +1012,7 @@ def correlate_event_provenance(
             body_hash = compute_body_hash(nev["body"])
             date = nev["date"]
             report_event_id, rcanonical = compute_individual_report_event_id(
-                topic, date, body_hash
+                topic, date, body_hash, markdown_mode=markdown_mode,
             )
             if (
                 report_event_id in report_canonical
@@ -1047,20 +1096,25 @@ def correlate_event_provenance(
             f"ambiguous_matches is non-empty ({len(ambiguous_matches)})"
         )
 
+    if structural:
+        attach_verified_navigation(run_dir, events, report_map, markdown_mode=markdown_mode)
+
     # Rewrite lineage with post-pipeline fingerprints (still event-lineage-v1).
     lineage_out = {
-        "$schema": "event-lineage-v1",
+        "$schema": expected_schema,
         "topic": topic,
         "run_id": run_id,
         "events": events,
     }
+    if structural:
+        lineage_out.update(markdown_mode=markdown_mode, source_accounting=lineage_doc["source_accounting"])
     (run_dir / "event_lineage.json").write_text(
         json.dumps(lineage_out, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
 
     correlation: dict[str, Any] = {
-        "$schema": "event-correlation-v1",
+        "$schema": STRUCTURAL_CORRELATION_SCHEMA if structural else "event-correlation-v1",
         "topic": topic,
         "run_id": run_id,
         "source_event_count": len(events),
@@ -1070,11 +1124,63 @@ def correlate_event_provenance(
         "survivor_verification": survivor_verification,
         "report_events": list(report_map.values()),
     }
+    if structural:
+        correlation["markdown_mode"] = markdown_mode
     (run_dir / "event_correlation.json").write_text(
         json.dumps(correlation, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
     return correlation
+
+
+def attach_verified_navigation(
+    run_dir: Path, events: list[dict[str, Any]], reports: dict[str, dict[str, Any]],
+    *, markdown_mode: str,
+) -> None:
+    from collections import Counter
+    from wordpipe.chronicle.index import SURVIVOR_FRAGMENT_RE, rendered_navigation
+
+    appendix = run_dir / "pipeline" / "appendix"
+    targets = {
+        "../chronicle_tagged.md": appendix.parent / "chronicle_tagged.md",
+        "chronicle_tagged_anchored.md": appendix / "chronicle_tagged_anchored.md",
+    }
+    try:
+        _, links = rendered_navigation((appendix / "event_index.md").read_text(encoding="utf-8"))
+        counts = {}
+        artifacts = {}
+        expected = {f"event-{report['date']}-{report['body_sha256']}" for report in reports.values()}
+        for href, _ in links:
+            path, _, fragment = href.partition("#")
+            if not SURVIVOR_FRAGMENT_RE.fullmatch(fragment):
+                continue
+            if path not in targets or fragment in artifacts:
+                raise ProvenanceError(f"structural navigation has an invalid or duplicate target: {href}")
+            target = targets[path].resolve()
+            if not target.is_relative_to(run_dir.resolve()):
+                raise ProvenanceError(f"structural navigation escapes its run: {href}")
+            if path not in counts:
+                counts[path] = Counter(rendered_navigation(target.read_text(encoding="utf-8"))[0])
+            if counts[path][fragment] != 1:
+                raise ProvenanceError(f"structural navigation has an invalid target: {href}")
+            artifacts[fragment] = target.relative_to(run_dir.resolve()).as_posix()
+    except (OSError, ValueError) as exc:
+        raise ProvenanceError(f"structural navigation could not be read: {exc}") from exc
+    if artifacts.keys() != expected:
+        raise ProvenanceError("structural event index disagrees with the survivor set")
+    for report in reports.values():
+        fragment = f"event-{report['date']}-{report['body_sha256']}"
+        report["survivor_key"] = [report["date"], report["body_sha256"]]
+        report["navigation"] = {
+            "markdown_mode": markdown_mode,
+            "run_id": run_dir.name,
+            "artifact": artifacts[fragment],
+            "fragment": fragment,
+        }
+    for event in events:
+        report = reports[event["report_event_id"]]
+        event["survivor_key"] = report["survivor_key"]
+        event["navigation"] = report["navigation"]
 
 
 def append_event_provenance_summary(
@@ -1091,7 +1197,7 @@ def append_event_provenance_summary(
     section = "\n".join([
         "## Event Provenance",
         "",
-        "- Schema: `event-correlation-v1`",
+        f"- Schema: `{correlation.get('$schema', 'event-correlation-v1')}`",
         f"- Survivor verification: `{method}`",
         f"- Source events: {correlation.get('source_event_count', 0)}",
         f"- Report events (individual ids in sidecar): {correlation.get('report_event_count', 0)}",
@@ -1115,7 +1221,9 @@ def _as_number(value: Any, *, default: float = 0.0) -> float:
     return default
 
 
-def find_previous_run(base_dir: Path, current_run_id: str) -> Path | None:
+def find_previous_run(
+    base_dir: Path, current_run_id: str, *, markdown_mode: str = LEGACY_MODE,
+) -> Path | None:
     """Return the most recent prior completed run under *base_dir*."""
     if not base_dir.is_dir():
         return None
@@ -1127,6 +1235,13 @@ def find_previous_run(base_dir: Path, current_run_id: str) -> Path | None:
             continue
         if child.resolve() == current_path:
             continue
+        if markdown_mode == STRUCTURAL_MODE:
+            try:
+                prior = json.loads((child / "topic_run_manifest.json").read_text(encoding="utf-8"))
+                if prior["adapter"].get("markdown_mode") != markdown_mode or any(prior["exit_codes"].values()):
+                    continue
+            except (OSError, ValueError, KeyError, AttributeError):
+                continue
         if (child / "run_metrics.json").is_file():
             candidates.append(child)
 
@@ -1283,6 +1398,35 @@ def _normalised_event_count(path: Path) -> int:
     return len(re.findall(r"(?m)^## Event:", text))
 
 
+def check_markdown_output_root(manifest: dict[str, Any], *, claim: bool = False) -> None:
+    base = Path(manifest["output"]["base_dir"]).resolve()
+    structural = manifest["adapter"].get("markdown_mode") == STRUCTURAL_MODE
+    if any((parent / STRUCTURAL_ROOT_MARKER).exists() for parent in base.parents):
+        raise RunDirectoryCollisionError("output root is inside a structural-v1 output root")
+    marker = base / STRUCTURAL_ROOT_MARKER
+    if not structural:
+        if marker.exists():
+            raise RunDirectoryCollisionError("legacy mode cannot use a structural-v1 output root")
+        return
+    legacy_root = Path(manifest["output"]["legacy_base_dir"]).resolve()
+    input_root = Path(manifest["input_dir"]).resolve()
+    if any(base.is_relative_to(path) or path.is_relative_to(base) for path in (legacy_root, input_root)):
+        raise RunDirectoryCollisionError("structural output overlaps the resolved legacy output or input root")
+    if any((parent / "topic_run_manifest.json").exists() or (parent / "run.log").exists() for parent in base.parents):
+        raise RunDirectoryCollisionError("structural output root is inside an existing topic run")
+    if base.exists() and (
+        not marker.is_file() or marker.is_symlink() or marker.read_text(encoding="utf-8") != STRUCTURAL_MODE
+    ):
+        raise RunDirectoryCollisionError("structural-v1 requires a new or previously claimed output root")
+    if claim and not base.exists():
+        try:
+            base.mkdir(parents=True, exist_ok=False)
+            with marker.open("x", encoding="utf-8") as handle:
+                handle.write(STRUCTURAL_MODE)
+        except FileExistsError as exc:
+            raise RunDirectoryCollisionError(f"structural output root claimed concurrently: {base}") from exc
+
+
 def run_report(manifest: dict[str, Any], *, dry_run: bool = False, run_id: str | None = None) -> dict[str, Any]:
     """Execute the full topic report flow.
 
@@ -1290,6 +1434,8 @@ def run_report(manifest: dict[str, Any], *, dry_run: bool = False, run_id: str |
     """
     repo_root = Path(manifest["_repo_root"])
     base_dir = Path(manifest["output"]["base_dir"])
+    markdown_mode = manifest["adapter"].get("markdown_mode", LEGACY_MODE)
+    check_markdown_output_root(manifest)
 
     if run_id is None:
         run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -1311,12 +1457,14 @@ def run_report(manifest: dict[str, Any], *, dry_run: bool = False, run_id: str |
         print(f"\nPlanned output directory: {run_dir}")
         return {"run_dir": str(run_dir), "exit_codes": {}, "run_metrics": {}, "timing_seconds": 0.0}
 
+    check_markdown_output_root(manifest, claim=True)
     try:
         run_dir.mkdir(parents=True, exist_ok=False)
     except FileExistsError as exc:
         raise RunDirectoryCollisionError(
             f"run directory already exists; evidence is append-only: {run_dir}"
         ) from exc
+    check_markdown_output_root(manifest)
     print(f"Output directory: {run_dir}")
 
     # Stage 1: Prepare
@@ -1370,6 +1518,7 @@ def run_report(manifest: dict[str, Any], *, dry_run: bool = False, run_id: str |
             topic=manifest["topic"],
             run_id=run_id,
             require_event_lineage=require_lineage,
+            markdown_mode=markdown_mode,
         )
     except AdapterMetricsError as exc:
         reason = str(exc)
@@ -1419,6 +1568,7 @@ def run_report(manifest: dict[str, Any], *, dry_run: bool = False, run_id: str |
                 event_lineage_doc,
                 topic=manifest["topic"],
                 run_id=run_id,
+                markdown_mode=markdown_mode,
             )
         except ProvenanceError as exc:
             reason = str(exc)
@@ -1465,7 +1615,7 @@ def run_report(manifest: dict[str, Any], *, dry_run: bool = False, run_id: str |
         run_metrics,
         source_lineage=validated_prepare_metrics.get("source_lineage"),
     )
-    previous_run_dir = find_previous_run(base_dir, run_id)
+    previous_run_dir = find_previous_run(base_dir, run_id, markdown_mode=markdown_mode)
     trend_report = write_trend_reports(run_dir, run_metrics, previous_run_dir)
 
     # Stage 4: Ontology outputs
@@ -1539,6 +1689,8 @@ def write_ontology_outputs(
 
     adapter_rel = dict(manifest["adapter"])
     adapter_rel["script"] = _rel(adapter_rel["script"])
+    structural = adapter_rel.get("markdown_mode") == STRUCTURAL_MODE
+    identity_run_id = f"{STRUCTURAL_MODE}:{run_id}" if structural else run_id
 
     run_manifest: dict[str, Any] = {
         "schema_version": manifest["schema_version"],
@@ -1596,7 +1748,7 @@ def write_ontology_outputs(
         "properties": {"script": manifest["adapter"]["script"]},
     })
 
-    _run_entity_id = f"run:{topic}:{run_id}"
+    _run_entity_id = f"run:{topic}:{identity_run_id}"
     run_properties: dict[str, Any] = {
         "run_id": run_id,
         "topic": topic,
@@ -1617,7 +1769,7 @@ def write_ontology_outputs(
     staged_files = run_metrics.get("staged_files", [])
     staged_entity_ids: list[str] = []
     for sf in staged_files:
-        eid = f"staged_source:{topic}:{sf}"
+        eid = f"staged_source:{topic}:{identity_run_id}:{sf}" if structural else f"staged_source:{topic}:{sf}"
         entities.append({
             "id": eid,
             "type": "StagedSource",
@@ -1628,7 +1780,7 @@ def write_ontology_outputs(
 
     # ReportEvent aggregate.
     merged_count: int = run_metrics.get("merged_event_count", 0) or 0
-    _event_id = f"report_event:{topic}:{run_id}"
+    _event_id = f"report_event:{topic}:{identity_run_id}"
     entities.append({
         "id": _event_id,
         "type": "ReportEvent",
@@ -1661,7 +1813,7 @@ def write_ontology_outputs(
     # Metrics from run_metrics.json.
     metric_properties = {k: v for k, v in run_metrics.items() if isinstance(v, (int, float, str))}
     if metric_properties:
-        _metric_id = f"metric:{topic}:{run_id}"
+        _metric_id = f"metric:{topic}:{identity_run_id}"
         entities.append({
             "id": _metric_id,
             "type": "Metric",
@@ -1686,7 +1838,7 @@ def write_ontology_outputs(
         ef_path = run_dir / ef_name
         should_include = ef_path.is_file() or ef_name == "topic_run_ontology.json"
         if should_include:
-            eid = f"evidence:{topic}:{run_id}:{ef_name}"
+            eid = f"evidence:{topic}:{identity_run_id}:{ef_name}"
             try:
                 evidence_path = os.path.relpath(ef_path, repo_root)
             except ValueError:
@@ -1700,7 +1852,7 @@ def write_ontology_outputs(
             evidence_ids.append(eid)
 
     if source_attribution:
-        _metric_id = f"metric:{topic}:{run_id}:source_attribution"
+        _metric_id = f"metric:{topic}:{identity_run_id}:source_attribution"
         entities.append({
             "id": _metric_id,
             "type": "Metric",
@@ -1720,7 +1872,7 @@ def write_ontology_outputs(
 
     # Verdict.
     verdict = _compute_verdict(manifest, run_metrics, exit_codes)
-    _verdict_id = f"verdict:{topic}:{run_id}"
+    _verdict_id = f"verdict:{topic}:{identity_run_id}"
     entities.append({
         "id": _verdict_id,
         "type": "Verdict",

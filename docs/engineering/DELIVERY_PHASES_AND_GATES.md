@@ -316,6 +316,40 @@ sidecar, while published artifacts and reports retain their original IDs.
 Keep production work gated on the maintainer decision. G2 qualification
 still requires the original acceptance tests below.
 
+#### Implementation handoff
+
+The maintainer accepted the specific PR #22 head
+`2e5c5e363fcdbe001ccdd58fe5d22690fb287d7c` and authorized slot-1
+implementation under issue #15. G2 remains REVISE pending acceptance.
+
+For a paired run, first run the existing manifest in legacy mode. In a
+separate structural manifest set `adapter.markdown_mode` to
+`structural-v1`, point `output.legacy_base_dir` at the legacy output root,
+and set `output.base_dir` to a new disjoint root. The runner claims the new
+root for structural mode and refuses existing unclaimed roots, input
+overlap, and resolved aliases of the legacy root. Subsequent structural
+runs use fresh run IDs under the claimed root. Comparison creates new
+evidence outside both completed runs.
+
+```console
+python tools/compare_markdown_modes.py --legacy-run LEGACY_RUN --structural-run STRUCTURAL_RUN --input-dir FROZEN_INPUT --output NEW_COMPARISON.json
+python tools/qualify_md01_wheel.py --evidence-dir FRESH_EVIDENCE_DIR
+```
+
+The comparison verifies structural input digests and replays the legacy
+staged Markdown and lineage against that snapshot. Historical legacy
+outputs lack a raw source digest, so equal replay cannot authenticate
+source bytes that never contributed to those artifacts. Qualification
+uses checkout driver scripts with `wordpipe` resolved from a fresh wheel
+install. This scope leaves CLI-01 and CI-01's broader gates intact.
+
+The structural adapter fails explicitly if source content collides with
+reserved month/event framing in the shared Chronicle transport. The source
+remains intact and the run records failure. Supporting that transport
+edge case requires separate compatibility review. Root checks resolve
+configured paths and guard normal runner writes. They do not provide
+filesystem isolation from concurrent external renames or symlink mutation.
+
 **Acceptance.** Attribute every source line to a recorded span or exclusion.
 Preserve source hashes. At default levels the candidate should emit only Alpha
 and the mixed-script section, with Empty counted and explicit diagnostics for
