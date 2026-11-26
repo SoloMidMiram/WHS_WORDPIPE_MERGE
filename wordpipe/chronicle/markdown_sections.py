@@ -5,14 +5,50 @@ from __future__ import annotations
 import hashlib
 import re
 from dataclasses import dataclass
+from importlib.metadata import version
 
 
 LEGACY_MODE = "legacy-v1"
 STRUCTURAL_MODE = "structural-v1"
 MARKDOWN_MODES = (LEGACY_MODE, STRUCTURAL_MODE)
-STRUCTURAL_RAW_SCHEMA = "markdown-structural-prepare-v1"
-STRUCTURAL_LINEAGE_SCHEMA = "event-lineage-structural-v1"
-STRUCTURAL_CORRELATION_SCHEMA = "event-correlation-structural-v1"
+STRUCTURAL_RAW_SCHEMA = "markdown-structural-prepare-v2"
+STRUCTURAL_LINEAGE_SCHEMA = "event-lineage-structural-v2"
+STRUCTURAL_CORRELATION_SCHEMA = "event-correlation-structural-v2"
+PARSER_ENGINE = "markdown-it-py"
+PARSER_PRESET = "commonmark"
+PARSER_EXTENSIONS = ("table",)
+PARSER_CONTRACT_VERSION = 1
+
+
+def parser_configuration(heading_levels: tuple[int, ...]) -> dict:
+    return {
+        "engine": PARSER_ENGINE,
+        "preset": PARSER_PRESET,
+        "enabled_extensions": list(PARSER_EXTENSIONS),
+        "mode": STRUCTURAL_MODE,
+        "contract_version": PARSER_CONTRACT_VERSION,
+        "heading_levels": sorted(set(heading_levels)),
+    }
+
+
+def parser_provenance(heading_levels: tuple[int, ...]) -> dict:
+    configuration = parser_configuration(heading_levels)
+    return {**configuration, "distribution_version": version(configuration["engine"])}
+
+
+def validate_parser_provenance(record: object, heading_levels: tuple[int, ...]) -> dict:
+    """Validate the producer record without substituting the reader's version."""
+    if not isinstance(record, dict):
+        raise ValueError("missing structural parser provenance")
+    installed = record.get("distribution_version")
+    if not isinstance(installed, str) or not re.fullmatch(r"[0-9][0-9A-Za-z!+._-]*", installed):
+        raise ValueError("invalid structural parser distribution version")
+    expected = parser_configuration(heading_levels)
+    if type(record.get("contract_version")) is not int or record != {**expected, "distribution_version": installed}:
+        raise ValueError("unsupported structural parser configuration or heading levels")
+    if any(type(level) is not int for level in record["heading_levels"]):
+        raise ValueError("invalid structural parser heading levels")
+    return record
 
 
 @dataclass(frozen=True)
@@ -72,14 +108,16 @@ def section_boundaries(source: SourceLines, heading_levels: tuple[int, ...]):
     text = "\n" * frontmatter_end + "".join(source.lines[frontmatter_end:])
     headings = []
     fences = []
-    for token in MarkdownIt("commonmark").enable("table").parse(text):
+    configuration = parser_configuration(heading_levels)
+    parser = MarkdownIt(configuration["preset"]).enable(configuration["enabled_extensions"])
+    for token in parser.parse(text):
         if token.type == "fence":
             fences.append(tuple(token.map))
         if (
             token.type == "heading_open"
             and token.level == 0
             and token.markup.startswith("#")
-            and len(token.markup) in heading_levels
+            and len(token.markup) in configuration["heading_levels"]
         ):
             start, end = token.map
             # Derive the original heading from the source, retaining inline

@@ -6,6 +6,7 @@ import os
 import shutil
 import subprocess
 import sys
+from importlib.metadata import version
 from pathlib import Path
 
 import pytest
@@ -13,7 +14,11 @@ import pytest
 from tools import compare_markdown_modes as comparison
 from tools import prepare_generic_markdown_chronicle as adapter
 from tools import run_topic_report as runner
-from wordpipe.chronicle.markdown_sections import STRUCTURAL_MODE
+from wordpipe.chronicle.markdown_sections import (
+    STRUCTURAL_LINEAGE_SCHEMA,
+    STRUCTURAL_MODE,
+    validate_parser_provenance,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -55,6 +60,42 @@ def test_unterminated_frontmatter_and_configured_h3(tmp_path):
     _, _, report = adapter.parse_structural_file(path, (2, 3))
     assert report["diagnostics"][0]["code"] == "unterminated_frontmatter"
     assert [row["heading_level"] for row in report["candidates"]] == [2, 3]
+
+
+def test_prepare_preserves_actual_parser_configuration(tmp_path):
+    sources = tmp_path / "sources"
+    sources.mkdir()
+    (sources / "config.md").write_text("## Parent\ncontent\n### Child\ncontent\n", encoding="utf-8")
+    run = tmp_path / "run"
+    run.mkdir()
+    metrics_path = run / "prepare_metrics.json"
+    metrics = adapter.prepare(
+        sources, run / "staged_input", metrics_path, markdown_mode=STRUCTURAL_MODE, heading_levels=(3, 2),
+    )
+    expected = {
+        "engine": "markdown-it-py", "distribution_version": version("markdown-it-py"),
+        "preset": "commonmark", "enabled_extensions": ["table"], "mode": STRUCTURAL_MODE,
+        "contract_version": 1, "heading_levels": [2, 3],
+    }
+    raw = json.loads((run / "event_lineage.json").read_text(encoding="utf-8"))
+    assert raw["parser_provenance"] == metrics["parser_provenance"] == expected
+    assert [event["heading_level"] for event in raw["events"]] == [2, 3]
+    finalized = runner.validate_and_finalize_event_lineage(
+        metrics, metrics_path, topic="t", run_id="run", require_event_lineage=True,
+        markdown_mode=STRUCTURAL_MODE, heading_levels=(3, 2),
+    )
+    assert finalized["parser_provenance"] == expected
+    for incompatible in (None, {**expected, "enabled_extensions": []}, {**expected, "contract_version": 2}):
+        with pytest.raises(ValueError, match="structural parser"):
+            validate_parser_provenance(incompatible, (3, 2))
+    historical_producer = {**expected, "distribution_version": "3.0.0"}
+    assert validate_parser_provenance(historical_producer, (3, 2)) == historical_producer
+    for schema in (STRUCTURAL_LINEAGE_SCHEMA, "event-lineage-structural-v1"):
+        with pytest.raises(runner.ProvenanceError, match="provenance|schema"):
+            runner.correlate_event_provenance(
+                run, {"$schema": schema, "markdown_mode": STRUCTURAL_MODE, "events": []},
+                topic="t", run_id="run", markdown_mode=STRUCTURAL_MODE,
+            )
 
 
 def manifest(tmp_path, *, structural):
@@ -177,6 +218,10 @@ def test_paired_replay(tmp_path):
     baseline = json.loads((old / "event_lineage.json").read_text(encoding="utf-8"))["events"]
     assert [{key: actual[key] for key in expected} for expected, actual in zip(frozen, baseline, strict=True)] == frozen
     evidence = comparison.compare(old, new, sources)
+    assert evidence["structural_parser_provenance"]["distribution_version"] == version("markdown-it-py")
+    for path in (new / "prepare_metrics.json", new / "event_lineage.json", new / "event_correlation.json"):
+        assert json.loads(path.read_text(encoding="utf-8"))["parser_provenance"] == evidence["structural_parser_provenance"]
+        assert "parser_provenance" not in json.loads((old / path.name).read_text(encoding="utf-8"))
     assert evidence == comparison.compare(old, new, sources)
     sidecar = tmp_path / "markdown_mode_comparison.json"
     compare_command = [

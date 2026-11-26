@@ -45,6 +45,7 @@ from wordpipe.chronicle.markdown_sections import (
     STRUCTURAL_LINEAGE_SCHEMA,
     STRUCTURAL_MODE,
     STRUCTURAL_RAW_SCHEMA,
+    validate_parser_provenance,
 )
 
 STRUCTURAL_ROOT_MARKER = ".md01-structural-v1"
@@ -721,6 +722,7 @@ def validate_and_finalize_event_lineage(
     run_id: str,
     require_event_lineage: bool,
     markdown_mode: str = LEGACY_MODE,
+    heading_levels: tuple[int, ...] = (2,),
 ) -> dict[str, Any] | None:
     """Pre-pipeline gate: validate raw lineage, write event-lineage-v1 envelope."""
     lineage_path = resolve_event_lineage_path(
@@ -745,6 +747,12 @@ def validate_and_finalize_event_lineage(
             raise AdapterMetricsError("unsupported structural prepare lineage schema or mode")
         if not isinstance(raw.get("source_accounting"), list):
             raise AdapterMetricsError("structural lineage missing source accounting")
+        try:
+            provenance = validate_parser_provenance(raw.get("parser_provenance"), heading_levels)
+        except ValueError as exc:
+            raise AdapterMetricsError(str(exc)) from exc
+        if metrics.get("parser_provenance") != provenance:
+            raise AdapterMetricsError("structural prepare metrics and lineage disagree on parser provenance")
     elif "$schema" in raw or "markdown_mode" in raw:
         raise AdapterMetricsError("unsupported raw legacy lineage schema or mode")
     events = raw.get("events")
@@ -940,7 +948,10 @@ def validate_and_finalize_event_lineage(
         "events": finalized,
     }
     if structural:
-        envelope.update(markdown_mode=markdown_mode, source_accounting=raw["source_accounting"])
+        envelope.update(
+            markdown_mode=markdown_mode, source_accounting=raw["source_accounting"],
+            parser_provenance=provenance,
+        )
     lineage_path.write_text(
         json.dumps(envelope, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
@@ -976,6 +987,7 @@ def correlate_event_provenance(
     topic: str,
     run_id: str,
     markdown_mode: str = LEGACY_MODE,
+    heading_levels: tuple[int, ...] = (2,),
 ) -> dict[str, Any]:
     """Post-pipeline gate: fingerprint normalised events and verify merged survivors."""
     from wordpipe.chronicle.merge import (
@@ -988,6 +1000,11 @@ def correlate_event_provenance(
     expected_schema = STRUCTURAL_LINEAGE_SCHEMA if structural else "event-lineage-v1"
     if lineage_doc.get("$schema") != expected_schema or lineage_doc.get("markdown_mode", LEGACY_MODE) != markdown_mode:
         raise ProvenanceError("unsupported event lineage schema or mode")
+    if structural:
+        try:
+            provenance = validate_parser_provenance(lineage_doc.get("parser_provenance"), heading_levels)
+        except ValueError as exc:
+            raise ProvenanceError(str(exc)) from exc
     events = lineage_doc.get("events")
     if not isinstance(events, list):
         raise ProvenanceError("finalized event_lineage.events must be a list")
@@ -1119,7 +1136,10 @@ def correlate_event_provenance(
         "events": events,
     }
     if structural:
-        lineage_out.update(markdown_mode=markdown_mode, source_accounting=lineage_doc["source_accounting"])
+        lineage_out.update(
+            markdown_mode=markdown_mode, source_accounting=lineage_doc["source_accounting"],
+            parser_provenance=provenance,
+        )
     (run_dir / "event_lineage.json").write_text(
         json.dumps(lineage_out, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
@@ -1138,6 +1158,7 @@ def correlate_event_provenance(
     }
     if structural:
         correlation["markdown_mode"] = markdown_mode
+        correlation["parser_provenance"] = provenance
     (run_dir / "event_correlation.json").write_text(
         json.dumps(correlation, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
@@ -1447,6 +1468,7 @@ def run_report(manifest: dict[str, Any], *, dry_run: bool = False, run_id: str |
     repo_root = Path(manifest["_repo_root"])
     base_dir = Path(manifest["output"]["base_dir"])
     markdown_mode = manifest["adapter"].get("markdown_mode", LEGACY_MODE)
+    heading_levels = tuple(manifest["adapter"].get("heading_levels", (2,)))
     check_markdown_output_root(manifest)
 
     if run_id is None:
@@ -1531,6 +1553,7 @@ def run_report(manifest: dict[str, Any], *, dry_run: bool = False, run_id: str |
             run_id=run_id,
             require_event_lineage=require_lineage,
             markdown_mode=markdown_mode,
+            heading_levels=heading_levels,
         )
     except AdapterMetricsError as exc:
         reason = str(exc)
@@ -1581,6 +1604,7 @@ def run_report(manifest: dict[str, Any], *, dry_run: bool = False, run_id: str |
                 topic=manifest["topic"],
                 run_id=run_id,
                 markdown_mode=markdown_mode,
+                heading_levels=heading_levels,
             )
         except ProvenanceError as exc:
             reason = str(exc)

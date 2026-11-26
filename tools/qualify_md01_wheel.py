@@ -15,6 +15,7 @@ from pathlib import Path
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--evidence-dir", type=Path, help="Fresh directory for paired-run artifacts")
+    parser.add_argument("--parser-version", help="Install this markdown-it-py version for the replay")
     args = parser.parse_args()
     pytest_args = []
     if args.evidence_dir is not None:
@@ -43,10 +44,10 @@ def main() -> None:
         subprocess.run([sys.executable, "-m", "venv", str(venv)], check=True)
         bin_dir = venv / ("Scripts" if os.name == "nt" else "bin")
         python = bin_dir / ("python.exe" if os.name == "nt" else "python")
-        subprocess.run(
-            [str(python), "-m", "pip", "install", f"wordpipe[chronicle,test] @ {wheel.as_uri()}"],
-            check=True,
-        )
+        requirements = [f"wordpipe[chronicle,test] @ {wheel.as_uri()}"]
+        if args.parser_version:
+            requirements.append(f"markdown-it-py=={args.parser_version}")
+        subprocess.run([str(python), "-m", "pip", "install", *requirements], check=True)
         shutil.copytree(root / "pipeline", checkout / "pipeline")
         for name in (
             "tools/compare_markdown_modes.py",
@@ -64,9 +65,12 @@ def main() -> None:
         env = dict(os.environ, PATH=os.pathsep.join((str(bin_dir), os.environ["PATH"])))
         subprocess.run(
             [str(python), "-c",
-             "from pathlib import Path; import sys, wordpipe.chronicle.markdown_sections as m; "
+             "from pathlib import Path; from importlib.metadata import version; "
+             "import sys, markdown_it, wordpipe.chronicle.markdown_sections as m; "
              "origin = Path(m.__file__).resolve(); print('MD-01 installed origin:', origin); "
-             "assert origin.is_relative_to(Path(sys.prefix).resolve())"],
+             "assert origin.is_relative_to(Path(sys.prefix).resolve()); "
+             "assert Path(markdown_it.__file__).resolve().is_relative_to(Path(sys.prefix).resolve()); "
+             "print('MD-01 installed parser:', version('markdown-it-py'))"],
             cwd=checkout, env=env, check=True,
         )
         subprocess.run(

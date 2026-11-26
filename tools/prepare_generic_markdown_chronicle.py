@@ -33,6 +33,7 @@ from wordpipe.chronicle.markdown_sections import (
     STRUCTURAL_MODE,
     STRUCTURAL_RAW_SCHEMA,
     SourceLines,
+    parser_provenance,
     section_boundaries,
 )
 
@@ -263,6 +264,7 @@ def prepare(
         raise ValueError("heading levels must be in 2–6")
     if not structural and heading_levels != (2,):
         raise ValueError("the legacy prepare CLI uses level 2")
+    provenance = parser_provenance(heading_levels) if structural else None
     lineage_path = metrics_path.parent / EVENT_LINEAGE_FILENAME
     if structural:
         output_dir = output_dir.resolve()
@@ -337,6 +339,7 @@ def prepare(
             "$schema": STRUCTURAL_RAW_SCHEMA,
             "markdown_mode": markdown_mode,
             "source_accounting": source_accounting,
+            "parser_provenance": provenance,
         })
     lineage_path.write_text(
         json.dumps(lineage_doc, indent=2, ensure_ascii=False) + "\n",
@@ -362,6 +365,7 @@ def prepare(
     if structural:
         metrics["markdown_mode"] = markdown_mode
         metrics["heading_levels"] = list(heading_levels)
+        metrics["parser_provenance"] = provenance
     metrics_path.write_text(
         json.dumps(metrics, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",

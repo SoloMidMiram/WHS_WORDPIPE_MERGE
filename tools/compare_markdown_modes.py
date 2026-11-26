@@ -25,6 +25,7 @@ from wordpipe.chronicle.markdown_sections import (
     STRUCTURAL_LINEAGE_SCHEMA,
     STRUCTURAL_MODE,
     SourceLines,
+    validate_parser_provenance,
 )
 
 
@@ -52,6 +53,11 @@ def load_completed_run(run: Path, mode: str):
             raise ValueError(f"{run}: incompatible sidecar schema or mode")
         if document["run_id"] != manifest["run_id"] or document["topic"] != manifest["topic"]:
             raise ValueError(f"{run}: sidecar belongs to a different run")
+    if mode == STRUCTURAL_MODE:
+        levels = tuple(manifest["adapter"].get("heading_levels", (2,)))
+        producer = validate_parser_provenance(lineage.get("parser_provenance"), levels)
+        if validate_parser_provenance(correlation.get("parser_provenance"), levels) != producer:
+            raise ValueError(f"{run}: structural sidecars disagree on parser provenance")
     if correlation["ambiguous_matches"] or correlation["unmerged_source_event_count"]:
         raise ValueError(f"{run}: unresolved correlation")
     events = lineage["events"]
@@ -158,7 +164,8 @@ def compare(legacy_run: Path, structural_run: Path, input_dir: Path) -> dict:
                 "structural": after,
             })
     return {
-        "$schema": "markdown-mode-comparison-v1",
+        "$schema": "markdown-mode-comparison-v2",
+        "structural_parser_provenance": structural["parser_provenance"],
         "topic": legacy_manifest["topic"],
         "legacy_run_id": legacy_manifest["run_id"],
         "structural_run_id": structural_manifest["run_id"],
