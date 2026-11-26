@@ -379,6 +379,29 @@ def test_dry_run_does_not_create_directories(tmp_path):
     assert result["exit_codes"] == {}
 
 
+def test_topic_runner_records_timeout_without_touching_prior_outputs(tmp_path):
+    from hashlib import sha256
+
+    manifest_path, config = _valid_manifest_file(tmp_path)
+    old = Path(config["output"]["base_dir"]) / "previous"
+    old.mkdir()
+    artifact = old / "merged.md"
+    artifact.write_bytes(b"previous successful output")
+    digest = sha256(artifact.read_bytes()).digest()
+    Path(config["adapter"]["script"]).write_text("import time\ntime.sleep(7)\n", encoding="utf-8")
+    manifest = runner.load_manifest(manifest_path)
+    result = runner.run_report(manifest, run_id="fresh-timeout", stage_timeout=2)
+    run = Path(result["run_dir"])
+    assert result["exit_codes"] == {"prepare": 124}
+    evidence, = (run / "exec-01").glob("*.json")
+    assert evidence.name == "prepare.json"
+    terminal = json.loads(evidence.read_text(encoding="utf-8"))
+    assert terminal["outcome"] == "timeout" and terminal["cleanup"] == "verified"
+    assert 2 <= terminal["elapsed_seconds"] <= 7
+    assert sha256(artifact.read_bytes()).digest() == digest
+    assert not (run / "pipeline").exists()
+
+
 def test_runner_help_and_dry_run_without_site_packages(tmp_path):
     command = [sys.executable, "-I", "-S", str(MODULE_PATH)]
     help_result = subprocess.run([*command, "--help"], capture_output=True, text=True)
@@ -1119,7 +1142,7 @@ def test_run_report_invalid_metrics_blocks_pipeline_and_sets_prepare_fail(tmp_pa
     manifest["adapter"]["id"] = "prepare_insurancechatbot_chronicle"
     called_labels: list[str] = []
 
-    def fake_run_stage(cmd, label, *, dry_run=False, capture_output_to=None):
+    def fake_run_stage(cmd, label, *, dry_run=False, capture_output_to=None, **execution):
         called_labels.append(label)
         if "prepare" in label:
             run_dir = Path(manifest["output"]["base_dir"]) / "contract_fail"

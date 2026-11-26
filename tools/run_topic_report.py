@@ -25,7 +25,6 @@ import math
 import os
 import re
 import shutil
-import subprocess
 import sys
 import time
 from datetime import datetime, timezone
@@ -46,6 +45,7 @@ from wordpipe.markdown_contract import (
     STRUCTURAL_MODE,
     STRUCTURAL_RAW_SCHEMA,
 )
+from wordpipe.execution import Cancellation, ExecutionPolicy, execute, write_terminal_evidence
 
 STRUCTURAL_ROOT_MARKER = ".md01-structural-v1"
 GENERIC_MARKDOWN = "prepare_generic_markdown_chronicle"
@@ -368,6 +368,9 @@ def run_stage(
     *,
     dry_run: bool = False,
     capture_output_to: str | None = None,
+    policy: ExecutionPolicy = ExecutionPolicy(),
+    evidence_path: Path | None = None,
+    publish_owner: bool = False,
 ) -> dict[str, Any]:
     """Run one stage command and return ``{"exit_code": int, "output": str}``.
 
@@ -379,29 +382,25 @@ def run_stage(
 
     print(f"  [{label}] Starting...")
 
-    proc = subprocess.run(
-        cmd,
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-    )
-
-    combined = (proc.stdout or "") + (proc.stderr or "")
+    result = execute(cmd, policy, publish_owner=publish_owner)
+    if evidence_path is not None:
+        evidence_path.parent.mkdir(exist_ok=True)
+        write_terminal_evidence(evidence_path, result, policy)
+    combined = result.stdout.text(policy.stdout_limit) + result.stderr.text(policy.stderr_limit)
 
     if capture_output_to:
         dest = Path(capture_output_to)
         dest.parent.mkdir(parents=True, exist_ok=True)
-        with dest.open("a", encoding="utf-8") as fh:
+        with dest.open("a", encoding="utf-8", newline="\n") as fh:
             fh.write(combined)
 
-    if proc.returncode != 0:
-        print(f"  [{label}] FAILED (exit code {proc.returncode})")
+    if result.exit_code != 0:
+        print(f"  [{label}] FAILED ({result.outcome.value}, exit code {result.exit_code})")
         print(f"  [{label}] stderr snippet: {combined[-500:]}")
     else:
-        print(f"  [{label}] OK (exit code {proc.returncode})")
+        print(f"  [{label}] OK (exit code {result.exit_code})")
 
-    return {"exit_code": proc.returncode, "output": combined}
+    return {"exit_code": result.exit_code, "output": combined}
 
 
 def enrich_run_metrics(run_metrics: dict[str, Any], timing_seconds: float) -> dict[str, Any]:
@@ -1463,12 +1462,16 @@ def check_markdown_output_root(manifest: dict[str, Any], *, claim: bool = False)
             raise RunDirectoryCollisionError(f"structural output root claimed concurrently: {base}") from exc
 
 
-def run_report(manifest: dict[str, Any], *, dry_run: bool = False, run_id: str | None = None) -> dict[str, Any]:
+def run_report(
+    manifest: dict[str, Any], *, dry_run: bool = False, run_id: str | None = None,
+    stage_timeout: float | None = None,
+) -> dict[str, Any]:
     """Execute the full topic report flow.
 
     Returns a result dict with keys: ``run_dir``, ``exit_codes``, ``run_metrics``, ``timing_seconds``.
     """
     repo_root = Path(manifest["_repo_root"])
+    policy = ExecutionPolicy(timeout=stage_timeout, cancellation=Cancellation())
     base_dir = Path(manifest["output"]["base_dir"])
     markdown_mode = manifest["adapter"].get("markdown_mode", LEGACY_MODE)
     heading_levels = tuple(manifest["adapter"].get("heading_levels", (2,)))
@@ -1508,10 +1511,12 @@ def run_report(manifest: dict[str, Any], *, dry_run: bool = False, run_id: str |
     log_path = run_dir / "run.log"
     log_path.parent.mkdir(parents=True, exist_ok=True)
     log_path.write_text("", encoding="utf-8")  # clear log
+    execution_dir = run_dir / "exec-01"
 
     prep_result = run_stage(
         commands[CMD_PREPARE], "prepare: adapter prepare",
         dry_run=False, capture_output_to=str(log_path),
+        policy=policy, evidence_path=execution_dir / "prepare.json",
     )
     exit_codes: dict[str, int] = {CMD_PREPARE: prep_result["exit_code"]}
     if prep_result["exit_code"] != 0:
@@ -1581,6 +1586,7 @@ def run_report(manifest: dict[str, Any], *, dry_run: bool = False, run_id: str |
     pipe_result = run_stage(
         commands[CMD_PIPELINE], "pipeline: chain.ps1",
         dry_run=False, capture_output_to=str(log_path),
+        policy=policy, evidence_path=execution_dir / "pipeline.json", publish_owner=True,
     )
     t1 = time.perf_counter()
     timing_seconds = t1 - t0
@@ -1629,6 +1635,7 @@ def run_report(manifest: dict[str, Any], *, dry_run: bool = False, run_id: str |
     summary_result = run_stage(
         commands[CMD_SUMMARIZE], "summarize: adapter summarize",
         dry_run=False, capture_output_to=str(log_path),
+        policy=policy, evidence_path=execution_dir / "summarize.json",
     )
     exit_codes[CMD_SUMMARIZE] = summary_result["exit_code"]
 
@@ -2008,6 +2015,7 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Return exit code 0 even when verdict is REVIEW",
     )
+    parser.add_argument("--stage-timeout-seconds", type=float, help="Optional deadline per stage")
     return parser
 
 
@@ -2026,8 +2034,9 @@ def main(argv: list[str] | None = None) -> int:
             manifest,
             dry_run=args.dry_run,
             run_id=args.run_id,
+            **({"stage_timeout": args.stage_timeout_seconds} if args.stage_timeout_seconds is not None else {}),
         )
-    except RunDirectoryCollisionError as exc:
+    except (RunDirectoryCollisionError, ValueError, OSError) as exc:
         print(f"Run error: {exc}", file=sys.stderr)
         return 1
 

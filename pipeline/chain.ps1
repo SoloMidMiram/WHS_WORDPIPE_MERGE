@@ -69,7 +69,8 @@ param(
     [switch]$NoLinkRegistry,
     [switch]$SourceCoverage,
     [switch]$AllowPartialIngest,
-    [switch]$Verbose
+    [switch]$Verbose,
+    [double]$StageTimeoutSeconds
 )
 
 # ---------------------------------------------------------------------------
@@ -82,6 +83,8 @@ $VerifyPy = "$ScriptDir/verify_ingest.py"
 $MergePy = "$ScriptDir/merge.py"
 $CategorizePy = "$ScriptDir/categorize.py"
 $IndexPy = "$ScriptDir/index.py"
+$ExecutePy = "$ScriptDir/execute_stage.py"
+$HasStageTimeout = $PSBoundParameters.ContainsKey("StageTimeoutSeconds")
 
 # ---------------------------------------------------------------------------
 # Help
@@ -106,6 +109,7 @@ Options:
   -NoLinkRegistry       Skip link registry generation in index.py
   -SourceCoverage       Pass source_coverage.md to index.py
   -AllowPartialIngest    Continue pipeline when some (not all) files fail to ingest
+  -StageTimeoutSeconds <seconds>  Optional positive deadline per native stage
   -Verbose              Enable debug logging in all stages
 
 Exit codes:
@@ -128,6 +132,11 @@ Examples:
 if (-not $InputDir -and -not $OutputDir) {
     Show-Help
 }
+if ($HasStageTimeout -and ($StageTimeoutSeconds -le 0 -or
+        [double]::IsNaN($StageTimeoutSeconds) -or [double]::IsInfinity($StageTimeoutSeconds))) {
+    Write-Error "StageTimeoutSeconds must be finite and positive"
+    exit 1
+}
 
 # chain.ps1 signals failures via exit codes, not thrown errors. Keep
 # Write-Error non-terminating so each abort message is followed by exit N
@@ -146,6 +155,8 @@ function Invoke-ChronicleStage {
     $exitCode = $null
     $diagnostics = @()
     $previousExitCode = $global:LASTEXITCODE
+    $terminal = $null
+    $evidenceRef = $null
 
     try {
         $pythonName = if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) { "python.exe" } else { "python" }
@@ -154,17 +165,34 @@ function Invoke-ChronicleStage {
         $ErrorActionPreference = "Continue"
         $PSNativeCommandUseErrorActionPreference = $false
         $global:LASTEXITCODE = $null
-        $diagnostics = @(& $python.Source $ScriptPath @Arguments 2>&1)
-        $exitCode = $global:LASTEXITCODE
-
-        if ($exitCode -eq 0) {
+        $script:executionCount++
+        $evidenceRef = "exec-01/$($evidence.run_id)/$($script:executionCount).json"
+        $bridgeArgs = @($ExecutePy, "--evidence", (Join-Path $OutputDirAbs $evidenceRef))
+        if ($HasStageTimeout) {
+            $bridgeArgs += @("--timeout", $StageTimeoutSeconds.ToString([Globalization.CultureInfo]::InvariantCulture))
+        }
+        $bridgeArgs += @("--", $python.Source, $ScriptPath) + $Arguments
+        # The bridge emits one JSON record with bounded rendered diagnostics.
+        $reply = @(& $python.Source @bridgeArgs 2>&1)
+        if ($global:LASTEXITCODE -ne 0 -or $reply.Count -ne 1) {
+            throw "Bounded execution bridge did not return a terminal record"
+        }
+        $terminal = ConvertFrom-Json -InputObject ([string]$reply[0]) -ErrorAction Stop
+        if ($terminal.schema -cne "exec-01-v1") { throw "Unknown execution evidence schema" }
+        $exitCode = $terminal.native_exit_code
+        $diagnostics = @($terminal.stdout_text, $terminal.stderr_text, $terminal.detail) |
+            Where-Object { $_ }
+        if ($terminal.outcome -eq "success") {
             $status = "ok"
             $failureKind = $null
-        } elseif ($null -ne $exitCode) {
+        } elseif ($terminal.outcome -eq "native_failure") {
             $failureKind = "native_exit"
+        } elseif ($terminal.outcome -ne "launch_failure") {
+            $failureKind = $terminal.outcome
         }
     } catch {
         $diagnostics += $_
+        $evidenceRef = $null
     } finally {
         $global:LASTEXITCODE = $previousExitCode
         $timer.Stop()
@@ -177,6 +205,7 @@ function Invoke-ChronicleStage {
         ExitCode    = $exitCode
         Diagnostics = $diagnostics
         DurationMs  = $timer.ElapsedMilliseconds
+        ExecutionEvidence = $evidenceRef
     }
 }
 
@@ -208,6 +237,7 @@ $activeStage = $ingestStage
 $runExitCode = 1
 $lock = $null
 $summaryPath = $null
+$executionCount = 0
 
 try {
     try {
@@ -222,8 +252,15 @@ try {
         $lock = [IO.FileStream]::new($lockPath, [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite,
             [IO.FileShare]::None, 4096, [IO.FileOptions]::DeleteOnClose)
         $path = Join-Path $OutputDirAbs "run.json"
+        if (Test-Path -LiteralPath $path -PathType Leaf) {
+            $prior = (Read-ChronicleArtifactPrefix $path 1048576 $true) | ConvertFrom-Json -ErrorAction Stop
+            if ($prior.status -in @("ok", "partial") -and $prior.exit_code -eq 0) {
+                throw "Output directory contains a successful run. Use a fresh OutputDir."
+            }
+        }
         [IO.File]::Delete($path)
         $summaryPath = $path
+        [IO.Directory]::CreateDirectory((Join-Path $OutputDirAbs "exec-01/$($evidence.run_id)")) | Out-Null
 
         if (-not (Test-Path -LiteralPath $InputDir -PathType Container -ErrorAction Stop)) {
             throw "Input directory does not exist: $InputDir"
@@ -310,6 +347,10 @@ try {
             Write-StageFail "$filename ($($result.FailureKind), exit code $($result.ExitCode))"
             if ($Verbose -or $result.FailureKind -eq "launch_error") {
                 Write-Host "  Output: $($result.Diagnostics)" -ForegroundColor DarkGray
+            }
+            if ($result.FailureKind -ne "native_exit") {
+                $runExitCode = 1
+                exit $runExitCode
             }
         }
     }

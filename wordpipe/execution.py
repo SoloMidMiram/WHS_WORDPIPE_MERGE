@@ -13,6 +13,7 @@ import uuid
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from enum import Enum
+from pathlib import Path
 from typing import Callable
 
 
@@ -98,6 +99,12 @@ class Capture:
             "truncated": self.truncated,
         }
 
+    def text(self, limit: int = MAX_CAPTURE) -> str:
+        # Replacement characters can expand malformed UTF-8. Keep the
+        # serialized UTF-8 diagnostic within the original retention bound.
+        data = self.retained.decode("utf-8", "replace").encode("utf-8")
+        return data[:limit].decode("utf-8", "ignore").replace("\r\n", "\n").replace("\r", "\n")
+
 
 @dataclass(frozen=True)
 class ExecutionResult:
@@ -133,6 +140,24 @@ class ExecutionResult:
             "stderr": self.stderr.evidence(), "cleanup": self.cleanup.value,
             "detail": self.detail, "exited_process_records": self.exited_records,
         }
+
+
+def write_terminal_evidence(path: Path, result: ExecutionResult, policy: ExecutionPolicy) -> None:
+    record = result.evidence()
+    record["policy"] = {
+        "timeout_seconds": policy.timeout,
+        "cleanup_budget_seconds": CLEANUP_BUDGET,
+        "cleanup_grace_seconds": policy.cleanup_grace,
+        "stdout_limit": policy.stdout_limit,
+        "stderr_limit": policy.stderr_limit,
+        "ownership": "inherited" if policy.inherited else "owned",
+        "has_deadline": policy.timeout is not None or (
+            policy.inherited is not None and policy.inherited.deadline is not None
+        ),
+    }
+    with path.open("x", encoding="utf-8") as handle:
+        json.dump(record, handle, ensure_ascii=True)
+        handle.write("\n")
 
 
 def select_trigger(

@@ -35,7 +35,8 @@ function Set-ChronicleStageEvidence {
     $Stage.status = $Result.Status
     $Stage.duration_ms = $Result.DurationMs
     $Stage.native_exit_code = $Result.ExitCode
-    if ($Result.FailureKind -in @("native_exit", "launch_error")) {
+    if ($Result.ExecutionEvidence) { $Stage.execution_evidence = $Result.ExecutionEvidence }
+    if ($Result.FailureKind) {
         $Stage.diagnostics = @([string]$Result.FailureKind)
     }
 }
@@ -74,10 +75,11 @@ function Get-ChronicleIngestEvidence {
         rejected = $null
         diagnostics = @()
     }
-    if ($Result.FailureKind -in @("native_exit", "launch_error")) {
+    if ($Result.ExecutionEvidence) { $entry.execution_evidence = $Result.ExecutionEvidence }
+    if ($Result.FailureKind) {
         $entry.diagnostics += [string]$Result.FailureKind
     }
-    if ($Result.FailureKind -eq "launch_error") { return $entry }
+    if ($Result.FailureKind -and $Result.FailureKind -ne "native_exit") { return $entry }
 
     $manifestPath = [IO.Path]::ChangeExtension($OutputPath, ".rejections.json")
     try {

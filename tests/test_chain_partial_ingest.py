@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import shutil
 import subprocess
@@ -14,10 +15,12 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CHAIN_PS1 = REPO_ROOT / "pipeline" / "chain.ps1"
 
-# Existing Windows integration fixtures require python.exe. The launch
-# failure test and MD-01 paired runs also exercise the native Linux launcher.
 _POWERSHELL: str | None = shutil.which("pwsh") or shutil.which("powershell")
-_PYTHON_EXE: str | None = shutil.which("python.exe")
+_PYTHON_EXE: str | None = shutil.which("python.exe" if os.name == "nt" else "python")
+
+
+def _file_digests(root):
+    return {p.relative_to(root): hashlib.sha256(p.read_bytes()).digest() for p in root.rglob("*") if p.is_file()}
 
 
 def _read_evidence(out_dir: Path) -> dict:
@@ -41,8 +44,8 @@ def _run_chain(
     _POWERSHELL is None or _PYTHON_EXE is None,
     reason="chain.ps1 requires PowerShell and python.exe",
 )
-def test_chain_allow_partial_ingest_reused_output_dir(tmp_path: Path) -> None:
-    """A partial run over a reused output dir merges only fresh normalised files."""
+def test_chain_allow_partial_ingest_and_previous_output_preservation(tmp_path: Path) -> None:
+    """A fresh partial attempt ignores seeded stale input and preserves the earlier run."""
     raw_dir = tmp_path / "raw"
     raw_dir.mkdir()
     out_dir = tmp_path / "out"
@@ -71,6 +74,8 @@ def test_chain_allow_partial_ingest_reused_output_dir(tmp_path: Path) -> None:
     assert merged.exists(), "Run 1 should produce merged.md"
     assert "Alpha Outage" in merged.read_text(encoding="utf-8")
     first_id = _read_evidence(out_dir)["run_id"]
+    first_dir = out_dir
+    first_hashes = _file_digests(first_dir)
 
     # Run 2: alpha is now undated (ingest fails) and beta is a new valid file.
     alpha.write_text(
@@ -89,6 +94,17 @@ def test_chain_allow_partial_ingest_reused_output_dir(tmp_path: Path) -> None:
         """),
         encoding="utf-8",
     )
+    collision = _run_chain(
+        ["-InputDir", str(raw_dir), "-OutputDir", str(first_dir), "-SkipCategorize"],
+        cwd=REPO_ROOT,
+    )
+    assert collision.returncode == 1
+    assert "fresh OutputDir" in collision.stderr
+    assert _file_digests(first_dir) == first_hashes
+    out_dir = tmp_path / "partial"
+    (out_dir / "normalised").mkdir(parents=True)
+    shutil.copyfile(normalised_alpha, out_dir / "normalised" / "alpha.md")
+    merged = out_dir / "merged.md"
     second = _run_chain(
         ["-InputDir", str(raw_dir), "-OutputDir", str(out_dir),
          "-AllowPartialIngest", "-SkipCategorize", "-SkipIndex"],
@@ -113,20 +129,24 @@ def test_chain_allow_partial_ingest_reused_output_dir(tmp_path: Path) -> None:
     ]
     assert "alpha outage body" not in (out_dir / "run.json").read_text(encoding="utf-8")
 
+    partial_hashes = _file_digests(out_dir)
+    failed_dir = tmp_path / "failed"
     verified = _run_chain(
-        ["-InputDir", str(raw_dir), "-OutputDir", str(out_dir),
+        ["-InputDir", str(raw_dir), "-OutputDir", str(failed_dir),
          "-AllowPartialIngest", "-Verify", "-SkipCategorize"],
         cwd=REPO_ROOT,
     )
     assert verified.returncode == 2, verified.stdout + verified.stderr
     assert "Verification failed" in verified.stdout
-    failed = _read_evidence(out_dir)
+    failed = _read_evidence(failed_dir)
     assert failed["run_id"] != partial["run_id"]
     assert failed["exit_code"] == 2
     assert failed["merge_inputs"] == []
     assert [stage["status"] for stage in failed["stages"]] == [
         "partial", "failed", "not_run", "skipped", "skipped",
     ]
+    assert _file_digests(out_dir) == partial_hashes
+    assert _file_digests(first_dir) == first_hashes
 
 
 @pytest.mark.skipif(
@@ -229,6 +249,7 @@ def isolated_chain(tmp_path: Path) -> tuple[Path, Path, Path]:
     chain = scripts / CHAIN_PS1.name
     shutil.copyfile(CHAIN_PS1, chain)
     shutil.copyfile(CHAIN_PS1.with_name("chain_evidence.ps1"), scripts / "chain_evidence.ps1")
+    shutil.copyfile(CHAIN_PS1.with_name("execute_stage.py"), scripts / "execute_stage.py")
     raw_dir = tmp_path / "raw"
     raw_dir.mkdir()
     (raw_dir / "input.md").write_text("fixture", encoding="utf-8")
@@ -241,6 +262,26 @@ def isolated_chain(tmp_path: Path) -> tuple[Path, Path, Path]:
             encoding="utf-8",
         )
     return chain, raw_dir, tmp_path / "out"
+
+
+@pytest.mark.skipif(_POWERSHELL is None or _PYTHON_EXE is None, reason="requires native PowerShell and Python")
+def test_direct_chain_timeout_skips_dependents_even_in_partial_mode(isolated_chain):
+    chain, raw_dir, out_dir = isolated_chain
+    (chain.parent / "ingest.py").write_text("import time\ntime.sleep(7)\n", encoding="utf-8")
+    result = _run_chain(
+        ["-InputDir", str(raw_dir), "-OutputDir", str(out_dir),
+         "-StageTimeoutSeconds", "2", "-AllowPartialIngest"],
+        cwd=raw_dir.parent, script=chain,
+    )
+    assert result.returncode == 1, result.stdout + result.stderr
+    summary = _read_evidence(out_dir)
+    invocation = summary["ingest_files"][0]
+    terminal = json.loads((out_dir / invocation["execution_evidence"]).read_text(encoding="utf-8"))
+    assert terminal["outcome"] == terminal["trigger"] == "timeout"
+    assert terminal["cleanup"] == "verified"
+    assert 2 <= terminal["elapsed_seconds"] <= 7
+    assert summary["stages"][2]["status"] == "not_run"
+    assert not (raw_dir.parent / "merge").exists()
 
 
 @pytest.mark.skipif(
