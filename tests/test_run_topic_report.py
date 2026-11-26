@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import math
+import subprocess
 import sys
 from pathlib import Path
 
@@ -306,7 +307,7 @@ def test_build_commands_returns_three_stages(tmp_path):
     assert "--metrics" in prepare_cmd
 
     pipeline_cmd = cmds[runner.CMD_PIPELINE]
-    assert "powershell" in pipeline_cmd[0].lower()
+    assert pipeline_cmd[0] in {"powershell", "pwsh"}
     assert "chain.ps1" in str(pipeline_cmd)
 
     summarize_cmd = cmds[runner.CMD_SUMMARIZE]
@@ -376,6 +377,33 @@ def test_dry_run_does_not_create_directories(tmp_path):
     assert not (tmp_path / "dry_test").exists()
     assert result["run_dir"].endswith("dry_test")
     assert result["exit_codes"] == {}
+
+
+def test_runner_help_and_dry_run_without_site_packages(tmp_path):
+    command = [sys.executable, "-I", "-S", str(MODULE_PATH)]
+    help_result = subprocess.run([*command, "--help"], capture_output=True, text=True)
+    assert help_result.returncode == 0, help_result.stderr
+    assert "--dry-run" in help_result.stdout
+
+    manifest_path, data = _valid_manifest_file(tmp_path)
+    adapter = tmp_path / "tools" / "prepare_generic_markdown_chronicle.py"
+    adapter.parent.mkdir()
+    adapter.write_text("raise RuntimeError('dry-run must not execute the adapter')\n", encoding="utf-8")
+    legacy_root = tmp_path / "output"
+    for mode in ("legacy-v1", "structural-v1"):
+        data["adapter"] = {"id": "prepare_generic_markdown_chronicle", "markdown_mode": mode}
+        if mode == "structural-v1":
+            data["output"]["legacy_base_dir"] = str(legacy_root)
+            data["output"]["base_dir"] = str(tmp_path / "structural")
+        manifest_path.write_text(json.dumps(data), encoding="utf-8")
+        plan = subprocess.run([
+            *command, "--manifest", str(manifest_path), "--dry-run", "--run-id", "preflight",
+        ], capture_output=True, text=True)
+        assert plan.returncode == 0, plan.stderr
+        assert f"--markdown-mode {mode}" in plan.stdout
+        assert "Planned output directory:" in plan.stdout
+    assert not list(legacy_root.iterdir())
+    assert not (tmp_path / "structural").exists()
 
 
 def test_existing_run_directory_is_rejected_without_modification(tmp_path):

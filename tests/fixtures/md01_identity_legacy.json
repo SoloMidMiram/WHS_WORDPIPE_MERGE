@@ -1,0 +1,38 @@
+[
+  {
+    "start_line": 7,
+    "candidate_ordinal": 1,
+    "staged_event_ordinal": 1,
+    "source_event_id": "source_event:md01_synthetic:4a46a3afc1ce9ab33268f0d19163d99f15e1637b5d893d7c1d9c117cb7a5c7a6",
+    "report_event_id": "report_event:md01_synthetic:ea847040b9c64c5d5bc8f68acf9974bcc8fba5ea81451a035551e222731da1c3",
+    "date": "2025-02-02",
+    "body_sha256": "ddd59984906f0b6eceb99718689209dfa612ef0d9175a6b47502d568bd31e03d"
+  },
+  {
+    "start_line": 11,
+    "candidate_ordinal": 2,
+    "staged_event_ordinal": 2,
+    "source_event_id": "source_event:md01_synthetic:13b8daa14159623de17e4e7d08f1be7adb0f7c4b824e92c9e76eacc4f6378ee3",
+    "report_event_id": "report_event:md01_synthetic:2818a867a5d630ab710c5dbfb1d70222bb75697a4f73c5137254fd7b9a4adf30",
+    "date": "2025-01-01",
+    "body_sha256": "eb22b7cabe42ff43d1f3976ca1076e50f6637047617905ad2ff669d2f1db8003"
+  },
+  {
+    "start_line": 16,
+    "candidate_ordinal": 3,
+    "staged_event_ordinal": 3,
+    "source_event_id": "source_event:md01_synthetic:957e211b0f36a287e950c692b22e0a0b08362c8692c346cbe27acfcabdb43412",
+    "report_event_id": "report_event:md01_synthetic:18975eae52ca94744165b083eeac6a6ecbb5a640047bbc2fc129aa5be2e3da6e",
+    "date": "2025-01-01",
+    "body_sha256": "41a0007b2989ef221f3aed2dadfd95c1ddaae33b7d2bc98fef7b06ab1199bc51"
+  },
+  {
+    "start_line": 35,
+    "candidate_ordinal": 5,
+    "staged_event_ordinal": 4,
+    "source_event_id": "source_event:md01_synthetic:18f0b09456dd7ef65dad2c63299bb9bc47ebe1c2b67049413cf3089a595294d2",
+    "report_event_id": "report_event:md01_synthetic:04f3b34f25cb1b4b4dd81be0f7c876fcd0d6a8542164a9dd573dfb49d518bd29",
+    "date": "2025-01-01",
+    "body_sha256": "148cfbf66aa0b3e8b5709f7ec63ef9807e79452bc7ba4ab98c2136bcea16c4cb"
+  }
+]

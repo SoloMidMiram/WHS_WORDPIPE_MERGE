@@ -148,7 +148,8 @@ function Invoke-ChronicleStage {
     $previousExitCode = $global:LASTEXITCODE
 
     try {
-        $python = Get-Command -Name python.exe -CommandType Application -TotalCount 1 -ErrorAction Stop
+        $pythonName = if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) { "python.exe" } else { "python" }
+        $python = Get-Command -Name $pythonName -CommandType Application -TotalCount 1 -ErrorAction Stop
         # Keep native stderr diagnostic-only in Windows PowerShell and PowerShell 7.
         $ErrorActionPreference = "Continue"
         $PSNativeCommandUseErrorActionPreference = $false

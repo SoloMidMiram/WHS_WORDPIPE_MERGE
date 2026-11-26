@@ -14,8 +14,8 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CHAIN_PS1 = REPO_ROOT / "pipeline" / "chain.ps1"
 
-# chain.ps1 invokes ``python.exe`` by name, which is Windows-specific, so the
-# test is skipped on environments that cannot run the script at all.
+# Existing Windows integration fixtures require python.exe. The launch
+# failure test and MD-01 paired runs also exercise the native Linux launcher.
 _POWERSHELL: str | None = shutil.which("pwsh") or shutil.which("powershell")
 _PYTHON_EXE: str | None = shutil.which("python.exe")
 
@@ -318,7 +318,8 @@ def test_chain_missing_python_is_launch_failure_with_stale_exit_code(isolated_ch
     )
     assert result.returncode == 1, result.stdout + result.stderr
     assert "launch_error" in result.stdout
-    assert "python.exe" in result.stdout
+    python_name = "python.exe" if os.name == "nt" else "'python'"
+    assert python_name in result.stdout
     assert "native_exit" not in result.stdout
     assert not (raw_dir.parent / "ingest").exists()
     assert _read_evidence(out_dir)["stages"][0]["diagnostics"] == ["launch_error"]

@@ -277,7 +277,8 @@ are body content. Outside sections record exclusions by span. Recognize
 frontmatter only on the opening line, with exact `---` delimiter lines
 and a YAML mapping payload. Record an invalid or unterminated opener as
 a diagnostic and apply ordinary Markdown rules to its text. Preserve the
-existing first-section-date and first-file-date fallback rules. Record
+existing first-section-date and first-file-date fallback order, considering
+only valid calendar dates in structural mode. Record
 whether the date came from the section, file fallback or default constant.
 These are ordering dates. Full date semantics stay with TIME-01.
 
@@ -315,6 +316,83 @@ sidecar, while published artifacts and reports retain their original IDs.
 **Recommendation.** Accept this bounded contract for implementation review.
 Keep production work gated on the maintainer decision. G2 qualification
 still requires the original acceptance tests below.
+
+#### Implementation handoff
+
+The maintainer accepted the specific PR #22 head
+`2e5c5e363fcdbe001ccdd58fe5d22690fb287d7c` and authorized slot-1
+implementation under issue #15. G2 remains REVISE pending acceptance.
+
+For a paired run, first run the existing manifest in legacy mode. In a
+separate structural manifest set `adapter.markdown_mode` to
+`structural-v1`, point `output.legacy_base_dir` at the legacy output root,
+and set `output.base_dir` to a new disjoint root. Optional
+`adapter.heading_levels` chooses unique integers from 2 through 6 and
+defaults to `[2]`. The runner claims the new
+root for structural mode and refuses existing unclaimed roots, input
+overlap, and resolved aliases of the legacy root. Subsequent structural
+runs use fresh run IDs under the claimed root. Comparison creates new
+evidence outside both completed runs.
+
+```console
+python tools/compare_markdown_modes.py --legacy-run LEGACY_RUN --structural-run STRUCTURAL_RUN --input-dir FROZEN_INPUT --output NEW_COMPARISON.json
+python tools/qualify_md01_wheel.py --evidence-dir FRESH_EVIDENCE_DIR
+```
+
+The comparison verifies structural input digests and replays the legacy
+staged Markdown and lineage against that snapshot. Historical legacy
+outputs lack a raw source digest, so equal replay cannot authenticate
+source bytes that never contributed to those artifacts. Qualification
+uses checkout driver scripts with `wordpipe` resolved from a fresh wheel
+install. This scope leaves CLI-01 and CI-01's broader gates intact.
+
+The structural adapter fails explicitly if source content collides with
+reserved month/event framing in the shared Chronicle transport. The source
+remains intact and the run records failure. Supporting that transport
+edge case requires separate compatibility review. Root checks resolve
+configured paths and guard normal runner writes. They do not provide
+filesystem isolation from concurrent external renames or symlink mutation.
+
+#### Accepted bounded implementation and parser provenance
+
+The maintainer accepted the bounded implementation in PR #23 at
+`1b700d7a82d9b5e0ee350185421fbb10e2950a82` subject to the provenance
+correction and its final checks. Structural mode remains opt-in.
+The historical characterization used markdown-it-py 4.2.0. The original
+hosted implementation qualification used 4.3.0.
+
+Structural preparation metrics and raw lineage, finalized lineage and
+correlation record `parser_provenance`. Comparison exposes the same producer
+record as `structural_parser_provenance`. It has `engine` (`markdown-it-py`),
+`distribution_version` (installed distribution metadata), `preset`
+(`commonmark`), `enabled_extensions` (`["table"]`), `mode`
+(`structural-v1`), integer `contract_version` (1), and ascending effective
+`heading_levels`. Preparation uses the same configuration for parsing and
+evidence. Readers check supported configuration and provenance agreement
+without replacing a producer's version with the current installation.
+
+The structural preparation, lineage, correlation and comparison sidecar
+schemas advance to v2. Legacy schemas remain unchanged. A v2 reader rejects
+older structural sidecars or missing or incompatible provenance. Retain
+historical evidence and use its original implementation and recorded
+environment for historical replay where available. For v2 evidence, run
+again from verified inputs in a new structural output directory and retain
+both runs. Roll back operationally by selecting legacy mode and its separate
+output root. Parser provenance is excluded from existing event identity
+algorithms.
+
+The Windows wheel comparison exercised markdown-it-py 3.0.0, 4.2.0 and
+4.3.0. It found the same candidate selection, spans, payloads, source IDs,
+report IDs, survivor keys and run-local navigation on the frozen fixture.
+The declared minimum `markdown-it-py>=3` stands. This evidence covers the
+three tested versions and the frozen fixture.
+
+**Remaining G2 decision.** Review source coverage and explain all inclusions
+and exclusions on the intended inputs. Disposition reserved Chronicle
+framing in that scope, then verify stable locators, identities and replay.
+Verify temporal roles and evidence locators, including assigned ordering
+dates and explicit unknowns, under the separate TIME-01 work. The maintainer
+must record G2 acceptance. CI-01 source import isolation remains separate.
 
 **Acceptance.** Attribute every source line to a recorded span or exclusion.
 Preserve source hashes. At default levels the candidate should emit only Alpha
@@ -649,7 +727,7 @@ subject to the independent gateway review.
 |---|---|---|
 | G0 — Governance | Reconcile the root roadmap, the 24 unique work packages and open GitHub issues. Assign each tracked scope one owner issue, retain the historical evidence and pass repository governance on the integrated candidate. | Maintainer, GOV-01 [#14][i14]. ACCEPT; [#19][pr19] merged; #14 closed. |
 | G1 — Fidelity | Freeze the authorized candidate and contract before preparing a new independent holdout. All delivered packets retain 100% of protected facts and required IDs, have verified anchors and contain zero unsupported facts. Record delivery, raw fallback, refusals and full-population coverage separately. Pass the predeclared coverage and efficiency criteria and reproduce results with canonical artifacts preserved. | Context-export maintainer and independent evaluator, [#8][i8]. **REVISE** after frozen B2. B3 **DEFERRED**. |
-| G2 — Parsing | Account for included and excluded content without unexplained loss. Verify fences, preambles, identity, replay and stable line mappings. Record temporal roles and provenance, including assigned and unknown dates. | Chronicle maintainer, MD-01 [#15][i15] and TIME-01. Evaluation pending. |
+| G2 — Parsing | Account for included and excluded content without unexplained loss. Verify fences, preambles, identity, replay and stable line mappings. Record temporal roles and provenance, including assigned and unknown dates. | Chronicle maintainer, MD-01 [#15][i15] and TIME-01. **REVISE.** Bounded opt-in implementation accepted subject to final verification. |
 | G3 — Corpus | Apply G3-core deterministic fixture criteria for v0.2 and G3-full independent IAA and quality criteria for v0.3. Record restricted Flowers corpus and publication decisions separately. | Corpus reviewer, CORP-01 [#16][i16] and NLP-01. Flowers semantic evidence remains REVIEW. |
 | G4 — Ontology | For v0.2, verify unique source/survivor references, stable identities and provenance, schema compatibility and mapped project instances. Record the manual comparison disposition. For full G4, review the versioned schema, evaluated concepts and relations, and migration and compatibility evidence. | Chronicle and ontology maintainers, CORE-01, ONT-01 and ONT-02. Evidence pending. |
 | G5 — Release | Verify wheel-installed Chronicle, EXEC-01 liveness and failure recovery, current security review, CI-01 import-origin isolation and CLI-01 exact-candidate Windows and Linux acceptance. Track DOCX capability and external TraceLedger acceptance independently. | Release maintainer, EXEC-01, SEC-01 [#17][i17], CLI-01 and CI-01; DOCX-01 separately. Qualification pending. |

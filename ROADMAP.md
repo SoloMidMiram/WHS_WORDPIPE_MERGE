@@ -2,7 +2,7 @@
 
 > **Date (Gregorian):** 2026-07-09
 > **Date (Shamsi/Jalali):** 1405-04-18
-> **Last Updated:** 2026-11-22
+> **Last Updated:** 2026-11-26
 > Dated entries identify their reviewed branch and PR.
 
 ## Current delivery roadmap
@@ -30,6 +30,109 @@ covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, a vacant 
 | 7 | Optional AI research | [NCM #9](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/9) is blocked for real inference. [Jev #10](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/10) has offline preparation available. [Combined benchmark #11](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/11) is blocked on upstream evidence. |
 
 ## Active narrative roadmap — newest first
+
+### 2026-11-26 — MD-01 malformed timestamp review fix
+
+Branch `codex/md-01-structural-markdown`,
+[PR #23](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23).
+Reviewed head `d55641dbc6783f463bcd1dd416304cb07aa29d3c` and base
+`0a6385cbc50ef394a06c3b38129682acd795cf76`.
+The [invalid timestamp finding](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23#discussion_r4709095230)
+reproduced with PyYAML 6.0.3. Handling its constructor error exposed a
+second failure when the same invalid date reached the staging renderer.
+Structural preparation now records malformed frontmatter and uses the
+first valid section or file date before the existing default. The
+repository map was checked. Local checks passed 32 focused tests, the
+separate source-pinned paired replay, and all five governance checks.
+Next is exact-head CI and review-thread verification before the
+maintainer's merge decision. G2 remains REVISE and #15 stays open in slot 1.
+
+### 2026-11-26 — MD-01 topic runner preflight review fix
+
+Branch `codex/md-01-structural-markdown`,
+[PR #23](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23).
+Reviewed head `722f3c175b01ae7d5940b2257ba27ea1931be86d` and base
+`0a6385cbc50ef394a06c3b38129682acd795cf76`.
+The [runner finding](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23#discussion_r4708010182)
+reproduced under `python -S`. The runner now imports Markdown contract names
+from a dependency-free module and defers parser provenance validation until
+execution. The new subprocess test covers help and dry-run planning for
+both modes with site packages disabled. Local checks passed 97 focused
+tests with the source-pinned paired replay passing separately. All five
+governance checks passed. The repository map includes the contract module.
+Recheck exact-head CI before resolving the finding. The next decision is
+merge authorization. G2 remains REVISE and #15 stays open in slot 1.
+
+### 2026-11-26 — MD-01 standalone legacy adapter review fix
+
+Branch `codex/md-01-structural-markdown`,
+[PR #23](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23).
+Reviewed head `8522e14ea1538ac5cc9965f5b352164710001e44` and base
+`0a6385cbc50ef394a06c3b38129682acd795cf76`. The
+[standalone adapter finding](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23#discussion_r4707855582)
+reproduced under `python -S`. Keep Chronicle imports behind structural
+preparation. The new standalone test covers help, implicit and explicit
+legacy preparation, and summarize with site packages disabled.
+Local focused tests reported 30 passes and one deselection for the paired
+replay, which hosted CI exercises. All five governance checks passed.
+The repository map was checked. The next decision is merge authorization
+after exact-head CI and review-thread verification. G2 remains REVISE and
+issue #15 stays open in slot 1.
+
+### 2026-11-26 — MD-01 parser provenance correction and acceptance
+
+Branch `codex/md-01-structural-markdown`,
+[PR #23](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23).
+Base `0a6385cbc50ef394a06c3b38129682acd795cf76`. The maintainer accepted the
+bounded opt-in implementation at `1b700d7a82d9b5e0ee350185421fbb10e2950a82`
+subject to parser provenance and final verification. At that original head,
+103 focused cases passed, the paired case ran separately, and all five
+[hosted jobs](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45803359319)
+passed. The original unpinned Windows run reported 385 passed, 5 failed and
+6 skipped. The four pre-existing foreign imports and the paired test's
+legacy-leg import failure remain CI-01 evidence.
+
+Reviewed correction `fbcc39603991b4db1ee1d8803843b6da5cccd56c` adds the
+actual Markdown parser provenance to the versioned structural sidecars.
+Windows Python 3.11 focused checks passed 104 tests with the paired case
+run separately. The Windows source suite with the repository explicitly
+pinned in `PYTHONPATH` passed 391 tests with 6 skipped, including repeated
+paired source replay. Fresh Windows wheel environments passed paired replay
+on markdown-it-py 3.0.0, 4.2.0 and 4.3.0. All 22 compared evidence groups
+matched after removing the producer provenance fields. The frozen fixture
+and legacy identity ledger were verified by hash. The repository map was
+checked. Recheck exact-head hosted evidence after this documentation commit.
+The maintainer's merge decision is the next boundary. G2 remains REVISE,
+#15 stays open in slot 1, and legacy remains the default.
+
+### 2026-11-26 — MD-01 bounded implementation review
+
+Branch `codex/md-01-structural-markdown`,
+[draft implementation PR #23](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23).
+The maintainer accepted the compatibility contract at
+`2e5c5e363fcdbe001ccdd58fe5d22690fb287d7c` and authorized implementation
+under #15 in slot 1. PR #22 integrated through main
+`0a6385cbc50ef394a06c3b38129682acd795cf76`, with all five
+[hosted jobs](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45796776892)
+passing. The [delivery plan](docs/engineering/DELIVERY_PHASES_AND_GATES.md)
+links mode selection, run isolation and paired comparison. The repository
+map includes the new verification commands. Original characterization and
+foreign import failures remain baseline and CI-01 evidence. Exact implementation
+checks and the implementation acceptance decision are separate from the
+accepted contract. G0 remains ACCEPT, G1 continues to block v0.2, and G2
+remains REVISE. Slot 2 remains vacant pending EXEC-01 admission. SEC-01 retains
+slot 3 and SAFE-01 remains READY.
+
+Reviewed implementation parent `2d8e4566da07b7e8aa2cd371ba4c29c6f1c8c48d`.
+Local focused checks passed 102 tests with the paired case run separately.
+Windows installed-wheel replay passed with four legacy events, two structural
+events and two removed fenced headings. The [initial hosted run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45800928923)
+passed its Windows jobs and failed one Linux test that expected the Windows
+launcher name in Linux diagnostics. This iteration corrects that assertion,
+exposes the approved heading-level configuration, and verifies the comparison
+CLI's exclusive output. The earlier unpinned Windows run preserved foreign
+imports in CI-01 evidence and also caught an intermediate wheel build
+artifact. Subsequent qualification builds in a separate temporary source tree.
 
 ### 2026-11-26 — MD-01 parser and identity contract review
 
