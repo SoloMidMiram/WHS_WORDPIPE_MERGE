@@ -13,7 +13,7 @@ def _stat(pid):
 
 def verify_inherited(owner_pid, token):
     group = os.getpgrp()
-    if token != "linux-session" or group == os.getpid() or os.getsid(0) != group:
+    if token != "linux-session" or os.getsid(0) != group:
         raise ValueError("invalid inherited Linux session")
     if _stat(group)[1:] != (owner_pid, group, group):
         raise ValueError("inherited Linux session does not have the declared owner")
@@ -59,9 +59,11 @@ class Process:
                 state, _, group, session = _stat(path.name)
             except (FileNotFoundError, ProcessLookupError):
                 continue
-            if group == session == self.child.pid:
+            if session == self.child.pid:
                 if state in ("Z", "X"):
                     exited += 1
+                elif group != self.child.pid:
+                    raise ValueError("live descendant left the owned Linux process group")
                 else:
                     live += 1
         return live, exited

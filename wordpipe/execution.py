@@ -44,11 +44,16 @@ class Cancellation:
     """One-shot request on the same monotonic clock as the supervisor."""
 
     clock: Callable[[], float] = time.monotonic
-    requested_at: float | None = field(default=None, init=False)
+    _request: dict[str, float] = field(default_factory=dict, init=False, repr=False)
+
+    @property
+    def requested_at(self) -> float | None:
+        return self._request.get("at")
 
     def request(self) -> None:
-        if self.requested_at is None:
-            self.requested_at = self.clock()
+        # One insertion even if a signal handler and a cooperative caller
+        # request cancellation concurrently on CPython.
+        self._request.setdefault("at", self.clock())
 
 
 @dataclass(frozen=True)
@@ -339,11 +344,17 @@ def _supervise(process, policy, cancel, started, deadline):
             detail = str(exc)[:512]
 
     trigger = terminal[0]
+    finished = time.monotonic()
+    if trigger in (Outcome.CANCELLED, Outcome.TIMEOUT, Outcome.CLEANUP_FAILURE) and (
+        finished > terminal[1] + CLEANUP_BUDGET and not policy.inherited
+    ):
+        cleanup = Cleanup.UNVERIFIED
+        detail = detail or "absolute cleanup deadline reached"
     if detail is not None and cleanup != Cleanup.INHERITED:
         cleanup = Cleanup.UNVERIFIED
     outcome = Outcome.CLEANUP_FAILURE if cleanup == Cleanup.UNVERIFIED else trigger
     return ExecutionResult(
-        outcome, trigger, native, time.monotonic() - started,
+        outcome, trigger, native, finished - started,
         Capture(bytes(buffers[0]), observed[0]), Capture(bytes(buffers[1]), observed[1]),
         cleanup, detail, exited_records,
     )

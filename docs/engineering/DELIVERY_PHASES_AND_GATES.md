@@ -98,7 +98,7 @@ exit and successor; no fourth active package.
 | Slot | Current package | Next decision |
 |---|---|---|
 | Slot 1 — document understanding | MD-01 [#15][i15] (admitted) | Qualify intended inputs and disposition reserved framing. G2 remains REVISE. |
-| Slot 2 — runtime reliability | EXEC-01 [#25][i25] (admitted for preparation) | Review the bounded execution contract before authorizing production implementation. |
+| Slot 2 — runtime reliability | EXEC-01 [#25][i25] (implementation authorized) | Review the bounded runtime candidate and platform evidence. G5 qualification remains pending. |
 | Independent hardening | SEC-01 [#17][i17] | Complete the public release audit. SAFE-01 [#18][i18] remains READY until recorded exit and explicit admission. |
 
 **Slot 2 release.** [PR #20](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/20) integrated at
@@ -635,6 +635,59 @@ for missing ownership, survivors, exceeded timing or capture limits,
 ambiguous terminal evidence, incompatible exit handling or prior-output
 mutation. G5 remains unqualified.
 
+#### Runtime implementation and verification boundaries
+
+[Implementation authorization](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/25#issuecomment-7199329907)
+is tied to main `8dac70e60a827e608f3eb46ab046473f56f57a52`.
+[Draft PR #27](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/27)
+implements the shared executor and both stage entry points.
+
+The default execution deadline is unset. Use
+`--stage-timeout-seconds` for each topic-runner stage or
+`-StageTimeoutSeconds` for native stages in a standalone PowerShell
+invocation. In a topic-runner invocation the PowerShell subtree uses
+the outer stage's remaining absolute deadline. The executor bounds
+each stream at 1 MiB by default, drains excess bytes concurrently and
+retains separate byte counts and truncation flags. The fixed five-second
+cleanup budget includes the default half-second grace, escalation,
+drainage and reap. One execution result preserves the triggering cause
+and any separate cleanup failure.
+
+The additive `exec-01-v1` stage record stores policy, outcome, trigger,
+native code, legacy exit projection, elapsed time, stream byte counts,
+truncation, and cleanup disposition. The Python runner writes it under
+`exec-01/` in the attempt directory before advancing. The PowerShell
+bridge writes each stage record under `exec-01/<run-id>/` and adds
+references to existing chain evidence. The compatibility projection
+uses native nonzero codes for native failures, 124 for timeout, 130 for
+cancellation and 125 for launch or cleanup failure. PowerShell keeps
+existing operator exit codes 1–5 for stage failures. Bounded rendered
+diagnostics replace incomplete or invalid UTF-8. A PowerShell attempt
+refuses an output directory with a successful or partial-success
+`run.json`, so repeated operators must select a fresh directory.
+
+Linux uses a new session and process group and keeps the leader PID
+unreaped during ownership checks. It uses procfs to distinguish live
+members and exited process records, then reaps its direct child. A
+visible descendant that moved to another group in the session causes
+cleanup failure. A process which starts a different session may be
+invisible after detaching. The executor's verified scope is the
+supported group. It cannot account for arbitrary detached processes
+or reap orphan zombies belonging to another parent. Windows creates
+the process suspended, assigns and verifies a kill-on-close Job Object
+before resume, and terminates the suspended child on assignment
+failure. Inherited contexts are checked against kernel membership.
+Nested evidence identifies the outer owner as responsible for tree
+verification. No third-party runtime dependency was added.
+
+Host process creation can block inside the OS. The deadline starts
+before the call, and a returned process is checked against the original
+deadline. The implementation cannot interrupt process creation before
+the OS returns control. Windows hosts may decline a targeted console
+break. Forced job termination remains within the same cleanup budget.
+Mandatory qualification and implementation acceptance remain open
+until the candidate evidence has been reviewed.
+
 ### SAFE-01 preparation (2026-11-26)
 
 **Verified by inspection.** `wordpipe/orchestration/pipeline.py` calls
@@ -889,7 +942,7 @@ technical evidence and historical remediation.
 | ONT-01 | P1 | Project ontology population | To-create | Ontology implementer | Queued. Map verified Phase 13–17 runs to existing project entities. Verify stable IDs, schema compatibility and evidence references (core G4). |
 | ONT-02 | P1 | Semantic concepts and relationships | To-create | Ontology lead + reviewer | Gated by ONT-01, NLP-01 and the Phase 15 schema decision. Verify versioned migration and evidence-backed relations (full G4). |
 | SAFE-01 | P1 | Atomic DOCX publication | [#18][i18] | DOCX implementer | Ready after SEC-01 in slot 3. Prove failure preservation and cleanup through installed paths on Windows and Linux (DOCX readiness). |
-| EXEC-01 | P1 | Bounded execution and cancellation | [#25][i25] | Runtime implementer | Slot 2 admitted for preparation. Contract acceptance precedes implementation and G5 qualification. |
+| EXEC-01 | P1 | Bounded execution and cancellation | [#25][i25] | Runtime implementer | Slot 2 implementation authorized. Runtime candidate and G5 qualification remain under review. |
 | SEC-01 | P1 | Public repository and dependency audit | [#17][i17] | Release/security maintainer | Admitted in slot 3. Record current ref, dependency, workflow and release-artifact coverage and disposition (G5). |
 | DOCX-01 | P2 | Flattener and capability contracts | To-create | DOCX implementer | Queued. Characterize supported COM/XML dependencies and experimental flags. Verify installation and capability reporting (DOCX readiness). |
 | INT-01 | P2 | TraceLedger consumer validation | To-create | Integration lead + external consumer | Queued. Require a real available consumer and verify library, EventSink and capability contracts (external consumer acceptance). |

@@ -31,6 +31,23 @@ covers MD-01 (#15) in slot 1 for qualification, EXEC-01 (#25) in slot 2 for cont
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-26 — EXEC-01 bounded runtime implementation review
+
+Branch `codex/exec-01-bounded-execution`,
+[draft PR #27](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/27).
+Authorized base `8dac70e60a827e608f3eb46ab046473f56f57a52`, tree
+`df6633b3c88116cc0c1552e994a412b2a935e7b2`. Reviewed implementation
+parent `cfa635eef5e82e5d8631fa71eef67fee5197fb6a`. [Issue #25](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/25#issuecomment-7199329907)
+records authorization. The Python runner and direct PowerShell chain
+use the shared executor, retain legacy exit handling and persist terminal
+stage evidence. The repository map includes the new entry points.
+The [first candidate run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45873842102)
+passed its Windows jobs and exposed a Linux inherited-session regression.
+The follow-up permits the kernel-verified session leader to use the
+owner's context and tests observable ownership loss. Recheck all
+platform results on the published head. Issue #25 retains slot 2 and G5
+remains pending independent acceptance.
+
 ### 2026-11-26 — EXEC-01 slot-2 admission and contract boundary
 
 Branch `codex/exec-01-admission-contract`, PR number unassigned at the

@@ -156,7 +156,10 @@ function Invoke-ChronicleStage {
     $diagnostics = @()
     $previousExitCode = $global:LASTEXITCODE
     $terminal = $null
-    $evidenceRef = $null
+    $bridgeStarted = $false
+    $script:executionCount++
+    $evidenceRef = "exec-01/$($evidence.run_id)/$($script:executionCount).json"
+    $evidencePath = Join-Path $OutputDirAbs $evidenceRef
 
     try {
         $pythonName = if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) { "python.exe" } else { "python" }
@@ -165,14 +168,13 @@ function Invoke-ChronicleStage {
         $ErrorActionPreference = "Continue"
         $PSNativeCommandUseErrorActionPreference = $false
         $global:LASTEXITCODE = $null
-        $script:executionCount++
-        $evidenceRef = "exec-01/$($evidence.run_id)/$($script:executionCount).json"
-        $bridgeArgs = @($ExecutePy, "--evidence", (Join-Path $OutputDirAbs $evidenceRef))
+        $bridgeArgs = @($ExecutePy, "--evidence", $evidencePath)
         if ($HasStageTimeout) {
             $bridgeArgs += @("--timeout", $StageTimeoutSeconds.ToString([Globalization.CultureInfo]::InvariantCulture))
         }
         $bridgeArgs += @("--", $python.Source, $ScriptPath) + $Arguments
         # The bridge emits one JSON record with bounded rendered diagnostics.
+        $bridgeStarted = $true
         $reply = @(& $python.Source @bridgeArgs 2>&1)
         if ($global:LASTEXITCODE -ne 0 -or $reply.Count -ne 1) {
             throw "Bounded execution bridge did not return a terminal record"
@@ -192,7 +194,24 @@ function Invoke-ChronicleStage {
         }
     } catch {
         $diagnostics += $_
-        $evidenceRef = $null
+        if ($bridgeStarted) { $failureKind = "cleanup_failure" }
+        if (-not [IO.File]::Exists($evidencePath)) {
+            $fallbackOutcome = if ($bridgeStarted) { "cleanup_failure" } else { "launch_failure" }
+            $fallbackCleanup = if ($bridgeStarted) { "unverified" } else { "not_started" }
+            $fallback = @{
+                schema = "exec-01-v1"; outcome = $fallbackOutcome; trigger = $fallbackOutcome
+                native_exit_code = $null; exit_code = 125; elapsed_seconds = $timer.Elapsed.TotalSeconds
+                stdout = $null; stderr = $null; cleanup = $fallbackCleanup
+                detail = "PowerShell execution bridge unavailable"; exited_process_records = $null
+            }
+            try {
+                $stream = [IO.File]::Open($evidencePath, [IO.FileMode]::CreateNew)
+                try {
+                    $bytes = [Text.Encoding]::UTF8.GetBytes((ConvertTo-Json -InputObject $fallback -Compress))
+                    $stream.Write($bytes, 0, $bytes.Length)
+                } finally { $stream.Dispose() }
+            } catch { $evidenceRef = $null }
+        }
     } finally {
         $global:LASTEXITCODE = $previousExitCode
         $timer.Stop()

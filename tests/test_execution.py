@@ -48,7 +48,7 @@ def test_cancellation_is_one_shot():
 
 
 def stage(code, policy=ExecutionPolicy()):
-    return execute([sys.executable, "-c", code], policy)
+    return execute([sys.executable, "-S", "-c", code], policy)
 
 
 def test_native_results_and_missing_executable(tmp_path):
@@ -110,7 +110,7 @@ def test_two_second_deadline_with_descendant_held_pipes(tmp_path, leader_exits):
         f"path=Path({str(heartbeat)!r});"
         "\nfor n in range(150):\n path.write_text(str(n));time.sleep(.05)"
     )
-    launch = f"import subprocess,sys;subprocess.Popen([sys.executable,'-c',{child!r}]);"
+    launch = f"import subprocess,sys;subprocess.Popen([sys.executable,'-S','-c',{child!r}]);"
     if not leader_exits:
         launch += ("import signal,time;signal.signal(signal.SIGTERM,signal.SIG_IGN);"
                    "signal.signal(getattr(signal,'SIGBREAK',signal.SIGTERM),signal.SIG_IGN);time.sleep(7)")
@@ -221,6 +221,47 @@ def test_cooperative_cancellation():
         timer.join()
     assert (result.outcome, result.cleanup) == (Outcome.CANCELLED, Cleanup.VERIFIED)
     assert time.monotonic() - cancel.requested_at <= 5
+
+
+def test_runtime_interrupt_handler_cancels_active_stage(tmp_path):
+    ready = tmp_path / "ready"
+
+    def interrupt_when_ready():
+        deadline = time.monotonic() + 3
+        while not ready.exists() and time.monotonic() < deadline:
+            time.sleep(.01)
+        if ready.exists():
+            signal.raise_signal(signal.SIGINT)
+
+    sender = threading.Thread(target=interrupt_when_ready)
+    sender.start()
+    try:
+        result = stage(
+            f"from pathlib import Path;import time;Path({str(ready)!r}).touch();time.sleep(6)",
+            ExecutionPolicy(timeout=4),
+        )
+    finally:
+        sender.join(timeout=4)
+    assert result.outcome == Outcome.CANCELLED and result.cleanup == Cleanup.VERIFIED
+
+
+@pytest.mark.skipif(sys.platform != "linux", reason="Linux process-group boundary")
+def test_detectable_escape_is_reported_as_cleanup_failure(tmp_path):
+    exit_marker = tmp_path / "finite-escape-finished"
+    child = f"import os,time;from pathlib import Path;os.setpgid(0,0);time.sleep(.4);Path({str(exit_marker)!r}).touch()"
+    # Keep the leader briefly alive to give the finite child time to move
+    # into another group within the same session before verification.
+    code = (
+        f"import subprocess,sys,time;subprocess.Popen([sys.executable,'-c',{child!r}],"
+        "stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL);time.sleep(.2)"
+    )
+    result = stage(code, ExecutionPolicy(timeout=2))
+    assert result.outcome == Outcome.CLEANUP_FAILURE
+    assert "left the owned Linux process group" in result.detail
+    limit = time.monotonic() + 1
+    while not exit_marker.exists() and time.monotonic() < limit:
+        time.sleep(.01)
+    assert exit_marker.exists()
 
 
 def test_unvalidated_environment_cannot_claim_ownership(monkeypatch):
