@@ -237,6 +237,16 @@ def resolve_adapter(adapter: dict[str, Any], repo_root: str | Path) -> dict[str,
             raise ManifestError("markdown_mode requires the generic Markdown adapter and legacy-v1 or structural-v1")
         if adapter["markdown_mode"] == STRUCTURAL_MODE and "script" in adapter:
             raise ManifestError("structural-v1 requires the registered generic Markdown adapter script")
+    if "heading_levels" in adapter:
+        levels = adapter["heading_levels"]
+        if (
+            adapter.get("markdown_mode") != STRUCTURAL_MODE
+            or not isinstance(levels, list)
+            or not levels
+            or any(type(level) is not int or level not in range(2, 7) for level in levels)
+            or len(set(levels)) != len(levels)
+        ):
+            raise ManifestError("heading_levels requires structural-v1 and unique integer levels in 2–6")
     registry_entry = ADAPTER_REGISTRY.get(adapter_id)
     script = adapter.get("script")
     if script is None:
@@ -316,6 +326,8 @@ def build_commands(manifest: dict[str, Any], run_dir: Path) -> dict[str, list[st
 
     if "markdown_mode" in manifest["adapter"]:
         prepare_cmd.extend(["--markdown-mode", manifest["adapter"]["markdown_mode"]])
+    if "heading_levels" in manifest["adapter"]:
+        prepare_cmd.extend(["--heading-levels", *map(str, manifest["adapter"]["heading_levels"])])
 
     shell = "powershell" if os.name == "nt" or not shutil.which("pwsh") else "pwsh"
     pipeline_cmd = [

@@ -33,7 +33,8 @@ covers admitted MD-01 (#15) in slot 1 after G0 ACCEPT and #14 closure, a vacant 
 
 ### 2026-11-26 — MD-01 bounded implementation review
 
-Branch `codex/md-01-structural-markdown`, implementation PR pending.
+Branch `codex/md-01-structural-markdown`,
+[draft implementation PR #23](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23).
 The maintainer accepted the compatibility contract at
 `2e5c5e363fcdbe001ccdd58fe5d22690fb287d7c` and authorized implementation
 under #15 in slot 1. PR #22 integrated through main
@@ -47,6 +48,17 @@ checks and the implementation acceptance decision are separate from the
 accepted contract. G0 remains ACCEPT, G1 continues to block v0.2, and G2
 remains REVISE. Slot 2 remains vacant pending EXEC-01 admission. SEC-01 retains
 slot 3 and SAFE-01 remains READY.
+
+Reviewed implementation parent `2d8e4566da07b7e8aa2cd371ba4c29c6f1c8c48d`.
+Local focused checks passed 102 tests with the paired case run separately.
+Windows installed-wheel replay passed with four legacy events, two structural
+events and two removed fenced headings. The [initial hosted run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45800928923)
+passed its Windows jobs and failed one Linux test that expected the Windows
+launcher name in Linux diagnostics. This iteration corrects that assertion,
+exposes the approved heading-level configuration, and verifies the comparison
+CLI's exclusive output. The earlier unpinned Windows run preserved foreign
+imports in CI-01 evidence and also caught an intermediate wheel build
+artifact. Subsequent qualification builds in a separate temporary source tree.
 
 ### 2026-11-26 — MD-01 parser and identity contract review
 

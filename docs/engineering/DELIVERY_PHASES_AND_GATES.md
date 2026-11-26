@@ -325,7 +325,9 @@ implementation under issue #15. G2 remains REVISE pending acceptance.
 For a paired run, first run the existing manifest in legacy mode. In a
 separate structural manifest set `adapter.markdown_mode` to
 `structural-v1`, point `output.legacy_base_dir` at the legacy output root,
-and set `output.base_dir` to a new disjoint root. The runner claims the new
+and set `output.base_dir` to a new disjoint root. Optional
+`adapter.heading_levels` chooses unique integers from 2 through 6 and
+defaults to `[2]`. The runner claims the new
 root for structural mode and refuses existing unclaimed roots, input
 overlap, and resolved aliases of the legacy root. Subsequent structural
 runs use fresh run IDs under the claimed root. Comparison creates new

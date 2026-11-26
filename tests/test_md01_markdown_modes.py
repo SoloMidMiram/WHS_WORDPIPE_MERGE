@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -131,6 +132,8 @@ def test_explicit_errors_for_schema_mode_and_ambiguous_heading(tmp_path):
         runner.correlate_event_provenance(tmp_path, {"$schema": "event-lineage-v1"}, topic="t", run_id="x", markdown_mode=STRUCTURAL_MODE)
     with pytest.raises(runner.ManifestError, match="markdown_mode"):
         runner.resolve_adapter({"id": "prepare_generic_markdown_chronicle", "markdown_mode": "unknown"}, ROOT)
+    with pytest.raises(runner.ManifestError, match="heading_levels"):
+        runner.resolve_adapter({"id": "prepare_generic_markdown_chronicle", "heading_levels": [3]}, ROOT)
 
 
 def without_run_id(value):
@@ -175,9 +178,14 @@ def test_paired_replay(tmp_path):
     assert [{key: actual[key] for key in expected} for expected, actual in zip(frozen, baseline, strict=True)] == frozen
     evidence = comparison.compare(old, new, sources)
     assert evidence == comparison.compare(old, new, sources)
-    (tmp_path / "markdown_mode_comparison.json").write_text(
-        json.dumps(evidence, ensure_ascii=False, indent=2) + "\n", encoding="utf-8",
-    )
+    sidecar = tmp_path / "markdown_mode_comparison.json"
+    compare_command = [
+        sys.executable, str(ROOT / "tools/compare_markdown_modes.py"), "--legacy-run", str(old),
+        "--structural-run", str(new), "--input-dir", str(sources), "--output", str(sidecar),
+    ]
+    subprocess.run(compare_command, check=True)
+    assert json.loads(sidecar.read_text(encoding="utf-8")) == evidence
+    assert subprocess.run(compare_command, capture_output=True).returncode == 1
     print("MD-01 paired replay: 4 legacy events, 2 structural events, 2 removed false headings")
     candidates = evidence["candidates"]
     assert [row["disposition"] for row in candidates] == [

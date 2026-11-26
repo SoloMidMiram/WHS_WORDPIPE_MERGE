@@ -253,11 +253,16 @@ def source_metrics(files: Sequence[Path]) -> dict[str, int]:
 
 def prepare(
     input_dir: Path, output_dir: Path, metrics_path: Path, *, markdown_mode: str = LEGACY_MODE,
+    heading_levels: tuple[int, ...] = (2,),
 ) -> dict[str, object]:
     input_dir = input_dir.resolve()
     if markdown_mode not in MARKDOWN_MODES:
         raise ValueError(f"unsupported Markdown mode: {markdown_mode!r}")
     structural = markdown_mode == STRUCTURAL_MODE
+    if not heading_levels or any(level not in range(2, 7) for level in heading_levels):
+        raise ValueError("heading levels must be in 2–6")
+    if not structural and heading_levels != (2,):
+        raise ValueError("the legacy prepare CLI uses level 2")
     lineage_path = metrics_path.parent / EVENT_LINEAGE_FILENAME
     if structural:
         output_dir = output_dir.resolve()
@@ -284,7 +289,7 @@ def prepare(
     md_files = sorted(input_dir.glob("*.md"))
     for idx, md_file in enumerate(md_files):
         if structural:
-            events, file_lineage, accounting = parse_structural_file(md_file)
+            events, file_lineage, accounting = parse_structural_file(md_file, heading_levels)
             candidates = len(accounting["candidates"])
             source_accounting.append(accounting)
         else:
@@ -356,6 +361,7 @@ def prepare(
     }
     if structural:
         metrics["markdown_mode"] = markdown_mode
+        metrics["heading_levels"] = list(heading_levels)
     metrics_path.write_text(
         json.dumps(metrics, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
@@ -474,6 +480,7 @@ def main() -> None:
     prep.add_argument("--output-dir", required=True, type=Path)
     prep.add_argument("--metrics", required=True, type=Path)
     prep.add_argument("--markdown-mode", choices=MARKDOWN_MODES, default=LEGACY_MODE)
+    prep.add_argument("--heading-levels", nargs="+", type=int, choices=range(2, 7), default=(2,))
 
     summary = subparsers.add_parser("summarize", help="Summarize a completed pipeline run")
     summary.add_argument("--run-dir", required=True, type=Path)
@@ -484,7 +491,10 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.command == "prepare":
-        prepare(args.input_dir, args.output_dir, args.metrics, markdown_mode=args.markdown_mode)
+        prepare(
+            args.input_dir, args.output_dir, args.metrics,
+            markdown_mode=args.markdown_mode, heading_levels=tuple(args.heading_levels),
+        )
         return
 
     if args.command == "summarize":
