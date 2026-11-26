@@ -6,8 +6,11 @@ import json
 import hashlib
 import os
 import shutil
+import signal
 import subprocess
+import sys
 import textwrap
+import time
 from pathlib import Path
 
 import pytest
@@ -282,6 +285,61 @@ def test_direct_chain_timeout_skips_dependents_even_in_partial_mode(isolated_cha
     assert 2 <= terminal["elapsed_seconds"] <= 7
     assert summary["stages"][2]["status"] == "not_run"
     assert not (raw_dir.parent / "merge").exists()
+
+
+@pytest.mark.skipif(_POWERSHELL is None or _PYTHON_EXE is None, reason="requires native PowerShell and Python")
+def test_direct_chain_ctrl_c_preserves_terminal_cancellation(isolated_chain):
+    chain, raw_dir, out_dir = isolated_chain
+    ready = raw_dir.parent / "worker-ready"
+    (chain.parent / "ingest.py").write_text(
+        f"from pathlib import Path\nimport time\nPath({str(ready)!r}).touch()\ntime.sleep(7)\n",
+        encoding="utf-8",
+    )
+    if os.name == "nt":
+        # Deliver a real Ctrl+C only to the fixture's private, hidden console.
+        shell = shutil.which("powershell")
+        assert shell is not None
+        startup = subprocess.STARTUPINFO(dwFlags=subprocess.STARTF_USESHOWWINDOW, wShowWindow=0)
+        options = {"creationflags": subprocess.CREATE_NEW_CONSOLE, "startupinfo": startup}
+    else:
+        shell = _POWERSHELL
+        options = {"start_new_session": True}
+    with subprocess.Popen(
+        [shell, "-NoProfile", "-File", str(chain), "-InputDir", str(raw_dir),
+         "-OutputDir", str(out_dir), "-AllowPartialIngest"],
+        cwd=raw_dir.parent, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **options,
+    ) as process:
+        try:
+            readiness_limit = time.monotonic() + 6
+            while not ready.exists() and process.poll() is None and time.monotonic() < readiness_limit:
+                time.sleep(.01)
+            assert ready.exists()
+            start = time.monotonic()
+            if os.name == "nt":
+                code = (
+                    "import ctypes,time;k=ctypes.WinDLL('kernel32',use_last_error=True);"
+                    "k.FreeConsole();"
+                    f"assert k.AttachConsole({process.pid}),ctypes.get_last_error();"
+                    "assert k.SetConsoleCtrlHandler(None,True),ctypes.get_last_error();"
+                    "assert k.GenerateConsoleCtrlEvent(0,0),ctypes.get_last_error();time.sleep(.1)"
+                )
+                subprocess.run([sys.executable, "-S", "-c", code], check=True, timeout=3,
+                               creationflags=subprocess.CREATE_NO_WINDOW)
+            else:
+                os.killpg(process.pid, signal.SIGINT)
+            stdout, stderr = process.communicate(timeout=5)
+            assert process.returncode != 0, stdout + stderr
+            assert time.monotonic() - start <= 5
+        finally:
+            if process.poll() is None:
+                process.kill()
+                process.wait(timeout=2)
+    summary = _read_evidence(out_dir)
+    assert summary["status"] == "failed"
+    assert summary["stages"][2]["status"] == "not_run"
+    stage_evidence, = (out_dir / "exec-01").rglob("*.json")
+    terminal = json.loads(stage_evidence.read_text(encoding="utf-8"))
+    assert terminal["outcome"] == "cancelled" and terminal["cleanup"] == "verified"
 
 
 @pytest.mark.skipif(

@@ -48,6 +48,15 @@ owner's context and tests observable ownership loss. Recheck all
 platform results on the published head. Issue #25 retains slot 2 and G5
 remains pending independent acceptance.
 
+Reviewed parent `8b1471fbf2b830d0ef1b14ac11c22313641dd992` passed all
+five [hosted jobs](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45876010509).
+A private Windows console probe then reproduced an operator-facing
+Ctrl+C failure. The owned worker exited, but PowerShell returned 0 and
+the stage record was missing. The follow-up waits on the bridge
+directly, retains cancellation evidence and returns nonzero. The
+local reference probe observed exit 1 and verified cleanup. Recheck
+real console cancellation and both hosted platforms on the final head.
+
 ### 2026-11-26 — EXEC-01 slot-2 admission and contract boundary
 
 Branch `codex/exec-01-admission-contract`, PR number unassigned at the

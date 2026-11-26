@@ -159,7 +159,11 @@ function Invoke-ChronicleStage {
     $bridgeStarted = $false
     $script:executionCount++
     $evidenceRef = "exec-01/$($evidence.run_id)/$($script:executionCount).json"
+    $script:activeExecutionRef = $evidenceRef
     $evidencePath = Join-Path $OutputDirAbs $evidenceRef
+    $requestPath = "$evidencePath.request"
+    $responsePath = "$evidencePath.response"
+    $bridge = $null
 
     try {
         $pythonName = if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) { "python.exe" } else { "python" }
@@ -168,18 +172,35 @@ function Invoke-ChronicleStage {
         $ErrorActionPreference = "Continue"
         $PSNativeCommandUseErrorActionPreference = $false
         $global:LASTEXITCODE = $null
-        $bridgeArgs = @($ExecutePy, "--evidence", $evidencePath)
-        if ($HasStageTimeout) {
-            $bridgeArgs += @("--timeout", $StageTimeoutSeconds.ToString([Globalization.CultureInfo]::InvariantCulture))
+        $request = @{
+            evidence = $evidencePath; response = $responsePath
+            argv = @($python.Source, $ScriptPath) + $Arguments
+            timeout = $(if ($HasStageTimeout) { $StageTimeoutSeconds } else { $null })
         }
-        $bridgeArgs += @("--", $python.Source, $ScriptPath) + $Arguments
-        # The bridge emits one JSON record with bounded rendered diagnostics.
+        [IO.File]::WriteAllText($requestPath, (ConvertTo-Json -InputObject $request -Compress),
+            [Text.UTF8Encoding]::new($false))
+        $startInfo = [Diagnostics.ProcessStartInfo]::new($python.Source)
+        $startInfo.UseShellExecute = $false
+        if ($null -ne $startInfo.PSObject.Properties["ArgumentList"]) {
+            $startInfo.ArgumentList.Add($ExecutePy)
+            $startInfo.ArgumentList.Add($requestPath)
+        } else {
+            $startInfo.Arguments = '"{0}" "{1}"' -f $ExecutePy, $requestPath
+        }
+        # Native command pipelines stop their child on Ctrl+C. Wait on the
+        # bridge directly so it can handle the console signal and publish.
+        $bridge = [Diagnostics.Process]::Start($startInfo)
         $bridgeStarted = $true
-        $reply = @(& $python.Source @bridgeArgs 2>&1)
-        if ($global:LASTEXITCODE -ne 0 -or $reply.Count -ne 1) {
+        $bridge.WaitForExit()
+        if ($bridge.ExitCode -ne 0 -or -not [IO.File]::Exists($responsePath)) {
             throw "Bounded execution bridge did not return a terminal record"
         }
-        $terminal = ConvertFrom-Json -InputObject ([string]$reply[0]) -ErrorAction Stop
+        # JSON escaping can expand both 1 MiB streams by up to sixfold.
+        if ([IO.FileInfo]::new($responsePath).Length -gt 13MB) {
+            throw "Bounded execution bridge response exceeded its limit"
+        }
+        $terminal = [IO.File]::ReadAllText($responsePath, [Text.UTF8Encoding]::new($false, $true)) |
+            ConvertFrom-Json -ErrorAction Stop
         if ($terminal.schema -cne "exec-01-v1") { throw "Unknown execution evidence schema" }
         $exitCode = $terminal.native_exit_code
         $diagnostics = @($terminal.stdout_text, $terminal.stderr_text, $terminal.detail) |
@@ -213,6 +234,9 @@ function Invoke-ChronicleStage {
             } catch { $evidenceRef = $null }
         }
     } finally {
+        if ($bridge) { $bridge.Dispose() }
+        [IO.File]::Delete($requestPath)
+        [IO.File]::Delete($responsePath)
         $global:LASTEXITCODE = $previousExitCode
         $timer.Stop()
     }
@@ -257,6 +281,7 @@ $runExitCode = 1
 $lock = $null
 $summaryPath = $null
 $executionCount = 0
+$activeExecutionRef = $null
 
 try {
     try {
@@ -618,6 +643,19 @@ try {
 } finally {
     try {
         if ($summaryPath) {
+            if ($runExitCode -ne 0 -and $activeExecutionRef) {
+                $lastExecutionPath = Join-Path $OutputDirAbs $activeExecutionRef
+                if ([IO.File]::Exists($lastExecutionPath)) {
+                    $lastExecution = (Read-ChronicleArtifactPrefix $lastExecutionPath 16384 $true) |
+                        ConvertFrom-Json -ErrorAction Stop
+                    if ($lastExecution.trigger -eq "cancelled") {
+                        $activeStage.status = "failed"
+                        $activeStage.native_exit_code = $lastExecution.native_exit_code
+                        $activeStage.diagnostics = @("cancelled")
+                        $activeStage.execution_evidence = $activeExecutionRef
+                    }
+                }
+            }
             if ($runExitCode -ne 0 -and $activeStage.status -ne "failed") {
                 $activeStage.status = "failed"
                 if ($activeStage.diagnostics.Count -eq 0) {
@@ -633,8 +671,9 @@ try {
         }
     } catch {
         Write-Error "Could not publish Chronicle run evidence: $summaryPath"
-        if ($runExitCode -eq 0) { exit 1 }
+        if ($runExitCode -eq 0) { $runExitCode = 1 }
     } finally {
         if ($lock) { $lock.Dispose() }
     }
+    exit $runExitCode
 }

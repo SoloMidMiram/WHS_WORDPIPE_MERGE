@@ -14,25 +14,25 @@ from wordpipe.execution import (
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--timeout", type=float)
-    parser.add_argument("--evidence", type=Path, required=True)
-    parser.add_argument("argv", nargs=argparse.REMAINDER)
+    parser.add_argument("request", type=Path)
     args = parser.parse_args()
-    argv = args.argv[1:] if args.argv and args.argv[0] == "--" else args.argv
+    request = json.loads(args.request.read_text(encoding="utf-8"))
+    argv = request["argv"]
     if not argv:
         parser.error("a command is required")
     try:
-        policy = ExecutionPolicy(timeout=args.timeout, inherited=inherited_context())
+        policy = ExecutionPolicy(timeout=request["timeout"], inherited=inherited_context())
     except (OSError, ValueError) as exc:
         policy = ExecutionPolicy()
         result = ExecutionResult(Outcome.LAUNCH_FAILURE, Outcome.LAUNCH_FAILURE, None, 0.,
                                  detail=str(exc)[:512])
     else:
         result = execute(argv, policy)
-    write_terminal_evidence(args.evidence, result, policy)
-    print(json.dumps({
-        **result.evidence(), "stdout_text": result.stdout.text(), "stderr_text": result.stderr.text(),
-    }, ensure_ascii=True))
+    write_terminal_evidence(Path(request["evidence"]), result, policy)
+    with Path(request["response"]).open("x", encoding="utf-8") as response:
+        json.dump({
+            **result.evidence(), "stdout_text": result.stdout.text(), "stderr_text": result.stderr.text(),
+        }, response, ensure_ascii=True)
     return 0
 
 

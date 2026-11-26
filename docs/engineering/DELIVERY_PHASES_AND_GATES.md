@@ -658,7 +658,11 @@ native code, legacy exit projection, elapsed time, stream byte counts,
 truncation, and cleanup disposition. The Python runner writes it under
 `exec-01/` in the attempt directory before advancing. The PowerShell
 bridge writes each stage record under `exec-01/<run-id>/` and adds
-references to existing chain evidence. The compatibility projection
+references to existing chain evidence. PowerShell waits on the bridge
+as a .NET process so console interruption can leave it time to finish
+owned cleanup and persist cancellation evidence. Its response file
+has a separate fixed JSON envelope bound and transient responses are
+removed. The compatibility projection
 uses native nonzero codes for native failures, 124 for timeout, 130 for
 cancellation and 125 for launch or cleanup failure. PowerShell keeps
 existing operator exit codes 1–5 for stage failures. Bounded rendered
