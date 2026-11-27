@@ -98,7 +98,7 @@ exit and successor; no fourth active package.
 | Slot | Current package | Next decision |
 |---|---|---|
 | Slot 1 — document understanding | MD-01 [#15][i15] (admitted) | Qualify intended inputs and disposition reserved framing. G2 remains REVISE. |
-| Slot 2 — runtime reliability | EXEC-01 [#25][i25] (implementation authorized) | Review the bounded runtime candidate and platform evidence. G5 qualification remains pending. |
+| Slot 2 — runtime reliability | EXEC-01 [#25][i25] (implementation integrated) | Record the separate EXEC-01 exit decision. Aggregate G5 remains pending. |
 | Independent hardening | SEC-01 [#17][i17] | Complete the public release audit. SAFE-01 [#18][i18] remains READY until recorded exit and explicit admission. |
 
 **Slot 2 release.** [PR #20](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/20) integrated at
@@ -639,8 +639,9 @@ mutation. G5 remains unqualified.
 
 [Implementation authorization](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/25#issuecomment-7199329907)
 is tied to main `8dac70e60a827e608f3eb46ab046473f56f57a52`.
-[Draft PR #27](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/27)
-implements the shared executor and both stage entry points.
+[PR #27](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/27)
+integrated the shared executor and both stage entry points through main
+`9152218f8b34a05f953f1d39f9e4176aa0656a2b`.
 
 The default execution deadline is unset. Use
 `--stage-timeout-seconds` for each topic-runner stage or
@@ -681,16 +682,21 @@ or reap orphan zombies belonging to another parent. Windows creates
 the process suspended, assigns and verifies a kill-on-close Job Object
 before resume, and terminates the suspended child on assignment
 failure. Inherited contexts are checked against kernel membership.
-Nested evidence identifies the outer owner as responsible for tree
-verification. No third-party runtime dependency was added.
+Nested stages verify completion of their descendants through Linux
+subreaping or Windows nested Job Object accounting. Windows hosts that
+restrict nested jobs may reject assignment before execution. Nested
+evidence identifies the outer owner as responsible for tree cleanup.
+No third-party runtime dependency was added.
 
 Host process creation can block inside the OS. The deadline starts
 before the call, and a returned process is checked against the original
 deadline. The implementation cannot interrupt process creation before
 the OS returns control. Windows hosts may decline a targeted console
 break. Forced job termination remains within the same cleanup budget.
-Mandatory qualification and implementation acceptance remain open
-until the candidate evidence has been reviewed.
+The bounded implementation is accepted and integrated. The local timing
+disposition, original fixture failures and hosted evidence remain linked
+in the roadmap and [issue #25][i25]. Issue #25 and slot 2 remain active
+pending a separate EXEC-01 exit decision. Aggregate G5 remains pending.
 
 ### SAFE-01 preparation (2026-11-26)
 
@@ -946,7 +952,7 @@ technical evidence and historical remediation.
 | ONT-01 | P1 | Project ontology population | To-create | Ontology implementer | Queued. Map verified Phase 13–17 runs to existing project entities. Verify stable IDs, schema compatibility and evidence references (core G4). |
 | ONT-02 | P1 | Semantic concepts and relationships | To-create | Ontology lead + reviewer | Gated by ONT-01, NLP-01 and the Phase 15 schema decision. Verify versioned migration and evidence-backed relations (full G4). |
 | SAFE-01 | P1 | Atomic DOCX publication | [#18][i18] | DOCX implementer | Ready after SEC-01 in slot 3. Prove failure preservation and cleanup through installed paths on Windows and Linux (DOCX readiness). |
-| EXEC-01 | P1 | Bounded execution and cancellation | [#25][i25] | Runtime implementer | Slot 2 implementation authorized. Runtime candidate and G5 qualification remain under review. |
+| EXEC-01 | P1 | Bounded execution and cancellation | [#25][i25] | Runtime implementer | Implementation integrated. Slot 2 remains active pending the separate exit decision. Aggregate G5 remains pending. |
 | SEC-01 | P1 | Public repository and dependency audit | [#17][i17] | Release/security maintainer | Admitted in slot 3. Record current ref, dependency, workflow and release-artifact coverage and disposition (G5). |
 | DOCX-01 | P2 | Flattener and capability contracts | To-create | DOCX implementer | Queued. Characterize supported COM/XML dependencies and experimental flags. Verify installation and capability reporting (DOCX readiness). |
 | INT-01 | P2 | TraceLedger consumer validation | To-create | Integration lead + external consumer | Queued. Require a real available consumer and verify library, EventSink and capability contracts (external consumer acceptance). |

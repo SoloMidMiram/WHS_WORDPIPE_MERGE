@@ -2,7 +2,7 @@
 
 > **Date (Gregorian):** 2026-07-09
 > **Date (Shamsi/Jalali):** 1405-04-18
-> **Last Updated:** 2026-11-26
+> **Last Updated:** 2026-11-27
 > Dated entries identify their reviewed branch and PR.
 
 ## Current delivery roadmap
@@ -17,7 +17,7 @@ AI qualification belongs to the v0.5 target. Delivery gateway IDs are scoped
 to the matrix. The historical goals and phases below retain their identifiers.
 
 The [three-slot queue](docs/engineering/DELIVERY_PHASES_AND_GATES.md#active-execution-queue)
-covers MD-01 (#15) in slot 1 for qualification, EXEC-01 (#25) in slot 2 for contract review, and SEC-01 (#17) in slot 3 for audit. SAFE-01 is READY pending documented SEC-01 exit and separate admission. All three slots are occupied.
+covers MD-01 (#15) in slot 1 for qualification, EXEC-01 (#25) in slot 2 pending its separate exit decision, and SEC-01 (#17) in slot 3 for audit. SAFE-01 is READY pending documented SEC-01 exit and separate admission. All three slots are occupied.
 
 | Order | Phase | Current execution |
 |---|---|---|
@@ -30,6 +30,21 @@ covers MD-01 (#15) in slot 1 for qualification, EXEC-01 (#25) in slot 2 for cont
 | 7 | Optional AI research | [NCM #9](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/9) is blocked for real inference. [Jev #10](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/10) has offline preparation available. [Combined benchmark #11](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/11) is blocked on upstream evidence. |
 
 ## Active narrative roadmap — newest first
+
+### 2026-11-27 — EXEC-01 integration
+
+[PR #27](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/27) integrated
+through normal merge `9152218f8b34a05f953f1d39f9e4176aa0656a2b` on main.
+The verified parents are base `8dac70e60a827e608f3eb46ab046473f56f57a52`
+and accepted head `10277812fa31bb429733e19d6a1152cec452e8ad`. All nine
+accepted commits are reachable, and the integrated tree matches
+`a8a67e87e4740c89f39d677c5b709ce24f8fb63d`. The maintainer accepted the
+local timing disposition and authorized this exact merge. The local sample
+and historical push failures remain recorded in the entries below.
+[Fresh main CI](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45930573086)
+tracks the integration commit. The repository map was checked. Issue #25
+remains open in slot 2 pending its separate exit decision. Aggregate G5
+remains pending. G0 stays ACCEPT, G1 and G2 stay REVISE, and G1 blocks v0.2.
 
 ### 2026-11-27 — EXEC-01 inherited deadline fixture correction
 
