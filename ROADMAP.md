@@ -35,6 +35,33 @@ See the [authoritative avenue and queue mapping](docs/engineering/DELIVERY_PHASE
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-27 — Windows readiness failure observability
+
+Slice A on `codex/windows-readiness-correction` starts from
+`09928e82e72efeeed388965eeacb8b5594728e33`. [#25](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/25)
+and [#34](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/34) retain the
+failure history. [PR #40](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/40)
+supplies the Windows pipe preview technique. This slice adds failure evidence
+to the cancellation fixture. The earlier live-PID finding remains separate.
+The repository map still routes to the same test and execution modules.
+
+The Slice A validation budget is one focused run per platform, one full local
+suite, the five governance checks, one applicable local wheel qualification
+and one normal hosted push/PR CI pair. The earlier diagnostic campaign is
+closed. The next decision is independent acceptance of observability. A
+future corrective slice requires evidence from a failing readiness boundary.
+G1 and G2 remain REVISE. TIME-01 remains queued.
+
+The Windows focused run recorded five passes and one readiness failure at
+six seconds. The launcher remained live and the bridge entered with the
+expected interpreter. Worker readiness, response and terminal receipt were
+absent at the boundary. Linux focused validation passed all six cases
+including cancellation. Full Windows pytest reported 445 passed and eight
+skipped. The five local governance checks passed. Local wheel setup built
+the wheel and stopped at dependency installation after a proxy TLS timeout.
+See [#34](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/34) for the
+candidate and hosted workflow disposition.
+
 ### 2026-11-27 — Engineering efficiency and evidence routing review
 
 Reviewed PR #37 on `codex/pre-pilot-token-efficiency`, head
