@@ -25,7 +25,7 @@ Source inspection at [c0a6d1fac7dc](https://github.com/SoloMidMiram/WHS_WORDPIPE
 
 | Finding | Observed implementation / limitation | Owner and disposition |
 |---|---|---|
-| A | `wordpipe/chronicle/merge.py` collapses whitespace and keys on date/body hash; tests explicitly preserve whitespace normalization. Distinct indentation/title may collapse. | P1 CORE-01/G3-core queued characterization, no new identity algorithm. |
+| A | `wordpipe/chronicle/merge.py` collapses whitespace and keys on date/body hash; tests explicitly preserve whitespace normalization. Distinct indentation/title may collapse. | P1 CORE-01/G3-core queued characterization via [CORE-02 #36](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/36), no new identity algorithm or separate admission. |
 | B | `steps/finalize.py` writes destination before `toc_step`; `steps/flatten.py` uses predictable working path. | P1 SAFE-01 #18 READY; preserve destination and invocation ownership. |
 | C | `orchestrator.py` compatibility shim returns path/count without inspecting report errors. | DOCX-01/INT-01 queued; characterize consumers and strict failure semantics. |
 | D | Ingest writes output directly; merge publishes main report and sidecar separately; wheel qualification copies checkout drivers. | P1 CLI-01 #34 admitted for characterization only. |
