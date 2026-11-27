@@ -103,11 +103,11 @@ exit and successor; no fourth active package.
 
 ### Parallel avenues and priorities (2026-11-27 review reconciliation)
 
-Avenues are portfolio categories, not extra slots. Release-critical means required by the existing target, not authorization to implement. P1/P2 labels within packages retain their established meaning.
+Avenues are portfolio categories, not extra slots. Four avenues describe parallel possibility, not authorization; Avenue D has no current execution slot. At every slot exit, record whether G1/B3 re-entry evidence exists and the resulting disposition, without automatically admitting B3. Release-critical means required by the existing target, not authorization to implement. P1/P2 labels within packages retain their established meaning.
 
 | Avenue | Current admitted work | Successor queue / dependencies |
 |---|---|---|
-| A — evidence correctness and context fidelity | MD-01 #15 (slot 1) | TIME-01; G3-core fixtures and CORE-01 merge-equivalence characterization; core references and ONT-01. G1 #8 remains release-critical and B3 deferred pending re-entry; reassess at slot exits. NLP-01 scope supports declared parsing/corpus criteria; full Flowers and ONT-02 later. |
+| A — evidence correctness and context fidelity | MD-01 #15 (slot 1) | TIME-01; G3-core fixtures and CORE-01 merge-equivalence characterization ([queued subordinate #36](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/36)); core references and ONT-01. G1 #8 remains release-critical and B3 deferred pending re-entry; reassess at slot exits. NLP-01 scope supports declared parsing/corpus criteria; full Flowers and ONT-02 later. |
 | B — distributable Chronicle and runtime | CLI-01 #34 (slot 2, characterization only) | Exact-candidate clean install and publication safety; EXEC-01 and CI-01 P1 complete within scope; CI-01 P2 deferred. |
 | C — public assurance and independent DOCX | SEC-01 #17 (slot 3) | SAFE-01 #18 after audit exit and admission; DOCX-01 capability/error contract; INT-01 external consumer evidence. DOCX is not a v0.2 Chronicle gate. |
 | D — future knowledge and optional AI | None | CLAIM-01, CITE-01, PERF-01, conditional STORE-01; #9–#11 gated or queued. No inference, storage redesign or fourth slot. |
@@ -127,6 +127,10 @@ CORP-01 [#16][i16] can prepare its rubric offline once admitted. Technical
 independence allows work to start with an available slot. Gated, queued and
 deferred entries in the [issue map](#backlog-activation-and-synchronization)
 are outside the current execution queue.
+
+### Qualification exception — 2026-11-27
+
+The documentation-only candidate `ef73b3314838af79c0b9629cd1641c11971aa527` had two Windows Python 3.11 integration job failures: [PR run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45952209272), `test_two_second_deadline_with_descendant_held_pipes[True]`; [push run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45952185451), `test_direct_chain_ctrl_c_preserves_terminal_cancellation`. Both reported 439 passed, 8 skipped, 1 failed. Preserve logs; characterize fixture readiness/timing versus actual execution/ownership failure on the exact baseline and candidate. Do not assume flakiness or weaken thresholds. Prior EXEC-01 exit remains a historical scoped decision; current qualification is unresolved. No automatic reopening or additional admission. PR acceptance is REVISE pending disposition and fresh exact-head checks.
 
 ## Phase 1 — Context fidelity
 
@@ -1023,7 +1027,7 @@ Counts (not GitHub issue numbers):
 | WPs requiring future GitHub issues on admission | 12 |
 | **Total tracked items** | **24** |
 
-The GitHub issue column is the WP-to-issue mapping. To-create means
+The GitHub issue column is the WP-to-issue mapping. CORE-02 #36 is a subordinate characterization tracker of CORE-01/G3-core, not a 25th package or a separate admission; CORE-01 still requires its owner on admission. To-create means
 search and reuse before opening an issue; no number is reserved.
 Planning statuses reflect the recorded G0 acceptance and queue admission; research and release qualification remain open. The repository
 maintainer (SoloMidMiram) is accountable for every work package; the
@@ -1039,7 +1043,7 @@ technical evidence and historical remediation.
 | TIME-01 | P1 | Temporal evidence and date semantics | To-create | Chronicle implementer | Queued. Start after MD-01 establishes spans. Verify all date roles, locators and explicit unknowns (G2). |
 | CORP-01 | P1 | Flowers semantic corpus acceptance | [#16][i16] | Corpus lead + independent reviewers | Queued. Prepare rubric offline. Score after G2 decisions, frozen taxonomy and authorization of the local inventory (G3). |
 | NLP-01 | P1 | Multilingual normalization and taxonomy | To-create | NLP lead + reviewer | Queued. Define annotation, then measure normalized Persian/English keyword and phrase behavior, offsets and per-label results (G2, G3). |
-| CORE-01 | P1 | Reference builder and manual comparison | To-create | Chronicle implementer | Queued. First characterize merge equivalence with G3-core synthetic fixtures (same date/body, distinct title, indentation/code/Markdown and survivor lineage); retain current identity until approved compatibility decision. Reuse verified survivors, resolvable links, repeatability and manual comparison disposition (G4). |
+| CORE-01 | P1 | Reference builder and manual comparison | To-create | Chronicle implementer | Queued. First characterize merge equivalence via subordinate CORE-02 [#36](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/36) with G3-core synthetic fixtures (same date/body, distinct title, indentation/code/Markdown and survivor lineage); retain current identity until approved compatibility decision. Reuse verified survivors, resolvable links, repeatability and manual comparison disposition (G4). |
 | ONT-01 | P1 | Project ontology population | To-create | Ontology implementer | Queued. Map verified Phase 13–17 runs to existing project entities. Verify stable IDs, schema compatibility and evidence references (core G4). |
 | ONT-02 | P1 | Semantic concepts and relationships | To-create | Ontology lead + reviewer | Gated by ONT-01, NLP-01 and the Phase 15 schema decision. Verify versioned migration and evidence-backed relations (full G4). |
 | SAFE-01 | P1 | Atomic DOCX publication | [#18][i18] | DOCX implementer | READY after SEC-01 in slot 3. Prove failure preservation, TOC commit point and unique invocation-owned flatten staging/cleanup through installed Windows/Linux paths (DOCX readiness). |
