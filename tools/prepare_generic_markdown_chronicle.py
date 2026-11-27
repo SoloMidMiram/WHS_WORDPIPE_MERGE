@@ -248,7 +248,11 @@ def source_metrics(files: Sequence[Path]) -> dict[str, int]:
     for path in files:
         raw = path.read_bytes()
         total_bytes += len(raw)
-        total_lines += path.read_text(encoding="utf-8").count("\n") + 1
+        text = raw.decode("utf-8").replace("\r\n", "\n").replace("\r", "\n")
+        # A final delimiter terminates the last line without starting another.
+        total_lines += text.count("\n")
+        if text and not text.endswith("\n"):
+            total_lines += 1
     return {
         "input_file_count": len(files),
         "input_total_bytes": total_bytes,
