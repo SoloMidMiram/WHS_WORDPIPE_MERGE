@@ -159,8 +159,8 @@ def test_execution_bridge_origin(tmp_path, qualification):
         assert terminal["cleanup"] == "not_started" and terminal["native_exit_code"] is None
         assert terminal["exit_code"] == 125
         assert "CI-01: foreign origin for wordpipe" in terminal["detail"]
-        assert str(expected).replace("\\", "/") in terminal["detail"]
-        assert (foreign / "__init__.py").as_posix() in terminal["detail"]
+        assert expected.resolve().as_posix() in terminal["detail"]
+        assert (foreign / "__init__.py").resolve().as_posix() in terminal["detail"]
         assert json.loads(response.read_text())["detail"] == terminal["detail"]
     else:
         assert terminal["outcome"] == "success"

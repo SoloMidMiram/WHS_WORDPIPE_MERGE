@@ -50,6 +50,14 @@ executor blobs and frozen MD-01 fixtures are identical to the reviewed
 head. The repository map was checked. Recheck both final hosted runs
 before independent implementation acceptance. Issue #30 retains slot 2.
 
+The first corrected hosted head `21ef77384e8ffaf5123e466f4073000b135a4526`
+rejected the foreign wheel origin on Windows, but the test compared a
+short Windows path with the guard's resolved path. The test now resolves
+both expected and actual paths before checking the diagnostic. The
+[first PR run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45937762907)
+and [first push run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45937758459)
+retain the assertion failure.
+
 ### 2026-11-27 — CI-01 P1 implementation review
 
 Branch `codex/ci-01-origin-qualification`, reviewed base
