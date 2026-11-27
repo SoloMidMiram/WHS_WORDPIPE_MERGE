@@ -60,3 +60,7 @@ Independent confirmation is still needed for operational limits.
 See evidence/topic-cohort.jsonl and evidence/topic-cohort-summary.json.
 READY FOR PILOT on these measured axes, subject to separate real-input
 authorization. No further runs or observer experiments were made.
+
+The [ChatGPT agent history pilot](../../../docs/engineering/pilots/md01-chatgpt-agent-history/README.md)
+records the separate real-input workload. Its metrics are not pooled with
+this synthetic cohort.

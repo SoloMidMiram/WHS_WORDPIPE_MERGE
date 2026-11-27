@@ -1,0 +1,32 @@
+{
+  "revision": "3d32ba1ce4292a44a6a509c5a4d3585fc884f9ae",
+  "baseline": "1295ad15cc085732391a6d1dfe8069de32752ad1",
+  "inputs_sha256": "90d7044fa8dc68521b39fb54501d30e5f25c27c883bcd1431b8ec709c0d1c79e",
+  "configs": {
+    "legacy": "661422e34b8a9c2ccc4dccfc561c2b747a629e9e948f201195a6571c4b94b584",
+    "structural": "50a580b2c7a82b7c79d73db8c8919305180a2e398133e068df1adde75eae3b53"
+  },
+  "deadline_seconds_per_stage": 75,
+  "admission_budget_seconds": 1000,
+  "cache": "same native Windows host, serial, primed but uncontrolled",
+  "no_retries": true,
+  "attempts": [
+    {
+      "mode": "legacy",
+      "id": "first"
+    },
+    {
+      "mode": "structural",
+      "id": "first"
+    },
+    {
+      "mode": "structural",
+      "id": "replay"
+    },
+    {
+      "mode": "legacy",
+      "id": "replay"
+    }
+  ],
+  "rationale": "Prior five-file synthetic workload ran near 21 s but this corpus is much larger. Four serial attempts, three outer stages each with a 75 s registered deadline and existing cleanup. Budget covers that finite worst-case envelope and start overhead; no synthetic warning thresholds transferred."
+}
