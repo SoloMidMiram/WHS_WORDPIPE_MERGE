@@ -35,6 +35,19 @@ See the [authoritative avenue and queue mapping](docs/engineering/DELIVERY_PHASE
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-27 — MD-01 original-source coverage and link counts
+
+Local candidate on `codex/md01-physical-line-accounting`; no PR opened.
+Reviewed line-metric parent `9dcfbd304aa41159fecd7f5e4393238857c500e0`
+against integrated main `09928e82e72efeeed388965eeacb8b5594728e33`.
+Use validated prepare coverage and verified report mappings to attribute
+original sources. Count the distinct URL rows in the registry without
+changing URL identity. Reprocessing retained output metadata from all four
+pilot runs showed five sources, 17 events and 162 links across 30 domains.
+The real pilot was not rerun. The repository map was checked; routes and
+ownership stay the same. PR #39 remains pending CI disposition. G2 remains
+REVISE. The next decision is review of this bounded correction.
+
 ### 2026-11-27 — Engineering efficiency and evidence routing review
 
 Reviewed PR #37 on `codex/pre-pilot-token-efficiency`, head

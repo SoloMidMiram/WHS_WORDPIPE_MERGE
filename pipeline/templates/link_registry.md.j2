@@ -1,7 +1,7 @@
 # Link Registry
 
 > All external URLs extracted from the chronicle, deduplicated and sorted by domain.
-> **Total unique links:** {{ links|length }}
+> **Total unique links:** {{ links.values()|map('length')|sum }}
 
 {% for domain, domain_links in links|dictsort %}
 ## {{ domain }}
