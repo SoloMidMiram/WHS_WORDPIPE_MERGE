@@ -19,6 +19,21 @@ plan's gateway IDs are distinct from the historical roadmap goals cited below.
 | **OUTSTANDING** | Required behavior or evidence is not yet present. |
 | **CONDITIONAL** | Reassess only when the documented architecture trigger is met. |
 
+## 2026-11-27 review reconciliation
+
+Source inspection at [c0a6d1fac7dc](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/commit/c0a6d1fac7dcf9c51021e6a8c62ad462e255389a); [main CI](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45948321058) is existing evidence, not new runtime validation. The findings below describe observed code and proposed probes, not independently reproduced end-to-end failures.
+
+| Finding | Observed implementation / limitation | Owner and disposition |
+|---|---|---|
+| A | `wordpipe/chronicle/merge.py` collapses whitespace and keys on date/body hash; tests explicitly preserve whitespace normalization. Distinct indentation/title may collapse. | P1 CORE-01/G3-core queued characterization, no new identity algorithm. |
+| B | `steps/finalize.py` writes destination before `toc_step`; `steps/flatten.py` uses predictable working path. | P1 SAFE-01 #18 READY; preserve destination and invocation ownership. |
+| C | `orchestrator.py` compatibility shim returns path/count without inspecting report errors. | DOCX-01/INT-01 queued; characterize consumers and strict failure semantics. |
+| D | Ingest writes output directly; merge publishes main report and sidecar separately; wheel qualification copies checkout drivers. | P1 CLI-01 #34 admitted for characterization only. |
+| E | Structural mode is opt-in and rejects certain reserved framing collisions. | P1 MD-01 #15 retained; document supported input and replay. |
+| F | Scanner is extension/pattern-limited; no history/dependency/SAST or resource assurance. | P1 SEC-01 #17 retained. |
+
+The canonical delivery plan owns status and release gates. Subjective review scores do not qualify any gateway. No broad refactor, semantic deduplication redesign or storage change is authorized.
+
 ## Historical PR #2 Review Closure
 
 The August review tracked CI confirmation and four P2 findings as open. The
@@ -59,7 +74,7 @@ re-entry criteria and work-package dependencies.
 | P1 | **QUEUED** | TIME-01 · Date provenance. | Applicable MD-01 spans. | Separate assigned dates from evidenced roles and retain source locators. |
 | P1 | **READY** | SAFE-01 · DOCX final publication. | [#18](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/18), READY; admission requires SEC-01 exit and a separate decision. | Test staging, save/reopen, TOC mutation and replace. Preserve destination bytes on pre-commit failures. |
 | P1 | **COMPLETE** | CI-01 · Source-test import isolation and installed origins. | [#30](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/30), bounded P1 exit. | Windows and Linux qualification accepted. Slot 2 released. |
-| P1 | **QUEUED** | CLI-01 · Complete installed Chronicle flow. | Separate mandatory G5/v0.2 work proposed for vacant slot 2. | Obtain explicit admission, then qualify the documented installed flow on Windows and Linux using verified wheel origins. |
+| P1 | **ADMITTED — characterization** | CLI-01 · Complete installed Chronicle flow and safe publication. | [#34](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/34), slot 2. | Reproduce clean installed flow, driver dependencies, aliases, output discovery and multi-artifact failure; propose bounded contract before implementation. |
 | P1 | **ACTIVE** | SEC-01 · Public repository and supply-chain assurance. | [#17](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17), slot 3. | Distinguish scanner coverage from reachable history, SAST and dependency advisories. Record tool scope, refs, artifacts, dependency and Actions evidence, and redacted dispositions. |
 | P1 | **BLOCKED** | Genuine NCM inference and combined AI evaluation. | [#9](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/9), [#11](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/11). | Resolve the documented upstream prerequisites. Jev offline preparation under [#10](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/10) is permissible; live use requires separate authorization. |
 | P1 | **VERIFIED** | Canonicalize Chronicle index logic under `wordpipe.chronicle`. | Alignment audit and index extraction tests. | Characterized via `tests/test_index_extraction.py`; pure seam extracted to `wordpipe/chronicle/index.py`; `pipeline/index.py` retained as a thin wrapper preserving CLI/import/JSON contracts. |
