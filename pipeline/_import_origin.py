@@ -84,26 +84,32 @@ def verify(mode, checkout, prefix=None, *, modules=(), driver=None):
         raise OriginError(f"invalid qualification mode or installation prefix: {mode!r}, {prefix!r}")
 
     specs = {}
+    driver_namespaces = {"pipeline", "tools"}
 
     def check(name):
         if name in specs:
             return specs[name][1]
         parent, _, _ = name.rpartition(".")
+        top = name.split(".", 1)[0]
+        expected = roots if top == "wordpipe" else {_resolved(checkout / top)}
+        if top in driver_namespaces and not all(path.is_relative_to(checkout) for path in expected):
+            raise OriginError(f"foreign driver root for {top}: expected under {checkout}, actual {sorted(expected)}")
         search_path = check(parent) if parent else None
         if parent and search_path is None:
             raise OriginError(f"invalid package parent: {parent}")
         spec, loaded = _spec(name, search_path)
         if spec is None:
             kind = "invalid" if name in sys.modules else "missing"
-            raise OriginError(f"{kind} origin for {name}: expected under {sorted(roots)}, actual unavailable")
+            raise OriginError(f"{kind} origin for {name}: expected under {sorted(expected)}, actual unavailable")
         locations = getattr(loaded, "__path__", spec.submodule_search_locations)
-        if not spec.has_location or not spec.origin or (name == "wordpipe" and locations is None):
-            raise OriginError(f"invalid origin for {name}: expected under {sorted(roots)}, actual {spec.origin!r}")
-        origin = _resolved(spec.origin)
-        if not origin.is_file():
+        namespace = name in driver_namespaces and spec.origin is None and locations is not None
+        if not namespace and (not spec.has_location or not spec.origin or (name == "wordpipe" and locations is None)):
+            raise OriginError(f"invalid origin for {name}: expected under {sorted(expected)}, actual {spec.origin!r}")
+        origin = None if namespace else _resolved(spec.origin)
+        if origin is not None and not origin.is_file():
             raise OriginError(f"invalid origin for {name}: expected a file, actual {origin}")
-        paths = [origin]
-        if loaded is not None:
+        paths = [origin] if origin is not None else []
+        if loaded is not None and not namespace:
             filename = getattr(loaded, "__file__", None)
             if not filename:
                 raise OriginError(f"invalid loaded file for {name}: expected {origin}, actual {filename!r}")
@@ -114,15 +120,16 @@ def verify(mode, checkout, prefix=None, *, modules=(), driver=None):
             paths.extend(_resolved(path) for path in spec.submodule_search_locations)
         if locations is not None and (not locations or not all(_resolved(path).is_dir() for path in locations)):
             raise OriginError(f"invalid package search path for {name}: actual {locations}")
-        valid = [any(path.is_relative_to(root) for root in roots) for path in paths]
+        valid = [any(path.is_relative_to(root) for root in expected) for path in paths]
         if not all(valid):
             kind = "mixed" if any(valid) or parent else "foreign"
-            raise OriginError(f"{kind} origin for {name}: expected under {sorted(roots)}, actual {paths}")
-        if len(paths) > 1 and loaded is not None and paths[1] != origin:
+            raise OriginError(f"{kind} origin for {name}: expected under {sorted(expected)}, actual {paths}")
+        if origin is not None and loaded is not None and paths[1] != origin:
             raise OriginError(f"mixed origin for {name}: expected {origin}, actual {paths[1]}")
-        if records is not None and (origin not in records or origin.is_relative_to(checkout)):
+        if top == "wordpipe" and records is not None and (origin not in records or origin.is_relative_to(checkout)):
             raise OriginError(f"invalid wheel origin for {name}: expected a file from {metadata}, actual {origin}")
-        specs[name] = (str(origin), locations)
+        spec_origin = sorted({str(path) for path in paths}) if namespace else str(origin)
+        specs[name] = (spec_origin, locations)
         return locations
 
     check("wordpipe")

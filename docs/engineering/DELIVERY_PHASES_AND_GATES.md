@@ -751,6 +751,8 @@ wheel installation and driver tree, then explicitly selects wheel mode
 and supplies the intended environment prefix. The session passes its
 declared roots to the guarded drivers. A foreign origin aborts before
 fixture or stage processing. The guard does not redirect module resolution.
+The pytest session also verifies the declared repository driver imports
+and rejects mixed `pipeline` or `tools` namespace search paths.
 These checks cover the declared test sessions and Chronicle drivers.
 CLI-01's complete installed Chronicle flow remains separately queued.
 

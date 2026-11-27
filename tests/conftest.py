@@ -22,11 +22,15 @@ def pytest_sessionstart(session):
         "checkout": str(root),
         "prefix": str(prefix) if prefix is not None else None,
     }
+    modules = (
+        "wordpipe.execution", "wordpipe.chronicle.index", "wordpipe.chronicle.markdown_sections",
+        "pipeline.index", "tools.compare_markdown_modes", "tools.prepare_generic_markdown_chronicle",
+        "tools.run_topic_report",
+    )
+    if context["mode"] == "source":
+        modules += ("tools.pipeline_contracts",)
     try:
-        report = checker["verify"](
-            **context, modules=("wordpipe.execution", "wordpipe.chronicle.index",
-                                "wordpipe.chronicle.markdown_sections"),
-        )
+        report = checker["verify"](**context, modules=modules)
     except (OSError, TypeError, ValueError, AttributeError) as exc:
         raise pytest.UsageError(f"CI-01: {exc}") from None
     print("CI-01 session origin:", json.dumps(report, sort_keys=True))

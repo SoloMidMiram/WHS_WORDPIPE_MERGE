@@ -34,6 +34,11 @@ def test_source_session_checks_origin_before_collection(tmp_path):
     _package(foreign, f"from pathlib import Path; Path({str(imported)!r}).touch()")
     (intended / "tests").mkdir()
     (intended / "pipeline").mkdir()
+    (intended / "tools").mkdir()
+    for name in ("pipeline/index.py", "tools/compare_markdown_modes.py",
+                 "tools/prepare_generic_markdown_chronicle.py", "tools/run_topic_report.py",
+                 "tools/pipeline_contracts.py"):
+        (intended / name).touch()
     shutil.copyfile(GUARD, intended / "pipeline" / GUARD.name)
     shutil.copyfile(ROOT / "tests" / "conftest.py", intended / "tests" / "conftest.py")
     (intended / "tests" / "test_marker.py").write_text(
@@ -48,6 +53,14 @@ def test_source_session_checks_origin_before_collection(tmp_path):
     assert "CI-01: foreign origin for wordpipe" in bad.stderr
     assert intended.name in bad.stderr and foreign.name in bad.stderr
     assert not ran.exists() and not imported.exists()
+    (foreign / "tools").mkdir()
+    mixed = subprocess.run(
+        argv, cwd=tmp_path, env=dict(env, PYTHONPATH=os.pathsep.join((str(intended), str(foreign)))),
+        capture_output=True, text=True, timeout=30,
+    )
+    assert mixed.returncode == 4, mixed.stdout + mixed.stderr
+    assert "CI-01: mixed origin for tools" in mixed.stderr
+    assert not ran.exists()
     happy = subprocess.run(argv, cwd=tmp_path, env=dict(env, PYTHONPATH=str(intended / ".." / intended.name)),
                            capture_output=True, text=True, timeout=30)
     assert happy.returncode == 0, happy.stdout + happy.stderr
