@@ -31,6 +31,57 @@ covers MD-01 (#15) in slot 1 for qualification, CI-01 P1 (#30) in slot 2 for con
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-27 — CI-01 bridge qualification correction
+
+Branch `codex/ci-01-origin-qualification`,
+[PR #32](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/32).
+Reviewed head `9fe049d94fa4ca665560d8e8908742d6127c176c`, base
+`656d96b0dad5412cf58437a0708bc5cedbce047b`. Windows local probes showed
+that the source bridge prepended its checkout and launched a stage under
+a conflicting import configuration. With a clean wheel installed, the
+direct and PowerShell bridges both executed the foreign initializer.
+Their reviewed-source and reviewed-wheel logs are retained with the
+baseline archive. The fix checks the bridge origin before importing
+WordPipe or changing the import path. An origin rejection persists an
+EXEC-01 launch-failure record and leaves the stage unstarted. The normal
+unqualified bridge uses its historical path setup. Copied synthetic
+EXEC-01 fixtures exercise that unqualified path explicitly. The
+executor blobs and frozen MD-01 fixtures are identical to the reviewed
+head. The repository map was checked. Recheck both final hosted runs
+before independent implementation acceptance. Issue #30 retains slot 2.
+
+The first corrected hosted head `21ef77384e8ffaf5123e466f4073000b135a4526`
+rejected the foreign wheel origin on Windows, but the test compared a
+short Windows path with the guard's resolved path. The test now resolves
+both expected and actual paths before checking the diagnostic. The
+[first PR run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45937762907)
+and [first push run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45937758459)
+retain the assertion failure.
+
+### 2026-11-27 — CI-01 P1 implementation review
+
+Branch `codex/ci-01-origin-qualification`, reviewed base
+`656d96b0dad5412cf58437a0708bc5cedbce047b`. The accepted contract and
+[implementation authorization](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/30#issuecomment-7209077805)
+are recorded in #30. [Fresh contract-integration CI](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45934463028)
+passed all five jobs. The implementation checks the source pytest session
+before collection and validates origins in the actual Chronicle drivers.
+The clean wheel run records its digest, checks the resolved modules and
+distribution metadata separately, and rejects an injected foreign package
+even with a valid wheel installed. The five historical Windows cases
+still fail with foreign imports, now with an explicit CI-01 diagnostic,
+and all five passed in the intended environment. The original failure
+logs and MD-01 fixtures remain preserved. The next decision is independent
+implementation acceptance. Slot 2 remains assigned to CI-01 P1.
+
+The local full-suite run at reviewed parent
+`5d20d52ba2cb3c4a8fc18d8305743a4eafc54572` exposed a wrapper-help test
+that launched a bare `python` and correctly hit the foreign-origin
+guard. The test now launches the session interpreter explicitly, and
+the focused rerun passed all eight cases. The same preliminary full
+run also hit the previously documented local inherited-expiry readiness
+limit. Recheck both hosted workflows on the updated candidate.
+
 ### 2026-11-27 — CI-01 P1 admission and contract review
 
 Branch `codex/ci-01-admission-contract`, reviewed base

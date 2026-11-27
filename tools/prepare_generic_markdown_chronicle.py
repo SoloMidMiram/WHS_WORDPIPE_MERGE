@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 from dataclasses import dataclass
@@ -501,7 +502,15 @@ def main() -> None:
 
     if args.command == "prepare":
         if args.markdown_mode == STRUCTURAL_MODE and __package__ in (None, ""):
-            sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+            root = Path(__file__).resolve().parents[1]
+            if "WORDPIPE_ORIGIN_QUALIFICATION" in os.environ:
+                from runpy import run_path
+
+                run_path(str(root / "pipeline" / "_import_origin.py"))["require_driver"](
+                    __file__, "wordpipe.chronicle.markdown_sections",
+                    "wordpipe.chronicle.ingest", "wordpipe.chronicle.merge",
+                )
+            sys.path.insert(0, str(root))
         prepare(
             args.input_dir, args.output_dir, args.metrics,
             markdown_mode=args.markdown_mode, heading_levels=tuple(args.heading_levels),

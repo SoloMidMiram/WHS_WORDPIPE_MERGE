@@ -406,7 +406,9 @@ def test_topic_runner_records_timeout_without_touching_prior_outputs(tmp_path):
     assert not (run / "pipeline").exists()
 
 
-def test_runner_help_and_dry_run_without_site_packages(tmp_path):
+def test_runner_help_and_dry_run_without_site_packages(tmp_path, monkeypatch):
+    # This fixture exercises the standalone CLI without a qualification environment.
+    monkeypatch.delenv("WORDPIPE_ORIGIN_QUALIFICATION", raising=False)
     command = [sys.executable, "-I", "-S", str(MODULE_PATH)]
     help_result = subprocess.run([*command, "--help"], capture_output=True, text=True)
     assert help_result.returncode == 0, help_result.stderr

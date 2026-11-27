@@ -98,7 +98,7 @@ exit and successor; no fourth active package.
 | Slot | Current package | Next decision |
 |---|---|---|
 | Slot 1 — document understanding | MD-01 [#15][i15] (admitted) | Qualify intended inputs and disposition reserved framing. G2 remains REVISE. |
-| Slot 2 — CI qualification | CI-01 P1 [#30][i30] (admitted) | Approve the bounded source and installed-origin contract before implementation. Aggregate G5 remains pending. |
+| Slot 2 — CI qualification | CI-01 P1 [#30][i30] (implementation authorized) | Review the bounded implementation and Windows/Linux qualification. Aggregate G5 remains pending. |
 | Independent hardening | SEC-01 [#17][i17] | Complete the public release audit. SAFE-01 [#18][i18] remains READY until recorded exit and explicit admission. |
 
 **Slot 2 release.** [PR #20](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/20) integrated at
@@ -743,6 +743,18 @@ verified the existing MD-01 wheel replay from both clean installations.
 | Deliberate mismatch | Use deterministic temporary checkouts and isolated interpreter state. Prove healthy source operation and explicit foreign rejection on Windows and Linux. Include the case where the parent imports locally but the child resolves elsewhere, and test resolved aliases and sibling-prefix paths. Avoid masking the failing case with an import-path repair. |
 | Clean wheel origins | Build the exact revision's wheel and record its digest. Install non-editably into a clean environment and launch from a neutral driver directory. Verify resolved repository package/module and distribution origins in the intended installation's library directories, outside source and driver roots. Record the interpreter, declared roots and actual origins. Exercise the existing installed MD-01 replay and origin probes without claiming the separate CLI-01 flow is qualified. |
 | Candidate gate | Preserve exact base and candidate revisions, original failure and negative/positive evidence, focused/full tests, all five governance checks, both platform jobs and the installed-wheel replays. Stop at independent implementation acceptance. |
+
+**Qualification entry points.** Source CI uses `python -m pytest tests -q
+--wordpipe-origin=source` from the intended checkout. Source tests default
+to that mode. `python tools/qualify_md01_wheel.py` creates the separate
+wheel installation and driver tree, then explicitly selects wheel mode
+and supplies the intended environment prefix. The session passes its
+declared roots to the guarded drivers. A foreign origin aborts before
+fixture or stage processing. The guard does not redirect module resolution.
+The pytest session also verifies the declared repository driver imports
+and rejects mixed `pipeline` or `tools` namespace search paths.
+These checks cover the declared test sessions and Chronicle drivers.
+CLI-01's complete installed Chronicle flow remains separately queued.
 
 ### SAFE-01 preparation (2026-11-26)
 
