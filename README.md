@@ -3,6 +3,16 @@
 > Evidence-first document intelligence: transform source documents into traceable,
 > reproducible Chronicles, preserve archival evidence, and process DOCX through a modular library.
 
+**Preserve. Structure. Deliver.**
+
+## How WHS works
+
+- **Preserve:** copy-only archival and source integrity verification.
+- **Structure:** deterministic document processing into Chronicles, events, lineage and source references.
+- **Deliver (research):** provenance-bound context for downstream consumers; fidelity remains unqualified.
+
+Source documents → deterministic extraction and merge → verified event references → experimental context delivery.
+
 ## Project status and direction
 
 **Development foundation (package metadata 0.1.0); v0.2 is not release-qualified.** Chronicle provides deterministic ingest, merge, categorization, indexing and source/survivor navigation. Provenance-bound context delivery is experimental: G1 failed qualification; semantic ontology and optional AI assistance are future work. DOCX readiness is assessed separately.
@@ -40,6 +50,14 @@ use raw Chronicle input. The current work and follow-up gates are tracked in
 
 The examples below are checkout workflows, not a standalone wheel-install guarantee. CLI-01 will qualify the distributed driver and complete installed workflow. Use disposable or copied inputs and distinct output paths; never target original evidence.
 
+### Installation modes
+
+| Mode | Status |
+|---|---|
+| Editable development checkout | Documented below |
+| Non-editable wheel | Component replays verified; complete standalone workflow qualification pending CLI-01 |
+| Distributed topic driver | Distribution contract undecided; checkout invocation below is not a standalone installation |
+
 ### Chronicle Library / CLI
 
 ```powershell
@@ -62,12 +80,14 @@ minimal ontology spine.
 ```powershell
 python tools\run_topic_report.py `
   --manifest WordHorrorStories\insurancechatbot\topic_manifest.json `
-  --run-id phase13_trend_validation
+  --run-id local_demo_insurancechatbot
 
 python tools\run_topic_report.py `
   --manifest WordHorrorStories\pipelinechronicle\topic_manifest.json `
-  --run-id phase14_trend_validation
+  --run-id local_demo_pipelinechronicle
 ```
+
+Choose a fresh, unused run ID for each invocation; the examples are checkout-only.
 
 Reference runs:
 - `WordHorrorStories/insurancechatbot/output/phase13_trend_validation/` (200 events, trend compared)
