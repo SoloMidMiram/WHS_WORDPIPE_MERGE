@@ -12,7 +12,9 @@ its code. Repository AGENTS.md and explicit user authorization remain controllin
 
 1. Run `python tools/repo_context.py snapshot`. Read
    `docs/engineering/REPO_MAP.md` and the newest relevant ROADMAP entry.
-2. Pick the affected lane from the map. Run
+2. Pick the affected lane from the map. For a repeat review, start with the
+   last accepted revision and retrieve its delta, affected contracts and
+   invalidated evidence. Run
    `python tools/repo_context.py find "keyword" --scope tools --scope tests`.
    The helper uses literal, case-insensitive Git grep on tracked text, returns
    bounded locators, and excludes corpus/evidence by default. It does not search
@@ -23,8 +25,10 @@ its code. Repository AGENTS.md and explicit user authorization remain controllin
 
 ## Decide and execute
 
-Write a short task capsule: goal; branch/PR/head/base; affected contracts;
-evidence locators and classification; next action; unresolved acceptance gate.
+Use the [operational capsule and measurement contract](../../../docs/engineering/REPO_MAP.md#pre-pilot-engineering-efficiency).
+Proceed from contract through implementation, automated validation, independent
+review and decision. Iterate only for a demonstrated defect, failed acceptance
+criterion, material new evidence or unresolved implementation decision.
 Prefer existing runner/checker CLI invocations from the map. Do not recreate
 their parsing or checks in model prose. Use a model for judgment that cannot be
 settled deterministically, such as semantic labels, after narrowing the inputs.
@@ -61,6 +65,7 @@ After any commit, verify exact-head CI independently. If offline, say unverified
 and retain the known SHA; do not substitute older CI. Keep merge readiness,
 real-corpus acceptance and future capabilities as separate verdicts.
 
-For a handoff, return the capsule plus changed paths, verification and unresolved
-items. Do not replay full logs or reload every historical document. Improve this
+For an ordinary handoff, use at most 250 words. Return verdict, revision,
+evidence, blockers and next action. Link detailed receipts and record usage
+when available. Improve this
 skill from repeated observed work; avoid adding a rule for every incidental error.
