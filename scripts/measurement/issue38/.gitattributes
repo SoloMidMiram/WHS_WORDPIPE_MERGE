@@ -1,0 +1,3 @@
+fixture/*.md -text
+evidence/*.json -text whitespace=cr-at-eol
+evidence/*.jsonl -text whitespace=cr-at-eol

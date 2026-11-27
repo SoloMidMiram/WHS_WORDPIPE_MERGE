@@ -1,0 +1,45 @@
+{
+  "main": "1295ad15cc085732391a6d1dfe8069de32752ad1",
+  "fixture_sha256": "a6fc44fa2f26349876d9b43d78e64ce51a35814b575f45f2a89767d0757039c8",
+  "cache": "primed host; filesystem cache not flushed or claimed controlled; same environment; serial; no concurrent workload commissioned",
+  "admission_budget_seconds": 300,
+  "automatic_relaxation": false,
+  "attempts": [
+    {
+      "id": "topic-1",
+      "mode": "legacy",
+      "attempt": 1
+    },
+    {
+      "id": "topic-2",
+      "mode": "structural",
+      "attempt": 1
+    },
+    {
+      "id": "topic-3",
+      "mode": "structural",
+      "attempt": 2
+    },
+    {
+      "id": "topic-4",
+      "mode": "legacy",
+      "attempt": 2
+    },
+    {
+      "id": "topic-5",
+      "mode": "legacy",
+      "attempt": 3
+    },
+    {
+      "id": "topic-6",
+      "mode": "structural",
+      "attempt": 3
+    }
+  ],
+  "state": "registered_not_run",
+  "reason": "observer completeness and matched engineering evidence require disposition",
+  "manifests": {
+    "legacy": "ee8d30456d218c1349109448855db7647da5dba1ec8fb20989f2bab529f8ad35",
+    "structural": "30f178d91569abfcff29217fbf90edd18c3223cc891aa2515e1d623ba747c262"
+  }
+}
