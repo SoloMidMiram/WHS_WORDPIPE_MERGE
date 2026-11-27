@@ -35,6 +35,10 @@ See the [authoritative avenue and queue mapping](docs/engineering/DELIVERY_PHASE
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-27 — MD-01 correction review and prerequisite guard
+
+Reviewed [PR #41](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/41) on `codex/md01-physical-line-accounting` at `24ba50b7a2f233fa634593a21d0b557f1b5e9df4`, base `09928e82e72efeeed388965eeacb8b5594728e33`. The Codex acceptance review identified a misplaced PowerShell prerequisite decorator; correction `679121e9ade801b37bf752504fbaeb8786b19f3a` restores it to the paired replay, leaving the pure-Python source-coverage test unguarded. Source and patch inspected remotely; no fresh local execution asserted. The earlier exact-head push passed all five jobs; the PR event failed before Ctrl+C in Windows 3.11 and cancelled two sibling jobs. Preserve that evidence under #25/#34; do not attribute it to this MD-01 fix. PR #39 is separate. The repository map was checked; paths and ownership are unchanged. Next: validate the final candidate with and without PowerShell, full governance and exact-head CI, then independent acceptance. G2 remains REVISE; TIME-01 and CORE-02 remain queued. No real-pilot rerun or new slot.
+
 ### 2026-11-27 — MD-01 original-source coverage and link counts
 
 Local candidate on `codex/md01-physical-line-accounting`; no PR opened.
