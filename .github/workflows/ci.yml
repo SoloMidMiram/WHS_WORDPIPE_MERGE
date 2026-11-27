@@ -1,21 +1,28 @@
 name: Windows readiness evidence
 on:
-  push:
-    branches: [codex/windows-chain-readiness-diagnostics]
+  pull_request:
+    branches: [main]
 jobs:
   readiness:
+    if: github.head_ref == 'codex/windows-chain-readiness-diagnostics'
     runs-on: windows-latest
     timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11"]
+        include:
+          - python-version: "3.10"
+            extras: chronicle,test
+          - python-version: "3.11"
+            extras: chronicle,test
+          - python-version: "3.11"
+            extras: chronicle,docx,test
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
-      - run: python -m pip install -e ".[chronicle,test]"
+      - run: python -m pip install -e ".[${{ matrix.extras }}]"
       - name: Preserve full-suite startup context
         shell: pwsh
         run: |
