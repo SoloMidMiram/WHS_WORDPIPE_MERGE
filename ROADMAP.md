@@ -17,7 +17,7 @@ AI qualification belongs to the v0.5 target. Delivery gateway IDs are scoped
 to the matrix. The historical goals and phases below retain their identifiers.
 
 The [three-slot queue](docs/engineering/DELIVERY_PHASES_AND_GATES.md#active-execution-queue)
-covers MD-01 (#15) in slot 1 for qualification and SEC-01 (#17) in slot 3 for audit. Slot 2 is vacant after CI-01 P1 exit. CLI-01 is proposed for separate admission. SAFE-01 is READY pending documented SEC-01 exit and separate admission.
+covers MD-01 (#15) in slot 1 for qualification and SEC-01 (#17) in slot 3 for audit. Slot 2 now holds [CLI-01 #34](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/34) for characterization only after CI-01 P1 exit. SAFE-01 is READY pending documented SEC-01 exit and separate admission.
 
 | Order | Phase | Current execution |
 |---|---|---|
@@ -25,11 +25,19 @@ covers MD-01 (#15) in slot 1 for qualification and SEC-01 (#17) in slot 3 for au
 | 2 | Document understanding | The bounded opt-in [Markdown implementation #23](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23) is integrated. [#15](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/15) stays open in slot 1 and G2 remains **REVISE**. TIME-01 and NLP-01 remain queued. |
 | 3 | Corpus acceptance | [Flowers #16](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/16) is queued for G3-full. G3-core synthetic evidence remains a distinct v0.2 gate. |
 | 4 | References and ontology | Complete Phase 9c using existing survivor contracts and populate the project ontology before schema expansion. |
-| 5 | Product stabilization | [Public audit #17](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17) occupies slot 3 for release assurance. [Atomic DOCX #18](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/18) is READY for separate DOCX qualification. [CI-01 P1 #30](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/30) is complete. CLI-01 remains queued for separate admission. |
+| 5 | Product stabilization | [Public audit #17](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17) occupies slot 3 for release assurance. [Atomic DOCX #18](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/18) is READY for separate DOCX qualification. [CI-01 P1 #30](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/30) is complete. [CLI-01 #34](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/34) is admitted for installed-flow and evidence-safe publication characterization, not implementation. |
 | 6 | Knowledge intelligence | Ground citations, claims and relations in provenance. Measure search needs before indexing. |
 | 7 | Optional AI research | [NCM #9](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/9) is blocked for real inference. [Jev #10](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/10) has offline preparation available. [Combined benchmark #11](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/11) is blocked on upstream evidence. |
 
+### Parallel development avenues
+
+See the [authoritative avenue and queue mapping](docs/engineering/DELIVERY_PHASES_AND_GATES.md#parallel-avenues-and-priorities-2026-11-27-review-reconciliation). A: evidence correctness and context fidelity (MD-01); B: distributable Chronicle (CLI-01); C: assurance and independent DOCX (SEC-01); D: future knowledge and optional AI (no admission). Only three work packages are active. G1 remains release-critical despite B3 deferral; core corpus and reference gates remain mandatory for v0.2.
+
 ## Active narrative roadmap — newest first
+
+### 2026-11-27 — Review reconciliation and CLI-01 admission
+
+Reviewed main `c0a6d1fac7dcf9c51021e6a8c62ad462e255389a` and [successful main CI](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45948321058). The two reviews agree on preserving architecture and prioritizing reliable evidence delivery. [CLI-01 #34](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/34) is the new slot-2 owner for characterization only. Its contract includes independently distributed driver selection and source/output alias and multi-artifact failure characterization. MD-01 #15 and SEC-01 #17 retain slots 1 and 3; SAFE-01 #18 stays READY. Merge equivalence is queued under CORE-01/G3-core, legacy API error propagation under DOCX-01/INT-01. No new gateway, production code, implementation authorization or release decision. The repository map was inspected and updated. G0 ACCEPT; G1/G2 REVISE; aggregate G5 pending; v0.2 NO-GO. No new local runtime execution claimed.
 
 ### 2026-11-27 — CI-01 P1 integration and exit
 
