@@ -150,3 +150,14 @@ scoring rubric. A zero-acceptance arm has no defined per-acceptance ratio.
 Engineering efficiency is cross-cutting. This measurement plan leaves the
 execution queue, G1 qualification, B3 deferral and release decisions with
 their existing authorities.
+
+### Evidence routing
+
+Publish approved pilot statistics in a topic-named directory under
+docs/engineering/pilots. Keep the input identities, run registration,
+measurement units and sanitized receipts together. Track measurement
+qualification and workload-specific limits through
+[issue #38](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/38).
+Keep raw corpus copies, generated output and detailed logs in the local
+workspace unless separately approved for publication. Stage named paths
+after reviewing the full staged inventory and its source hashes.
