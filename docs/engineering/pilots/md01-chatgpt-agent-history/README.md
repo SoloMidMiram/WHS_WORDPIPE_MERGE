@@ -57,3 +57,35 @@ or performance thresholds.
 Raw source snapshots, Chronicles, detailed comparisons and logs are retained
 in the local pilot workspace. G2 remains REVISE and the pilot did not change a
 release gate, execution slot, threshold or production file.
+
+## Maintainer disposition
+
+**ACCEPT pilot execution as characterization evidence. REVISE product
+usefulness.** Semantic and release acceptance remain separate. Preserve these
+inputs, parser modes, GPT-2 estimates and findings as the TIME-01 and future
+context-efficiency comparison baseline.
+
+The existing artifacts were inspected without rerunning the pilot. Both
+modes and both replays reported one source, **Merged Chronicle**, in the
+source manifest. Their lineage contains five distinct original contributors.
+This is a presentation-layer fidelity discrepancy. Track it under MD-01
+[#15](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/15) and CORE-01.
+
+Each link registry labels **30** as total unique links. The Markdown tables
+contain **162** distinct URL strings, **45** after stripping fragments, across
+**30** domain headings. The displayed total matches the domain count. Clarify
+the intended URL identity before changing the count. Track this under MD-01
+and CORE-01.
+
+| Follow-up | Existing ownership |
+| --- | --- |
+| Source manifest and link counts | MD-01 / CORE-01 |
+| Incident dates and fallback semantics | TIME-01 |
+| Context-size growth and evidence retention | G1 [#8](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/8) |
+| Domain-appropriate categorization | ONT-01 / NLP-01 |
+| Physical-line summary overcount | MD-01 |
+| Descriptive runtime comparison | [#38](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/38) / PERF-01 |
+
+The structural median was 13.9% higher in two observations per mode. This
+does not establish a performance regression or justify a new budget. No
+correction, new slot, corpus expansion, or release-gate change is recorded.
