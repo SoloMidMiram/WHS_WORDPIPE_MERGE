@@ -17,7 +17,7 @@ AI qualification belongs to the v0.5 target. Delivery gateway IDs are scoped
 to the matrix. The historical goals and phases below retain their identifiers.
 
 The [three-slot queue](docs/engineering/DELIVERY_PHASES_AND_GATES.md#active-execution-queue)
-covers MD-01 (#15) in slot 1 for qualification, EXEC-01 (#25) in slot 2 pending its separate exit decision, and SEC-01 (#17) in slot 3 for audit. SAFE-01 is READY pending documented SEC-01 exit and separate admission. All three slots are occupied.
+covers MD-01 (#15) in slot 1 for qualification and SEC-01 (#17) in slot 3 for audit. Slot 2 is vacant after EXEC-01 exit. CI-01 P1 is proposed for separate admission. SAFE-01 is READY pending documented SEC-01 exit and separate admission.
 
 | Order | Phase | Current execution |
 |---|---|---|
@@ -30,6 +30,19 @@ covers MD-01 (#15) in slot 1 for qualification, EXEC-01 (#25) in slot 2 pending 
 | 7 | Optional AI research | [NCM #9](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/9) is blocked for real inference. [Jev #10](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/10) has offline preparation available. [Combined benchmark #11](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/11) is blocked on upstream evidence. |
 
 ## Active narrative roadmap — newest first
+
+### 2026-11-27 — EXEC-01 exit and slot 2 release
+
+The maintainer accepted bounded EXEC-01 exit on the existing Windows and
+Linux qualification and the local failure disposition. [PR #27](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/27)
+remains the production integration at `9152218f8b34a05f953f1d39f9e4176aa0656a2b`.
+[PR #28](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/28) integrated
+the three-document reconciliation at `63dda05f2efa36bc71cbb1e5e471fcc6f1604c8d`.
+Branch `codex/exec-01-exit-docs` records the exit without changing the accepted
+revisions. The repository map was checked. The execution thresholds,
+historical failures and platform limits are retained. Aggregate G5 is
+pending. Slot 2 is vacant. The next decision is separate admission of
+the mandatory CI-01 P1 scope.
 
 ### 2026-11-27 — EXEC-01 integration
 
