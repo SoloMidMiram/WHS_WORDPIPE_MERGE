@@ -98,7 +98,7 @@ exit and successor; no fourth active package.
 | Slot | Current package | Next decision |
 |---|---|---|
 | Slot 1 — document understanding | MD-01 [#15][i15] (admitted) | Qualify intended inputs and disposition reserved framing. G2 remains REVISE. |
-| Slot 2 — CI qualification | CI-01 P1 [#30][i30] (implementation authorized) | Review the bounded implementation and Windows/Linux qualification. Aggregate G5 remains pending. |
+| Slot 2 — installed workflow qualification | Vacant after CI-01 P1 [#30][i30] exit | CLI-01 is proposed for separate admission. Aggregate G5 remains pending. |
 | Independent hardening | SEC-01 [#17][i17] | Complete the public release audit. SAFE-01 [#18][i18] remains READY until recorded exit and explicit admission. |
 
 **Slot 2 release.** [PR #20](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/20) integrated at
@@ -756,6 +756,25 @@ and rejects mixed `pipeline` or `tools` namespace search paths.
 These checks cover the declared test sessions and Chronicle drivers.
 CLI-01's complete installed Chronicle flow remains separately queued.
 
+**CI-01 P1 exit (2026-11-27).** The maintainer accepted the bounded
+implementation and bridge correction in
+[PR #32](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/32).
+Production integrated at `d8af7425cd181efe71463785accbb6e072293ee0`.
+[Fresh main qualification](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45947525968)
+covers Windows and Linux source suites, clean-wheel MD-01 replays and
+bridge-origin controls. The [issue evidence][i30] retains the five
+historical failures, the bridge baseline and the Windows path-alias
+assertion failures. Accepted coverage is limited to the declared
+repository qualification modes and guarded launch paths. P2 remains
+deferred, slot 2 is vacant, and aggregate G5 remains pending.
+
+**Proposed CLI-01 admission.** Qualify the documented complete Chronicle
+workflow and supported wrappers from a clean non-editable wheel on Windows
+and Linux. Run from neutral directories with verified installed origins.
+Pin the candidate and wheel digests. Use deterministic fixtures to verify
+stage progression, expected artifacts and status for success and failure.
+Keep CLI-01 queued until explicit slot-2 admission.
+
 ### SAFE-01 preparation (2026-11-26)
 
 **Verified by inspection.** `wordpipe/orchestration/pipeline.py` calls
@@ -977,7 +996,8 @@ independent WordPipe DOCX readiness decision sit outside v0.2.
 - [ ] Core G4 references, compatible project instances and the manual comparison disposition are evidenced. If the authorized comparison is blocked, record its release impact and obtain a maintainer scope decision.
 - [x] EXEC-01 deadline, cancellation, diagnostic bound, child cleanup and failure recovery pass within the supported platform scope. See the exit decision in [#25][i25].
 - [ ] Public release scope and dependency/publication review pass [#17][i17].
-- [ ] CI-01 source-test origin assertions and foreign-checkout regression pass; CLI-01 clean installed Chronicle workflow passes with verified installation origins on Windows and Linux at the release candidate.
+- [x] CI-01 P1 source-test origin assertions, foreign-checkout rejection and installed-origin qualification passed within the accepted scope. See [#30][i30].
+- [ ] CLI-01 clean installed Chronicle workflow passes with verified installation origins on Windows and Linux at the release candidate.
 
 ## Backlog activation and synchronization
 
@@ -1019,7 +1039,7 @@ technical evidence and historical remediation.
 | PERF-01 | P2 | Chronicle scaling benchmark | To-create | Benchmark implementer | Queued. Measure wall time and peak memory at 100, 1,000, 10,000 and 100,000 events on pinned fixtures (G6). |
 | STORE-01 | P2 | Rebuildable SQLite projection | To-create | Storage implementer | Gated by demonstrated query friction. Use PERF-01 characterization where relevant. Require reproducible rebuilds from canonical artifacts and measured benefit (G6). |
 | CLI-01 | P1 | Installed Chronicle CLI | To-create | Release implementer | Queued. Exercise a clean wheel install and documented complete Chronicle flow on Windows and Linux, retaining wrapper compatibility (G5). |
-| CI-01 | P1/P2 | Source-test import isolation and installed origins | [#30][i30] | CI/release implementer | P1 admitted in slot 2 for contract approval. Windows/Linux source and installed-origin qualification blocks v0.2/G5. P2 profile split and duplicate scanner deferred. Preserve governance checks. |
+| CI-01 | P1/P2 | Source-test import isolation and installed origins | [#30][i30] | CI/release implementer | P1 complete on Windows and Linux within the accepted scope. Slot 2 released. P2 profile split and duplicate scanner deferred. Aggregate G5 remains pending. |
 | REF-01 | P3 | Conditional refactoring and retirement | To-create | Subsystem maintainer | Deferred. Characterize consumer use before wrapper retirement. Require a third-adapter coupling or unsafe schema evolution before decomposing the runner. |
 | #8 | P1 | Deterministic context fidelity | [#8][i8] | Context lead + independent evaluator | G1 REVISE after frozen B2. B3 DEFERRED pending [re-entry evidence](#b3-re-entry). |
 | #9 | P1 | NCM fidelity | [#9][i9] | Research lead + upstream runtime owner | BLOCKED for genuine inference. Require G1 and upstream runtime/fidelity qualification (G7). |
