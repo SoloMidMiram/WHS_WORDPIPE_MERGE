@@ -15,6 +15,7 @@ Usage:
 
 import json
 import re
+import sys
 import tempfile
 from pathlib import Path
 from typing import Dict, List
@@ -847,7 +848,7 @@ class TestPipelineIntegration:
         """Verify pipeline/verify_ingest.py --help works."""
         import subprocess
         result = subprocess.run(
-            ["python", "pipeline/verify_ingest.py", "--help"],
+            [sys.executable, "pipeline/verify_ingest.py", "--help"],
             capture_output=True, text=True,
         )
         assert result.returncode == 0

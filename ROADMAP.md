@@ -47,6 +47,14 @@ and all five passed in the intended environment. The original failure
 logs and MD-01 fixtures remain preserved. The next decision is independent
 implementation acceptance. Slot 2 remains assigned to CI-01 P1.
 
+The local full-suite run at reviewed parent
+`5d20d52ba2cb3c4a8fc18d8305743a4eafc54572` exposed a wrapper-help test
+that launched a bare `python` and correctly hit the foreign-origin
+guard. The test now launches the session interpreter explicitly, and
+the focused rerun passed all eight cases. The same preliminary full
+run also hit the previously documented local inherited-expiry readiness
+limit. Recheck both hosted workflows on the updated candidate.
+
 ### 2026-11-27 — CI-01 P1 admission and contract review
 
 Branch `codex/ci-01-admission-contract`, reviewed base
