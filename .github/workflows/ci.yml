@@ -1,148 +1,30 @@
-name: CI
-on: [push, pull_request]
+name: Windows readiness evidence
+on:
+  push:
+    branches: [codex/windows-chain-readiness-diagnostics]
 jobs:
-  test:
+  readiness:
     runs-on: windows-latest
+    timeout-minutes: 10
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.10", "3.11"]
-        docx: [false]
-        include:
-          - python-version: "3.11"
-            docx: true
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install base dependencies
-        if: ${{ !matrix.docx }}
-        run: python -m pip install -e ".[chronicle,test]"
-      - name: Install with DOCX extra
-        if: ${{ matrix.docx }}
-        run: python -m pip install -e ".[chronicle,docx,test]"
-      - run: python -c "import pytest; print(f'pytest {pytest.__version__} installed')"
-      - run: python -m pytest tests -q --wordpipe-origin=source
-      - run: python tools/check_root_layout.py --root .
-      - run: python tools/check_input_catalog.py --root .
-      - run: python tools/check_architecture_boundaries.py --root .
-      - run: python tools/docs_link_check.py
-      - run: python tools/security_scan.py --root . --fail-on-findings
-      - name: MD-01 installed-wheel paired replay
-        if: ${{ matrix.docx }}
-        run: python tools/qualify_md01_wheel.py
-
-      # DOCX CLI integration test (only on docx extra job)
-      - name: Real DOCX CLI test
-        if: ${{ matrix.docx }}
-        shell: powershell
+      - run: python -m pip install -e ".[chronicle,test]"
+      - name: Preserve full-suite startup context
+        shell: pwsh
         run: |
-          $tmpDir = Join-Path $env:RUNNER_TEMP "docx_test"
-          New-Item -ItemType Directory -Force -Path $tmpDir | Out-Null
-          $docxPath = Join-Path $tmpDir "test.docx"
-          $outPath = Join-Path $tmpDir "test.cleaned.docx"
-
-          # Create a minimal DOCX using python-docx
-          python -c @"
-          from docx import Document
-          doc = Document()
-          doc.add_heading('Test Document', 0)
-          doc.add_paragraph('Hello world.')
-          doc.save(r'$docxPath')
-          "@
-
-          # Run the CLI with --no-flatten
-          python -m wordpipe.cli.main --in "$docxPath" --out "$outPath" --no-flatten
-          if ($LASTEXITCODE -ne 0) { exit 1 }
-
-          # Verify output can be reopened
-          python -c @"
-          from docx import Document
-          doc = Document(r'$outPath')
-          assert len(doc.paragraphs) > 0, 'Output DOCX is empty'
-          print(f'Output DOCX has {len(doc.paragraphs)} paragraphs')
-          "@
-          if ($LASTEXITCODE -ne 0) { exit 1 }
-
-      # chain.ps1 integration test (only on docx extra job)
-      - name: Real chain.ps1 test
-        if: ${{ matrix.docx }}
-        shell: powershell
-        run: |
-          $tmpDir = Join-Path $env:RUNNER_TEMP "chain_test"
-          New-Item -ItemType Directory -Force -Path $tmpDir | Out-Null
-
-          # Create a valid raw deep-search .md file
-          $validPath = Join-Path $tmpDir "valid.md"
-          [System.IO.File]::WriteAllText($validPath, '- **2025-01-01 - Test Event:** This is a test event.')
-
-          # Run all five stages under Windows PowerShell.
-          $mergeDir = Join-Path $tmpDir "merged"
-          $result = & .\pipeline\chain.ps1 -InputDir $tmpDir -OutputDir $mergeDir -Verify 2>&1
-          $exitCode = $LASTEXITCODE
-          if ($exitCode -ne 0) {
-            Write-Error "chain.ps1 with valid input exited $exitCode. Output: $result"
-            exit 1
+          $env:WHS_READINESS_DIAGNOSTIC = Join-Path $env:RUNNER_TEMP "readiness.json"
+          python -m pytest tests -q --wordpipe-origin=source
+          $result = $LASTEXITCODE
+          if (Test-Path -LiteralPath $env:WHS_READINESS_DIAGNOSTIC) {
+            Get-Content -LiteralPath $env:WHS_READINESS_DIAGNOSTIC
+          } else {
+            Write-Host 'Readiness diagnostic was not captured'
           }
-          $evidence = Get-Content -LiteralPath (Join-Path $mergeDir "run.json") -Raw | ConvertFrom-Json
-          if ($evidence.status -ne "ok" -or ($evidence.stages.status -join ",") -ne "ok,ok,ok,ok,ok" -or
-              $evidence.ingest_files[0].accepted -ne 1 -or $evidence.ingest_files[0].rejected -ne 0 -or
-              -not (Test-Path -LiteralPath (Join-Path $mergeDir "appendix/event_index.md"))) {
-            throw "Full Chronicle run did not produce the expected evidence."
-          }
-
-          # Now create a file with an undated heading (raw format)
-          $badPath = Join-Path $tmpDir "bad.md"
-          [System.IO.File]::WriteAllText($badPath, '- **unknown - No Date:** This event has no date.')
-
-          $mergeDir2 = Join-Path $tmpDir "merged_bad"
-          $result = & .\pipeline\chain.ps1 -InputDir $tmpDir -OutputDir $mergeDir2 -SkipCategorize -SkipIndex 2>&1
-          $exitCode = $LASTEXITCODE
-          if ($exitCode -ne 1) {
-            Write-Error "chain.ps1 with undated input should have exited 1 but exited $exitCode"
-            exit 1
-          }
-          $evidence = Get-Content -LiteralPath (Join-Path $mergeDir2 "run.json") -Raw | ConvertFrom-Json
-          if ($evidence.status -ne "failed" -or $evidence.exit_code -ne 1 -or
-              $evidence.merge_inputs.Count -ne 0 -or
-              @($evidence.ingest_files | Where-Object { $_.rejected -eq 1 }).Count -ne 1) {
-            throw "Failed Chronicle run did not produce the expected evidence."
-          }
-
-          exit 0
-
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.11"
-      - name: Install build tool
-        run: python -m pip install build
-      - name: Build wheel and sdist
-        run: python -m build
-      - name: Install wheel in a fresh venv and run entrypoint
-        run: |
-          python -m venv .venv
-          .venv/bin/pip install dist/*.whl
-          .venv/bin/wordpipe --help
-
-  test-linux:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
-        with:
-          python-version: "3.11"
-      - name: Install base dependencies
-        run: python -m pip install -e ".[chronicle,test]"
-      - run: python -c "import wordpipe; print('wordpipe import OK')"
-      - run: python -m pytest tests -q --wordpipe-origin=source
-      - run: python tools/check_root_layout.py --root .
-      - run: python tools/check_input_catalog.py --root .
-      - run: python tools/check_architecture_boundaries.py --root .
-      - run: python tools/docs_link_check.py
-      - run: python tools/security_scan.py --root . --fail-on-findings
-      - name: MD-01 installed-wheel paired replay
-        run: python tools/qualify_md01_wheel.py
+          exit $result

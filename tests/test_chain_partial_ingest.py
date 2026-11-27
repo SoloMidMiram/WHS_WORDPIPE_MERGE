@@ -433,10 +433,32 @@ def test_direct_chain_ctrl_c_preserves_terminal_cancellation(isolated_chain):
         cwd=raw_dir.parent, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **options,
     ) as process:
         try:
-            readiness_limit = time.monotonic() + 6
+            readiness_start = time.monotonic()
+            readiness_limit = readiness_start + 6
             while not ready.exists() and process.poll() is None and time.monotonic() < readiness_limit:
                 time.sleep(.01)
-            assert ready.exists()
+            ready_at_boundary = ready.exists()
+            diagnostic_path = os.environ.get("WHS_READINESS_DIAGNOSTIC")
+            if diagnostic_path and os.name == "nt":
+                import _winapi
+                import msvcrt
+
+                elapsed = time.monotonic() - readiness_start
+                status = process.poll()
+                streams = {}
+                for name, stream in (("stdout", process.stdout), ("stderr", process.stderr)):
+                    try:
+                        data, available, _ = _winapi.PeekNamedPipe(msvcrt.get_osfhandle(stream.fileno()), 2048)
+                        streams[name] = {"available": available, "preview": data.decode("utf-8", errors="replace")}
+                    except OSError as exc:
+                        streams[name] = {"winerror": exc.winerror}
+                Path(diagnostic_path).write_text(json.dumps({
+                    "launcher": shell, "interpreter": sys.executable, "resolved_python": shutil.which("python.exe"),
+                    "pid": process.pid, "elapsed_seconds": elapsed, "ready": ready_at_boundary,
+                    "launcher_returncode": status, "streams": streams,
+                    "stage_records": len(list((out_dir / "exec-01").rglob("*.json"))),
+                }), encoding="utf-8")
+            assert ready_at_boundary
             start = time.monotonic()
             if os.name == "nt":
                 code = (
