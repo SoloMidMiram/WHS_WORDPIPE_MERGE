@@ -98,7 +98,7 @@ exit and successor; no fourth active package.
 | Slot | Current package | Next decision |
 |---|---|---|
 | Slot 1 — document understanding | MD-01 [#15][i15] (admitted) | Qualify intended inputs and disposition reserved framing. G2 remains REVISE. |
-| Slot 2 — runtime reliability | EXEC-01 [#25][i25] (implementation integrated) | Record the separate EXEC-01 exit decision. Aggregate G5 remains pending. |
+| Slot 2 — runtime reliability | Vacant after EXEC-01 [#25][i25] exit | CI-01 P1 is proposed for separate admission. Aggregate G5 remains pending. |
 | Independent hardening | SEC-01 [#17][i17] | Complete the public release audit. SAFE-01 [#18][i18] remains READY until recorded exit and explicit admission. |
 
 **Slot 2 release.** [PR #20](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/20) integrated at
@@ -693,10 +693,15 @@ before the call, and a returned process is checked against the original
 deadline. The implementation cannot interrupt process creation before
 the OS returns control. Windows hosts may decline a targeted console
 break. Forced job termination remains within the same cleanup budget.
-The bounded implementation is accepted and integrated. The local timing
-disposition, original fixture failures and hosted evidence remain linked
-in the roadmap and [issue #25][i25]. Issue #25 and slot 2 remain active
-pending a separate EXEC-01 exit decision. Aggregate G5 remains pending.
+The maintainer accepted bounded EXEC-01 exit on 2026-11-27. The
+[production main run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45930573086)
+passed on Windows and Linux. The two-second synthetic deadline,
+single five-second cleanup budget, 1 MiB per stream cap, explicit
+truncation, zero surviving owned fixture processes and byte-identical
+prior outputs were accepted within the documented platform scope.
+The original failing regressions, interrupted-write fixture failures,
+accepted replacement and local timing disposition remain linked in the
+roadmap and [issue #25][i25]. Slot 2 is vacant. Aggregate G5 remains pending.
 
 ### SAFE-01 preparation (2026-11-26)
 
@@ -917,7 +922,7 @@ independent WordPipe DOCX readiness decision sit outside v0.2.
 - [ ] Temporal semantics are characterized and distinguish inferred and assigned dates.
 - [ ] G3-core deterministic synthetic fixture acceptance supports the declared release scope. Real Flowers semantic evaluation and IAA are G3-full/v0.3.
 - [ ] Core G4 references, compatible project instances and the manual comparison disposition are evidenced. If the authorized comparison is blocked, record its release impact and obtain a maintainer scope decision.
-- [ ] EXEC-01 deadline, cancellation, diagnostic bound, child cleanup and failure recovery pass on supported platforms.
+- [x] EXEC-01 deadline, cancellation, diagnostic bound, child cleanup and failure recovery pass within the supported platform scope. See the exit decision in [#25][i25].
 - [ ] Public release scope and dependency/publication review pass [#17][i17].
 - [ ] CI-01 source-test origin assertions and foreign-checkout regression pass; CLI-01 clean installed Chronicle workflow passes with verified installation origins on Windows and Linux at the release candidate.
 
@@ -952,7 +957,7 @@ technical evidence and historical remediation.
 | ONT-01 | P1 | Project ontology population | To-create | Ontology implementer | Queued. Map verified Phase 13–17 runs to existing project entities. Verify stable IDs, schema compatibility and evidence references (core G4). |
 | ONT-02 | P1 | Semantic concepts and relationships | To-create | Ontology lead + reviewer | Gated by ONT-01, NLP-01 and the Phase 15 schema decision. Verify versioned migration and evidence-backed relations (full G4). |
 | SAFE-01 | P1 | Atomic DOCX publication | [#18][i18] | DOCX implementer | Ready after SEC-01 in slot 3. Prove failure preservation and cleanup through installed paths on Windows and Linux (DOCX readiness). |
-| EXEC-01 | P1 | Bounded execution and cancellation | [#25][i25] | Runtime implementer | Implementation integrated. Slot 2 remains active pending the separate exit decision. Aggregate G5 remains pending. |
+| EXEC-01 | P1 | Bounded execution and cancellation | [#25][i25] | Runtime implementer | Completed after verified exit. Slot 2 released. Aggregate G5 remains pending. |
 | SEC-01 | P1 | Public repository and dependency audit | [#17][i17] | Release/security maintainer | Admitted in slot 3. Record current ref, dependency, workflow and release-artifact coverage and disposition (G5). |
 | DOCX-01 | P2 | Flattener and capability contracts | To-create | DOCX implementer | Queued. Characterize supported COM/XML dependencies and experimental flags. Verify installation and capability reporting (DOCX readiness). |
 | INT-01 | P2 | TraceLedger consumer validation | To-create | Integration lead + external consumer | Queued. Require a real available consumer and verify library, EventSink and capability contracts (external consumer acceptance). |
