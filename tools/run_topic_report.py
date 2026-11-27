@@ -31,8 +31,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-# Ensure repo root is importable when invoked as a script.
 _REPO_ROOT_FOR_IMPORT = Path(__file__).resolve().parents[1]
+if __name__ == "__main__" and "WORDPIPE_ORIGIN_QUALIFICATION" in os.environ:
+    from runpy import run_path
+
+    run_path(str(_REPO_ROOT_FOR_IMPORT / "pipeline" / "_import_origin.py"))["require_driver"](
+        __file__, "wordpipe.execution", "wordpipe.markdown_contract",
+    )
+
+# Ensure repo root is importable when invoked as a script.
 if str(_REPO_ROOT_FOR_IMPORT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT_FOR_IMPORT))
 

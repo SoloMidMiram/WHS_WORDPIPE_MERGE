@@ -22,7 +22,7 @@ jobs:
         if: ${{ matrix.docx }}
         run: python -m pip install -e ".[chronicle,docx,test]"
       - run: python -c "import pytest; print(f'pytest {pytest.__version__} installed')"
-      - run: python -m pytest tests -q
+      - run: python -m pytest tests -q --wordpipe-origin=source
       - run: python tools/check_root_layout.py --root .
       - run: python tools/check_input_catalog.py --root .
       - run: python tools/check_architecture_boundaries.py --root .
@@ -138,7 +138,7 @@ jobs:
       - name: Install base dependencies
         run: python -m pip install -e ".[chronicle,test]"
       - run: python -c "import wordpipe; print('wordpipe import OK')"
-      - run: python -m pytest tests -q
+      - run: python -m pytest tests -q --wordpipe-origin=source
       - run: python tools/check_root_layout.py --root .
       - run: python tools/check_input_catalog.py --root .
       - run: python tools/check_architecture_boundaries.py --root .

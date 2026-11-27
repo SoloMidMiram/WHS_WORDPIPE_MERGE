@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import os
 import shutil
 import subprocess
@@ -41,6 +42,7 @@ def main() -> None:
             check=True,
         )
         wheel, = wheels.glob("wordpipe-*.whl")
+        print(f"CI-01 wheel SHA-256: {hashlib.sha256(wheel.read_bytes()).hexdigest()}", flush=True)
         subprocess.run([sys.executable, "-m", "venv", str(venv)], check=True)
         bin_dir = venv / ("Scripts" if os.name == "nt" else "bin")
         python = bin_dir / ("python.exe" if os.name == "nt" else "python")
@@ -53,6 +55,7 @@ def main() -> None:
             "tools/compare_markdown_modes.py",
             "tools/prepare_generic_markdown_chronicle.py",
             "tools/run_topic_report.py",
+            "tests/conftest.py",
             "tests/test_md01_markdown_modes.py",
             "tests/fixtures/md01_structure.md",
             "tests/fixtures/md01_identity_legacy.json",
@@ -63,19 +66,39 @@ def main() -> None:
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(root / name, destination)
         env = dict(os.environ, PATH=os.pathsep.join((str(bin_dir), os.environ["PATH"])))
+        pytest_command = [
+            str(python), "-m", "pytest", "-q", "-s", "--wordpipe-origin=wheel",
+            "--wordpipe-wheel-prefix", str(venv),
+        ]
+        paired = "tests/test_md01_markdown_modes.py::test_paired_replay"
+        foreign = work / "foreign"
+        (foreign / "wordpipe").mkdir(parents=True)
+        (foreign / "wordpipe" / "__init__.py").write_text(
+            "raise AssertionError('foreign package initializer executed')\n", encoding="utf-8",
+        )
+        mismatch = subprocess.run(
+            [*pytest_command, "--collect-only", paired], cwd=checkout,
+            env=dict(env, PYTHONPATH=str(foreign)), capture_output=True, text=True, timeout=30,
+        )
+        if mismatch.returncode != 4 or "CI-01: foreign origin for wordpipe" not in mismatch.stderr:
+            raise RuntimeError(f"CI-01 wheel mismatch control failed: {mismatch.stdout}{mismatch.stderr}")
+        print("CI-01 wheel mismatch rejected despite installed metadata", flush=True)
+        print(mismatch.stderr.strip(), flush=True)
         subprocess.run(
             [str(python), "-c",
-             "from pathlib import Path; from importlib.metadata import version; "
-             "import sys, markdown_it, wordpipe.chronicle.markdown_sections as m; "
+             "from pathlib import Path; from importlib.metadata import version; import runpy,sys; "
+             "verify = runpy.run_path('pipeline/_import_origin.py')['verify']; "
+             "verify('wheel', Path.cwd(), sys.argv[1], modules=('wordpipe.chronicle.markdown_sections',)); "
+             "import markdown_it, wordpipe.chronicle.markdown_sections as m; "
+             "verify('wheel', Path.cwd(), sys.argv[1]); "
              "origin = Path(m.__file__).resolve(); print('MD-01 installed origin:', origin); "
              "assert origin.is_relative_to(Path(sys.prefix).resolve()); "
              "assert Path(markdown_it.__file__).resolve().is_relative_to(Path(sys.prefix).resolve()); "
-             "print('MD-01 installed parser:', version('markdown-it-py'))"],
+             "print('MD-01 installed parser:', version('markdown-it-py'))", str(venv)],
             cwd=checkout, env=env, check=True,
         )
         subprocess.run(
-            [str(python), "-m", "pytest", "-q", "-s", *pytest_args,
-             "tests/test_md01_markdown_modes.py::test_paired_replay"],
+            [*pytest_command, *pytest_args, paired],
             cwd=checkout, env=env, check=True,
         )
 

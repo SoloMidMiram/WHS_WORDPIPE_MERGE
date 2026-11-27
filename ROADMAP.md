@@ -31,6 +31,22 @@ covers MD-01 (#15) in slot 1 for qualification, CI-01 P1 (#30) in slot 2 for con
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-27 — CI-01 P1 implementation review
+
+Branch `codex/ci-01-origin-qualification`, reviewed base
+`656d96b0dad5412cf58437a0708bc5cedbce047b`. The accepted contract and
+[implementation authorization](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/30#issuecomment-7209077805)
+are recorded in #30. [Fresh contract-integration CI](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45934463028)
+passed all five jobs. The implementation checks the source pytest session
+before collection and validates origins in the actual Chronicle drivers.
+The clean wheel run records its digest, checks the resolved modules and
+distribution metadata separately, and rejects an injected foreign package
+even with a valid wheel installed. The five historical Windows cases
+still fail with foreign imports, now with an explicit CI-01 diagnostic,
+and all five passed in the intended environment. The original failure
+logs and MD-01 fixtures remain preserved. The next decision is independent
+implementation acceptance. Slot 2 remains assigned to CI-01 P1.
+
 ### 2026-11-27 — CI-01 P1 admission and contract review
 
 Branch `codex/ci-01-admission-contract`, reviewed base

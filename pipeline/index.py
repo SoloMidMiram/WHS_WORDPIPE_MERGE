@@ -10,11 +10,19 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
 import sys
 from collections import Counter
 from os.path import relpath
 from pathlib import Path
 from urllib.parse import quote, unquote
+
+if __name__ == "__main__" and "WORDPIPE_ORIGIN_QUALIFICATION" in os.environ:
+    from runpy import run_path
+
+    run_path(str(Path(__file__).with_name("_import_origin.py")))["require_driver"](
+        __file__, "wordpipe.chronicle.index", "wordpipe.chronicle.merge",
+    )
 
 from wordpipe.chronicle.index import (
     DEFAULT_CONFIG,

@@ -205,6 +205,10 @@ function Invoke-ChronicleStage {
         $exitCode = $terminal.native_exit_code
         $diagnostics = @($terminal.stdout_text, $terminal.stderr_text, $terminal.detail) |
             Where-Object { $_ }
+        if ($env:WORDPIPE_ORIGIN_QUALIFICATION -and -not $Verbose -and
+            $terminal.outcome -eq "native_failure" -and $terminal.stderr_text -match '(?m)^CI-01: [^\r\n]+') {
+            Write-Host $Matches[0]
+        }
         if ($terminal.outcome -eq "success") {
             $status = "ok"
             $failureKind = $null
