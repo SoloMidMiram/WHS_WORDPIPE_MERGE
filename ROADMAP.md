@@ -17,7 +17,7 @@ AI qualification belongs to the v0.5 target. Delivery gateway IDs are scoped
 to the matrix. The historical goals and phases below retain their identifiers.
 
 The [three-slot queue](docs/engineering/DELIVERY_PHASES_AND_GATES.md#active-execution-queue)
-covers MD-01 (#15) in slot 1 for qualification and SEC-01 (#17) in slot 3 for audit. Slot 2 is vacant after EXEC-01 exit. CI-01 P1 is proposed for separate admission. SAFE-01 is READY pending documented SEC-01 exit and separate admission.
+covers MD-01 (#15) in slot 1 for qualification, CI-01 P1 (#30) in slot 2 for contract approval, and SEC-01 (#17) in slot 3 for audit. SAFE-01 is READY pending documented SEC-01 exit and separate admission.
 
 | Order | Phase | Current execution |
 |---|---|---|
@@ -25,11 +25,25 @@ covers MD-01 (#15) in slot 1 for qualification and SEC-01 (#17) in slot 3 for au
 | 2 | Document understanding | The bounded opt-in [Markdown implementation #23](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/23) is integrated. [#15](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/15) stays open in slot 1 and G2 remains **REVISE**. TIME-01 and NLP-01 remain queued. |
 | 3 | Corpus acceptance | [Flowers #16](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/16) is queued for G3-full. G3-core synthetic evidence remains a distinct v0.2 gate. |
 | 4 | References and ontology | Complete Phase 9c using existing survivor contracts and populate the project ontology before schema expansion. |
-| 5 | Product stabilization | [Public audit #17](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17) occupies slot 3 for release assurance. [Atomic DOCX #18](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/18) is READY for separate DOCX qualification. CLI-01 and CI-01 remain queued v0.2 work. |
+| 5 | Product stabilization | [Public audit #17](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17) occupies slot 3 for release assurance. [Atomic DOCX #18](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/18) is READY for separate DOCX qualification. [CI-01 P1 #30](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/30) occupies slot 2. CLI-01 remains queued. |
 | 6 | Knowledge intelligence | Ground citations, claims and relations in provenance. Measure search needs before indexing. |
 | 7 | Optional AI research | [NCM #9](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/9) is blocked for real inference. [Jev #10](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/10) has offline preparation available. [Combined benchmark #11](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/11) is blocked on upstream evidence. |
 
 ## Active narrative roadmap — newest first
+
+### 2026-11-27 — CI-01 P1 admission and contract review
+
+Branch `codex/ci-01-admission-contract`, reviewed base
+`f45b994126bdfd1b33f5749cf2317c3ad8bff7f6`. The maintainer admitted
+[CI-01 #30](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/30)
+to slot 2 after EXEC-01 exit. The [delivery plan](docs/engineering/DELIVERY_PHASES_AND_GATES.md#ci-01-p1-admission-and-bounded-contract)
+records the Windows foreign editable-install reproduction, the
+source and installed-origin boundaries and the acceptance criteria.
+The [baseline main run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45931888181)
+passed all five jobs, including both existing installed-wheel MD-01
+replays. The repository map was checked. The next decision is
+implementation authorization. G0 stays ACCEPT, G1 and G2 stay REVISE,
+G1 blocks v0.2, and aggregate G5 remains pending.
 
 ### 2026-11-27 — EXEC-01 exit and slot 2 release
 

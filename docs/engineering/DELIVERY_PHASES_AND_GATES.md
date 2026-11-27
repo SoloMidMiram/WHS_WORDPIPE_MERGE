@@ -98,7 +98,7 @@ exit and successor; no fourth active package.
 | Slot | Current package | Next decision |
 |---|---|---|
 | Slot 1 — document understanding | MD-01 [#15][i15] (admitted) | Qualify intended inputs and disposition reserved framing. G2 remains REVISE. |
-| Slot 2 — runtime reliability | Vacant after EXEC-01 [#25][i25] exit | CI-01 P1 is proposed for separate admission. Aggregate G5 remains pending. |
+| Slot 2 — CI qualification | CI-01 P1 [#30][i30] (admitted) | Approve the bounded source and installed-origin contract before implementation. Aggregate G5 remains pending. |
 | Independent hardening | SEC-01 [#17][i17] | Complete the public release audit. SAFE-01 [#18][i18] remains READY until recorded exit and explicit admission. |
 
 **Slot 2 release.** [PR #20](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/20) integrated at
@@ -703,6 +703,47 @@ The original failing regressions, interrupted-write fixture failures,
 accepted replacement and local timing disposition remain linked in the
 roadmap and [issue #25][i25]. Slot 2 is vacant. Aggregate G5 remains pending.
 
+### CI-01 P1 admission and bounded contract
+
+The maintainer admitted [#30][i30] on 2026-11-27 against main
+`f45b994126bdfd1b33f5749cf2317c3ad8bff7f6`. The CI/release implementer
+owns the source-session and installed-origin checks. Implementation
+requires a separate decision. Optional P2 profile restructuring and
+duplicate-scanner work are deferred. CLI-01 remains queued for full
+installed Chronicle acceptance.
+
+**Reproduced baseline.** On Windows, running the intended checkout's
+`python pipeline/index.py --help` resolved `wordpipe.chronicle.index`
+from an older checkout and failed importing `SURVIVOR_FRAGMENT_RE`.
+The direct-script search path starts at `pipeline/`. The intended
+repository root was absent and `PathFinder` had no `wordpipe` match.
+The interpreter's setuptools editable finder supplied the foreign package.
+`PYTHONPATH` was unset. The parent launched from the repository with
+`python -m pytest` can resolve local imports while its direct-script
+children resolve the editable package. The PowerShell chain selects
+Python from its application path and then launches those stage scripts.
+The original Windows logs and their hashes remain preserved.
+The focused Windows replay reproduced all five recorded failures with
+pytest third-party plugin autoload disabled after a separate plugin
+startup error. The reproduction retained the foreign editable install.
+The same five tests passed with a separate environment whose editable
+install points to the intended checkout.
+A controlled Linux WSL replay used the baseline index driver, the
+historical package from `e1974119693e433bc7cbbff387904aa8f2883a03`,
+and explicit `PYTHONPATH` injection. It reproduced the same missing
+symbol and foreign origin. The Linux injection is a portable control.
+The Windows editable finder explains the original failure. The
+[baseline hosted run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45931888181)
+verified the existing MD-01 wheel replay from both clean installations.
+
+| Boundary | Required evidence for implementation acceptance |
+|---|---|
+| Source pytest session | Derive the expected checkout from the trusted test invocation, independent of the discovered package. Before collection, validate resolved package and module origins under that checkout, including package search locations where applicable. Reject missing, invalid, mixed or foreign origins with a nonzero result and expected/actual diagnostics. |
+| Source subprocesses | Check the interpreter, working directory, launcher form and relevant repository package and driver origins in the actual launch context, including direct index launch, PowerShell stages and the topic runner. Reject a mismatched child before stage execution. Keep the documented source invocation and existing fixtures working. |
+| Deliberate mismatch | Use deterministic temporary checkouts and isolated interpreter state. Prove healthy source operation and explicit foreign rejection on Windows and Linux. Include the case where the parent imports locally but the child resolves elsewhere, and test resolved aliases and sibling-prefix paths. Avoid masking the failing case with an import-path repair. |
+| Clean wheel origins | Build the exact revision's wheel and record its digest. Install non-editably into a clean environment and launch from a neutral driver directory. Verify resolved repository package/module and distribution origins in the intended installation's library directories, outside source and driver roots. Record the interpreter, declared roots and actual origins. Exercise the existing installed MD-01 replay and origin probes without claiming the separate CLI-01 flow is qualified. |
+| Candidate gate | Preserve exact base and candidate revisions, original failure and negative/positive evidence, focused/full tests, all five governance checks, both platform jobs and the installed-wheel replays. Stop at independent implementation acceptance. |
+
 ### SAFE-01 preparation (2026-11-26)
 
 **Verified by inspection.** `wordpipe/orchestration/pipeline.py` calls
@@ -966,7 +1007,7 @@ technical evidence and historical remediation.
 | PERF-01 | P2 | Chronicle scaling benchmark | To-create | Benchmark implementer | Queued. Measure wall time and peak memory at 100, 1,000, 10,000 and 100,000 events on pinned fixtures (G6). |
 | STORE-01 | P2 | Rebuildable SQLite projection | To-create | Storage implementer | Gated by demonstrated query friction. Use PERF-01 characterization where relevant. Require reproducible rebuilds from canonical artifacts and measured benefit (G6). |
 | CLI-01 | P1 | Installed Chronicle CLI | To-create | Release implementer | Queued. Exercise a clean wheel install and documented complete Chronicle flow on Windows and Linux, retaining wrapper compatibility (G5). |
-| CI-01 | P1/P2 | CI profiles and duplicate scanner | To-create | CI/release implementer | Queued. P1 platform qualification and test-import hermeticity block v0.2/G5: assert intended source/install origins and fail on foreign checkout; verify deliberate mismatch regression. P2 profile split and duplicate scanner optional with scope decision. Preserve governance checks. |
+| CI-01 | P1/P2 | Source-test import isolation and installed origins | [#30][i30] | CI/release implementer | P1 admitted in slot 2 for contract approval. Windows/Linux source and installed-origin qualification blocks v0.2/G5. P2 profile split and duplicate scanner deferred. Preserve governance checks. |
 | REF-01 | P3 | Conditional refactoring and retirement | To-create | Subsystem maintainer | Deferred. Characterize consumer use before wrapper retirement. Require a third-adapter coupling or unsafe schema evolution before decomposing the runner. |
 | #8 | P1 | Deterministic context fidelity | [#8][i8] | Context lead + independent evaluator | G1 REVISE after frozen B2. B3 DEFERRED pending [re-entry evidence](#b3-re-entry). |
 | #9 | P1 | NCM fidelity | [#9][i9] | Research lead + upstream runtime owner | BLOCKED for genuine inference. Require G1 and upstream runtime/fidelity qualification (G7). |
@@ -1025,6 +1066,7 @@ links for research PRs that deliver evidence while a quality gate stays open.
 [i17]: https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/17
 [i18]: https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/18
 [i25]: https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/25
+[i30]: https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/30
 [a40]: https://github.com/SoloMidMiram/md-mdc-Agents-Skills-MCPs-Kagent-A2A-SubAgents/issues/40
 [a41]: https://github.com/SoloMidMiram/md-mdc-Agents-Skills-MCPs-Kagent-A2A-SubAgents/issues/41
 [a44]: https://github.com/SoloMidMiram/md-mdc-Agents-Skills-MCPs-Kagent-A2A-SubAgents/issues/44
