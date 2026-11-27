@@ -246,7 +246,10 @@ STAGE_SCRIPTS = ("ingest", "verify_ingest", "merge", "categorize", "index")
 
 
 @pytest.fixture
-def isolated_chain(tmp_path: Path) -> tuple[Path, Path, Path]:
+def isolated_chain(tmp_path: Path, monkeypatch) -> tuple[Path, Path, Path]:
+    # These copied drivers exercise ordinary EXEC-01 behavior with synthetic
+    # stages outside the qualified checkout. CI-01 covers the real bridge.
+    monkeypatch.delenv("WORDPIPE_ORIGIN_QUALIFICATION", raising=False)
     scripts = tmp_path / "scripts"
     scripts.mkdir()
     chain = scripts / CHAIN_PS1.name

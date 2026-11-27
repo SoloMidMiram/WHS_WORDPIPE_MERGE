@@ -31,6 +31,25 @@ covers MD-01 (#15) in slot 1 for qualification, CI-01 P1 (#30) in slot 2 for con
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-27 — CI-01 bridge qualification correction
+
+Branch `codex/ci-01-origin-qualification`,
+[PR #32](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/32).
+Reviewed head `9fe049d94fa4ca665560d8e8908742d6127c176c`, base
+`656d96b0dad5412cf58437a0708bc5cedbce047b`. Windows local probes showed
+that the source bridge prepended its checkout and launched a stage under
+a conflicting import configuration. With a clean wheel installed, the
+direct and PowerShell bridges both executed the foreign initializer.
+Their reviewed-source and reviewed-wheel logs are retained with the
+baseline archive. The fix checks the bridge origin before importing
+WordPipe or changing the import path. An origin rejection persists an
+EXEC-01 launch-failure record and leaves the stage unstarted. The normal
+unqualified bridge uses its historical path setup. Copied synthetic
+EXEC-01 fixtures exercise that unqualified path explicitly. The
+executor blobs and frozen MD-01 fixtures are identical to the reviewed
+head. The repository map was checked. Recheck both final hosted runs
+before independent implementation acceptance. Issue #30 retains slot 2.
+
 ### 2026-11-27 — CI-01 P1 implementation review
 
 Branch `codex/ci-01-origin-qualification`, reviewed base

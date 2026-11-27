@@ -56,6 +56,7 @@ def main() -> None:
             "tools/prepare_generic_markdown_chronicle.py",
             "tools/run_topic_report.py",
             "tests/conftest.py",
+            "tests/test_import_origin.py",
             "tests/test_md01_markdown_modes.py",
             "tests/fixtures/md01_structure.md",
             "tests/fixtures/md01_identity_legacy.json",
@@ -97,8 +98,12 @@ def main() -> None:
              "print('MD-01 installed parser:', version('markdown-it-py'))", str(venv)],
             cwd=checkout, env=env, check=True,
         )
+        bridge_cases = [
+            "tests/test_import_origin.py::test_execution_bridge_origin",
+            "tests/test_import_origin.py::test_powershell_bridge_records_foreign_origin_before_ingest",
+        ]
         subprocess.run(
-            [*pytest_command, *pytest_args, paired],
+            [*pytest_command, *pytest_args, *bridge_cases, paired],
             cwd=checkout, env=env, check=True,
         )
 

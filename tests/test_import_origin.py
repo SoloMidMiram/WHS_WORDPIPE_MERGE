@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 import sys
+import sysconfig
 from pathlib import Path
 
 import pytest
@@ -104,26 +105,95 @@ def test_actual_child_rejects_foreign_origin_before_bootstrap(tmp_path, script):
     assert "usage:" not in result.stdout and not imported.exists()
 
 
-def test_powershell_stage_records_foreign_origin_before_ingest(tmp_path):
+def _bridge_conflict(tmp_path):
+    mode = json.loads(os.environ[CONTEXT])["mode"]
+    expected = ROOT / "wordpipe" if mode == "source" else Path(sysconfig.get_path("purelib")) / "wordpipe"
+    foreign = tmp_path / "foreign"
+    marker = tmp_path / "foreign-imported"
+    package = _package(
+        foreign, f"from pathlib import Path\nPath({str(marker)!r}).write_text(__file__, encoding='utf-8')\n"
+        f"__path__.append({str(expected)!r})\n",
+    )
+    (package / "execution.py").unlink()
+    return expected, package, marker
+
+
+def _report_bridge(expected, foreign, marker, *, launcher, result, terminal, native_started):
+    print("CI-01 bridge probe:", json.dumps({
+        "mode": json.loads(os.environ[CONTEXT])["mode"], "launcher": launcher,
+        "interpreter": sys.executable, "cwd": str(ROOT),
+        "expected_package": str(expected), "foreign_candidate": str(foreign / "__init__.py"),
+        "foreign_initializer": marker.read_text(encoding="utf-8") if marker.is_file() else None,
+        "process_exit": result.returncode, "terminal": terminal, "native_started": native_started,
+    }, sort_keys=True), flush=True)
+
+
+@pytest.mark.parametrize("qualification", ["healthy", "foreign", "unqualified"])
+def test_execution_bridge_origin(tmp_path, qualification):
+    expected, foreign, imported = _bridge_conflict(tmp_path)
+    evidence = tmp_path / "terminal.json"
+    response = tmp_path / "response.json"
+    native = tmp_path / "native-started"
+    request = tmp_path / "request.json"
+    request.write_text(json.dumps({
+        "evidence": str(evidence), "response": str(response), "timeout": None,
+        "argv": [sys.executable, "-c", f"from pathlib import Path; Path({str(native)!r}).touch()"],
+    }), encoding="utf-8")
+    env = os.environ.copy()
+    if qualification == "foreign":
+        env["PYTHONPATH"] = str(foreign.parent)
+    elif qualification == "unqualified":
+        env.pop(CONTEXT)
+    result = subprocess.run(
+        [sys.executable, str(ROOT / "pipeline" / "execute_stage.py"), str(request)],
+        cwd=ROOT, env=env, capture_output=True, text=True, timeout=30,
+    )
+    terminal = json.loads(evidence.read_text()) if evidence.is_file() else {}
+    _report_bridge(expected, foreign, imported, launcher=f"python script with {qualification} bridge request",
+                   result=result, terminal=terminal, native_started=native.exists())
+    assert result.returncode == 0, result.stdout + result.stderr  # bridge transport status
+    assert not imported.exists()
+    if qualification == "foreign":
+        assert not native.exists()
+        assert terminal["outcome"] == terminal["trigger"] == "launch_failure"
+        assert terminal["cleanup"] == "not_started" and terminal["native_exit_code"] is None
+        assert terminal["exit_code"] == 125
+        assert "CI-01: foreign origin for wordpipe" in terminal["detail"]
+        assert str(expected).replace("\\", "/") in terminal["detail"]
+        assert (foreign / "__init__.py").as_posix() in terminal["detail"]
+        assert json.loads(response.read_text())["detail"] == terminal["detail"]
+    else:
+        assert terminal["outcome"] == "success"
+        assert native.exists()
+
+
+def test_powershell_bridge_records_foreign_origin_before_ingest(tmp_path):
     shell = shutil.which("pwsh") or shutil.which("powershell")
     if shell is None:
         pytest.skip("requires the platform PowerShell launcher")
-    foreign = tmp_path / "foreign"
-    _package(foreign)
+    expected, foreign, imported = _bridge_conflict(tmp_path)
     raw = tmp_path / "raw"
     raw.mkdir()
     (raw / "one.md").write_text("- **2025-01-01 - Test:** body\n", encoding="utf-8")
     out = tmp_path / "run"
-    env = dict(os.environ, PYTHONPATH=str(foreign),
+    env = dict(os.environ, PYTHONPATH=str(foreign.parent),
                PATH=os.pathsep.join((str(Path(sys.executable).parent), os.environ["PATH"])))
     result = subprocess.run(
         [shell, "-NoProfile", "-NonInteractive", "-File", str(ROOT / "pipeline" / "chain.ps1"),
-         "-InputDir", str(raw), "-OutputDir", str(out)],
+         "-InputDir", str(raw), "-OutputDir", str(out), "-AllowPartialIngest"],
         cwd=ROOT, env=env, capture_output=True, text=True, timeout=30,
     )
+    run = json.loads((out / "run.json").read_text(encoding="utf-8"))
+    reference = run["ingest_files"][0]["execution_evidence"]
+    terminal = json.loads((out / reference).read_text()) if reference else {}
+    native_started = terminal.get("native_exit_code") is not None
+    _report_bridge(expected, foreign, imported, launcher="PowerShell chain to Python bridge",
+                   result=result, terminal=terminal, native_started=native_started)
     assert result.returncode == 1, result.stdout + result.stderr
     assert "CI-01: foreign origin for wordpipe" in result.stdout
+    assert not imported.exists()
+    assert terminal["outcome"] == "launch_failure" and terminal["cleanup"] == "not_started"
+    assert not native_started
     assert not list((out / "normalised").glob("*.md"))
-    run = json.loads((out / "run.json").read_text(encoding="utf-8"))
     assert run["status"] == "failed"
     assert run["stages"][2]["status"] == "not_run"
