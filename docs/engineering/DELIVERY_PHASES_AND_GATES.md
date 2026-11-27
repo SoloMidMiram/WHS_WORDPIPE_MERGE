@@ -98,8 +98,21 @@ exit and successor; no fourth active package.
 | Slot | Current package | Next decision |
 |---|---|---|
 | Slot 1 — document understanding | MD-01 [#15][i15] (admitted) | Qualify intended inputs and disposition reserved framing. G2 remains REVISE. |
-| Slot 2 — installed workflow qualification | Vacant after CI-01 P1 [#30][i30] exit | CLI-01 is proposed for separate admission. Aggregate G5 remains pending. |
-| Independent hardening | SEC-01 [#17][i17] | Complete the public release audit. SAFE-01 [#18][i18] remains READY until recorded exit and explicit admission. |
+| Slot 2 — installed workflow qualification | CLI-01 [#34][i34] (admitted, characterization only) | Reproduce installed-flow and publication failures; propose distribution and safety contract. Separate implementation authorization required; G5 pending. |
+| Slot 3 — independent hardening | SEC-01 [#17][i17] (admitted) | Complete the public release audit. SAFE-01 [#18][i18] remains READY until recorded exit and explicit admission. |
+
+### Parallel avenues and priorities (2026-11-27 review reconciliation)
+
+Avenues are portfolio categories, not extra slots. Four avenues describe parallel possibility, not authorization; Avenue D has no current execution slot. At every slot exit, record whether G1/B3 re-entry evidence exists and the resulting disposition, without automatically admitting B3. Release-critical means required by the existing target, not authorization to implement. P1/P2 labels within packages retain their established meaning.
+
+| Avenue | Current admitted work | Successor queue / dependencies |
+|---|---|---|
+| A — evidence correctness and context fidelity | MD-01 #15 (slot 1) | TIME-01; G3-core fixtures and CORE-01 merge-equivalence characterization ([queued subordinate #36](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/36)); core references and ONT-01. G1 #8 remains release-critical and B3 deferred pending re-entry; reassess at slot exits. NLP-01 scope supports declared parsing/corpus criteria; full Flowers and ONT-02 later. |
+| B — distributable Chronicle and runtime | CLI-01 #34 (slot 2, characterization only) | Exact-candidate clean install and publication safety; EXEC-01 and CI-01 P1 complete within scope; CI-01 P2 deferred. |
+| C — public assurance and independent DOCX | SEC-01 #17 (slot 3) | SAFE-01 #18 after audit exit and admission; DOCX-01 capability/error contract; INT-01 external consumer evidence. DOCX is not a v0.2 Chronicle gate. |
+| D — future knowledge and optional AI | None | CLAIM-01, CITE-01, PERF-01, conditional STORE-01; #9–#11 gated or queued. No inference, storage redesign or fourth slot. |
+
+Both submitted reviews were reconciled against main `c0a6d1fac7dcf9c51021e6a8c62ad462e255389a` and its [five-job main CI](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45948321058). Static observations are recorded in the [optimization map](OUTSTANDING_WORK_AND_OPTIMIZATION_MAP.md); no new runtime tests, security audit or B2 rescoring were performed. G0 ACCEPT, G1/G2 REVISE, G3-core/G4-core evidence pending, aggregate G5 pending; v0.2 NO-GO. G3-core and G4-core are mandatory v0.2 work, unlike G3-full/G4-full. Do not equate subjective maturity scores with qualification.
 
 **Slot 2 release.** [PR #20](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/20) integrated at
 `c78c6e90d96ee8e9f07e08b14e74de1bd657de93`, recording the B3 DEFER exit.
@@ -114,6 +127,10 @@ CORP-01 [#16][i16] can prepare its rubric offline once admitted. Technical
 independence allows work to start with an available slot. Gated, queued and
 deferred entries in the [issue map](#backlog-activation-and-synchronization)
 are outside the current execution queue.
+
+### Qualification exception — 2026-11-27
+
+The documentation-only candidate `ef73b3314838af79c0b9629cd1641c11971aa527` had two Windows Python 3.11 integration job failures: [PR run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45952209272), `test_two_second_deadline_with_descendant_held_pipes[True]`; [push run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45952185451), `test_direct_chain_ctrl_c_preserves_terminal_cancellation`. Both reported 439 passed, 8 skipped, 1 failed. Preserve logs; characterize fixture readiness/timing versus actual execution/ownership failure on the exact baseline and candidate. Do not assume flakiness or weaken thresholds. Prior EXEC-01 exit remains a historical scoped decision; current qualification is unresolved. No automatic reopening or additional admission. PR acceptance is REVISE pending disposition and fresh exact-head checks.
 
 ## Phase 1 — Context fidelity
 
@@ -773,7 +790,7 @@ workflow and supported wrappers from a clean non-editable wheel on Windows
 and Linux. Run from neutral directories with verified installed origins.
 Pin the candidate and wheel digests. Use deterministic fixtures to verify
 stage progression, expected artifacts and status for success and failure.
-Keep CLI-01 queued until explicit slot-2 admission.
+The above proposal is historical. On 2026-11-27 CLI-01 [#34][i34] was admitted to slot 2 for characterization only, after CI-01 exit. Compare packaged module/console driver, explicitly shipped driver files and separately versioned/checksummed bundle; no distribution choice has been accepted. Reproduce same-path and filesystem aliases, output discovery collisions, interrupted and multi-artifact writes, stale outputs and failure/recovery on disposable fixtures. Require source-byte preservation and a coherent publication contract; individual replaces do not make a multi-file transaction atomic. Submit the exact baseline and proposed contract before requesting implementation authorization. Keep G5 pending.
 
 ### SAFE-01 preparation (2026-11-26)
 
@@ -1006,11 +1023,11 @@ Counts (not GitHub issue numbers):
 | Bucket | Count |
 |---|---:|
 | Research issues #8–#11 | 4 |
-| Engineering issues mapped to WPs (#14–#18) | 5 |
-| WPs requiring future GitHub issues on admission | 15 |
+| Engineering WPs with owner issues (#14–#18, #25, #30, #34) | 8 |
+| WPs requiring future GitHub issues on admission | 12 |
 | **Total tracked items** | **24** |
 
-The GitHub issue column is the WP-to-issue mapping. To-create means
+The GitHub issue column is the WP-to-issue mapping. CORE-02 #36 is a subordinate characterization tracker of CORE-01/G3-core, not a 25th package or a separate admission; CORE-01 still requires its owner on admission. To-create means
 search and reuse before opening an issue; no number is reserved.
 Planning statuses reflect the recorded G0 acceptance and queue admission; research and release qualification remain open. The repository
 maintainer (SoloMidMiram) is accountable for every work package; the
@@ -1026,19 +1043,19 @@ technical evidence and historical remediation.
 | TIME-01 | P1 | Temporal evidence and date semantics | To-create | Chronicle implementer | Queued. Start after MD-01 establishes spans. Verify all date roles, locators and explicit unknowns (G2). |
 | CORP-01 | P1 | Flowers semantic corpus acceptance | [#16][i16] | Corpus lead + independent reviewers | Queued. Prepare rubric offline. Score after G2 decisions, frozen taxonomy and authorization of the local inventory (G3). |
 | NLP-01 | P1 | Multilingual normalization and taxonomy | To-create | NLP lead + reviewer | Queued. Define annotation, then measure normalized Persian/English keyword and phrase behavior, offsets and per-label results (G2, G3). |
-| CORE-01 | P1 | Reference builder and manual comparison | To-create | Chronicle implementer | Queued. Reuse verified survivor keys for Phase 9c. Require resolvable links, repeatability and an evidenced or explicitly blocked comparison (G4). |
+| CORE-01 | P1 | Reference builder and manual comparison | To-create | Chronicle implementer | Queued. First characterize merge equivalence via subordinate CORE-02 [#36](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/36) with G3-core synthetic fixtures (same date/body, distinct title, indentation/code/Markdown and survivor lineage); retain current identity until approved compatibility decision. Reuse verified survivors, resolvable links, repeatability and manual comparison disposition (G4). |
 | ONT-01 | P1 | Project ontology population | To-create | Ontology implementer | Queued. Map verified Phase 13–17 runs to existing project entities. Verify stable IDs, schema compatibility and evidence references (core G4). |
 | ONT-02 | P1 | Semantic concepts and relationships | To-create | Ontology lead + reviewer | Gated by ONT-01, NLP-01 and the Phase 15 schema decision. Verify versioned migration and evidence-backed relations (full G4). |
-| SAFE-01 | P1 | Atomic DOCX publication | [#18][i18] | DOCX implementer | Ready after SEC-01 in slot 3. Prove failure preservation and cleanup through installed paths on Windows and Linux (DOCX readiness). |
+| SAFE-01 | P1 | Atomic DOCX publication | [#18][i18] | DOCX implementer | READY after SEC-01 in slot 3. Prove failure preservation, TOC commit point and unique invocation-owned flatten staging/cleanup through installed Windows/Linux paths (DOCX readiness). |
 | EXEC-01 | P1 | Bounded execution and cancellation | [#25][i25] | Runtime implementer | Completed after verified exit. Slot 2 released. Aggregate G5 remains pending. |
 | SEC-01 | P1 | Public repository and dependency audit | [#17][i17] | Release/security maintainer | Admitted in slot 3. Record current ref, dependency, workflow and release-artifact coverage and disposition (G5). |
-| DOCX-01 | P2 | Flattener and capability contracts | To-create | DOCX implementer | Queued. Characterize supported COM/XML dependencies and experimental flags. Verify installation and capability reporting (DOCX readiness). |
+| DOCX-01 | P2 | Flattener and capability contracts | To-create | DOCX implementer | Queued. Characterize COM/XML dependencies, experimental flags and legacy process_docx_v3_simple error propagation; preserve tuple API pending explicit compatibility decision. Verify install and capability reporting (DOCX readiness). |
 | INT-01 | P2 | TraceLedger consumer validation | To-create | Integration lead + external consumer | Queued. Require a real available consumer and verify library, EventSink and capability contracts (external consumer acceptance). |
 | CLAIM-01 | P2 | Claim lifecycle and contradictions | To-create | Knowledge lead + reviewer | Gated by grounded references and the semantic schema decision. Verify evidence, temporal scope and historical preservation (G6). |
 | CITE-01 | P2 | Research citation model | To-create | Knowledge implementer | Queued. Build on CORE-01 source locators. Verify per-claim citations resolve and survive replay (G6). |
 | PERF-01 | P2 | Chronicle scaling benchmark | To-create | Benchmark implementer | Queued. Measure wall time and peak memory at 100, 1,000, 10,000 and 100,000 events on pinned fixtures (G6). |
 | STORE-01 | P2 | Rebuildable SQLite projection | To-create | Storage implementer | Gated by demonstrated query friction. Use PERF-01 characterization where relevant. Require reproducible rebuilds from canonical artifacts and measured benefit (G6). |
-| CLI-01 | P1 | Installed Chronicle CLI | To-create | Release implementer | Queued. Exercise a clean wheel install and documented complete Chronicle flow on Windows and Linux, retaining wrapper compatibility (G5). |
+| CLI-01 | P1 | Installed Chronicle CLI and evidence-safe publication | [#34][i34] | Release implementer | Admitted slot 2, characterization only. Qualify driver distribution, clean installed workflow and collision/failure safety on Windows/Linux; separate implementation authorization (G5). |
 | CI-01 | P1/P2 | Source-test import isolation and installed origins | [#30][i30] | CI/release implementer | P1 complete on Windows and Linux within the accepted scope. Slot 2 released. P2 profile split and duplicate scanner deferred. Aggregate G5 remains pending. |
 | REF-01 | P3 | Conditional refactoring and retirement | To-create | Subsystem maintainer | Deferred. Characterize consumer use before wrapper retirement. Require a third-adapter coupling or unsafe schema evolution before decomposing the runner. |
 | #8 | P1 | Deterministic context fidelity | [#8][i8] | Context lead + independent evaluator | G1 REVISE after frozen B2. B3 DEFERRED pending [re-entry evidence](#b3-re-entry). |
@@ -1103,3 +1120,5 @@ links for research PRs that deliver evidence while a quality gate stays open.
 [a41]: https://github.com/SoloMidMiram/md-mdc-Agents-Skills-MCPs-Kagent-A2A-SubAgents/issues/41
 [a44]: https://github.com/SoloMidMiram/md-mdc-Agents-Skills-MCPs-Kagent-A2A-SubAgents/issues/44
 [a45]: https://github.com/SoloMidMiram/md-mdc-Agents-Skills-MCPs-Kagent-A2A-SubAgents/issues/45
+
+[i34]: https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/34
