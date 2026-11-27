@@ -3,10 +3,14 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import shutil
+import signal
 import subprocess
+import sys
 import textwrap
+import time
 from pathlib import Path
 
 import pytest
@@ -14,10 +18,12 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[1]
 CHAIN_PS1 = REPO_ROOT / "pipeline" / "chain.ps1"
 
-# Existing Windows integration fixtures require python.exe. The launch
-# failure test and MD-01 paired runs also exercise the native Linux launcher.
 _POWERSHELL: str | None = shutil.which("pwsh") or shutil.which("powershell")
-_PYTHON_EXE: str | None = shutil.which("python.exe")
+_PYTHON_EXE: str | None = shutil.which("python.exe" if os.name == "nt" else "python")
+
+
+def _file_digests(root):
+    return {p.relative_to(root): hashlib.sha256(p.read_bytes()).digest() for p in root.rglob("*") if p.is_file()}
 
 
 def _read_evidence(out_dir: Path) -> dict:
@@ -41,8 +47,8 @@ def _run_chain(
     _POWERSHELL is None or _PYTHON_EXE is None,
     reason="chain.ps1 requires PowerShell and python.exe",
 )
-def test_chain_allow_partial_ingest_reused_output_dir(tmp_path: Path) -> None:
-    """A partial run over a reused output dir merges only fresh normalised files."""
+def test_chain_allow_partial_ingest_and_previous_output_preservation(tmp_path: Path) -> None:
+    """A fresh partial attempt ignores seeded stale input and preserves the earlier run."""
     raw_dir = tmp_path / "raw"
     raw_dir.mkdir()
     out_dir = tmp_path / "out"
@@ -71,6 +77,8 @@ def test_chain_allow_partial_ingest_reused_output_dir(tmp_path: Path) -> None:
     assert merged.exists(), "Run 1 should produce merged.md"
     assert "Alpha Outage" in merged.read_text(encoding="utf-8")
     first_id = _read_evidence(out_dir)["run_id"]
+    first_dir = out_dir
+    first_hashes = _file_digests(first_dir)
 
     # Run 2: alpha is now undated (ingest fails) and beta is a new valid file.
     alpha.write_text(
@@ -89,6 +97,17 @@ def test_chain_allow_partial_ingest_reused_output_dir(tmp_path: Path) -> None:
         """),
         encoding="utf-8",
     )
+    collision = _run_chain(
+        ["-InputDir", str(raw_dir), "-OutputDir", str(first_dir), "-SkipCategorize"],
+        cwd=REPO_ROOT,
+    )
+    assert collision.returncode == 1
+    assert "fresh OutputDir" in collision.stderr
+    assert _file_digests(first_dir) == first_hashes
+    out_dir = tmp_path / "partial"
+    (out_dir / "normalised").mkdir(parents=True)
+    shutil.copyfile(normalised_alpha, out_dir / "normalised" / "alpha.md")
+    merged = out_dir / "merged.md"
     second = _run_chain(
         ["-InputDir", str(raw_dir), "-OutputDir", str(out_dir),
          "-AllowPartialIngest", "-SkipCategorize", "-SkipIndex"],
@@ -113,20 +132,24 @@ def test_chain_allow_partial_ingest_reused_output_dir(tmp_path: Path) -> None:
     ]
     assert "alpha outage body" not in (out_dir / "run.json").read_text(encoding="utf-8")
 
+    partial_hashes = _file_digests(out_dir)
+    failed_dir = tmp_path / "failed"
     verified = _run_chain(
-        ["-InputDir", str(raw_dir), "-OutputDir", str(out_dir),
+        ["-InputDir", str(raw_dir), "-OutputDir", str(failed_dir),
          "-AllowPartialIngest", "-Verify", "-SkipCategorize"],
         cwd=REPO_ROOT,
     )
     assert verified.returncode == 2, verified.stdout + verified.stderr
     assert "Verification failed" in verified.stdout
-    failed = _read_evidence(out_dir)
+    failed = _read_evidence(failed_dir)
     assert failed["run_id"] != partial["run_id"]
     assert failed["exit_code"] == 2
     assert failed["merge_inputs"] == []
     assert [stage["status"] for stage in failed["stages"]] == [
         "partial", "failed", "not_run", "skipped", "skipped",
     ]
+    assert _file_digests(out_dir) == partial_hashes
+    assert _file_digests(first_dir) == first_hashes
 
 
 @pytest.mark.skipif(
@@ -229,6 +252,7 @@ def isolated_chain(tmp_path: Path) -> tuple[Path, Path, Path]:
     chain = scripts / CHAIN_PS1.name
     shutil.copyfile(CHAIN_PS1, chain)
     shutil.copyfile(CHAIN_PS1.with_name("chain_evidence.ps1"), scripts / "chain_evidence.ps1")
+    shutil.copyfile(CHAIN_PS1.with_name("execute_stage.py"), scripts / "execute_stage.py")
     raw_dir = tmp_path / "raw"
     raw_dir.mkdir()
     (raw_dir / "input.md").write_text("fixture", encoding="utf-8")
@@ -241,6 +265,201 @@ def isolated_chain(tmp_path: Path) -> tuple[Path, Path, Path]:
             encoding="utf-8",
         )
     return chain, raw_dir, tmp_path / "out"
+
+
+@pytest.mark.skipif(_POWERSHELL is None or _PYTHON_EXE is None, reason="requires native PowerShell and Python")
+def test_direct_chain_timeout_skips_dependents_even_in_partial_mode(isolated_chain):
+    chain, raw_dir, out_dir = isolated_chain
+    (chain.parent / "ingest.py").write_text("import time\ntime.sleep(7)\n", encoding="utf-8")
+    result = _run_chain(
+        ["-InputDir", str(raw_dir), "-OutputDir", str(out_dir),
+         "-StageTimeoutSeconds", "2", "-AllowPartialIngest"],
+        cwd=raw_dir.parent, script=chain,
+    )
+    assert result.returncode == 1, result.stdout + result.stderr
+    summary = _read_evidence(out_dir)
+    invocation = summary["ingest_files"][0]
+    terminal = json.loads((out_dir / invocation["execution_evidence"]).read_text(encoding="utf-8"))
+    assert terminal["outcome"] == terminal["trigger"] == "timeout"
+    assert terminal["cleanup"] == "verified"
+    assert 2 <= terminal["elapsed_seconds"] <= 7
+    assert summary["stages"][2]["status"] == "not_run"
+    assert not (raw_dir.parent / "merge").exists()
+
+
+@pytest.mark.skipif(_POWERSHELL is None or _PYTHON_EXE is None, reason="requires native PowerShell and Python")
+@pytest.mark.parametrize("expires", [False, True])
+def test_inherited_chain_waits_for_redirected_descendant(isolated_chain, monkeypatch, expires):
+    from wordpipe.execution import Cleanup, ExecutionPolicy, Outcome
+    from tools.run_topic_report import run_stage
+
+    chain, raw_dir, out_dir = isolated_chain
+    monkeypatch.chdir(raw_dir.parent)
+    artifact = raw_dir.parent / "stage-artifact"
+    ready = raw_dir.parent / "worker-ready"
+    leader_exited = raw_dir.parent / "leader-exited"
+    completed = raw_dir.parent / "worker-completed"
+    dependent = raw_dir.parent / "dependent-started"
+    early_receipt = raw_dir.parent / "ingest-reported-before-completion"
+    worker = chain.parent / "worker.py"
+    worker.write_text(
+        textwrap.dedent(f"""\
+            import sys
+            import time
+            from pathlib import Path
+
+            leader = int(sys.argv[1])
+            if sys.platform == 'win32':
+                import _winapi
+                handle = _winapi.OpenProcess(0x00100000, False, leader)  # SYNCHRONIZE
+
+                def leader_alive():
+                    return _winapi.WaitForSingleObject(handle, 0) != _winapi.WAIT_OBJECT_0
+            else:
+                stat = Path(f'/proc/{{leader}}/stat')
+
+                def leader_alive():
+                    try:
+                        return stat.read_text().rsplit(')', 1)[1].split()[0] not in ('Z', 'X')
+                    except (FileNotFoundError, ProcessLookupError):
+                        return False
+
+            artifact = Path({str(artifact)!r})
+            artifact.write_text('working')
+            Path({str(ready)!r}).touch()
+            limit = time.monotonic() + 2
+            while leader_alive():
+                assert time.monotonic() < limit, 'fixture leader did not exit'
+                time.sleep(0.01)
+            if sys.platform == 'win32':
+                _winapi.CloseHandle(handle)
+            Path({str(leader_exited)!r}).touch()
+            evidence_dir = Path({str(out_dir / "exec-01")!r})
+            until = time.monotonic() + {7 if expires else 0.6}
+            while time.monotonic() < until:
+                if Path({str(dependent)!r}).exists():
+                    artifact.write_text('dependent entered early')
+                    raise SystemExit(0)
+                time.sleep(0.01)
+                artifact.write_text('working')
+            if any(evidence_dir.glob('*/1.json')):
+                Path({str(early_receipt)!r}).touch()
+            artifact.write_text('finished')
+            Path({str(completed)!r}).touch()
+            """),
+        encoding="utf-8",
+    )
+    # Keep the leader alive until the worker can observe its exit reliably.
+    (chain.parent / "ingest.py").write_text(
+        textwrap.dedent(f"""\
+            import os, subprocess, sys, time
+            from pathlib import Path
+
+            output = Path(sys.argv[sys.argv.index('--output') + 1])
+            output.write_text('synthetic normalised input')
+            child = subprocess.Popen(
+                [sys.executable, '-S', {str(worker)!r}, str(os.getpid())],
+                stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            )
+            ready = Path({str(ready)!r})
+            limit = time.monotonic() + 2
+            while not ready.exists():
+                assert child.poll() is None and time.monotonic() < limit, 'worker was not ready'
+                time.sleep(0.01)
+            """),
+        encoding="utf-8",
+    )
+    (chain.parent / "verify_ingest.py").write_text(
+        "from pathlib import Path\n"
+        f"Path({str(dependent)!r}).touch()\n"
+        f"assert Path({str(completed)!r}).exists(), 'premature verification'\n"
+        f"assert Path({str(artifact)!r}).read_text() == 'finished', 'premature verification'\n",
+        encoding="utf-8",
+    )
+    receipt = raw_dir.parent / "pipeline.json"
+    # The inherited deadline includes shell and bridge startup. The executor's
+    # separate G5 fixtures pin the two-second requirement without that startup.
+    timeout = 4 if expires else 8
+    result = run_stage(
+        [_POWERSHELL, "-NoProfile", "-NonInteractive", "-File", str(chain), "-InputDir", str(raw_dir),
+         "-OutputDir", str(out_dir), "-Verify", "-SkipCategorize", "-SkipIndex"],
+        "pipeline: chain.ps1", policy=ExecutionPolicy(timeout=timeout),
+        evidence_path=receipt, publish_owner=True,
+    )
+    terminal = json.loads(receipt.read_text(encoding="utf-8"))
+    assert terminal["cleanup"] == Cleanup.VERIFIED
+    assert ready.exists() and leader_exited.exists(), result["output"]
+    if expires:
+        assert terminal["outcome"] == terminal["trigger"] == Outcome.TIMEOUT, result["output"]
+        assert timeout <= terminal["elapsed_seconds"] <= timeout + 5
+        assert not dependent.exists()
+        assert not (raw_dir.parent / "merge").exists()
+        assert not completed.exists()
+    else:
+        assert result["exit_code"] == 0, result["output"]
+        assert completed.exists() and dependent.exists() and artifact.read_text() == "finished"
+        assert not early_receipt.exists(), "ingest reported completion before the descendant finished"
+        invocation = _read_evidence(out_dir)["ingest_files"][0]
+        evidence = json.loads((out_dir / invocation["execution_evidence"]).read_text(encoding="utf-8"))
+        assert evidence["outcome"] == Outcome.SUCCESS
+        assert evidence["policy"]["ownership"] == "inherited"
+        assert evidence["policy"]["has_deadline"]
+        assert evidence["cleanup"] == Cleanup.INHERITED
+
+
+@pytest.mark.skipif(_POWERSHELL is None or _PYTHON_EXE is None, reason="requires native PowerShell and Python")
+def test_direct_chain_ctrl_c_preserves_terminal_cancellation(isolated_chain):
+    chain, raw_dir, out_dir = isolated_chain
+    ready = raw_dir.parent / "worker-ready"
+    (chain.parent / "ingest.py").write_text(
+        f"from pathlib import Path\nimport time\nPath({str(ready)!r}).touch()\ntime.sleep(7)\n",
+        encoding="utf-8",
+    )
+    if os.name == "nt":
+        # Deliver a real Ctrl+C only to the fixture's private, hidden console.
+        shell = shutil.which("powershell")
+        assert shell is not None
+        startup = subprocess.STARTUPINFO(dwFlags=subprocess.STARTF_USESHOWWINDOW, wShowWindow=0)
+        options = {"creationflags": subprocess.CREATE_NEW_CONSOLE, "startupinfo": startup}
+    else:
+        shell = _POWERSHELL
+        options = {"start_new_session": True}
+    with subprocess.Popen(
+        [shell, "-NoProfile", "-File", str(chain), "-InputDir", str(raw_dir),
+         "-OutputDir", str(out_dir), "-AllowPartialIngest"],
+        cwd=raw_dir.parent, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **options,
+    ) as process:
+        try:
+            readiness_limit = time.monotonic() + 6
+            while not ready.exists() and process.poll() is None and time.monotonic() < readiness_limit:
+                time.sleep(.01)
+            assert ready.exists()
+            start = time.monotonic()
+            if os.name == "nt":
+                code = (
+                    "import ctypes,time;k=ctypes.WinDLL('kernel32',use_last_error=True);"
+                    "k.FreeConsole();"
+                    f"assert k.AttachConsole({process.pid}),ctypes.get_last_error();"
+                    "assert k.SetConsoleCtrlHandler(None,True),ctypes.get_last_error();"
+                    "assert k.GenerateConsoleCtrlEvent(0,0),ctypes.get_last_error();time.sleep(.1)"
+                )
+                subprocess.run([sys.executable, "-S", "-c", code], check=True, timeout=3,
+                               creationflags=subprocess.CREATE_NO_WINDOW)
+            else:
+                os.killpg(process.pid, signal.SIGINT)
+            stdout, stderr = process.communicate(timeout=5)
+            assert process.returncode != 0, stdout + stderr
+            assert time.monotonic() - start <= 5
+        finally:
+            if process.poll() is None:
+                process.kill()
+                process.wait(timeout=2)
+    summary = _read_evidence(out_dir)
+    assert summary["status"] == "failed"
+    assert summary["stages"][2]["status"] == "not_run"
+    stage_evidence, = (out_dir / "exec-01").rglob("*.json")
+    terminal = json.loads(stage_evidence.read_text(encoding="utf-8"))
+    assert terminal["outcome"] == "cancelled" and terminal["cleanup"] == "verified"
 
 
 @pytest.mark.skipif(

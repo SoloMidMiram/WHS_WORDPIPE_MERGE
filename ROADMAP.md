@@ -31,6 +31,95 @@ covers MD-01 (#15) in slot 1 for qualification, EXEC-01 (#25) in slot 2 for cont
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-27 — EXEC-01 inherited deadline fixture correction
+
+Branch `codex/exec-01-bounded-execution`, [PR #27](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/27).
+The [maintainer's production acceptance](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/25#issuecomment-7202211892)
+pins head `d23d1c52c628938be287386b6945fca516309729` and base
+`8dac70e60a827e608f3eb46ab046473f56f57a52`. The
+[passing PR run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45885071366)
+and Windows push failures in [attempt one](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45885064062/job/140133605555)
+and [attempt two](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45885064062/job/140143245482)
+remain separate evidence. Deadline cleanup can leave the worker's repeatedly
+truncated artifact empty, so the fixture records write-once readiness after
+the initial write, leader exit while the worker is active, and completion
+after the final write. Verification requires the completion marker and
+finished payload. The four- and eight-second cases and the separate
+two-second G5 checks retain their original deadlines. The tracked diff
+contains only the fixture and this evidence entry. The repository map was checked.
+
+Windows Python 3.10 with Windows PowerShell ran both cases ten times on the
+final fixture. Both passed on attempts 4, 5, 9 and 10. Attempts 1, 2, 3, 6
+and 8 each had one deadline-related case failure. Both cases failed on
+attempt 7 before readiness or confirmed leader exit. Seven of ten paired
+attempts passed on the preliminary fixture. None of the failures came from
+interrupted intermediate bytes. The final Windows Python 3.11 pair passed.
+With the final fixture on defective production head `d4ded46522f63e4a288fde692eb32def408b3453`,
+Windows detected both premature ingest completion and premature verification.
+Local WSL expired during shell or process startup in both focused cases.
+Its full preliminary suite reported 431 passed, four skipped and three
+deadline or readiness failures. The preliminary Windows 3.11 full suite
+reported 429 passed, eight skipped and one readiness failure. The Linux
+installed-wheel MD-01 paired replay and five governance checks passed.
+Use fresh push and PR CI on the replacement SHA for the next acceptance
+decision. Issue #25 stays open in slot 2 with G5 pending.
+
+### 2026-11-26 — EXEC-01 final acceptance corrections
+
+Branch `codex/exec-01-bounded-execution`, [draft PR #27](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/27).
+Base `8dac70e60a827e608f3eb46ab046473f56f57a52`, reviewed head
+`d4ded46522f63e4a288fde692eb32def408b3453`. Regression-only head
+`00444e98de60d74c10ffc82ce6f098cf0097ef1a` reproduced the findings
+against the original production code. On Windows, the runner attempted
+to decode malformed metrics after summarizer timeout and cancellation.
+PowerShell entered verification while an ordinary ingest descendant
+was still writing after its leader exited. The
+[regression-only hosted run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45884165557)
+retains the failing baseline.
+
+Reviewed correction `8c1f1a886f847ea477d96df278e4b044e470f606` routes
+summarization execution failures through failed-run reporting and excludes
+their raw metrics from future trend comparisons. A completed native
+nonzero summarizer keeps its historical reporting path and nonzero CLI
+verdict. A dedicated Linux bridge subreaps stage descendants, and the
+Windows bridge queries a nested accounting job after assignment before
+resume. The enclosing owner alone cancels and cleans up the tree.
+Inherited evidence continues to show `outer_owner`, while the outer
+terminal record reports verified cleanup. With an enclosing deadline of
+four seconds, the real PowerShell fixture exercises expiry after launch
+without making shell startup part of the separate G5 two-second fixture.
+Ten focused Windows tests passed, including the new sequenced and
+expired descendant cases. The repository map was checked. Recheck
+exact-head Windows and Linux suites and both MD-01 installed-wheel
+replays before the maintainer decides the revised implementation.
+Issue #25 remains open in slot 2 and G5 remains pending.
+
+### 2026-11-26 — EXEC-01 bounded runtime implementation review
+
+Branch `codex/exec-01-bounded-execution`,
+[draft PR #27](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/27).
+Authorized base `8dac70e60a827e608f3eb46ab046473f56f57a52`, tree
+`df6633b3c88116cc0c1552e994a412b2a935e7b2`. Reviewed implementation
+parent `cfa635eef5e82e5d8631fa71eef67fee5197fb6a`. [Issue #25](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/25#issuecomment-7199329907)
+records authorization. The Python runner and direct PowerShell chain
+use the shared executor, retain legacy exit handling and persist terminal
+stage evidence. The repository map includes the new entry points.
+The [first candidate run](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45873842102)
+passed its Windows jobs and exposed a Linux inherited-session regression.
+The follow-up permits the kernel-verified session leader to use the
+owner's context and tests observable ownership loss. Recheck all
+platform results on the published head. Issue #25 retains slot 2 and G5
+remains pending independent acceptance.
+
+Reviewed parent `8b1471fbf2b830d0ef1b14ac11c22313641dd992` passed all
+five [hosted jobs](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45876010509).
+A private Windows console probe then reproduced an operator-facing
+Ctrl+C failure. The owned worker exited, but PowerShell returned 0 and
+the stage record was missing. The follow-up waits on the bridge
+directly, retains cancellation evidence and returns nonzero. The
+local reference probe observed exit 1 and verified cleanup. Recheck
+real console cancellation and both hosted platforms on the final head.
+
 ### 2026-11-26 — EXEC-01 slot-2 admission and contract boundary
 
 Branch `codex/exec-01-admission-contract`, PR number unassigned at the
