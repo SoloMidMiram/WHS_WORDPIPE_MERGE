@@ -76,6 +76,88 @@ legacy code and secrets. Inspect those only for an explicit evidence question;
 keep restricted text local. Reuse a run by manifest/hash/SHA identity, not by
 folder name. Read the relevant small section instead of entire historical files.
 Cache derived facts in the dated roadmap with locators and invalidation
-conditions. The helper performs no model/API calls; no token savings percentage
-has been measured. Update this map when routes or ownership change, and record
-the check in every pre-merge roadmap entry.
+conditions. The helper performs no model/API calls. Update this map when routes
+or ownership change, and record the check in every pre-merge roadmap entry.
+
+## Pre-pilot engineering efficiency
+
+Use a revision-bound operational capsule as the starting context for engineering
+work. Use up to 2,500 tokens initially, with 1,500–2,500 as the budget range for
+multi-step work and less for small tasks. Record:
+
+- Task and scope, local branch and exact head/base, last accepted revision, and
+  PR state with its verification time when relevant.
+- Active ownership, constraints, decisions and blockers relevant to the task.
+- Affected contracts, checks, evidence locators, and conditions that invalidate
+  each reused result. Link the authoritative source for each material fact.
+- Next action and acceptance decision.
+
+Refresh the capsule when head, base, ownership or an evidence dependency
+changes. Keep the delivery plan, issue records and historical roadmap as the
+sources of record. Review deltas from the last accepted SHA. Retrieve symbols
+and failing assertions on demand. Use deterministic tools for inventories,
+hashes and checks. Keep raw logs and detailed receipts in evidence artifacts.
+Review completion, by itself, does not trigger a second review.
+
+### Engineering measurement
+
+Keep one usage receipt per bounded task. Record task class, revisions, verdict,
+attempts and reviews, token telemetry source, cached and uncached input, output,
+reasoning, model calls, repeated retrievals, avoidable iterations and broad scans. Count repeated
+retrieval when an unchanged evidence locator is fetched again for the same
+decision. Record final report length using a consistent tokenizer or, if
+unavailable, characters as a separate metric. Include retries and review turns
+when attributing usage to a task. Mark missing fields unavailable. Keep
+estimates separate and retain only aggregate metadata from private session logs.
+
+Compare like task classes and acceptance coverage. Use observed tokens across
+the measured tasks divided by accepted results, including the usage of failed
+attempts in the numerator. Report total and uncached input separately and record
+sample size, model and cache conditions where available. The initial reference
+sample is one recorded Codex turn per row, measured from cumulative telemetry
+deltas between turn boundaries on 2026-11-27. Additional turns and unreported
+usage remain outside this sample.
+
+| Reference turn | Cached input | Uncached input | Output | Reasoning within output | Total tokens |
+|---|---:|---:|---:|---:|---:|
+| PR #27 integration | 5,552,640 | 20,122 | 6,211 | 617 | 5,578,973 |
+| PR #28 documentation integration and exit | 8,110,336 | 29,313 | 8,197 | 1,142 | 8,147,846 |
+| PR #32 integration and exit | 12,688,512 | 421,035 | 9,013 | 804 | 13,118,560 |
+| PR #35 independent review, REVISE | 3,334,016 | 478,350 | 5,005 | 328 | 3,817,371 |
+
+Uncached input is reported input minus cached input. The sampled Codex
+telemetry includes reasoning within output, so count it once in the total.
+For other sources, record how reasoning is counted. This sample measures recorded model usage and
+does not establish quota consumption, billing, or achieved savings. Proposed
+targets after matched baseline collection are 40% fewer tokens per accepted
+task, 70% fewer repeated retrievals, 60% shorter reports, 50% fewer unnecessary
+review iterations and zero unnecessary full scans. Require zero protected
+information loss and zero reduction in regression coverage. Maintain all
+correctness, security, provenance and acceptance requirements.
+
+### Runtime pilot measurement
+
+Once the pilot is separately authorized, run the same questions on frozen
+documents and an independently scored answer set in three modes. A loads raw
+Markdown, B uses Chronicle output and indexes, and C uses eligible
+provenance-bound targeted evidence. Pin revisions, model settings and scoring
+rules. Include tool results as reflected in model telemetry, retry and fallback
+calls, elapsed time, correctness and actual cost where available. Report
+acceptance rates and total tokens per correct accepted result, including failed
+attempts in the total. Record protected facts and supporting references in the
+scoring rubric. A zero-acceptance arm has no defined per-acceptance ratio.
+
+Engineering efficiency is cross-cutting. This measurement plan leaves the
+execution queue, G1 qualification, B3 deferral and release decisions with
+their existing authorities.
+
+### Evidence routing
+
+Publish approved pilot statistics in a topic-named directory under
+docs/engineering/pilots. Keep the input identities, run registration,
+measurement units and sanitized receipts together. Track measurement
+qualification and workload-specific limits through
+[issue #38](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/38).
+Keep raw corpus copies, generated output and detailed logs in the local
+workspace unless separately approved for publication. Stage named paths
+after reviewing the full staged inventory and its source hashes.

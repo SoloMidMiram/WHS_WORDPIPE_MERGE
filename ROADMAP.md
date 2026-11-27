@@ -35,6 +35,24 @@ See the [authoritative avenue and queue mapping](docs/engineering/DELIVERY_PHASE
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-27 — Engineering efficiency and evidence routing review
+
+Reviewed PR #37 on `codex/pre-pilot-token-efficiency`, head
+`bb9381989e119749ad175b787ebb47f68a50649d`, against main
+`1295ad15cc085732391a6d1dfe8069de32752ad1`. The tracked change inventory is
+limited to the WHS context-loop skill and repository map before this entry.
+The map was checked for evidence routing. Topic statistics remain owned by
+PR #39 and #38, with MD-01 characterization recorded in #15.
+
+GitHub reported [push CI success](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45994509732)
+and a [Windows source-suite failure](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45994515664)
+in the PR run. The retained job log recorded the readiness assertion before
+Ctrl+C. The [bounded diagnostic disposition](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/25#issuecomment-7219759789)
+records healthy instrumented controls and an unresolved historical failure.
+Preserve the original checks and registered thresholds. Maintainer review of
+the final exact head and explicit CI exception disposition remain the
+integration boundary. No new production or release acceptance is recorded.
+
 ### 2026-11-27 — Review follow-up and qualification exception
 
 Draft PR #35's initial documentation head `ef73b3314838af79c0b9629cd1641c11971aa527` failed two distinct Windows execution tests ([PR CI](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45952209272), [push CI](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/45952185451)). Preserve logs and investigate before acceptance; no demonstrated runtime change in this PR, no waiver or automatic reopening of EXEC-01. [CORE-02 #36](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/36) tracks the queued merge-equivalence characterization within CORE-01/G3-core, not a new delivery package or slot. G1 remains a release blocker; reassess at every slot exit. No implementation or release authorization.
