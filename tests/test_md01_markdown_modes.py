@@ -211,10 +211,6 @@ def without_run_id(value):
     return value
 
 
-@pytest.mark.skipif(
-    not shutil.which("powershell" if sys.platform == "win32" else "pwsh"),
-    reason="paired Chronicle replay requires platform PowerShell",
-)
 def test_verified_source_coverage_contract():
     event = {"source_file": "original.md", "staged_file": "stage.md",
              "source_event_id": "source", "report_event_id": "report"}
@@ -239,6 +235,10 @@ def test_verified_source_coverage_contract():
     assert manifest["total_events"] == 1
 
 
+@pytest.mark.skipif(
+    not shutil.which("powershell" if sys.platform == "win32" else "pwsh"),
+    reason="paired Chronicle replay requires platform PowerShell",
+)
 def test_paired_replay(tmp_path):
     sources = tmp_path / "sources"
     sources.mkdir()
