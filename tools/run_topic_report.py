@@ -988,6 +988,40 @@ def _sorted_key_records(keys: set[tuple[str, str]]) -> list[dict[str, str]]:
     ]
 
 
+def verified_source_manifest(coverage, events, correlation):
+    """Build original-source coverage from verified report event mappings."""
+    from collections import Counter
+    from html import escape
+
+    if not isinstance(coverage, list) or not coverage:
+        raise ProvenanceError("original source coverage is missing")
+    expected = {}
+    for row in coverage:
+        name, count = row["source_file"], row["staged_event_count"]
+        if name in expected or type(count) is not int or count < 0:
+            raise ProvenanceError("original source coverage is inconsistent")
+        expected[name] = (row["staged_file"], count)
+    counts = Counter((event["source_file"], event["staged_file"]) for event in events)
+    expected_counts = Counter({(name, staged): count for name, (staged, count) in expected.items()})
+    reports = {row["report_event_id"]: set(row["source_event_ids"]) for row in correlation["report_events"]}
+    lineage_reports = {}
+    for event in events:
+        lineage_reports.setdefault(event["report_event_id"], set()).add(event["source_event_id"])
+    if counts != expected_counts or lineage_reports != reports:
+        raise ProvenanceError("original source coverage or report mapping disagrees with lineage")
+    contributions = {name: set() for name in expected}
+    for event in events:
+        contributions[event["source_file"]].add(event["report_event_id"])
+    sources = [
+        {"name": escape(name).replace("|", "&#124;"), "event_count": len(ids),
+         "status": "active" if ids else "no events"}
+        for name, ids in sorted(contributions.items(), key=lambda item: (-len(item[1]), item[0]))
+    ]
+    active = sum(bool(ids) for ids in contributions.values())
+    return {"sources": sources, "total_events": len(reports), "sources_with_events": active,
+            "sources_without_events": len(sources) - active}
+
+
 def correlate_event_provenance(
     run_dir: Path,
     lineage_doc: dict[str, Any],
@@ -1635,7 +1669,17 @@ def run_report(
                 markdown_mode=markdown_mode,
                 heading_levels=heading_levels,
             )
-        except ProvenanceError as exc:
+            if manifest["adapter"]["id"] == GENERIC_MARKDOWN:
+                from wordpipe.chronicle.index import load_config, render_template, safe_write
+
+                context = verified_source_manifest(
+                    validated_prepare_metrics.get("source_lineage"), event_lineage_doc["events"], correlation_doc,
+                )
+                config = load_config(Path(manifest["index_config"]), strict=True)
+                templates = Path(manifest["_repo_root"]) / config["templates_dir"]
+                safe_write(run_dir / "pipeline" / "appendix" / "source_manifest.md",
+                           render_template("source_manifest.md.j2", context, templates_dir=str(templates)))
+        except (ProvenanceError, OSError, ValueError) as exc:
             reason = str(exc)
             fail_msg = f"[FAIL] Event provenance correlation failed: {reason}"
             with log_path.open("a", encoding="utf-8") as fh:

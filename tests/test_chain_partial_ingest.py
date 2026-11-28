@@ -410,12 +410,193 @@ def test_inherited_chain_waits_for_redirected_descendant(isolated_chain, monkeyp
         assert evidence["cleanup"] == Cleanup.INHERITED
 
 
+def _await_worker_readiness(process, ready):
+    started = time.monotonic()
+    deadline = started + 6
+    status = None
+    while not ready.exists() and (status := process.poll()) is None and time.monotonic() < deadline:
+        time.sleep(.01)
+    if ready.exists():
+        return None
+    return {
+        "reason": "launcher_exited" if status is not None else "readiness_deadline_expired",
+        "elapsed_seconds": round(time.monotonic() - started, 3),
+        "launcher_returncode": status,
+        "worker_ready": False,
+    }
+
+
+def _readiness_stream_evidence(stream):
+    # Windows can peek without consuming. On POSIX, only the terminal failure
+    # path reads the pipe, with nonblocking reads and no later consumer.
+    limit = 2048
+    try:
+        if os.name == "nt":
+            import _winapi
+            import msvcrt
+
+            data, available, _ = _winapi.PeekNamedPipe(msvcrt.get_osfhandle(stream.fileno()), limit)
+        else:
+            fd = stream.fileno()
+            os.set_blocking(fd, False)
+            try:
+                data = os.read(fd, limit)
+            except BlockingIOError:
+                data = b""
+            available = None
+    except OSError as exc:
+        return {"io_error": exc.errno, "winerror": getattr(exc, "winerror", None)}
+
+    # Emit fixed excerpts only. Arbitrary process output can contain paths,
+    # arguments, or credentials, even in an isolated test.
+    markers = {
+        b"Stage 1 : Ingestion": "ingestion stage",
+        b"Processing: input.md": "processing fixture input",
+        b"[FAIL]": "reported stage failure",
+        b"Traceback (most recent call last):": "Python traceback",
+        b"ModuleNotFoundError:": "Python module import failure",
+        b"Bounded execution bridge did not return a terminal record": "bridge terminal record missing",
+    }
+    return {
+        "sampled_bytes": len(data),
+        "available_bytes": available,
+        "sample_limit_bytes": limit,
+        "markers": [label for marker, label in markers.items() if marker in data],
+    }
+
+
+def _readiness_failure_evidence(process, shell, out_dir, bridge_entered):
+    def interpreter_evidence(executable):
+        if not isinstance(executable, str) or not executable:
+            return {"resolved": False}
+        return {
+            "resolved": True,
+            "name": Path(executable).name,
+            "matches_pytest": os.path.normcase(executable) == os.path.normcase(sys.executable),
+        }
+
+    execution_dir = out_dir / "exec-01"
+    request = next(execution_dir.glob("*/1.json.request"), None)
+    selected_python = None
+    if request is not None:
+        try:
+            with request.open("rb") as handle:
+                selected_python = json.loads(handle.read(8192))["argv"][0]
+        except (OSError, ValueError, KeyError, IndexError, TypeError):
+            pass
+    return {
+        "launcher": Path(shell).name,
+        "pytest_interpreter": Path(sys.executable).name,
+        "python_on_test_path": interpreter_evidence(shutil.which("python.exe" if os.name == "nt" else "python")),
+        "python_in_bridge_request": interpreter_evidence(selected_python),
+        "bridge_request_present": request is not None,
+        "bridge_main_entered": bridge_entered.exists(),
+        "bridge_response_present": next(execution_dir.glob("*/1.json.response"), None) is not None,
+        "terminal_receipt_present": next(execution_dir.glob("*/1.json"), None) is not None,
+        "stdout": _readiness_stream_evidence(process.stdout),
+        "stderr": _readiness_stream_evidence(process.stderr),
+    }
+
+
+@pytest.mark.parametrize(
+    ("marker_present", "exit_code", "elapsed", "reason"),
+    [
+        (False, 7, 1, "launcher_exited"),
+        (False, None, 6, "readiness_deadline_expired"),
+        (True, None, 1, None),
+    ],
+)
+def test_worker_readiness_outcome(monkeypatch, tmp_path, marker_present, exit_code, elapsed, reason):
+    from unittest.mock import Mock
+
+    ready = tmp_path / "worker-ready"
+    if marker_present:
+        monkeypatch.setattr(time, "sleep", lambda _: ready.touch())
+    process = Mock()
+    process.poll.return_value = exit_code
+    clock = iter((100, 100 + elapsed, 100 + elapsed))
+    monkeypatch.setattr(time, "monotonic", lambda: next(clock))
+
+    result = _await_worker_readiness(process, ready)
+
+    if reason is None:
+        assert result is None
+        process.poll.assert_called_once_with()
+    else:
+        assert result == {
+            "reason": reason,
+            "elapsed_seconds": elapsed,
+            "launcher_returncode": exit_code,
+            "worker_ready": False,
+        }
+
+
+def test_readiness_stream_evidence_caps_and_filters_output():
+    reader, writer = os.pipe()
+    with os.fdopen(reader, "rb") as stream, os.fdopen(writer, "wb", buffering=0) as output:
+        assert _readiness_stream_evidence(stream)["sampled_bytes"] == 0
+        payload = b"Processing: input.md\n" + b"private-value " * 155
+        output.write(payload)
+        evidence = _readiness_stream_evidence(stream)
+        assert evidence["sampled_bytes"] == 2048
+        assert evidence["markers"] == ["processing fixture input"]
+        assert "private-value" not in json.dumps(evidence)
+        if os.name == "nt":
+            assert stream.read(len(payload)) == payload
+
+
+def test_readiness_evidence_reports_bridge_progress(monkeypatch, tmp_path):
+    from unittest.mock import Mock
+
+    command = "python.exe" if os.name == "nt" else "python"
+    monkeypatch.setattr(shutil, "which", lambda name: sys.executable if name == command else None)
+    monkeypatch.setattr(sys.modules[__name__], "_readiness_stream_evidence", lambda stream: {})
+    process = Mock()
+    entered = tmp_path / "bridge-entered"
+    before = _readiness_failure_evidence(process, "powershell", tmp_path, entered)
+    assert not before["bridge_request_present"]
+    assert not before["bridge_main_entered"]
+    assert not before["bridge_response_present"]
+    assert not before["terminal_receipt_present"]
+    assert before["python_on_test_path"]["matches_pytest"]
+
+    stage = tmp_path / "exec-01" / "test-run" / "1.json"
+    stage.parent.mkdir(parents=True)
+    stage.with_suffix(".json.request").write_text(
+        json.dumps({"argv": [sys.executable, "secret-argument"]}), encoding="utf-8",
+    )
+    stage.touch()
+    entered.touch()
+    after = _readiness_failure_evidence(process, "powershell", tmp_path, entered)
+    assert after["bridge_request_present"]
+    assert after["bridge_main_entered"]
+    assert not after["bridge_response_present"]
+    assert after["terminal_receipt_present"]
+    assert after["python_in_bridge_request"]["matches_pytest"]
+    assert "secret-argument" not in json.dumps(after)
+
+
 @pytest.mark.skipif(_POWERSHELL is None or _PYTHON_EXE is None, reason="requires native PowerShell and Python")
 def test_direct_chain_ctrl_c_preserves_terminal_cancellation(isolated_chain):
     chain, raw_dir, out_dir = isolated_chain
     ready = raw_dir.parent / "worker-ready"
     (chain.parent / "ingest.py").write_text(
         f"from pathlib import Path\nimport time\nPath({str(ready)!r}).touch()\ntime.sleep(7)\n",
+        encoding="utf-8",
+    )
+    # Observe the copied bridge entering main before it attempts worker launch.
+    # A marker write failure must not change the bridge's normal behavior.
+    bridge_entered = raw_dir.parent / "bridge-entered"
+    bridge = chain.with_name("execute_stage.py")
+    entry = "def main() -> int:\n"
+    source = bridge.read_text(encoding="utf-8")
+    assert source.count(entry) == 1
+    bridge.write_text(
+        source.replace(
+            entry,
+            entry + f"    try:\n        Path({str(bridge_entered)!r}).touch()\n    except OSError:\n        pass\n",
+            1,
+        ),
         encoding="utf-8",
     )
     if os.name == "nt":
@@ -427,36 +608,40 @@ def test_direct_chain_ctrl_c_preserves_terminal_cancellation(isolated_chain):
     else:
         shell = _POWERSHELL
         options = {"start_new_session": True}
-    with subprocess.Popen(
+    process = subprocess.Popen(
         [shell, "-NoProfile", "-File", str(chain), "-InputDir", str(raw_dir),
          "-OutputDir", str(out_dir), "-AllowPartialIngest"],
         cwd=raw_dir.parent, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **options,
-    ) as process:
+    )
+    try:
+        failure = _await_worker_readiness(process, ready)
+        if failure is not None:
+            failure.update(_readiness_failure_evidence(process, shell, out_dir, bridge_entered))
+            pytest.fail(json.dumps(failure, sort_keys=True))
+        start = time.monotonic()
+        if os.name == "nt":
+            code = (
+                "import ctypes,time;k=ctypes.WinDLL('kernel32',use_last_error=True);"
+                "k.FreeConsole();"
+                f"assert k.AttachConsole({process.pid}),ctypes.get_last_error();"
+                "assert k.SetConsoleCtrlHandler(None,True),ctypes.get_last_error();"
+                "assert k.GenerateConsoleCtrlEvent(0,0),ctypes.get_last_error();time.sleep(.1)"
+            )
+            subprocess.run([sys.executable, "-S", "-c", code], check=True, timeout=3,
+                           creationflags=subprocess.CREATE_NO_WINDOW)
+        else:
+            os.killpg(process.pid, signal.SIGINT)
+        stdout, stderr = process.communicate(timeout=5)
+        assert process.returncode != 0, stdout + stderr
+        assert time.monotonic() - start <= 5
+    finally:
         try:
-            readiness_limit = time.monotonic() + 6
-            while not ready.exists() and process.poll() is None and time.monotonic() < readiness_limit:
-                time.sleep(.01)
-            assert ready.exists()
-            start = time.monotonic()
-            if os.name == "nt":
-                code = (
-                    "import ctypes,time;k=ctypes.WinDLL('kernel32',use_last_error=True);"
-                    "k.FreeConsole();"
-                    f"assert k.AttachConsole({process.pid}),ctypes.get_last_error();"
-                    "assert k.SetConsoleCtrlHandler(None,True),ctypes.get_last_error();"
-                    "assert k.GenerateConsoleCtrlEvent(0,0),ctypes.get_last_error();time.sleep(.1)"
-                )
-                subprocess.run([sys.executable, "-S", "-c", code], check=True, timeout=3,
-                               creationflags=subprocess.CREATE_NO_WINDOW)
-            else:
-                os.killpg(process.pid, signal.SIGINT)
-            stdout, stderr = process.communicate(timeout=5)
-            assert process.returncode != 0, stdout + stderr
-            assert time.monotonic() - start <= 5
-        finally:
             if process.poll() is None:
                 process.kill()
                 process.wait(timeout=2)
+        finally:
+            process.stdout.close()
+            process.stderr.close()
     summary = _read_evidence(out_dir)
     assert summary["status"] == "failed"
     assert summary["stages"][2]["status"] == "not_run"

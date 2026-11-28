@@ -211,6 +211,30 @@ def without_run_id(value):
     return value
 
 
+def test_verified_source_coverage_contract():
+    event = {"source_file": "original.md", "staged_file": "stage.md",
+             "source_event_id": "source", "report_event_id": "report"}
+    correlation = {"report_events": [{"report_event_id": "report", "source_event_ids": ["source"]}]}
+    with pytest.raises(runner.ProvenanceError, match="missing"):
+        runner.verified_source_manifest(None, [event], correlation)
+    with pytest.raises(runner.ProvenanceError, match="disagrees"):
+        runner.verified_source_manifest(
+            [{"source_file": "original.md", "staged_file": "stage.md", "staged_event_count": 2}],
+            [event], correlation,
+        )
+    coverage = [{"source_file": "original.md", "staged_file": "stage.md", "staged_event_count": 1},
+                {"source_file": "empty.md", "staged_file": "empty-stage.md", "staged_event_count": 0}]
+    with pytest.raises(runner.ProvenanceError, match="disagrees"):
+        runner.verified_source_manifest(coverage, [{**event, "staged_file": "wrong.md"}], correlation)
+    with pytest.raises(runner.ProvenanceError, match="disagrees"):
+        runner.verified_source_manifest(coverage, [event], {"report_events": []})
+    manifest = runner.verified_source_manifest(coverage, [event], correlation)
+    assert [(row["name"], row["event_count"]) for row in manifest["sources"]] == [
+        ("original.md", 1), ("empty.md", 0),
+    ]
+    assert manifest["total_events"] == 1
+
+
 @pytest.mark.skipif(
     not shutil.which("powershell" if sys.platform == "win32" else "pwsh"),
     reason="paired Chronicle replay requires platform PowerShell",
@@ -233,6 +257,9 @@ def test_paired_replay(tmp_path):
             result = runner.run_report(config, run_id=run_id)
             run = Path(result["run_dir"])
             assert all(code == 0 for code in result["exit_codes"].values()), (run / "run.log").read_text(encoding="utf-8")
+            source_manifest = (run / "pipeline/appendix/source_manifest.md").read_text(encoding="utf-8")
+            assert "md01_structure.md" in source_manifest
+            assert "Merged Chronicle" not in source_manifest
             runs[structural].append(run)
         for name in ("event_lineage.json", "event_correlation.json"):
             first, second = [json.loads((path / name).read_text(encoding="utf-8")) for path in runs[structural]]
