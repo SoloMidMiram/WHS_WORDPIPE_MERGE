@@ -1,0 +1,554 @@
+{
+  "rows": [
+    {
+      "mode": "legacy",
+      "attempt": "first",
+      "wall_seconds": 32.5120562,
+      "stages": {
+        "pipeline": 30.29700000000048,
+        "prepare": 0.6100000000005821,
+        "summarize": 0.8119999999998981
+      },
+      "events": 17,
+      "merged_events": 17,
+      "staged_events": 17,
+      "errors": 0,
+      "coverage_percent": 100.0,
+      "theme_tag_percent": 100.0,
+      "events_per_second": 0.5228829544161528,
+      "mib_per_second": 0.0072465864269420895,
+      "input_reported_lines": 2540,
+      "dates": {
+        "2026-07-16": 17
+      },
+      "date_roles": {
+        "unrecorded": 17
+      },
+      "contributions": {
+        "2025-08-04-Timeline_of_ChatGPT_Incidents_-_June_and_July_2025.md": 2,
+        "2025-08-06-ChatGPT's_Bugs_and_Lore_-_May_to_July_2025_Timeline.md": 3,
+        "2025-08-06-ChatGPT_Agent_Mode_-_Bugs,_Exploits,_and_Cultural_Phenomena_(June-July_2025).md": 5,
+        "2025-08-06-Evolution_of_ChatGPT_Hilarious_Bugs,_Creative_Uses,_and_Viral_Moments_(2022-2025).md": 4,
+        "2025-08-06-Hilarious_ChatGPT_Bugs_and_Creative_Uses_(Past_18_Weeks).md": 3
+      },
+      "themes": {
+        "Archive/Refactor": 7,
+        "Categorize/Themes": 14,
+        "Merge/Dedup": 17,
+        "Orchestration/CLI": 13,
+        "Planning/Roadmap": 14,
+        "Index/Appendix": 7,
+        "Testing/Verification": 13
+      },
+      "duplicates": 0,
+      "unmerged": 0,
+      "ambiguous": [],
+      "survivor_verification": {
+        "method": "merged-note-aware-v1",
+        "expected_key_count": 17,
+        "actual_key_count": 17,
+        "missing_key_count": 0,
+        "unexpected_key_count": 0,
+        "missing_keys": [],
+        "unexpected_keys": [],
+        "raw_heading_count": 17,
+        "parsed_event_count": 17
+      },
+      "navigation_resolved": 0,
+      "index_links": {
+        "event_index.md": {
+          "event_fragment_links": 17,
+          "resolved": 17
+        },
+        "theme_index.md": {
+          "event_fragment_links": 85,
+          "resolved": 85
+        }
+      },
+      "replay_stable": true,
+      "structural_accounting": [],
+      "parser_provenance": null,
+      "tokens": {
+        "merged": 87915,
+        "tagged": 89448,
+        "event_index": 2152,
+        "theme_index": 8040,
+        "source_manifest": 97
+      }
+    },
+    {
+      "mode": "structural",
+      "attempt": "first",
+      "wall_seconds": 34.5985631,
+      "stages": {
+        "pipeline": 27.07800000000134,
+        "prepare": 1.1090000000003783,
+        "summarize": 1.7190000000009604
+      },
+      "events": 17,
+      "merged_events": 17,
+      "staged_events": 17,
+      "errors": 0,
+      "coverage_percent": 100.0,
+      "theme_tag_percent": 100.0,
+      "events_per_second": 0.4913498849898769,
+      "mib_per_second": 0.006809572538892473,
+      "input_reported_lines": 2540,
+      "dates": {
+        "2026-07-16": 17
+      },
+      "date_roles": {
+        "default": 17
+      },
+      "contributions": {
+        "2025-08-04-Timeline_of_ChatGPT_Incidents_-_June_and_July_2025.md": 2,
+        "2025-08-06-ChatGPT's_Bugs_and_Lore_-_May_to_July_2025_Timeline.md": 3,
+        "2025-08-06-ChatGPT_Agent_Mode_-_Bugs,_Exploits,_and_Cultural_Phenomena_(June-July_2025).md": 5,
+        "2025-08-06-Evolution_of_ChatGPT_Hilarious_Bugs,_Creative_Uses,_and_Viral_Moments_(2022-2025).md": 4,
+        "2025-08-06-Hilarious_ChatGPT_Bugs_and_Creative_Uses_(Past_18_Weeks).md": 3
+      },
+      "themes": {
+        "Archive/Refactor": 7,
+        "Categorize/Themes": 14,
+        "Merge/Dedup": 17,
+        "Orchestration/CLI": 13,
+        "Planning/Roadmap": 14,
+        "Index/Appendix": 7,
+        "Testing/Verification": 13
+      },
+      "duplicates": 0,
+      "unmerged": 0,
+      "ambiguous": [],
+      "survivor_verification": {
+        "method": "merged-note-aware-v1",
+        "expected_key_count": 17,
+        "actual_key_count": 17,
+        "missing_key_count": 0,
+        "unexpected_key_count": 0,
+        "missing_keys": [],
+        "unexpected_keys": [],
+        "raw_heading_count": 17,
+        "parsed_event_count": 17
+      },
+      "navigation_resolved": 17,
+      "index_links": {
+        "event_index.md": {
+          "event_fragment_links": 17,
+          "resolved": 17
+        },
+        "theme_index.md": {
+          "event_fragment_links": 85,
+          "resolved": 85
+        }
+      },
+      "replay_stable": true,
+      "structural_accounting": [
+        {
+          "source": "2025-08-04-Timeline_of_ChatGPT_Incidents_-_June_and_July_2025.md",
+          "lines": 342,
+          "bytes": 30092,
+          "span_lines": {
+            "preamble": 2,
+            "heading": 2,
+            "body": 338
+          },
+          "fences": 0,
+          "diagnostics": 0,
+          "complete": true
+        },
+        {
+          "source": "2025-08-06-ChatGPT's_Bugs_and_Lore_-_May_to_July_2025_Timeline.md",
+          "lines": 517,
+          "bytes": 42798,
+          "span_lines": {
+            "preamble": 2,
+            "heading": 3,
+            "body": 512
+          },
+          "fences": 0,
+          "diagnostics": 0,
+          "complete": true
+        },
+        {
+          "source": "2025-08-06-ChatGPT_Agent_Mode_-_Bugs,_Exploits,_and_Cultural_Phenomena_(June-July_2025).md",
+          "lines": 654,
+          "bytes": 96114,
+          "span_lines": {
+            "preamble": 2,
+            "heading": 5,
+            "body": 647
+          },
+          "fences": 0,
+          "diagnostics": 0,
+          "complete": true
+        },
+        {
+          "source": "2025-08-06-Evolution_of_ChatGPT_Hilarious_Bugs,_Creative_Uses,_and_Viral_Moments_(2022-2025).md",
+          "lines": 541,
+          "bytes": 42948,
+          "span_lines": {
+            "preamble": 9,
+            "heading": 4,
+            "body": 528
+          },
+          "fences": 0,
+          "diagnostics": 0,
+          "complete": true
+        },
+        {
+          "source": "2025-08-06-Hilarious_ChatGPT_Bugs_and_Creative_Uses_(Past_18_Weeks).md",
+          "lines": 481,
+          "bytes": 35094,
+          "span_lines": {
+            "preamble": 2,
+            "heading": 3,
+            "body": 476
+          },
+          "fences": 0,
+          "diagnostics": 0,
+          "complete": true
+        }
+      ],
+      "parser_provenance": {
+        "engine": "markdown-it-py",
+        "preset": "commonmark",
+        "enabled_extensions": [
+          "table"
+        ],
+        "mode": "structural-v1",
+        "contract_version": 1,
+        "heading_levels": [
+          2
+        ],
+        "distribution_version": "4.3.0"
+      },
+      "tokens": {
+        "merged": 87915,
+        "tagged": 89448,
+        "event_index": 2152,
+        "theme_index": 8040,
+        "source_manifest": 97
+      }
+    },
+    {
+      "mode": "structural",
+      "attempt": "replay",
+      "wall_seconds": 42.5764205,
+      "stages": {
+        "pipeline": 37.15599999999904,
+        "prepare": 1.359999999998763,
+        "summarize": 0.18800000000010186
+      },
+      "events": 17,
+      "merged_events": 17,
+      "staged_events": 17,
+      "errors": 0,
+      "coverage_percent": 100.0,
+      "theme_tag_percent": 100.0,
+      "events_per_second": 0.39928203922168615,
+      "mib_per_second": 0.005533612793280695,
+      "input_reported_lines": 2540,
+      "dates": {
+        "2026-07-16": 17
+      },
+      "date_roles": {
+        "default": 17
+      },
+      "contributions": {
+        "2025-08-04-Timeline_of_ChatGPT_Incidents_-_June_and_July_2025.md": 2,
+        "2025-08-06-ChatGPT's_Bugs_and_Lore_-_May_to_July_2025_Timeline.md": 3,
+        "2025-08-06-ChatGPT_Agent_Mode_-_Bugs,_Exploits,_and_Cultural_Phenomena_(June-July_2025).md": 5,
+        "2025-08-06-Evolution_of_ChatGPT_Hilarious_Bugs,_Creative_Uses,_and_Viral_Moments_(2022-2025).md": 4,
+        "2025-08-06-Hilarious_ChatGPT_Bugs_and_Creative_Uses_(Past_18_Weeks).md": 3
+      },
+      "themes": {
+        "Archive/Refactor": 7,
+        "Categorize/Themes": 14,
+        "Merge/Dedup": 17,
+        "Orchestration/CLI": 13,
+        "Planning/Roadmap": 14,
+        "Index/Appendix": 7,
+        "Testing/Verification": 13
+      },
+      "duplicates": 0,
+      "unmerged": 0,
+      "ambiguous": [],
+      "survivor_verification": {
+        "method": "merged-note-aware-v1",
+        "expected_key_count": 17,
+        "actual_key_count": 17,
+        "missing_key_count": 0,
+        "unexpected_key_count": 0,
+        "missing_keys": [],
+        "unexpected_keys": [],
+        "raw_heading_count": 17,
+        "parsed_event_count": 17
+      },
+      "navigation_resolved": 17,
+      "index_links": {
+        "event_index.md": {
+          "event_fragment_links": 17,
+          "resolved": 17
+        },
+        "theme_index.md": {
+          "event_fragment_links": 85,
+          "resolved": 85
+        }
+      },
+      "replay_stable": true,
+      "structural_accounting": [
+        {
+          "source": "2025-08-04-Timeline_of_ChatGPT_Incidents_-_June_and_July_2025.md",
+          "lines": 342,
+          "bytes": 30092,
+          "span_lines": {
+            "preamble": 2,
+            "heading": 2,
+            "body": 338
+          },
+          "fences": 0,
+          "diagnostics": 0,
+          "complete": true
+        },
+        {
+          "source": "2025-08-06-ChatGPT's_Bugs_and_Lore_-_May_to_July_2025_Timeline.md",
+          "lines": 517,
+          "bytes": 42798,
+          "span_lines": {
+            "preamble": 2,
+            "heading": 3,
+            "body": 512
+          },
+          "fences": 0,
+          "diagnostics": 0,
+          "complete": true
+        },
+        {
+          "source": "2025-08-06-ChatGPT_Agent_Mode_-_Bugs,_Exploits,_and_Cultural_Phenomena_(June-July_2025).md",
+          "lines": 654,
+          "bytes": 96114,
+          "span_lines": {
+            "preamble": 2,
+            "heading": 5,
+            "body": 647
+          },
+          "fences": 0,
+          "diagnostics": 0,
+          "complete": true
+        },
+        {
+          "source": "2025-08-06-Evolution_of_ChatGPT_Hilarious_Bugs,_Creative_Uses,_and_Viral_Moments_(2022-2025).md",
+          "lines": 541,
+          "bytes": 42948,
+          "span_lines": {
+            "preamble": 9,
+            "heading": 4,
+            "body": 528
+          },
+          "fences": 0,
+          "diagnostics": 0,
+          "complete": true
+        },
+        {
+          "source": "2025-08-06-Hilarious_ChatGPT_Bugs_and_Creative_Uses_(Past_18_Weeks).md",
+          "lines": 481,
+          "bytes": 35094,
+          "span_lines": {
+            "preamble": 2,
+            "heading": 3,
+            "body": 476
+          },
+          "fences": 0,
+          "diagnostics": 0,
+          "complete": true
+        }
+      ],
+      "parser_provenance": {
+        "engine": "markdown-it-py",
+        "preset": "commonmark",
+        "enabled_extensions": [
+          "table"
+        ],
+        "mode": "structural-v1",
+        "contract_version": 1,
+        "heading_levels": [
+          2
+        ],
+        "distribution_version": "4.3.0"
+      },
+      "tokens": {
+        "merged": 87915,
+        "tagged": 89448,
+        "event_index": 2152,
+        "theme_index": 8040,
+        "source_manifest": 97
+      }
+    },
+    {
+      "mode": "legacy",
+      "attempt": "replay",
+      "wall_seconds": 35.2745505,
+      "stages": {
+        "pipeline": 30.57800000000134,
+        "prepare": 0.31300000000010186,
+        "summarize": 2.639999999999418
+      },
+      "events": 17,
+      "merged_events": 17,
+      "staged_events": 17,
+      "errors": 0,
+      "coverage_percent": 100.0,
+      "theme_tag_percent": 100.0,
+      "events_per_second": 0.4819338519990496,
+      "mib_per_second": 0.0066790766099457015,
+      "input_reported_lines": 2540,
+      "dates": {
+        "2026-07-16": 17
+      },
+      "date_roles": {
+        "unrecorded": 17
+      },
+      "contributions": {
+        "2025-08-04-Timeline_of_ChatGPT_Incidents_-_June_and_July_2025.md": 2,
+        "2025-08-06-ChatGPT's_Bugs_and_Lore_-_May_to_July_2025_Timeline.md": 3,
+        "2025-08-06-ChatGPT_Agent_Mode_-_Bugs,_Exploits,_and_Cultural_Phenomena_(June-July_2025).md": 5,
+        "2025-08-06-Evolution_of_ChatGPT_Hilarious_Bugs,_Creative_Uses,_and_Viral_Moments_(2022-2025).md": 4,
+        "2025-08-06-Hilarious_ChatGPT_Bugs_and_Creative_Uses_(Past_18_Weeks).md": 3
+      },
+      "themes": {
+        "Archive/Refactor": 7,
+        "Categorize/Themes": 14,
+        "Merge/Dedup": 17,
+        "Orchestration/CLI": 13,
+        "Planning/Roadmap": 14,
+        "Index/Appendix": 7,
+        "Testing/Verification": 13
+      },
+      "duplicates": 0,
+      "unmerged": 0,
+      "ambiguous": [],
+      "survivor_verification": {
+        "method": "merged-note-aware-v1",
+        "expected_key_count": 17,
+        "actual_key_count": 17,
+        "missing_key_count": 0,
+        "unexpected_key_count": 0,
+        "missing_keys": [],
+        "unexpected_keys": [],
+        "raw_heading_count": 17,
+        "parsed_event_count": 17
+      },
+      "navigation_resolved": 0,
+      "index_links": {
+        "event_index.md": {
+          "event_fragment_links": 17,
+          "resolved": 17
+        },
+        "theme_index.md": {
+          "event_fragment_links": 85,
+          "resolved": 85
+        }
+      },
+      "replay_stable": true,
+      "structural_accounting": [],
+      "parser_provenance": null,
+      "tokens": {
+        "merged": 87915,
+        "tagged": 89448,
+        "event_index": 2152,
+        "theme_index": 8040,
+        "source_manifest": 97
+      }
+    }
+  ],
+  "groups": {
+    "legacy": {
+      "wall_seconds": {
+        "n": 2,
+        "minimum": 32.5120562,
+        "maximum": 35.2745505,
+        "median": 33.89330335,
+        "iqr": 1.38124715,
+        "mad": 1.3812471499999965
+      },
+      "events_per_second": {
+        "n": 2,
+        "minimum": 0.4819338519990496,
+        "maximum": 0.5228829544161528,
+        "median": 0.5024084032076013,
+        "iqr": 0.020474551208551683,
+        "mad": 0.020474551208551628
+      },
+      "mib_per_second": {
+        "n": 2,
+        "minimum": 0.0066790766099457015,
+        "maximum": 0.0072465864269420895,
+        "median": 0.0069628315184438955,
+        "iqr": 0.000283754908498194,
+        "mad": 0.000283754908498194
+      }
+    },
+    "structural": {
+      "wall_seconds": {
+        "n": 2,
+        "minimum": 34.5985631,
+        "maximum": 42.5764205,
+        "median": 38.587491799999995,
+        "iqr": 3.9889287000000024,
+        "mad": 3.988928699999999
+      },
+      "events_per_second": {
+        "n": 2,
+        "minimum": 0.39928203922168615,
+        "maximum": 0.4913498849898769,
+        "median": 0.4453159621057815,
+        "iqr": 0.04603392288409536,
+        "mad": 0.046033922884095385
+      },
+      "mib_per_second": {
+        "n": 2,
+        "minimum": 0.005533612793280695,
+        "maximum": 0.006809572538892473,
+        "median": 0.0061715926660865835,
+        "iqr": 0.0006379798728058895,
+        "mad": 0.0006379798728058891
+      }
+    }
+  },
+  "pairs": {
+    "first": {
+      "dispositions": {
+        "matched_heading": 17
+      },
+      "common_source_ids": 0,
+      "common_report_ids": 0,
+      "common_body_hashes": 17
+    },
+    "replay": {
+      "dispositions": {
+        "matched_heading": 17
+      },
+      "common_source_ids": 0,
+      "common_report_ids": 0,
+      "common_body_hashes": 17
+    }
+  },
+  "tokenizer": {
+    "name": "GPT-2 BPE",
+    "kind": "consumer-token estimate",
+    "asset_sha256": "8414cab924d8b9b33013f0d221c5862f365ee9be39c5c2bfae8a5a9e970478a6",
+    "engine": "tokenizers 0.23.3"
+  },
+  "raw_document_tokens": 87421,
+  "token_scope": "sum of independently encoded UTF-8 Markdown files; standalone token estimates, no special tokens; no model inference or quality-adjusted savings claim",
+  "source_hashes_preserved": true,
+  "cohort_elapsed_seconds": 145.2475117,
+  "environment": {
+    "windows": "Microsoft Windows NT 10.0.26300.0",
+    "pwsh": "7.6.9",
+    "origin": "CI-01 source",
+    "python": "Python 3.11.4",
+    "parser": "4.3.0",
+    "cache": "same native Windows host, serial, primed but uncontrolled"
+  }
+}

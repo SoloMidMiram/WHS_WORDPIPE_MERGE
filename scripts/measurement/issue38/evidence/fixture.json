@@ -1,0 +1,36 @@
+{
+  "topic": "Workshop maintenance diary",
+  "classification": "synthetic",
+  "files": [
+    {
+      "file": "01-intake.md",
+      "bytes": 111,
+      "sha256": "187cc7770d1eb64aa1f90a529d6383c120429e784c34782ade6ee50d6629eb3d",
+      "expected_h2": 1
+    },
+    {
+      "file": "02-assessment.md",
+      "bytes": 116,
+      "sha256": "2cbcc09614ddebd7750657051cd718181adf5c231cf6cc3d4089b02dc5750c43",
+      "expected_h2": 1
+    },
+    {
+      "file": "03-inspection.md",
+      "bytes": 121,
+      "sha256": "d2f1cbc83580820c9588a841e85f1f03aa681afbe3d324fad7cf1fc6aef9ea69",
+      "expected_h2": 1
+    },
+    {
+      "file": "04-service.md",
+      "bytes": 116,
+      "sha256": "33d6c6c28598c9683533025d7bac936a7f8deb01422704a1673a33127d4cd9a7",
+      "expected_h2": 1
+    },
+    {
+      "file": "05-handoff.md",
+      "bytes": 115,
+      "sha256": "bef508e2cfdd73278a8a148c5b904c921ee9f4964d52050d48f3bfd2b634b623",
+      "expected_h2": 1
+    }
+  ]
+}

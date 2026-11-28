@@ -1,0 +1,43 @@
+{
+  "baseline": "1295ad15cc085732391a6d1dfe8069de32752ad1",
+  "revision": "3d32ba1ce4292a44a6a509c5a4d3585fc884f9ae",
+  "visibility": "public Git-tracked sources at baseline; user-authorized local processing; no republishing",
+  "catalog_sha256": "905d0856c23d0a11e9259888519247fcf61bc33456c42537f031b266552e86d6",
+  "files": [
+    {
+      "path": "inputs/chatgpt-chronicle/markdown/2025-08-04-Timeline_of_ChatGPT_Incidents_-_June_and_July_2025.md",
+      "classification": "source",
+      "catalog_sha256": "58e70987d60fc56f702ee46371a1ffd3666bc97fe04fe191137393418e45c256",
+      "raw_sha256": "58e70987d60fc56f702ee46371a1ffd3666bc97fe04fe191137393418e45c256",
+      "bytes": 30092
+    },
+    {
+      "path": "inputs/chatgpt-chronicle/markdown/2025-08-06-ChatGPT_Agent_Mode_-_Bugs,_Exploits,_and_Cultural_Phenomena_(June-July_2025).md",
+      "classification": "source",
+      "catalog_sha256": "c90bb6938a56015178cc42dae604544da675f0eeae197be6d96a2a089fe3fa5a",
+      "raw_sha256": "c90bb6938a56015178cc42dae604544da675f0eeae197be6d96a2a089fe3fa5a",
+      "bytes": 96114
+    },
+    {
+      "path": "inputs/chatgpt-chronicle/markdown/2025-08-06-ChatGPT's_Bugs_and_Lore_-_May_to_July_2025_Timeline.md",
+      "classification": "source",
+      "catalog_sha256": "f4ba39fc2200e088ad868a032f36c695d4dafa71b9890fd47e1960a1ccc65e81",
+      "raw_sha256": "f4ba39fc2200e088ad868a032f36c695d4dafa71b9890fd47e1960a1ccc65e81",
+      "bytes": 42798
+    },
+    {
+      "path": "inputs/chatgpt-chronicle/markdown/2025-08-06-Evolution_of_ChatGPT_Hilarious_Bugs,_Creative_Uses,_and_Viral_Moments_(2022-2025).md",
+      "classification": "source",
+      "catalog_sha256": "710310e122fe2c38980cbe7204c0dbc6c6b7fc44fbbc1a30dcd1ba9b8cfaa804",
+      "raw_sha256": "710310e122fe2c38980cbe7204c0dbc6c6b7fc44fbbc1a30dcd1ba9b8cfaa804",
+      "bytes": 42948
+    },
+    {
+      "path": "inputs/chatgpt-chronicle/markdown/2025-08-06-Hilarious_ChatGPT_Bugs_and_Creative_Uses_(Past_18_Weeks).md",
+      "classification": "source",
+      "catalog_sha256": "fe3614903a25fdd88cd304f78eae0738de386f44a3477cb3a7c7654dd41bae37",
+      "raw_sha256": "fe3614903a25fdd88cd304f78eae0738de386f44a3477cb3a7c7654dd41bae37",
+      "bytes": 35094
+    }
+  ]
+}

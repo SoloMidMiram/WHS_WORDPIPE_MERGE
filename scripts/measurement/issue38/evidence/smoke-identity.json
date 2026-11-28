@@ -1,0 +1,45 @@
+{
+  "baseline": "1295ad15cc085732391a6d1dfe8069de32752ad1",
+  "source": "inputs/chatgpt-chronicle/markdown/2025-08-06-Project_Activity_Summary.md",
+  "sha256": "a2452680944f02a407ebf5ef77fff5d781165a5516bc40e0e670bc96afef7b33",
+  "size_bytes": 7227,
+  "scope": "one public tracked repository source, local offline MD-01 parser characterization",
+  "environment_class": "native Windows; primed cache uncontrolled; serial; CI-01 source origin verified",
+  "overlay": "bcc4e0ae3abb476293e8c3196915287a78d7c51d",
+  "configs": {
+    "legacy": "f8d23b2c3ccba55b43915764bf864eba894a2c6b20748b1d420bfcc4e30f94c8",
+    "structural": "14ac805f7e04bd1862508d5bf3a855c91b3e800174213cccfe15c62b5e9ab7eb"
+  },
+  "registration": [
+    {
+      "id": "measure38-1",
+      "mode": "legacy",
+      "attempt": 1
+    },
+    {
+      "id": "measure38-1",
+      "mode": "structural",
+      "attempt": 1
+    },
+    {
+      "id": "measure38-2",
+      "mode": "legacy",
+      "attempt": 2
+    },
+    {
+      "id": "measure38-2",
+      "mode": "structural",
+      "attempt": 2
+    },
+    {
+      "id": "measure38-3",
+      "mode": "legacy",
+      "attempt": 3
+    },
+    {
+      "id": "measure38-3",
+      "mode": "structural",
+      "attempt": 3
+    }
+  ]
+}

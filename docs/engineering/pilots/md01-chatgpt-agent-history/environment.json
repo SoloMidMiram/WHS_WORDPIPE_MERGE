@@ -1,0 +1,8 @@
+{
+  "windows": "Microsoft Windows NT 10.0.26300.0",
+  "pwsh": "7.6.9",
+  "origin": "CI-01 source",
+  "python": "Python 3.11.4",
+  "parser": "4.3.0",
+  "cache": "same native Windows host, serial, primed but uncontrolled"
+}

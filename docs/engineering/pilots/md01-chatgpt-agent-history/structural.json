@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "topic": "md01_agent_history",
+  "input_dir": "_WORK/MD01-REAL-TOPIC-20261127/sources",
+  "adapter": {
+    "id": "prepare_generic_markdown_chronicle",
+    "markdown_mode": "structural-v1"
+  },
+  "themes_config": "WordHorrorStories/pipelinechronicle/themes.pipelinechronicle.json",
+  "index_config": "pipeline/index_config.json",
+  "output": {
+    "base_dir": "_WORK/MD01-REAL-TOPIC-20261127/structural",
+    "run_id_format": "timestamp",
+    "legacy_base_dir": "_WORK/MD01-REAL-TOPIC-20261127/legacy"
+  },
+  "quality_gates": {
+    "min_extraction_coverage_percent": 95.0,
+    "min_theme_tag_percent": 85.0,
+    "max_error_count": 0
+  }
+}
