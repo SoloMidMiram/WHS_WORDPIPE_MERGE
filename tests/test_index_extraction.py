@@ -20,12 +20,22 @@ import pytest
 from pipeline.index import (
     DEFAULT_CONFIG,
     build_event_index,
+    build_link_registry,
     build_theme_index,
     deduplicate_events,
     extract_events_from_tagged,
     load_config,
     render_template,
 )
+
+
+def test_link_registry_counts_urls_instead_of_domains():
+    context = build_link_registry([
+        {"date": "2025-01-01", "body": "https://example.com/a#x https://example.com/a#y https://example.com/a#x"},
+        {"date": "2025-01-02", "body": "https://example.org/b"},
+    ])
+    assert len(context["links"]) == 2
+    assert "**Total unique links:** 3" in render_template("link_registry.md.j2", context)
 
 TAGGED_MD = textwrap.dedent("""\
     ## Event: 2025-01-01 - Alpha Outage

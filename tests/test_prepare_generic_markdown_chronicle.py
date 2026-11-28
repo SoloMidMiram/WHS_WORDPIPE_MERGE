@@ -9,6 +9,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
 
 MODULE_PATH = Path(__file__).resolve().parents[1] / "tools" / "prepare_generic_markdown_chronicle.py"
 SPEC = importlib.util.spec_from_file_location("prepare_generic_markdown_chronicle", MODULE_PATH)
@@ -16,6 +17,26 @@ adapter = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
 sys.modules[SPEC.name] = adapter
 SPEC.loader.exec_module(adapter)
+
+
+@pytest.mark.parametrize(("source", "expected_lines"), [
+    (b"", 0),
+    (b"one", 1),
+    (b"one\n", 1),
+    (b"one\r\ntwo\r\n", 2),
+    (b"one\rtwo\r", 2),
+    (b"one\n\n", 2),
+    ("one\u2028two\nthree".encode("utf-8"), 2),
+])
+def test_source_metrics_counts_physical_markdown_lines(tmp_path, source, expected_lines):
+    path = tmp_path / "source.md"
+    path.write_bytes(source)
+
+    assert adapter.source_metrics([path]) == {
+        "input_file_count": 1,
+        "input_total_bytes": len(source),
+        "input_total_lines": expected_lines,
+    }
 
 
 def test_standalone_legacy_cli_without_site_packages(tmp_path):

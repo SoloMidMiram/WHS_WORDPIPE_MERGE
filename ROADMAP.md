@@ -35,6 +35,25 @@ See the [authoritative avenue and queue mapping](docs/engineering/DELIVERY_PHASE
 
 ## Active narrative roadmap — newest first
 
+### 2026-11-28 — MD-01 reconciliation after readiness observability
+
+Reconcile [PR #41](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/41), branch
+`codex/md01-physical-line-accounting`, accepted implementation head
+`f43c9c77003d57217bb826c66cf095adf3afa5e0`, with main `e850fa9f6aa7d4206a32936674427c8c3ac7275c`.
+[PR #42](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/42) is integrated; its tree
+`01a1b2250d9c2506c7fd8ad149ab16ca4a8ca404` and [main CI](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/actions/runs/46061028154)
+were verified remotely. Preserve both roadmap histories and the exact
+observability test blob alongside all accepted MD-01 changes. The repository
+map was checked; paths and ownership are unchanged. The pure-Python source
+coverage test is unguarded and paired replay retains its PowerShell skip.
+The previous candidate's Windows readiness failures and the captured Slice A
+failure remain evidence under #25/#34; root cause and descendant cleanup
+remain unresolved. Slice B is proposed only. No CI waiver, new diagnostic
+budget, corpus rerun, local execution claim or new slot. Next: fresh exact-head
+push and PR CI and independent acceptance of the reconciled candidate; assess
+MD-01 exit only after integration. PR #39 remains separate and awaits the
+resulting main. G1/G2 REVISE; TIME-01 queued; v0.2 NO-GO.
+
 ### 2026-11-27 — Windows readiness failure observability
 
 Slice A on `codex/windows-readiness-correction` starts from
@@ -61,6 +80,23 @@ skipped. The five local governance checks passed. Local wheel setup built
 the wheel and stopped at dependency installation after a proxy TLS timeout.
 See [#34](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/issues/34) for the
 candidate and hosted workflow disposition.
+
+### 2026-11-27 — MD-01 correction review and prerequisite guard
+
+Reviewed [PR #41](https://github.com/SoloMidMiram/WHS_WORDPIPE_MERGE/pull/41) on `codex/md01-physical-line-accounting` at `24ba50b7a2f233fa634593a21d0b557f1b5e9df4`, base `09928e82e72efeeed388965eeacb8b5594728e33`. The Codex acceptance review identified a misplaced PowerShell prerequisite decorator; correction `679121e9ade801b37bf752504fbaeb8786b19f3a` restores it to the paired replay, leaving the pure-Python source-coverage test unguarded. Source and patch inspected remotely; no fresh local execution asserted. The earlier exact-head push passed all five jobs; the PR event failed before Ctrl+C in Windows 3.11 and cancelled two sibling jobs. Preserve that evidence under #25/#34; do not attribute it to this MD-01 fix. PR #39 is separate. The repository map was checked; paths and ownership are unchanged. Next: validate the final candidate with and without PowerShell, full governance and exact-head CI, then independent acceptance. G2 remains REVISE; TIME-01 and CORE-02 remain queued. No real-pilot rerun or new slot.
+
+### 2026-11-27 — MD-01 original-source coverage and link counts
+
+Local candidate on `codex/md01-physical-line-accounting`; no PR opened.
+Reviewed line-metric parent `9dcfbd304aa41159fecd7f5e4393238857c500e0`
+against integrated main `09928e82e72efeeed388965eeacb8b5594728e33`.
+Use validated prepare coverage and verified report mappings to attribute
+original sources. Count the distinct URL rows in the registry without
+changing URL identity. Reprocessing retained output metadata from all four
+pilot runs showed five sources, 17 events and 162 links across 30 domains.
+The real pilot was not rerun. The repository map was checked; routes and
+ownership stay the same. PR #39 remains pending CI disposition. G2 remains
+REVISE. The next decision is review of this bounded correction.
 
 ### 2026-11-27 — Engineering efficiency and evidence routing review
 
